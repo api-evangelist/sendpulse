@@ -1,0 +1,141 @@
+aid: sendpulse
+url: https://raw.githubusercontent.com/api-evangelist/sendpulse/refs/heads/main/apis.yml
+name: SendPulse
+kind: company
+description: SendPulse is a multichannel marketing platform with a unified REST API
+  for email campaigns and address books, SMTP transactional email, SMS, web push
+  notifications, chatbots across messengers, and Automation 360 flows. The API uses
+  OAuth2 client_credentials to issue short-lived Bearer tokens against
+  https://api.sendpulse.com.
+image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
+tags:
+- Marketing
+- Email
+- SMS
+- Web Push
+- Chatbots
+- Transactional Email
+- Multichannel
+created: '2026-06-25'
+modified: '2026-06-25'
+specificationVersion: '0.19'
+apis:
+- aid: sendpulse:sendpulse-address-books-email-api
+  name: SendPulse Address Books & Email API
+  tags:
+  - Email
+  - Address Books
+  - Campaigns
+  image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
+  humanURL: https://sendpulse.com/integrations/api/bulk-email
+  baseURL: https://api.sendpulse.com
+  properties:
+  - url: https://sendpulse.com/integrations/api/bulk-email
+    type: Documentation
+  - url: https://sendpulse.com/integrations/api
+    type: APIReference
+  - url: openapi/sendpulse-openapi.yml
+    type: OpenAPI
+  description: Manage mailing lists (address books), subscribers and variables, and
+    create, send, and report on bulk email campaigns, senders, templates, and the
+    email blacklist.
+- aid: sendpulse:sendpulse-smtp-transactional-api
+  name: SendPulse SMTP / Transactional Email API
+  tags:
+  - SMTP
+  - Transactional Email
+  - Email
+  image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
+  humanURL: https://sendpulse.com/integrations/api/smtp
+  baseURL: https://api.sendpulse.com
+  properties:
+  - url: https://sendpulse.com/integrations/api/smtp
+    type: Documentation
+  - url: openapi/sendpulse-openapi.yml
+    type: OpenAPI
+  description: Send and track transactional email over SMTP, list sent messages, manage
+    sending IP addresses, and maintain the unsubscribe list.
+- aid: sendpulse:sendpulse-sms-api
+  name: SendPulse SMS API
+  tags:
+  - SMS
+  - Messaging
+  - Campaigns
+  image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
+  humanURL: https://sendpulse.com/integrations/api/bulk-sms
+  baseURL: https://api.sendpulse.com
+  properties:
+  - url: https://sendpulse.com/integrations/api/bulk-sms
+    type: Documentation
+  - url: openapi/sendpulse-openapi.yml
+    type: OpenAPI
+  description: Add and manage phone numbers in address books, send SMS to phone lists,
+    create and cancel SMS campaigns, retrieve campaign cost and statistics, and manage
+    the SMS blacklist.
+- aid: sendpulse:sendpulse-web-push-api
+  name: SendPulse Web Push API
+  tags:
+  - Web Push
+  - Notifications
+  - Subscriptions
+  image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
+  humanURL: https://sendpulse.com/integrations/api/web-push
+  baseURL: https://api.sendpulse.com
+  properties:
+  - url: https://sendpulse.com/integrations/api/web-push
+    type: Documentation
+  - url: openapi/sendpulse-openapi.yml
+    type: OpenAPI
+  description: Create web push notification campaigns, manage registered websites and
+    their subscribers and variables, retrieve integration code, and pull campaign
+    statistics.
+- aid: sendpulse:sendpulse-chatbots-api
+  name: SendPulse Chatbots API
+  tags:
+  - Chatbots
+  - Messengers
+  - Conversational
+  image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
+  humanURL: https://sendpulse.com/integrations/api/chatbot
+  baseURL: https://api.sendpulse.com
+  properties:
+  - url: https://sendpulse.com/integrations/api/chatbot
+    type: Documentation
+  - url: openapi/sendpulse-openapi.yml
+    type: OpenAPI
+  description: Manage chatbots across Telegram, Facebook Messenger, WhatsApp, Instagram,
+    Viber, and Live Chat - list bots and contacts, send messages, and run flows.
+- aid: sendpulse:sendpulse-automation-360-api
+  name: SendPulse Automation 360 API
+  tags:
+  - Automation
+  - Workflows
+  - Events
+  image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
+  humanURL: https://sendpulse.com/integrations/api/automation360
+  baseURL: https://api.sendpulse.com
+  properties:
+  - url: https://sendpulse.com/integrations/api/automation360
+    type: Documentation
+  - url: openapi/sendpulse-openapi.yml
+    type: OpenAPI
+  description: Trigger Automation 360 flows by sending events with subscriber data,
+    and report on flow, element, and conversion statistics.
+common:
+- type: GitHubOrganization
+  url: https://github.com/sendpulse
+- type: LinkedIn
+  url: https://www.linkedin.com/company/sendpulse
+- type: Website
+  url: https://sendpulse.com/
+- type: Documentation
+  url: https://sendpulse.com/integrations/api
+- type: Plans
+  url: plans/sendpulse-plans-pricing.yml
+- type: RateLimits
+  url: rate-limits/sendpulse-rate-limits.yml
+- type: FinOps
+  url: finops/sendpulse-finops.yml
+maintainers:
+- FN: Kin Lane
+  email: kin@apievangelist.com

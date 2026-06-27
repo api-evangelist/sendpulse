@@ -1,0 +1,111 @@
+specification: FinOps Framework
+specificationVersion: '1.0'
+schema: https://www.finops.org/framework/
+provider: SendPulse
+providerId: sendpulse
+created: '2026-06-25'
+modified: '2026-06-25'
+reconciled: false
+tags:
+- Marketing
+- Email
+- SMS
+- Web Push
+- Chatbots
+- FinOps
+- Cost Management
+- FOCUS
+description: >-
+  FinOps view of SendPulse spend. SendPulse bills a mix of plan subscriptions
+  priced by subscriber/contact count, pay-as-you-go prepaid email packages,
+  per-message SMS billed by destination country, separately tiered SMTP
+  transactional email, and chatbot plans by subscriber count. The same REST API
+  is available across plans, so cost is driven by sending volume and stored
+  contacts rather than API calls.
+notes: >-
+  Per-tier prices and SMS per-country rates change frequently; verify against
+  the SendPulse pricing pages during reconciliation.
+sources:
+- https://sendpulse.com/prices
+- https://sendpulse.com/prices/smtp
+- https://sendpulse.com/prices/sms
+- https://focus.finops.org/focus-specification/v1-3/
+alignedWith:
+  framework: FinOps Foundation Framework
+  frameworkUrl: https://www.finops.org/framework/
+  dataSpec: FOCUS
+  dataSpecVersion: '1.3'
+  dataSpecUrl: https://focus.finops.org/focus-specification/v1-3/
+publisherName: SendPulse
+serviceCategory: Marketing and Communications
+billingModel:
+  pricingCategory: Subscription and Usage-Based
+  billingFrequency: Monthly
+  billingCurrency: USD
+  chargeCategories:
+  - Usage
+  - Purchase
+  - Adjustment
+focusColumns:
+  ServiceName: SendPulse
+  ServiceCategory: Marketing and Communications
+  ProviderName: SendPulse
+  PublisherName: SendPulse
+  InvoiceIssuerName: SendPulse
+  BillingCurrency: USD
+  ChargeCategory: Usage
+  PricingCategory: Subscription and Usage-Based
+meters:
+- name: subscribers
+  description: Stored subscribers/contacts, the primary driver of email plan price.
+  unit: subscribers
+  aggregation: max
+  dimensions:
+  - account
+  - plan
+- name: emails_sent
+  description: Bulk email campaign volume, counted against monthly plan or prepaid packages.
+  unit: emails
+  aggregation: sum
+  dimensions:
+  - account
+  - address_book
+- name: smtp_emails
+  description: Transactional emails sent over SMTP, billed on separate volume tiers.
+  unit: emails
+  aggregation: sum
+  dimensions:
+  - account
+- name: sms_messages
+  description: SMS messages sent, billed per message by destination country and operator.
+  unit: messages
+  aggregation: sum
+  dimensions:
+  - account
+  - country
+- name: web_push_sends
+  description: Web push notifications delivered to subscribed browsers.
+  unit: notifications
+  aggregation: sum
+  dimensions:
+  - account
+  - website
+- name: chatbot_subscribers
+  description: Chatbot subscribers across messengers, driving chatbot plan price.
+  unit: subscribers
+  aggregation: max
+  dimensions:
+  - account
+  - messenger
+principles:
+- name: Visibility
+  description: Pull account balance via GET /balance and monitor sending volume per address book and channel.
+- name: Allocation
+  description: Separate address books, websites, and senders per workload/brand to attribute email, push, and SMS spend.
+- name: Optimization
+  description: Right-size the email plan to actual subscriber count, clean lists with the email verifier to cut wasted sends, use pay-as-you-go for low-frequency sending, and choose SMS routes by cost.
+- name: Accountability
+  description: Assign owners per channel; review monthly subscription, prepaid email, and per-country SMS spend against budget.
+maintainers:
+- FN: Kin Lane
+  email: kin@apievangelist.com

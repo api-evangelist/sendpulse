@@ -1,0 +1,442 @@
+{
+  "info": {
+    "name": "SendPulse API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": "REST API for the SendPulse multichannel marketing platform. Authenticated with an OAuth2 client_credentials Bearer token obtained from POST /oauth/access_token. Base URL https://api.sendpulse.com."
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{bearerToken}}",
+        "type": "string"
+      }
+    ]
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "https://api.sendpulse.com"
+    }
+  ],
+  "item": [
+    {
+      "name": "Authorization",
+      "item": [
+        {
+          "name": "Obtain an access token.",
+          "request": {
+            "method": "POST",
+            "auth": {
+              "type": "noauth"
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/oauth/access_token",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "oauth",
+                "access_token"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"grant_type\": \"client_credentials\",\n  \"client_id\": \"{{clientId}}\",\n  \"client_secret\": \"{{clientSecret}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "description": "Obtain an OAuth2 Bearer access token using the client_credentials grant. Tokens are valid for approximately one hour."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Address Books",
+      "item": [
+        {
+          "name": "List address books.",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/addressbooks",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "addressbooks"
+              ]
+            },
+            "description": "List address books (mailing lists)."
+          }
+        },
+        {
+          "name": "Create an address book.",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/addressbooks",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "addressbooks"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"bookName\": \"My List\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "description": "Create a new address book."
+          }
+        },
+        {
+          "name": "Add emails to an address book.",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/addressbooks/:id/emails",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "addressbooks",
+                ":id",
+                "emails"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": ""
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"emails\": []\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "description": "Add subscribers (emails with variables) to an address book."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Email Campaigns",
+      "item": [
+        {
+          "name": "List campaigns.",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/campaigns",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "campaigns"
+              ]
+            },
+            "description": "List email campaigns."
+          }
+        },
+        {
+          "name": "Create a campaign.",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/campaigns",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "campaigns"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"sender_name\": \"\",\n  \"sender_email\": \"\",\n  \"subject\": \"\",\n  \"body\": \"\",\n  \"list_id\": 0\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "description": "Create and send an email campaign."
+          }
+        }
+      ]
+    },
+    {
+      "name": "SMTP",
+      "item": [
+        {
+          "name": "Send a transactional email.",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/smtp/emails",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "smtp",
+                "emails"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": {}\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "description": "Send a transactional email over SMTP."
+          }
+        },
+        {
+          "name": "List sent emails.",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/smtp/emails",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "smtp",
+                "emails"
+              ]
+            },
+            "description": "List sent transactional emails."
+          }
+        }
+      ]
+    },
+    {
+      "name": "SMS",
+      "item": [
+        {
+          "name": "Send SMS.",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/sms/send",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "sms",
+                "send"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"phones\": [],\n  \"body\": \"\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "description": "Send SMS to a list of phone numbers."
+          }
+        },
+        {
+          "name": "List SMS campaigns.",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/sms/campaigns/list",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "sms",
+                "campaigns",
+                "list"
+              ]
+            },
+            "description": "List SMS campaigns."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Web Push",
+      "item": [
+        {
+          "name": "List push campaigns.",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/push/tasks",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "push",
+                "tasks"
+              ]
+            },
+            "description": "List web push campaigns."
+          }
+        },
+        {
+          "name": "Create push campaign.",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/push/tasks",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "push",
+                "tasks"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"\",\n  \"website_id\": 0,\n  \"body\": \"\",\n  \"ttl\": 0\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "description": "Create a web push campaign."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Automation 360",
+      "item": [
+        {
+          "name": "Trigger an event flow.",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/events/name/:eventName",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "events",
+                "name",
+                ":eventName"
+              ],
+              "variable": [
+                {
+                  "key": "eventName",
+                  "value": ""
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "description": "Trigger an Automation 360 flow by sending an event with subscriber data."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Account",
+      "item": [
+        {
+          "name": "Get account balance.",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/balance",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "balance"
+              ]
+            },
+            "description": "Get the account balance."
+          }
+        }
+      ]
+    }
+  ]
+}

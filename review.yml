@@ -1,0 +1,78 @@
+aid: sendpulse
+name: SendPulse
+review:
+  question: Does SendPulse expose a documented public WebSocket API?
+  answer: false
+  date: '2026-06-25'
+  reviewer: API Evangelist
+  asyncapiSpecCreated: false
+  asyncapiScopeNote: |
+    No AsyncAPI document was created. SendPulse's public REST API is a
+    synchronous request/response HTTPS API. SendPulse does offer outbound
+    HTTP webhooks (event callbacks) for email, SMTP, SMS, and chatbot
+    events, but webhooks are provider-initiated HTTP POSTs, not a
+    WebSocket or streaming transport, and no AsyncAPI was authored.
+findings:
+  summary: |
+    SendPulse does not publish a documented public WebSocket API. The
+    SendPulse platform exposes a synchronous REST API over HTTPS at
+    https://api.sendpulse.com, authenticated with OAuth2 client_credentials
+    Bearer tokens obtained from POST /oauth/access_token (tokens valid ~1
+    hour). All documented surfaces - address books and email campaigns, SMTP
+    transactional email, SMS, web push, chatbots, and Automation 360 - are
+    request/response REST endpoints returning JSON. SendPulse supports
+    outbound HTTP webhooks for event notifications, but no realtime,
+    bidirectional WebSocket (ws:// or wss://) endpoint is documented.
+  transports:
+    - protocol: REST
+      scheme: https
+      baseURL: https://api.sendpulse.com
+      documented: true
+    - protocol: Webhook
+      scheme: https
+      note: Outbound HTTP POST callbacks for email/SMTP/SMS/chatbot events. Provider-initiated, not WebSocket.
+      documented: true
+    - protocol: WebSocket
+      scheme: wss
+      documented: false
+      note: No WebSocket endpoint is documented in SendPulse's API reference for any product as of the review date.
+  endpointsConfirmedRest:
+    - POST https://api.sendpulse.com/oauth/access_token
+    - GET  https://api.sendpulse.com/addressbooks
+    - POST https://api.sendpulse.com/addressbooks
+    - GET  https://api.sendpulse.com/addressbooks/{id}
+    - POST https://api.sendpulse.com/addressbooks/{id}/emails
+    - GET  https://api.sendpulse.com/campaigns
+    - POST https://api.sendpulse.com/campaigns
+    - GET  https://api.sendpulse.com/senders
+    - GET  https://api.sendpulse.com/blacklist
+    - GET  https://api.sendpulse.com/smtp/emails
+    - POST https://api.sendpulse.com/smtp/emails
+    - POST https://api.sendpulse.com/sms/send
+    - POST https://api.sendpulse.com/sms/campaigns
+    - GET  https://api.sendpulse.com/push/tasks
+    - POST https://api.sendpulse.com/push/tasks
+    - GET  https://api.sendpulse.com/push/websites
+    - POST https://api.sendpulse.com/events/name/{eventName}
+    - GET  https://api.sendpulse.com/balance
+sources:
+  - url: https://sendpulse.com/integrations/api
+    type: APIReference
+    note: Overview lists REST base URL https://api.sendpulse.com and OAuth2 client_credentials auth; no WebSocket mentioned.
+  - url: https://sendpulse.com/integrations/api/bulk-email
+    type: Documentation
+    note: Email/address-book methods are HTTPS REST returning JSON.
+  - url: https://sendpulse.com/integrations/api/smtp
+    type: Documentation
+    note: SMTP transactional email send/track is REST; events delivered via outbound webhooks, not WebSocket.
+  - url: https://github.com/sendpulse/sendpulse-rest-api-php
+    type: SDK
+    note: Official PHP client confirms REST endpoint paths and Bearer-token flow; no WebSocket usage.
+actions:
+  asyncapiPath: null
+  apisYmlUpdated: true
+  reason: |
+    No WebSocket protocol surface exists and SendPulse's only asynchronous
+    surface is outbound HTTP webhooks, which are not modeled as AsyncAPI in
+    this artifact. The apis.yml documents the six REST API products with
+    their OpenAPI reference.

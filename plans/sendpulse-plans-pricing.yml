@@ -1,0 +1,223 @@
+specification: API Commons Plans
+specificationVersion: '0.1'
+schema: https://raw.githubusercontent.com/api-evangelist/interface-research/main/schema/api-commons.yml#/$defs/Plans
+provider: SendPulse
+providerId: sendpulse
+created: '2026-06-25'
+modified: '2026-06-25'
+reconciled: false
+tags:
+- Marketing
+- Email
+- SMS
+- Web Push
+- Chatbots
+- Plans
+description: >-
+  SendPulse offers a Free plan plus paid email plans (Standard, Pro,
+  Enterprise) priced by contact / subscriber count, with monthly-subscription
+  and pay-as-you-go (per-email) options. SMS, SMTP transactional email, and
+  chatbot tiers are priced separately. The same REST API is available on all
+  plans; quotas and feature limits scale with the plan. Specific per-tier
+  prices change frequently and are not fully reconciled in this artifact.
+notes: >-
+  Prices shown are representative values from the SendPulse pricing page (USD,
+  annual-billing rates where noted) and change frequently; verify on the
+  pricing page during reconciliation. SMS pricing is per-message and varies by
+  destination country and operator.
+sources:
+- https://sendpulse.com/prices
+- https://sendpulse.com/prices/smtp
+- https://sendpulse.com/prices/sms
+- https://sendpulse.com/integrations/api
+plans:
+- id: sendpulse-free
+  name: Free
+  type: free
+  description: >-
+    Free email plan for getting started, including basic automation, templates,
+    subscription forms, and full REST API access.
+  entries:
+  - label: Subscribers
+    name: free_subscribers
+    type: limit
+    metric: subscribers
+    limit: 500
+    timeFrame: month
+    geo: global
+    unit: 1
+    price: $0
+    userMultiplied: false
+  - label: Emails Per Month
+    name: free_emails
+    type: limit
+    metric: emails
+    limit: 15000
+    timeFrame: month
+    geo: global
+    unit: 1
+    price: $0
+    userMultiplied: false
+  elements:
+  - name: Email Campaigns
+  - name: Address Books
+  - name: Basic Automation (up to 5 flows)
+  - name: Subscription Forms
+  - name: REST API Access
+- id: sendpulse-standard
+  name: Standard
+  type: subscription
+  description: >-
+    Entry paid email plan with unlimited emails, advanced automation, and
+    multiple team users; priced by subscriber count.
+  entries:
+  - label: Up to 500 Subscribers
+    name: standard_500
+    type: flat
+    metric: subscribers
+    limit: 500
+    timeFrame: month
+    geo: global
+    unit: 1
+    price: from $9.60/month (annual billing)
+    userMultiplied: false
+  - label: Emails
+    name: standard_emails
+    type: limit
+    metric: emails
+    limit: -1
+    timeFrame: month
+    geo: global
+    unit: 1
+    price: unlimited
+    userMultiplied: false
+  elements:
+  - name: Unlimited Emails
+  - name: Advanced Automation
+  - name: A/B Testing
+  - name: Team Users
+- id: sendpulse-pro
+  name: Pro
+  type: subscription
+  description: >-
+    Higher-tier email plan adding dynamic segmentation, expert automation,
+    email verification, and more team users; priced by subscriber count.
+  entries:
+  - label: Up to 500 Subscribers
+    name: pro_500
+    type: flat
+    metric: subscribers
+    limit: 500
+    timeFrame: month
+    geo: global
+    unit: 1
+    price: from $11.52/month (annual billing)
+    userMultiplied: false
+  elements:
+  - name: Unlimited Emails
+  - name: Dynamic Segmentation
+  - name: Expert Automation
+  - name: Email Verification Included
+- id: sendpulse-enterprise
+  name: Enterprise
+  type: subscription
+  description: >-
+    Top email tier with unlimited automation flows and team users and dedicated
+    support; requires a minimum contact count.
+  entries:
+  - label: Enterprise (min 2,500 contacts)
+    name: enterprise
+    type: flat
+    metric: subscribers
+    limit: 2500
+    timeFrame: month
+    geo: global
+    unit: 1
+    price: from $16.13/month (annual billing)
+    userMultiplied: false
+  elements:
+  - name: Unlimited Automation Flows
+  - name: Unlimited Team Users
+  - name: Dedicated Support
+- id: sendpulse-pay-as-you-go
+  name: Pay-As-You-Go (Emails)
+  type: usage
+  description: >-
+    Prepaid email packages billed by number of emails rather than monthly
+    subscription; purchased emails remain valid for one year.
+  entries:
+  - label: Up to 10,000 Emails (Standard)
+    name: payg_standard_10k
+    type: usage
+    metric: emails
+    limit: 10000
+    timeFrame: year
+    geo: global
+    unit: 10000
+    price: from $48 per 10,000 emails
+    userMultiplied: false
+  elements:
+  - name: Prepaid Email Credits
+- id: sendpulse-smtp
+  name: SMTP / Transactional Email
+  type: usage
+  description: >-
+    Transactional email sending priced separately by email volume; includes a
+    free monthly allowance.
+  entries:
+  - label: SMTP Emails
+    name: smtp_emails
+    type: usage
+    metric: emails
+    limit: -1
+    timeFrame: month
+    geo: global
+    unit: 1
+    price: see SMTP pricing page (tiered by volume)
+    userMultiplied: false
+  elements:
+  - name: Transactional Email
+  - name: Dedicated IP (paid tiers)
+- id: sendpulse-sms
+  name: SMS
+  type: usage
+  description: >-
+    SMS sending billed per message; price depends on destination country and
+    operator.
+  entries:
+  - label: SMS Messages
+    name: sms_messages
+    type: usage
+    metric: messages
+    limit: -1
+    timeFrame: month
+    geo: global
+    unit: 1
+    price: per-message, varies by country/operator
+    userMultiplied: false
+  elements:
+  - name: Bulk SMS
+  - name: SMS Campaigns
+- id: sendpulse-chatbots
+  name: Chatbots
+  type: subscription
+  description: >-
+    Chatbot plans for messengers (Telegram, Facebook, WhatsApp, Instagram,
+    Viber, Live Chat) with a free tier and paid tiers by subscriber count.
+  entries:
+  - label: Chatbot Subscribers
+    name: chatbot_subscribers
+    type: limit
+    metric: subscribers
+    limit: -1
+    timeFrame: month
+    geo: global
+    unit: 1
+    price: free tier plus paid tiers (see chatbot pricing)
+    userMultiplied: false
+  elements:
+  - name: Multi-Messenger Chatbots
+  - name: Flow Builder
+maintainers:
+- FN: Kin Lane
+  email: kin@apievangelist.com

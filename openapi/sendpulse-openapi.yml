@@ -1,0 +1,1013 @@
+openapi: 3.0.1
+info:
+  title: SendPulse API
+  description: >-
+    REST API for the SendPulse multichannel marketing platform. Covers email
+    address books and bulk campaigns, SMTP transactional email, SMS, web push
+    notifications, chatbots, and Automation 360. All requests are made over
+    HTTPS against https://api.sendpulse.com and authenticated with a Bearer
+    access token obtained via the OAuth2 client_credentials grant at
+    POST /oauth/access_token. Tokens are valid for approximately one hour.
+  termsOfService: https://sendpulse.com/legal/terms
+  contact:
+    name: SendPulse Support
+    url: https://sendpulse.com/contacts
+  version: '1.0'
+servers:
+  - url: https://api.sendpulse.com
+security:
+  - bearerAuth: []
+tags:
+  - name: Authorization
+    description: OAuth2 token issuance.
+  - name: Address Books
+    description: Mailing lists and their subscribers.
+  - name: Email Campaigns
+    description: Bulk email campaign creation and reporting.
+  - name: Senders
+    description: Email sender addresses.
+  - name: Email Blacklist
+    description: Global email blacklist management.
+  - name: SMTP
+    description: Transactional email sending and tracking.
+  - name: SMS
+    description: SMS phone management and campaigns.
+  - name: Web Push
+    description: Web push websites, subscriptions, and campaigns.
+  - name: Automation 360
+    description: Event-triggered automation flows.
+  - name: Account
+    description: Account balance.
+paths:
+  /oauth/access_token:
+    post:
+      operationId: getAccessToken
+      tags:
+        - Authorization
+      summary: Obtain an OAuth2 access token.
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TokenRequest'
+      responses:
+        '200':
+          description: Access token issued.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenResponse'
+  /addressbooks:
+    get:
+      operationId: listAddressBooks
+      tags:
+        - Address Books
+      summary: List address books.
+      parameters:
+        - name: limit
+          in: query
+          schema:
+            type: integer
+        - name: offset
+          in: query
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: A list of address books.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AddressBook'
+    post:
+      operationId: createAddressBook
+      tags:
+        - Address Books
+      summary: Create an address book.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - bookName
+              properties:
+                bookName:
+                  type: string
+      responses:
+        '200':
+          description: Address book created.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateResult'
+  /addressbooks/{id}:
+    get:
+      operationId: getAddressBook
+      tags:
+        - Address Books
+      summary: Get information about an address book.
+      parameters:
+        - $ref: '#/components/parameters/AddressBookId'
+      responses:
+        '200':
+          description: Address book information.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AddressBook'
+    put:
+      operationId: editAddressBook
+      tags:
+        - Address Books
+      summary: Edit an address book name.
+      parameters:
+        - $ref: '#/components/parameters/AddressBookId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - name
+              properties:
+                name:
+                  type: string
+      responses:
+        '200':
+          description: Address book updated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResult'
+    delete:
+      operationId: deleteAddressBook
+      tags:
+        - Address Books
+      summary: Remove an address book.
+      parameters:
+        - $ref: '#/components/parameters/AddressBookId'
+      responses:
+        '200':
+          description: Address book removed.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResult'
+  /addressbooks/{id}/emails:
+    get:
+      operationId: listEmailsFromBook
+      tags:
+        - Address Books
+      summary: List emails in an address book.
+      parameters:
+        - $ref: '#/components/parameters/AddressBookId'
+      responses:
+        '200':
+          description: A list of subscribers.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Subscriber'
+    post:
+      operationId: addEmailsToBook
+      tags:
+        - Address Books
+      summary: Add emails to an address book.
+      parameters:
+        - $ref: '#/components/parameters/AddressBookId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - emails
+              properties:
+                emails:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/SubscriberInput'
+      responses:
+        '200':
+          description: Emails added.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResult'
+    delete:
+      operationId: removeEmailsFromBook
+      tags:
+        - Address Books
+      summary: Remove emails from an address book.
+      parameters:
+        - $ref: '#/components/parameters/AddressBookId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - emails
+              properties:
+                emails:
+                  type: array
+                  items:
+                    type: string
+                    format: email
+      responses:
+        '200':
+          description: Emails removed.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResult'
+  /campaigns:
+    get:
+      operationId: listCampaigns
+      tags:
+        - Email Campaigns
+      summary: List email campaigns.
+      parameters:
+        - name: limit
+          in: query
+          schema:
+            type: integer
+        - name: offset
+          in: query
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: A list of campaigns.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Campaign'
+    post:
+      operationId: createCampaign
+      tags:
+        - Email Campaigns
+      summary: Create and send an email campaign.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CampaignInput'
+      responses:
+        '200':
+          description: Campaign created.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Campaign'
+  /campaigns/{id}:
+    get:
+      operationId: getCampaign
+      tags:
+        - Email Campaigns
+      summary: Get email campaign information.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Campaign information.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Campaign'
+    delete:
+      operationId: cancelCampaign
+      tags:
+        - Email Campaigns
+      summary: Cancel an email campaign.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Campaign cancelled.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResult'
+  /senders:
+    get:
+      operationId: listSenders
+      tags:
+        - Senders
+      summary: List email senders.
+      responses:
+        '200':
+          description: A list of senders.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Sender'
+    post:
+      operationId: addSender
+      tags:
+        - Senders
+      summary: Add an email sender.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Sender'
+      responses:
+        '200':
+          description: Sender added.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResult'
+  /blacklist:
+    get:
+      operationId: listBlacklist
+      tags:
+        - Email Blacklist
+      summary: View blacklisted emails.
+      responses:
+        '200':
+          description: A list of blacklisted emails.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+                  format: email
+    post:
+      operationId: addToBlacklist
+      tags:
+        - Email Blacklist
+      summary: Add emails to the blacklist.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - emails
+              properties:
+                emails:
+                  type: string
+                  description: Base64-encoded, comma-separated list of emails.
+                comment:
+                  type: string
+      responses:
+        '200':
+          description: Emails blacklisted.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResult'
+    delete:
+      operationId: removeFromBlacklist
+      tags:
+        - Email Blacklist
+      summary: Remove emails from the blacklist.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - emails
+              properties:
+                emails:
+                  type: string
+                  description: Base64-encoded, comma-separated list of emails.
+      responses:
+        '200':
+          description: Emails removed from blacklist.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResult'
+  /smtp/emails:
+    get:
+      operationId: listSmtpEmails
+      tags:
+        - SMTP
+      summary: List sent transactional emails.
+      parameters:
+        - name: limit
+          in: query
+          schema:
+            type: integer
+        - name: offset
+          in: query
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: A list of sent emails.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SmtpEmail'
+    post:
+      operationId: sendSmtpEmail
+      tags:
+        - SMTP
+      summary: Send a transactional email.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+              properties:
+                email:
+                  $ref: '#/components/schemas/SmtpEmailInput'
+      responses:
+        '200':
+          description: Email accepted for delivery.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResult'
+  /smtp/emails/{id}:
+    get:
+      operationId: getSmtpEmail
+      tags:
+        - SMTP
+      summary: Get a transactional email by ID.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Email information.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SmtpEmail'
+  /smtp/unsubscribe:
+    get:
+      operationId: listSmtpUnsubscribed
+      tags:
+        - SMTP
+      summary: List unsubscribed emails.
+      responses:
+        '200':
+          description: A list of unsubscribed emails.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+                  format: email
+    post:
+      operationId: addSmtpUnsubscribe
+      tags:
+        - SMTP
+      summary: Add emails to the unsubscribe list.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                emails:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      email:
+                        type: string
+                        format: email
+                      comment:
+                        type: string
+      responses:
+        '200':
+          description: Emails unsubscribed.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResult'
+  /sms/send:
+    post:
+      operationId: sendSms
+      tags:
+        - SMS
+      summary: Send SMS to a list of phone numbers.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SmsSendInput'
+      responses:
+        '200':
+          description: SMS accepted.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResult'
+  /sms/campaigns:
+    post:
+      operationId: createSmsCampaign
+      tags:
+        - SMS
+      summary: Create an SMS campaign from an address book.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - addressBookId
+                - body
+              properties:
+                addressBookId:
+                  type: integer
+                body:
+                  type: string
+                transliterate:
+                  type: integer
+                sender:
+                  type: string
+      responses:
+        '200':
+          description: SMS campaign created.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResult'
+  /sms/campaigns/list:
+    get:
+      operationId: listSmsCampaigns
+      tags:
+        - SMS
+      summary: List SMS campaigns.
+      responses:
+        '200':
+          description: A list of SMS campaigns.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SmsCampaign'
+  /push/tasks:
+    get:
+      operationId: listPushCampaigns
+      tags:
+        - Web Push
+      summary: List web push campaigns.
+      parameters:
+        - name: limit
+          in: query
+          schema:
+            type: integer
+        - name: skip
+          in: query
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: A list of push campaigns.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PushCampaign'
+    post:
+      operationId: createPushCampaign
+      tags:
+        - Web Push
+      summary: Create a web push campaign.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PushCampaignInput'
+      responses:
+        '200':
+          description: Push campaign created.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResult'
+  /push/websites:
+    get:
+      operationId: listPushWebsites
+      tags:
+        - Web Push
+      summary: List registered websites.
+      responses:
+        '200':
+          description: A list of websites.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PushWebsite'
+  /events/name/{eventName}:
+    post:
+      operationId: startEventAutomation
+      tags:
+        - Automation 360
+      summary: Trigger an Automation 360 event flow.
+      parameters:
+        - name: eventName
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              description: >-
+                Subscriber data for the event. Must include the identifier
+                fields configured for the event (for example email or phone)
+                plus any custom variables.
+              additionalProperties: true
+      responses:
+        '200':
+          description: Event accepted.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResult'
+  /balance:
+    get:
+      operationId: getBalance
+      tags:
+        - Account
+      summary: Get account balance.
+      responses:
+        '200':
+          description: Account balance.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Balance'
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: >-
+        Bearer access token obtained from POST /oauth/access_token using the
+        client_credentials grant.
+  parameters:
+    AddressBookId:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: integer
+  schemas:
+    TokenRequest:
+      type: object
+      required:
+        - grant_type
+        - client_id
+        - client_secret
+      properties:
+        grant_type:
+          type: string
+          example: client_credentials
+        client_id:
+          type: string
+        client_secret:
+          type: string
+    TokenResponse:
+      type: object
+      properties:
+        access_token:
+          type: string
+        token_type:
+          type: string
+          example: Bearer
+        expires_in:
+          type: integer
+          example: 3600
+    AddressBook:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        all_email_qty:
+          type: integer
+        active_email_qty:
+          type: integer
+        inactive_email_qty:
+          type: integer
+        creationdate:
+          type: string
+        status:
+          type: integer
+        status_explain:
+          type: string
+    Subscriber:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+        status:
+          type: integer
+        status_explain:
+          type: string
+        variables:
+          type: array
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+              type:
+                type: string
+              value:
+                type: string
+    SubscriberInput:
+      type: object
+      required:
+        - email
+      properties:
+        email:
+          type: string
+          format: email
+        variables:
+          type: object
+          additionalProperties: true
+    Campaign:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        message:
+          type: object
+          properties:
+            sender_name:
+              type: string
+            sender_email:
+              type: string
+              format: email
+            subject:
+              type: string
+            list_id:
+              type: integer
+        status:
+          type: integer
+        all_email_qty:
+          type: integer
+        send_date:
+          type: string
+    CampaignInput:
+      type: object
+      required:
+        - sender_name
+        - sender_email
+        - subject
+        - body
+        - list_id
+      properties:
+        sender_name:
+          type: string
+        sender_email:
+          type: string
+          format: email
+        subject:
+          type: string
+        body:
+          type: string
+          description: Base64-encoded HTML body.
+        list_id:
+          type: integer
+        name:
+          type: string
+    Sender:
+      type: object
+      required:
+        - email
+        - name
+      properties:
+        email:
+          type: string
+          format: email
+        name:
+          type: string
+        status:
+          type: string
+    SmtpEmail:
+      type: object
+      properties:
+        id:
+          type: string
+        sender:
+          type: string
+          format: email
+        total_size:
+          type: integer
+        sender_ip:
+          type: string
+        smtp_answer_code:
+          type: integer
+        smtp_answer_subcode:
+          type: string
+        smtp_answer_data:
+          type: string
+        used_ip:
+          type: string
+        recipient:
+          type: string
+          format: email
+        subject:
+          type: string
+        send_date:
+          type: string
+    SmtpEmailInput:
+      type: object
+      required:
+        - subject
+        - from
+        - to
+      properties:
+        html:
+          type: string
+          description: Base64-encoded HTML body.
+        text:
+          type: string
+        subject:
+          type: string
+        from:
+          type: object
+          properties:
+            name:
+              type: string
+            email:
+              type: string
+              format: email
+        to:
+          type: array
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+              email:
+                type: string
+                format: email
+    SmsSendInput:
+      type: object
+      required:
+        - phones
+        - body
+      properties:
+        phones:
+          type: array
+          items:
+            type: string
+        body:
+          type: string
+        sender:
+          type: string
+        transliterate:
+          type: integer
+        route:
+          type: object
+          additionalProperties: true
+    SmsCampaign:
+      type: object
+      properties:
+        id:
+          type: integer
+        address_book_id:
+          type: integer
+        company_price:
+          type: number
+        company_currency:
+          type: string
+        send_date:
+          type: string
+        status:
+          type: integer
+        task_phones:
+          type: integer
+    PushCampaign:
+      type: object
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        body:
+          type: string
+        website_id:
+          type: integer
+        status:
+          type: integer
+        send_date:
+          type: string
+    PushCampaignInput:
+      type: object
+      required:
+        - title
+        - website_id
+        - body
+        - ttl
+      properties:
+        title:
+          type: string
+        website_id:
+          type: integer
+        body:
+          type: string
+        ttl:
+          type: integer
+        link:
+          type: string
+        stretch_time:
+          type: integer
+        filter_lang:
+          type: string
+    PushWebsite:
+      type: object
+      properties:
+        id:
+          type: integer
+        url:
+          type: string
+        add_date:
+          type: string
+        status:
+          type: integer
+    Balance:
+      type: object
+      properties:
+        currency:
+          type: string
+        balance_currency:
+          type: number
+    CreateResult:
+      type: object
+      properties:
+        id:
+          type: integer
+    SuccessResult:
+      type: object
+      properties:
+        result:
+          type: boolean
+    ErrorResult:
+      type: object
+      properties:
+        error_code:
+          type: integer
+        message:
+          type: string
+        is_error:
+          type: boolean

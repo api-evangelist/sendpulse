@@ -1,0 +1,71 @@
+specification: API Commons Rate Limits
+specificationVersion: '0.1'
+schema: https://raw.githubusercontent.com/api-evangelist/interface-research/main/schema/api-commons.yml#/$defs/RateLimits
+provider: SendPulse
+providerId: sendpulse
+created: '2026-06-25'
+modified: '2026-06-25'
+reconciled: false
+tags:
+- Marketing
+- Email
+- SMS
+- Web Push
+- Chatbots
+- Rate Limiting
+- Quotas
+- Throttling
+description: >-
+  The SendPulse REST API authenticates with short-lived OAuth2 Bearer tokens
+  (valid roughly one hour) issued via POST /oauth/access_token. Beyond the
+  token lifetime, the practical throughput constraints are the per-plan sending
+  quotas (subscribers, emails per month, SMS credits, chatbot subscribers)
+  rather than published per-second request limits. SendPulse may throttle
+  abusive request volume; specific per-endpoint request-rate values are not
+  published and are not reconciled in this artifact.
+notes: >-
+  SendPulse does not publish explicit per-second/per-minute REST request-rate
+  numbers in its public API documentation; the binding limits are plan sending
+  quotas and the one-hour access-token lifetime. Verify on the API
+  documentation and account dashboard during reconciliation.
+sources:
+- https://sendpulse.com/integrations/api
+- https://sendpulse.com/prices
+responseCodes:
+  throttled: 429
+limits:
+- name: Access Token Lifetime
+  scope: account
+  metric: seconds
+  limit: '3600'
+  notes: OAuth2 client_credentials access tokens are valid for approximately one hour; refresh by re-requesting a token.
+- name: Emails Per Month (plan quota)
+  scope: account
+  metric: emails
+  limit: see plan
+  notes: Bounded by the active email plan (for example 15,000/month on Free); unlimited on Standard/Pro/Enterprise subscriptions.
+- name: Subscribers (plan quota)
+  scope: account
+  metric: subscribers
+  limit: see plan
+  notes: Maximum stored subscribers/contacts is set by the plan tier.
+- name: SMS Credits
+  scope: account
+  metric: messages
+  limit: see balance
+  notes: SMS sending is bounded by prepaid balance and per-country pricing.
+- name: REST Request Rate
+  scope: account
+  metric: requests
+  limit: see provider documentation
+  notes: No explicit per-second/per-minute request rate is published; excessive request volume may be throttled.
+policies:
+- name: Token Refresh
+  description: Re-request an access token via POST /oauth/access_token when the current token expires (~1 hour).
+- name: Backoff Strategy
+  description: Clients should implement exponential backoff with jitter and honor Retry-After on 429 responses.
+- name: Quota Scaling
+  description: Sending quotas raise as accounts move to higher plan tiers or purchase additional email/SMS credits.
+maintainers:
+- FN: Kin Lane
+  email: kin@apievangelist.com

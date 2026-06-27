@@ -1,0 +1,265 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "SendPulse API",
+    "version": "1.0"
+  },
+  "request": {
+    "auth": {
+      "type": "bearer",
+      "token": "{{bearerToken}}"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Authorization",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Obtain an access token.",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.sendpulse.com/oauth/access_token",
+            "body": {
+              "type": "json",
+              "data": "{\n  \"grant_type\": \"client_credentials\",\n  \"client_id\": \"{{clientId}}\",\n  \"client_secret\": \"{{clientSecret}}\"\n}"
+            }
+          },
+          "docs": "Obtain an OAuth2 Bearer access token using the client_credentials grant. Tokens are valid for approximately one hour."
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Address Books",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List address books.",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.sendpulse.com/addressbooks"
+          },
+          "docs": "List address books (mailing lists)."
+        },
+        {
+          "info": {
+            "name": "Create an address book.",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.sendpulse.com/addressbooks",
+            "body": {
+              "type": "json",
+              "data": "{\n  \"bookName\": \"My List\"\n}"
+            }
+          },
+          "docs": "Create a new address book."
+        },
+        {
+          "info": {
+            "name": "Add emails to an address book.",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.sendpulse.com/addressbooks/{id}/emails",
+            "body": {
+              "type": "json",
+              "data": "{\n  \"emails\": []\n}"
+            }
+          },
+          "docs": "Add subscribers (emails with variables) to an address book."
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Email Campaigns",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List campaigns.",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.sendpulse.com/campaigns"
+          },
+          "docs": "List email campaigns."
+        },
+        {
+          "info": {
+            "name": "Create a campaign.",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.sendpulse.com/campaigns",
+            "body": {
+              "type": "json",
+              "data": "{\n  \"sender_name\": \"\",\n  \"sender_email\": \"\",\n  \"subject\": \"\",\n  \"body\": \"\",\n  \"list_id\": 0\n}"
+            }
+          },
+          "docs": "Create and send an email campaign."
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "SMTP",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Send a transactional email.",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.sendpulse.com/smtp/emails",
+            "body": {
+              "type": "json",
+              "data": "{\n  \"email\": {}\n}"
+            }
+          },
+          "docs": "Send a transactional email over SMTP."
+        },
+        {
+          "info": {
+            "name": "List sent emails.",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.sendpulse.com/smtp/emails"
+          },
+          "docs": "List sent transactional emails."
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "SMS",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Send SMS.",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.sendpulse.com/sms/send",
+            "body": {
+              "type": "json",
+              "data": "{\n  \"phones\": [],\n  \"body\": \"\"\n}"
+            }
+          },
+          "docs": "Send SMS to a list of phone numbers."
+        },
+        {
+          "info": {
+            "name": "List SMS campaigns.",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.sendpulse.com/sms/campaigns/list"
+          },
+          "docs": "List SMS campaigns."
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Web Push",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List push campaigns.",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.sendpulse.com/push/tasks"
+          },
+          "docs": "List web push campaigns."
+        },
+        {
+          "info": {
+            "name": "Create push campaign.",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.sendpulse.com/push/tasks",
+            "body": {
+              "type": "json",
+              "data": "{\n  \"title\": \"\",\n  \"website_id\": 0,\n  \"body\": \"\",\n  \"ttl\": 0\n}"
+            }
+          },
+          "docs": "Create a web push campaign."
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Automation 360",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Trigger an event flow.",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.sendpulse.com/events/name/{eventName}",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Trigger an Automation 360 flow by sending an event with subscriber data."
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Account",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Get account balance.",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.sendpulse.com/balance"
+          },
+          "docs": "Get the account balance."
+        }
+      ]
+    }
+  ]
+}
