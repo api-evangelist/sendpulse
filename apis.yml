@@ -122,6 +122,10 @@ apis:
   description: Trigger Automation 360 flows by sending events with subscriber data,
     and report on flow, element, and conversion statistics.
 common:
+- type: DomainSecurity
+  url: security/sendpulse-domain-security.yml
+- type: Authentication
+  url: authentication/sendpulse-authentication.yml
 - type: GitHubOrganization
   url: https://github.com/sendpulse
 - type: LinkedIn

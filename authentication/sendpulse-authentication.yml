@@ -1,0 +1,15 @@
+generated: '2026-07-11'
+method: derived
+source: openapi/sendpulse-openapi.yml
+summary:
+  types:
+  - http
+schemes:
+- name: bearerAuth
+  type: http
+  scheme: bearer
+  bearerFormat: JWT
+  description: Bearer access token obtained from POST /oauth/access_token using the client_credentials
+    grant.
+  sources:
+  - openapi/sendpulse-openapi.yml
