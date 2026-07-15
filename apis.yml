@@ -122,6 +122,8 @@ apis:
   description: Trigger Automation 360 flows by sending events with subscriber data,
     and report on flow, element, and conversion statistics.
 common:
+- type: AgenticAccess
+  url: agentic-access/sendpulse-agentic-access.yml
 - type: DomainSecurity
   url: security/sendpulse-domain-security.yml
 - type: Authentication
