@@ -1,0 +1,268 @@
+openapi: 3.0.1
+info:
+  title: SendPulse Account Address Books API
+  description: REST API for the SendPulse multichannel marketing platform. Covers email address books and bulk campaigns, SMTP transactional email, SMS, web push notifications, chatbots, and Automation 360. All requests are made over HTTPS against https://api.sendpulse.com and authenticated with a Bearer access token obtained via the OAuth2 client_credentials grant at POST /oauth/access_token. Tokens are valid for approximately one hour.
+  termsOfService: https://sendpulse.com/legal/terms
+  contact:
+    name: SendPulse Support
+    url: https://sendpulse.com/contacts
+  version: '1.0'
+servers:
+- url: https://api.sendpulse.com
+security:
+- bearerAuth: []
+tags:
+- name: Address Books
+  description: Mailing lists and their subscribers.
+paths:
+  /addressbooks:
+    get:
+      operationId: listAddressBooks
+      tags:
+      - Address Books
+      summary: List address books.
+      parameters:
+      - name: limit
+        in: query
+        schema:
+          type: integer
+      - name: offset
+        in: query
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: A list of address books.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AddressBook'
+    post:
+      operationId: createAddressBook
+      tags:
+      - Address Books
+      summary: Create an address book.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - bookName
+              properties:
+                bookName:
+                  type: string
+      responses:
+        '200':
+          description: Address book created.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateResult'
+  /addressbooks/{id}:
+    get:
+      operationId: getAddressBook
+      tags:
+      - Address Books
+      summary: Get information about an address book.
+      parameters:
+      - $ref: '#/components/parameters/AddressBookId'
+      responses:
+        '200':
+          description: Address book information.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AddressBook'
+    put:
+      operationId: editAddressBook
+      tags:
+      - Address Books
+      summary: Edit an address book name.
+      parameters:
+      - $ref: '#/components/parameters/AddressBookId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - name
+              properties:
+                name:
+                  type: string
+      responses:
+        '200':
+          description: Address book updated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResult'
+    delete:
+      operationId: deleteAddressBook
+      tags:
+      - Address Books
+      summary: Remove an address book.
+      parameters:
+      - $ref: '#/components/parameters/AddressBookId'
+      responses:
+        '200':
+          description: Address book removed.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResult'
+  /addressbooks/{id}/emails:
+    get:
+      operationId: listEmailsFromBook
+      tags:
+      - Address Books
+      summary: List emails in an address book.
+      parameters:
+      - $ref: '#/components/parameters/AddressBookId'
+      responses:
+        '200':
+          description: A list of subscribers.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Subscriber'
+    post:
+      operationId: addEmailsToBook
+      tags:
+      - Address Books
+      summary: Add emails to an address book.
+      parameters:
+      - $ref: '#/components/parameters/AddressBookId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - emails
+              properties:
+                emails:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/SubscriberInput'
+      responses:
+        '200':
+          description: Emails added.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResult'
+    delete:
+      operationId: removeEmailsFromBook
+      tags:
+      - Address Books
+      summary: Remove emails from an address book.
+      parameters:
+      - $ref: '#/components/parameters/AddressBookId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - emails
+              properties:
+                emails:
+                  type: array
+                  items:
+                    type: string
+                    format: email
+      responses:
+        '200':
+          description: Emails removed.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResult'
+components:
+  schemas:
+    Subscriber:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+        status:
+          type: integer
+        status_explain:
+          type: string
+        variables:
+          type: array
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+              type:
+                type: string
+              value:
+                type: string
+    SuccessResult:
+      type: object
+      properties:
+        result:
+          type: boolean
+    SubscriberInput:
+      type: object
+      required:
+      - email
+      properties:
+        email:
+          type: string
+          format: email
+        variables:
+          type: object
+          additionalProperties: true
+    AddressBook:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        all_email_qty:
+          type: integer
+        active_email_qty:
+          type: integer
+        inactive_email_qty:
+          type: integer
+        creationdate:
+          type: string
+        status:
+          type: integer
+        status_explain:
+          type: string
+    CreateResult:
+      type: object
+      properties:
+        id:
+          type: integer
+  parameters:
+    AddressBookId:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: integer
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: Bearer access token obtained from POST /oauth/access_token using the client_credentials grant.

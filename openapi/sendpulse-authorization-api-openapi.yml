@@ -1,0 +1,70 @@
+openapi: 3.0.1
+info:
+  title: SendPulse Account Authorization API
+  description: REST API for the SendPulse multichannel marketing platform. Covers email address books and bulk campaigns, SMTP transactional email, SMS, web push notifications, chatbots, and Automation 360. All requests are made over HTTPS against https://api.sendpulse.com and authenticated with a Bearer access token obtained via the OAuth2 client_credentials grant at POST /oauth/access_token. Tokens are valid for approximately one hour.
+  termsOfService: https://sendpulse.com/legal/terms
+  contact:
+    name: SendPulse Support
+    url: https://sendpulse.com/contacts
+  version: '1.0'
+servers:
+- url: https://api.sendpulse.com
+security:
+- bearerAuth: []
+tags:
+- name: Authorization
+  description: OAuth2 token issuance.
+paths:
+  /oauth/access_token:
+    post:
+      operationId: getAccessToken
+      tags:
+      - Authorization
+      summary: Obtain an OAuth2 access token.
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TokenRequest'
+      responses:
+        '200':
+          description: Access token issued.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenResponse'
+components:
+  schemas:
+    TokenRequest:
+      type: object
+      required:
+      - grant_type
+      - client_id
+      - client_secret
+      properties:
+        grant_type:
+          type: string
+          example: client_credentials
+        client_id:
+          type: string
+        client_secret:
+          type: string
+    TokenResponse:
+      type: object
+      properties:
+        access_token:
+          type: string
+        token_type:
+          type: string
+          example: Bearer
+        expires_in:
+          type: integer
+          example: 3600
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: Bearer access token obtained from POST /oauth/access_token using the client_credentials grant.

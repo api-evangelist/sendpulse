@@ -1,0 +1,57 @@
+openapi: 3.0.1
+info:
+  title: SendPulse Account Automation 360 API
+  description: REST API for the SendPulse multichannel marketing platform. Covers email address books and bulk campaigns, SMTP transactional email, SMS, web push notifications, chatbots, and Automation 360. All requests are made over HTTPS against https://api.sendpulse.com and authenticated with a Bearer access token obtained via the OAuth2 client_credentials grant at POST /oauth/access_token. Tokens are valid for approximately one hour.
+  termsOfService: https://sendpulse.com/legal/terms
+  contact:
+    name: SendPulse Support
+    url: https://sendpulse.com/contacts
+  version: '1.0'
+servers:
+- url: https://api.sendpulse.com
+security:
+- bearerAuth: []
+tags:
+- name: Automation 360
+  description: Event-triggered automation flows.
+paths:
+  /events/name/{eventName}:
+    post:
+      operationId: startEventAutomation
+      tags:
+      - Automation 360
+      summary: Trigger an Automation 360 event flow.
+      parameters:
+      - name: eventName
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              description: Subscriber data for the event. Must include the identifier fields configured for the event (for example email or phone) plus any custom variables.
+              additionalProperties: true
+      responses:
+        '200':
+          description: Event accepted.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResult'
+components:
+  schemas:
+    SuccessResult:
+      type: object
+      properties:
+        result:
+          type: boolean
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: Bearer access token obtained from POST /oauth/access_token using the client_credentials grant.
