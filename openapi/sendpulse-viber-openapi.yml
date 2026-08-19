@@ -1,0 +1,542 @@
+openapi: 3.1.2
+info:
+  title: SendPulse Viber API
+  description: >
+    The SendPulse Viber API enables rich mobile messaging with support for 
+    images, buttons, and SMS fallback. It is designed for high-engagement  promo
+    and system notifications within the Viber ecosystem.
+  version: 1.0.0
+  x-ai-description: >
+    Premium rich-media messaging gateway for Viber.  This API allows for
+    interactive customer engagement through multi-modal  notifications (text +
+    image + CTA) with automatic multi-channel fallback  to SMS for guaranteed
+    reach.
+  license:
+    name: Apache 2.0
+    identifier: Apache-2.0
+servers:
+  - url: https://api.sendpulse.com
+paths:
+  /viber:
+    post:
+      summary: Create a Viber campaign
+      operationId: createViberCampaign
+      tags:
+        - Campaigns
+      x-ai-role: customer_engagement_specialist
+      x-ai-description: >
+        Orchestrates a Viber broadcast. This endpoint supports sophisticated 
+        payloads including rich media and interactive buttons. It also  manages
+        the 'Resend via SMS' logic for recipients who don't have Viber  or are
+        offline.
+      x-ai-reasoning-instructions:
+        - Determine if the campaign is 'promo' (type 2) or 'system' (type 3).
+        - If 'system', verify the `message` matches a pre-approved template.
+        - >-
+          Check if `address_book` or `recipients` array is provided (one is
+          required).
+        - Validate `message_live_time` is between 60 and 86400 seconds.
+      x-ai-responding-instructions:
+        - Confirm the campaign creation and return the `task_id`.
+        - Highlight if the 'SMS fallback' was successfully configured.
+        - State the scheduled `send_date` clearly.
+      x-ai-suggestions:
+        - >-
+          Use `stretch_time` for large lists to avoid overwhelming your customer
+          support.
+        - Include a clear 'Buy Now' or 'Check Info' button to increase CTR.
+      x-ai-capabilities:
+        confirmation:
+          type: Required
+        security_info:
+          data_handling:
+            - ResourceStateUpdate
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - message_type
+                - sender_id
+                - message_live_time
+                - send_date
+              oneOf:
+                - required:
+                    - address_book
+                - required:
+                    - recipients
+              properties:
+                task_name:
+                  type: string
+                message_type:
+                  type: integer
+                  enum:
+                    - 2
+                    - 3
+                  description: 2 - promo, 3 - system
+                sender_id:
+                  type: integer
+                message_live_time:
+                  type: integer
+                  minimum: 60
+                  maximum: 86400
+                send_date:
+                  type: string
+                  description: '''now'' or ''YYYY-MM-DD HH:MM:SS'''
+                address_book:
+                  type:
+                    - integer
+                    - 'null'
+                recipients:
+                  type: array
+                  items:
+                    type: integer
+                message:
+                  type: string
+                  maxLength: 1000
+                stretch_time:
+                  type: integer
+                  minimum: 0
+                  maximum: 5
+                additional:
+                  type: object
+                  properties:
+                    button:
+                      type: object
+                      properties:
+                        text:
+                          type: string
+                        link:
+                          type: string
+                    image:
+                      type: object
+                      properties:
+                        link:
+                          type: string
+                    resend_sms:
+                      type: object
+                      properties:
+                        status:
+                          type: boolean
+                        sms_text:
+                          type: string
+                        sms_sender_name:
+                          type: string
+      responses:
+        '200':
+          description: Campaign created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  result:
+                    type: boolean
+                  data:
+                    type: object
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+  /viber/task:
+    get:
+      summary: Get a list of campaigns
+      operationId: getViberCampaigns
+      tags:
+        - Campaigns
+      x-ai-role: marketing_automation_specialist
+      x-ai-description: >
+        Retrieves a paginated list of Viber campaigns.  Provides high-level
+        status (moderation, sent, etc.) for oversight.
+      x-ai-reasoning-instructions:
+        - Use `limit` and `offset` for efficient data retrieval.
+      x-ai-responding-instructions:
+        - List the campaigns found, highlighting their current status.
+      x-ai-suggestions:
+        - Monitor 'moderation' status for newly created campaigns.
+      x-ai-capabilities:
+        confirmation:
+          type: None
+      parameters:
+        - name: limit
+          in: query
+          schema:
+            type: integer
+        - name: offset
+          in: query
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: List of campaigns
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ViberCampaign'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+  /viber/task/{id}:
+    get:
+      summary: Get statistics on a campaign
+      operationId: getViberCampaignStats
+      tags:
+        - Campaigns
+      parameters: []
+      x-ai-role: customer_engagement_specialist
+      x-ai-description: >
+        Detailed performance analytics for a Viber campaign.  Includes
+        delivered, read, and click-through (redirected) metrics.
+      x-ai-reasoning-instructions:
+        - Examine `resend_sms_status` if fallback was enabled.
+        - Analyze the `statistic` object to calculate ROI.
+      x-ai-responding-instructions:
+        - Provide a breakdown of campaign reach and engagement.
+        - Highlight the 'Read' rate as a primary engagement KPI.
+      x-ai-suggestions:
+        - If 'errors' are high, check the sender name status.
+      x-ai-capabilities:
+        confirmation:
+          type: None
+      responses:
+        '200':
+          description: Campaign statistics
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  statistic:
+                    type: object
+                    properties:
+                      sent:
+                        type: integer
+                      delivered:
+                        type: integer
+                      read:
+                        type: integer
+                      redirected:
+                        type: integer
+                      undelivered:
+                        type: integer
+                      errors:
+                        type: integer
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+  /viber/task/{id}/recipients:
+    get:
+      summary: Get a list of Viber campaign recipients
+      operationId: getViberRecipients
+      tags:
+        - Campaigns
+      parameters: []
+      x-ai-role: customer_engagement_specialist
+      x-ai-description: >
+        Granular recipient-level delivery report.  Identifies exactly who
+        received, read, or clicked the message.
+      x-ai-reasoning-instructions:
+        - Filter by `status` to find undelivered contacts.
+      x-ai-responding-instructions:
+        - >-
+          Confirm the list of recipients and their individual interaction
+          states.
+      x-ai-suggestions:
+        - Export this to re-target 'opened but not clicked' users.
+      x-ai-capabilities:
+        confirmation:
+          type: None
+      responses:
+        '200':
+          description: Recipient list
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  task_id:
+                    type: integer
+                  recipients:
+                    type: array
+                    items:
+                      type: object
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+  /viber/senders:
+    get:
+      summary: Get a list of sender names
+      operationId: getViberSenders
+      tags:
+        - Configuration
+      x-ai-role: customer_engagement_specialist
+      x-ai-description: >
+        Retrieves all registered and approved Viber sender names (Sender IDs). 
+        Only names with 'verified' status can be used.
+      x-ai-reasoning-instructions:
+        - Check `status` to ensure the name is ready for use.
+      x-ai-responding-instructions:
+        - List available verified sender identities.
+      x-ai-suggestions:
+        - If status is 'pending', check the `admin_comment` for feedback.
+      x-ai-capabilities:
+        confirmation:
+          type: None
+      responses:
+        '200':
+          description: Sender list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ViberSender'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+  /viber/senders/{id}:
+    get:
+      summary: Get a sender name profile
+      operationId: getViberSenderProfile
+      tags:
+        - Configuration
+      parameters: []
+      x-ai-role: customer_engagement_specialist
+      x-ai-description: >
+        Retrieves the detailed configuration and status for a specific Viber
+        sender ID.
+      x-ai-responding-instructions:
+        - State the current verification status and administrative feedback.
+      x-ai-capabilities:
+        confirmation:
+          type: None
+      responses:
+        '200':
+          description: Sender profile
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ViberSender'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+  /v2/viber-service/phone-exception:
+    get:
+      summary: Get a list of contacts in the blacklist
+      operationId: getViberBlacklist
+      tags:
+        - Compliance
+      x-ai-role: compliance_officer
+      x-ai-description: |
+        Returns the global Viber suppression list for the account.
+      x-ai-responding-instructions:
+        - Summarize the blacklisted phone numbers.
+      x-ai-capabilities:
+        confirmation:
+          type: None
+      parameters:
+        - name: limit
+          in: query
+          schema:
+            type: integer
+        - name: offset
+          in: query
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Blacklist data
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+    post:
+      summary: Add phone number to the blacklist
+      operationId: addViberBlacklist
+      tags:
+        - Compliance
+      x-ai-role: compliance_officer
+      x-ai-description: >
+        Suppress specific Viber recipients to prevent future messages. 
+        Essential for GDPR/CCPA compliance and 'STOP' request handling.
+      x-ai-reasoning-instructions:
+        - Include a clear `description` for the reason of suppression.
+      x-ai-responding-instructions:
+        - Confirm the numbers have been added to the blacklist.
+      x-ai-suggestions:
+        - Block numbers that consistently report your messages as spam.
+      x-ai-capabilities:
+        confirmation:
+          type: Required
+        security_info:
+          data_handling:
+            - ResourceStateUpdate
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - phones
+              properties:
+                phones:
+                  type: array
+                  items:
+                    type: string
+                description:
+                  type: string
+      responses:
+        '200':
+          description: Blacklist result
+          content:
+            application/json:
+              schema:
+                type: object
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+    delete:
+      summary: Remove a phone number from the blacklist
+      operationId: removeViberBlacklist
+      tags:
+        - Compliance
+      x-ai-role: compliance_officer
+      x-ai-description: >
+        Lifts suppression for Viber contacts. Only perform this with valid user
+        consent.
+      x-ai-responding-instructions:
+        - Confirm the numbers have been removed from suppression.
+      x-ai-capabilities:
+        confirmation:
+          type: Required
+        security_info:
+          data_handling:
+            - ResourceStateUpdate
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - phones
+              properties:
+                phones:
+                  type: array
+                  items:
+                    type: string
+      responses:
+        '200':
+          description: Removal successful
+          content:
+            application/json:
+              schema:
+                type: object
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+components:
+  schemas:
+    ViberCampaign:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        message:
+          type: string
+        sender_name:
+          type: string
+        send_date:
+          type: string
+        status:
+          type: string
+        created:
+          type: string
+    ViberSender:
+      type: object
+      properties:
+        id:
+          type: integer
+        status:
+          type: string
+        name:
+          type: string
+        service_type:
+          type: string
+        web_site:
+          type: string
+        description:
+          type: string
+        country:
+          type: string
+        traffic_type:
+          type: string
+        admin_comment:
+          type:
+            - string
+            - 'null'
+  securitySchemes:
+    apiKey:
+      type: http
+      scheme: bearer
+      bearerFormat: API Key
+      description: >
+        Static API Key authentication.  A long-lived token generated manually in
+        the SendPulse account settings.
+      x-ai-description: >
+        Permanent authentication token. Ideal for simple integrations without
+        token refresh logic.
+    oauth2:
+      type: oauth2
+      description: OAuth 2.0 Client Credentials flow for temporary access tokens.
+      flows:
+        clientCredentials:
+          tokenUrl: https://api.sendpulse.com/oauth/access_token
+          scopes: {}
+      x-ai-description: >
+        Standard OAuth 2.0 flow using Client ID and Client Secret.  Provides
+        temporary tokens (valid for 1 hour) for enhanced security.
+security:
+  - apiKey: []
+  - oauth2: []

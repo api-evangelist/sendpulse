@@ -1,0 +1,116 @@
+{
+  "item": [
+    {
+      "id": "026d3418-442d-43aa-81f4-66a1c500a6e1",
+      "name": "Account",
+      "description": {
+        "content": "Account balance.",
+        "type": "text/plain"
+      },
+      "item": [
+        {
+          "id": "30eb6789-1994-4c42-98ec-6a497e353846",
+          "name": "Get account balance.",
+          "request": {
+            "name": "Get account balance.",
+            "description": {},
+            "url": {
+              "path": [
+                "balance"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "8d7c0954-5909-44ae-a5c7-d4f70c045035",
+              "name": "Account balance.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "balance"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"currency\": \"string\",\n  \"balance_currency\": 7531.8042671577705\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        }
+      ],
+      "event": []
+    }
+  ],
+  "event": [],
+  "variable": [
+    {
+      "type": "string",
+      "value": "https://api.sendpulse.com",
+      "key": "baseUrl"
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{bearerToken}}"
+      }
+    ]
+  },
+  "info": {
+    "_postman_id": "ba384afb-64b4-40fb-b987-a60b652a8689",
+    "name": "SendPulse Account API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": {
+      "content": "REST API for the SendPulse multichannel marketing platform. Covers email address books and bulk campaigns, SMTP transactional email, SMS, web push notifications, chatbots, and Automation 360. All requests are made over HTTPS against https://api.sendpulse.com and authenticated with a Bearer access token obtained via the OAuth2 client_credentials grant at POST /oauth/access_token. Tokens are valid for approximately one hour.\n\nContact Support:\n Name: SendPulse Support",
+      "type": "text/plain"
+    }
+  }
+}

@@ -1,0 +1,42 @@
+overlay: 1.0.0
+info:
+  title: API Evangelist enhancements for SendPulse FileManager Public API
+  version: 1.0.0
+extends: ../openapi/sendpulse-file-manager-openapi.yml
+x-generated: '2026-08-13'
+x-method: generated
+x-source: Derived from openapi/sendpulse-file-manager-openapi.yml plus the searched artifacts in this repo. The
+  original specification is never mutated.
+actions:
+- target: $.info
+  description: Add the publisher contact SendPulse omits from every published spec.
+  update:
+    contact:
+      name: SendPulse Support
+      email: support@sendpulse.com
+      url: https://sendpulse.com/knowledge-base
+- target: $.info
+  description: Add terms of service.
+  update:
+    termsOfService: https://sendpulse.com/legal/terms
+- target: $.info
+  description: Record that no licence is declared on the specification itself.
+  update:
+    x-spec-license: not declared by publisher
+- target: $
+  description: Link the human documentation.
+  update:
+    externalDocs:
+      description: SendPulse API documentation
+      url: https://sendpulse.com/integrations/api
+- target: $.info
+  description: Record API Evangelist provenance and the runtime semantics captured in this repo.
+  update:
+    x-apievangelist:
+      source: https://api.sendpulse.com/.well-known/openapi/file-manager.yaml
+      harvested: '2026-08-13'
+      rate-limits: rate-limits/sendpulse-rate-limits.yml
+      errors: errors/sendpulse-problem-types.yml
+      conventions: conventions/sendpulse-conventions.yml
+      authentication: authentication/sendpulse-authentication.yml
+      mcp: mcp/sendpulse-mcp.yml

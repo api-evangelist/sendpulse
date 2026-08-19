@@ -1,15 +1,81 @@
-generated: '2026-07-11'
-method: derived
-source: openapi/sendpulse-openapi.yml
+generated: '2026-08-13'
+method: searched
+source: https://sendpulse.com/integrations/api + https://api.sendpulse.com/service-directory.json + openapi/*.yml
+  (securitySchemes across all 19 published specs)
 summary:
   types:
   - http
+  - oauth2
+  oauth2_flows:
+  - clientCredentials
+  header: 'Authorization: Bearer <token_or_key>'
+  token_endpoint: https://api.sendpulse.com/oauth/access_token
+  token_ttl_seconds: 3600
+  api_key_max_per_account: 5
+  credentials_page: https://login.sendpulse.com/settings/#api
+  scopes: none on the REST API; the MCP server advertises a single "rest" scope — see scopes/sendpulse-scopes.yml
 schemes:
-- name: bearerAuth
+- name: apiKey
   type: http
   scheme: bearer
-  bearerFormat: JWT
-  description: Bearer access token obtained from POST /oauth/access_token using the client_credentials
-    grant.
+  bearerFormat: API Key
+  description: Static API Key authentication.  A long-lived token generated manually in the SendPulse account settings.
   sources:
-  - openapi/sendpulse-openapi.yml
+  - openapi/sendpulse-a360-openapi.yml
+  - openapi/sendpulse-bulk-email-openapi.yml
+  - openapi/sendpulse-chatbots-openapi.yml
+  - openapi/sendpulse-crm-openapi.yml
+  - openapi/sendpulse-edu-openapi.yml
+  - openapi/sendpulse-facebook-openapi.yml
+  - openapi/sendpulse-file-manager-openapi.yml
+  - openapi/sendpulse-instagram-openapi.yml
+  - openapi/sendpulse-live-chat-openapi.yml
+  - openapi/sendpulse-popups-openapi.yml
+  - openapi/sendpulse-sms-openapi.yml
+  - openapi/sendpulse-smtp-openapi.yml
+  - openapi/sendpulse-telegram-openapi.yml
+  - openapi/sendpulse-tiktok-openapi.yml
+  - openapi/sendpulse-verifier-openapi.yml
+  - openapi/sendpulse-viber-chatbot-openapi.yml
+  - openapi/sendpulse-viber-openapi.yml
+  - openapi/sendpulse-web-push-openapi.yml
+  - openapi/sendpulse-whatsapp-openapi.yml
+- name: oauth2
+  type: oauth2
+  flows:
+  - flow: clientCredentials
+    tokenUrl: https://api.sendpulse.com/oauth/access_token
+    scopes: 0
+  description: OAuth 2.0 Client Credentials flow for temporary access tokens.
+  sources:
+  - openapi/sendpulse-a360-openapi.yml
+  - openapi/sendpulse-bulk-email-openapi.yml
+  - openapi/sendpulse-chatbots-openapi.yml
+  - openapi/sendpulse-crm-openapi.yml
+  - openapi/sendpulse-edu-openapi.yml
+  - openapi/sendpulse-facebook-openapi.yml
+  - openapi/sendpulse-file-manager-openapi.yml
+  - openapi/sendpulse-instagram-openapi.yml
+  - openapi/sendpulse-live-chat-openapi.yml
+  - openapi/sendpulse-popups-openapi.yml
+  - openapi/sendpulse-sms-openapi.yml
+  - openapi/sendpulse-smtp-openapi.yml
+  - openapi/sendpulse-telegram-openapi.yml
+  - openapi/sendpulse-tiktok-openapi.yml
+  - openapi/sendpulse-verifier-openapi.yml
+  - openapi/sendpulse-viber-chatbot-openapi.yml
+  - openapi/sendpulse-viber-openapi.yml
+  - openapi/sendpulse-web-push-openapi.yml
+  - openapi/sendpulse-whatsapp-openapi.yml
+docs: https://sendpulse.com/integrations/api
+notes:
+- 'Both methods travel in the same Authorization: Bearer header, so a server cannot tell a short-lived OAuth token
+  from a permanent API key by the request alone.'
+- A static API key never expires and carries full account permissions; up to 5 per account.
+- The token endpoint POST /oauth/access_token is documented but is NOT declared as an operation in any of the 19
+  published OpenAPI specs — a client generated purely from the specs cannot authenticate.
+- One spec (chatbots, crm, edu, facebook, file-manager, instagram, live-chat, popups, telegram, tiktok, viber-chatbot,
+  whatsapp) misspells the scheme key as "outh2" rather than "oauth2"; it is a naming typo in the published contract,
+  not a different mechanism.
+- The MCP server at mcp.sendpulse.com uses a separate authorization_code + PKCE flow with dynamic client registration,
+  or X-SP-ID / X-SP-SECRET headers.

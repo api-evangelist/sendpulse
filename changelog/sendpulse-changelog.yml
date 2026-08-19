@@ -1,0 +1,180 @@
+generated: '2026-08-13'
+method: searched
+source: https://sendpulse.com/updates
+machine_readable_feed:
+  url: https://sendpulse.com/updates/feed.json
+  format: JSON
+  schema_version: '1.0'
+  http_status: 200
+  note: First-party JSON feed of every platform update, with id/title/summary/category/created_at/updated_at.
+scheme: dated product-update entries, categorised by SendPulse tool; not API-version release notes
+note: This is a PRODUCT changelog, not an API changelog. Entries describe features in the Email, CRM, Chatbot, Courses,
+  Website, SMS, Push, Automation, Pop-up and Live Chat products. No entry announces an API version bump, a breaking
+  change or a deprecation, and there is no separate API/spec changelog.
+total_entries: 500
+entries_by_category:
+  Chatbots: 142
+  Online Course Builder: 79
+  Landing Pages: 71
+  CRM: 69
+  Automation 360: 68
+  Pop-ups: 39
+  Integrations: 14
+  General: 7
+  Email Campaigns: 6
+  Live chat: 5
+most_recent: '2026-08-11'
+breaking_changes_flagged: 0
+entries:
+- title: Track ad performance for your Instagram and WhatsApp chatbots
+  date: '2026-08-11'
+  category: Chatbots
+  summary: Use the new “Ad performance” tab to view Meta Ads Manager campaign data with chatbot results generated
+    after users click your ads, including conversations started, leads, purchases, and more. Track cost per lead
+    and cost per purchase to evaluate conversions against your ad spend, and view events your chatbot sends to Meta.
+- title: New CRM contact access level
+  date: '2026-08-11'
+  category: CRM
+  summary: In the user role settings, allow your team members to access contacts linked to their assigned deals
+    or tasks. When needed, they can open contact cards assigned to another user — for instance, to follow up on
+    a payment and close their deal. In the main contact list, they will still see only the contacts assigned to
+    them.
+- title: New payment filters in the CRM system
+  date: '2026-08-11'
+  category: CRM
+  summary: In “eCommerce” → “Payments,” filter payments by product name or SKU and contact assignee.  This helps
+    you analyze payments from customers assigned to specific team members and track transactions for selected products.
+- title: 'Questions for course tests, forms, and certificates '
+  date: '2026-08-11'
+  category: Online Course Builder
+  summary: Students can now ask questions about tests, forms, and certificates in their student account if this
+    feature is included in their plan. Instructors can instantly see which course item the question refers to, making
+    it easier to understand the context and provide timely help.
+- title: Arrange Telegram chatbot buttons your way
+  date: '2026-08-07'
+  category: Chatbots
+  summary: Drag and drop buttons or quick replies between rows in your chatbot message to arrange them exactly how
+    you want. Preview the button layout in the sidebar and restore the default arrangement with a single click whenever
+    needed. This allows you to create clearer, better-structured Telegram chatbot messages.
+- title: Track changes across your academy
+  date: '2026-08-07'
+  category: Online Course Builder
+  summary: Use the “History” tab to view changes to your academy settings, courses, groups, and students. Filter
+    records by event name, instructor, or date range to quickly find the information you need. Monitor your team's
+    activity and stay informed about recent updates.
+- title: 'Let AI generate SEO metadata for your CRM products '
+  date: '2026-08-07'
+  category: CRM
+  summary: Fill in SEO fields in seconds, even with zero tech skills. In your CRM product card, go to SEO settings
+    and click “Fill with AI” to generate the SEO title, description, and keywords based on the product name and
+    description. You can customize the prompt, select an AI model, and fine-tune the generated content if needed.
+- title: Sell CRM products through pop-ups
+  date: '2026-08-07'
+  category: Pop-ups
+  summary: Select the “Product” pop-up type and add one or more products from your CRM catalog — their details will
+    be filled in automatically. In the “Confirmation” tab, add checkout fields and select available payment methods.
+    Let customers purchase products directly in the pop-ups while CRM deals are created automatically after payment.
+- title: Use ad referral data in chatbot flows
+  date: '2026-08-07'
+  category: Chatbots
+  summary: In the “Chats” section, copy shortcodes for ad referral data, including the ad ID, ad link, click ID,
+    and more. Use them in chatbot messages, the “Action” → “Set variable” element, or send them to your analytics
+    tools for more accurate conversion tracking.
+- title: 'Refresh CRM payment statuses manually '
+  date: '2026-08-07'
+  category: CRM
+  summary: In the “Payments” section or a contact or deal card, click the refresh icon next to a payment status.
+    The CRM system retrieves the latest status from your payment provider without reloading the page.  This lets
+    you verify payments faster and continue working with customers without waiting for a payment webhook.
+- title: Enable two-way SMS conversations in Automation
+  date: '2026-08-05'
+  category: Automation 360
+  summary: In your automated flow, go to the "SMS" element and select your SMS chatbot phone number as the sender
+    to let recipients reply to your messages. Their replies will appear in the “Chats” section, where your chatbot
+    or a team member can take over the conversation. Turn one-way notifications into interactive conversations that
+    drive conversions.
+- title: Limit the number of students on course plans
+  date: '2026-08-07'
+  category: Online Course Builder
+  summary: In your paid course plan settings, set the maximum number of students who can purchase it. Once the limit
+    is reached, you can only enroll new students manually in the “Students” tab. This helps you sell premium plans
+    with limited spots and highlight the exclusivity of your offer.
+- title: 'New GPT-5.6 models in your chatbot “AI Agent” '
+  date: '2026-08-05'
+  category: Chatbots
+  summary: Use GPT-5.6 Sol for complex requests that require precision and strong reasoning, GPT-5.6 Luna for quick
+    consultations, and GPT-5.6 Terra for a balanced mix of speed and quality in your everyday chats. Every model
+    supports web search, file search, and MCP server connections.
+- title: Filter flows by start type in Automation
+  date: '2026-08-05'
+  category: Automation 360
+  summary: Use the “Start type” filter to quickly find automated flows triggered by your email service, CRM, online
+    courses, dynamic segments, or events. Combine it with other filter criteria to streamline navigation through
+    large automated flow lists.
+- title: Voice calls in your WhatsApp chatbots
+  date: '2026-08-05'
+  category: Chatbots
+  summary: Turn on voice calls in your chatbot settings to receive and make calls after a subscriber grants permission.
+    Incoming and answered outgoing calls start a 24-hour customer service window, allowing you to send free-form
+    messages within that timeframe. During calls, you can view the chat history and add notes for future conversations.
+- title: 'WhatsApp chatbots now support сarousel messages '
+  date: '2026-08-05'
+  category: Chatbots
+  summary: Add up to 10 cards with images, titles, descriptions, and one or two buttons to showcase products or
+    services in a single engaging message and boost conversions. Add a text message before the carousel, and make
+    sure every card contains the same number and type of buttons.
+- title: Inform subscribers when they're chatting with an AI agent
+  date: '2026-08-05'
+  category: Chatbots
+  summary: In your AI integration settings, turn on the “AI agent disclosure” option and customize the default notification
+    if needed. The system automatically adds it to the AI agent's first message to help you stay transparent and
+    comply with regulations in supported regions.
+- title: View all Automation flows linked to a pixel event
+  date: '2026-08-05'
+  category: Automation 360
+  summary: In the “Linked flows” section, you can now see all automated flows where a pixel event starts or stops
+    a scenario or is used in the “Condition” element. The system automatically updates flow names and statuses whenever
+    you make changes. This allows you to immediately see how editing or deleting an event will affect your auto-flows,
+    helping you manage them more efficiently.
+- title: Delete variables in bulk with the public API
+  date: '2026-08-05'
+  category: Chatbots
+  summary: Use the POST /contacts/deleteVariable endpoint to pass multiple variable IDs or names in a single request
+    and clear their values for a selected chatbot contact. This will help you reduce API requests and remove temporary
+    or outdated subscriber data more efficiently.
+- title: Style pop-up placeholders your way
+  date: '2026-08-05'
+  category: Pop-ups
+  summary: In your pop-up settings, you can customize the font, color, and size of placeholders in input fields.
+    For instance, match their appearance to your pop-up layout and brand style, or increase the font size on mobile
+    devices to improve readability.
+- title: Manage WhatsApp templates with the public API
+  date: '2026-08-05'
+  category: Chatbots
+  summary: Use GET /templates to retrieve and search templates by name, category, status, or language; DELETE /templates/{id}
+    to remove them using templates’ ID; and POST /templates to create new templates and automatically submit them
+    for Meta review. Manage your WhatsApp templates from external systems without extra manual work.
+- title: Enhance student accounts using custom code
+  date: '2026-07-30'
+  category: Online Course Builder
+  summary: Add third-party code or custom JavaScript in your academy settings to enhance student accounts without
+    hiring an expert. Easily integrate analytics, support chat, feedback forms, and other custom tools to level
+    up your academy and create a tailored learning experience.
+- title: Start chatbot flows from the specific point in your flow
+  date: '2026-07-30'
+  category: Chatbots
+  summary: When manually launching a chatbot flow from the “Audience” section, you can select the starting point
+    of your flow. To do this, simply paste the block ID copied from the flow builder. For instance, you can let
+    customers who have already purchased a subscription access it immediately instead of browsing your pricing plans.
+- title: Run automated flows with just a subscriber's name and ID
+  date: '2026-07-30'
+  category: Automation 360
+  summary: If your chatbot flow contains the “Start A360 workflow by event” action, the Automation flow will run
+    even without the subscriber's email address or phone number. Messages will be sent through the “Messaging app”
+    element only, while other actions, like creating a deal or notifying your team, will continue to run as configured.
+- title: Filter CRM payments by product and payment type
+  date: '2026-07-30'
+  category: CRM
+  summary: In “eCommerce” → “Payments,” filter payments by product type (physical, digital, or subscription) and
+    payment type (first or repeat). This helps you better evaluate customer acquisition and retention trends to
+    optimize your product offering.

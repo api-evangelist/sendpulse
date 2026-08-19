@@ -1,0 +1,606 @@
+openapi: 3.1.2
+info:
+  title: SendPulse Web Push API
+  description: >
+    The SendPulse Web Push API allows you to send browser notifications to your 
+    website visitors. It supports subscriber management, advanced segmentation, 
+    and detailed tracking of delivery and clicks.
+  version: 1.0.0
+  x-ai-description: >
+    High-engagement browser notification service. This API enables real-time 
+    communication with website subscribers across desktop and mobile browsers, 
+    featuring advanced segmentation, scheduled broadcasts, and interactive 
+    elements like buttons and custom icons.
+  license:
+    name: Apache 2.0
+    identifier: Apache-2.0
+servers:
+  - url: https://api.sendpulse.com
+paths:
+  /push/tasks:
+    get:
+      summary: Get a list of sent web push campaigns
+      operationId: getWebPushCampaigns
+      tags:
+        - Campaigns
+      x-ai-role: marketing_automation_specialist
+      x-ai-description: >
+        Retrieves the history of web push broadcasts. Provides a snapshot of 
+        campaign status and timing for cross-referencing with website traffic.
+      x-ai-reasoning-instructions:
+        - Use `limit` and `offset` for pagination (max 100 entries per reply).
+        - Apply date filters (`from`, `to`) in `YYYY-MM-DD HH:MM:SS` format.
+      x-ai-responding-instructions:
+        - Summarize the recent web push activity.
+      x-ai-suggestions:
+        - Filter by `website_id` if managing multiple digital properties.
+      x-ai-capabilities:
+        confirmation:
+          type: None
+      parameters:
+        - name: limit
+          in: query
+          schema:
+            type: integer
+        - name: offset
+          in: query
+          schema:
+            type: integer
+        - name: from
+          in: query
+          schema:
+            type: string
+        - name: to
+          in: query
+          schema:
+            type: string
+        - name: website_id
+          in: query
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: List of web push campaigns
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                    title:
+                      type: string
+                    body:
+                      type: string
+                    website_id:
+                      type: integer
+                    from:
+                      type: string
+                    to:
+                      type: string
+                    status:
+                      type: integer
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+    post:
+      summary: Create a new web push campaign
+      operationId: createWebPushCampaign
+      tags:
+        - Campaigns
+      x-ai-role: web_engagement_specialist
+      x-ai-description: >
+        Triggers a new browser notification broadcast. This endpoint supports 
+        rich content (icons, large images) and deep segmentation logic to 
+        target specific user cohorts based on language, browser, or custom
+        variables.
+      x-ai-reasoning-instructions:
+        - 'Note the limit: 1 campaign per 15 minutes per website.'
+        - Ensure the `ttl` (lifetime) does not exceed 86400 seconds.
+        - >-
+          If using buttons, ensure the payload is a valid JSON string (max 2
+          buttons).
+        - Validate that image data is Base64 encoded and under 200KB.
+      x-ai-responding-instructions:
+        - Confirm the campaign has been queued and return the `id`.
+        - Mention any filters applied to the broadcast.
+      x-ai-suggestions:
+        - New_Feature_Alert
+        - Breaking_News_Update
+      x-ai-capabilities:
+        confirmation:
+          type: Required
+        security_info:
+          data_handling:
+            - ResourceStateUpdate
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - title
+                - website_id
+                - body
+                - ttl
+              properties:
+                title:
+                  type: string
+                website_id:
+                  type: integer
+                body:
+                  type: string
+                ttl:
+                  type: integer
+                  maximum: 86400
+                link:
+                  type: string
+                filter_lang:
+                  type: string
+                filter_browser:
+                  type: string
+                filter_region:
+                  type: string
+                  description: JSON string of country codes, e.g. ['UK']
+                filter_url:
+                  type: string
+                  description: JSON string for URL filtering
+                filter_subscription_date_from:
+                  type: string
+                filter_subscription_date_to:
+                  type: string
+                filter:
+                  type: object
+                  description: Segmentation by custom variables
+                stretch_time:
+                  type: integer
+                send_date:
+                  type: string
+                  format: date-time
+                buttons:
+                  type: string
+                  description: JSON string for buttons
+                image:
+                  type: string
+                  description: JSON string with name and Base64 data
+                icon:
+                  type: string
+                  description: JSON string with name and Base64 data
+      responses:
+        '200':
+          description: Campaign created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  result:
+                    type: boolean
+                  id:
+                    type: integer
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+  /push/websites/total:
+    get:
+      summary: Get total number of websites
+      operationId: getWebPushWebsitesTotal
+      tags:
+        - Websites
+      x-ai-role: web_engagement_specialist
+      x-ai-description: >
+        Returns the count of websites currently configured for web push in the
+        account.
+      x-ai-capabilities:
+        confirmation:
+          type: None
+      responses:
+        '200':
+          description: Total count
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  total:
+                    type: integer
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+  /push/websites:
+    get:
+      summary: Get a list of websites
+      operationId: getWebPushWebsites
+      tags:
+        - Websites
+      x-ai-role: web_engagement_specialist
+      x-ai-description: >
+        Retrieves all websites integrated with the web push service,  including
+        their verification status and integration date.
+      x-ai-capabilities:
+        confirmation:
+          type: None
+      parameters:
+        - name: limit
+          in: query
+          schema:
+            type: integer
+        - name: offset
+          in: query
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: List of websites
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                    url:
+                      type: string
+                    add_date:
+                      type: string
+                    status:
+                      type: integer
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+  /push/websites/{id}/variables:
+    get:
+      summary: Get a list of variables for a website
+      operationId: getWebPushVariables
+      tags:
+        - Websites
+      parameters: []
+      x-ai-role: marketing_automation_specialist
+      x-ai-description: >
+        Lists all custom data fields (variables) defined for a specific
+        website.  These variables are used for advanced segmentation of the
+        subscriber base.
+      x-ai-responding-instructions:
+        - List the available variables and their data types.
+      x-ai-suggestions:
+        - >-
+          Check these variables before constructing a `filter` for a new
+          campaign.
+      x-ai-capabilities:
+        confirmation:
+          type: None
+      responses:
+        '200':
+          description: List of variables
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                    name:
+                      type: string
+                    type:
+                      type: string
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+  /push/websites/{id}/subscriptions:
+    get:
+      summary: Get a list of website subscribers
+      operationId: getWebPushSubscriptions
+      tags:
+        - Subscribers
+      parameters:
+        - name: limit
+          in: query
+          schema:
+            type: integer
+        - name: offset
+          in: query
+          schema:
+            type: integer
+        - name: subscription_date_from
+          in: query
+          schema:
+            type: string
+            format: date
+        - name: subscription_date_to
+          in: query
+          schema:
+            type: string
+            format: date
+      x-ai-role: web_engagement_specialist
+      x-ai-description: >
+        Retrieves individual subscriber data including browser, OS, and
+        geographic location.  Used for auditing the audience composition.
+      x-ai-reasoning-instructions:
+        - 'Note status codes: 0 (Deactivated), 1 (Active), 6 (Unsubscribed).'
+      x-ai-responding-instructions:
+        - Detail the subscriber demographics for the requested website.
+      x-ai-capabilities:
+        confirmation:
+          type: None
+      responses:
+        '200':
+          description: List of subscribers
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+  /push/websites/{id}/subscriptions/total:
+    get:
+      summary: Get a total number of website subscribers
+      operationId: getWebPushSubscribersTotal
+      tags:
+        - Subscribers
+      parameters: []
+      x-ai-role: web_engagement_specialist
+      x-ai-description: >
+        Returns the aggregate subscriber count for a specific website.  Used to
+        track audience growth over time.
+      x-ai-capabilities:
+        confirmation:
+          type: None
+      responses:
+        '200':
+          description: Total subscriber count
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  total:
+                    type: integer
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+  /push/websites/info/{id}:
+    get:
+      summary: Get information about a website
+      operationId: getWebPushWebsiteInfo
+      tags:
+        - Websites
+      parameters: []
+      x-ai-role: web_engagement_specialist
+      x-ai-description: >
+        Retrieves comprehensive metadata for a website property,  including
+        daily subscriber growth and active vs. inactive counts.
+      x-ai-capabilities:
+        confirmation:
+          type: None
+      responses:
+        '200':
+          description: Website information
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  url:
+                    type: string
+                  status:
+                    type: string
+                  total_subscribers:
+                    type: integer
+                  active_subscribers:
+                    type: integer
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+  /push/websites/{id}/code:
+    get:
+      summary: Get JS code for a website
+      operationId: getWebPushCode
+      tags:
+        - Configuration
+      parameters: []
+      x-ai-role: web_engagement_specialist
+      x-ai-description: >
+        Retrieves the specific JavaScript snippet required to enable web push 
+        functionality on the target website. This script handles the permission 
+        prompt and subscriber token generation.
+      x-ai-responding-instructions:
+        - >-
+          Provide the `script_code` and instruct the user to place it before the
+          `</head>` tag.
+      x-ai-capabilities:
+        confirmation:
+          type: None
+      responses:
+        '200':
+          description: Integration code
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  script_url:
+                    type: string
+                  script_code:
+                    type: string
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+  /push/subscriptions/state:
+    post:
+      summary: Activate/deactivate a subscriber
+      operationId: setWebPushSubscriberState
+      tags:
+        - Subscribers
+      x-ai-role: web_engagement_specialist
+      x-ai-description: >
+        Manually toggles the active state of a subscriber.  Can be used to
+        suppress users or re-activate them based on business logic.
+      x-ai-reasoning-instructions:
+        - 'Set `state: 1` for activation and `0` for deactivation.'
+      x-ai-responding-instructions:
+        - Confirm the subscriber state has been updated.
+      x-ai-capabilities:
+        confirmation:
+          type: Required
+        security_info:
+          data_handling:
+            - ResourceStateUpdate
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - id
+                - state
+              properties:
+                id:
+                  type: integer
+                state:
+                  type: integer
+                  enum:
+                    - 0
+                    - 1
+      responses:
+        '200':
+          description: State updated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  result:
+                    type: boolean
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+  /push/tasks/{id}:
+    get:
+      summary: Get statistics on sent campaigns
+      operationId: getWebPushCampaignStats
+      tags:
+        - Campaigns
+      parameters: []
+      x-ai-role: marketing_automation_specialist
+      x-ai-description: >
+        Retrieves final performance metrics for a web push broadcast,  including
+        delivered counts and click-through (redirect) rates.
+      x-ai-reasoning-instructions:
+        - >-
+          Analyze the `redirect` vs `delivered` ratio to measure campaign
+          effectiveness.
+      x-ai-responding-instructions:
+        - Report the engagement metrics for the specific campaign.
+      x-ai-capabilities:
+        confirmation:
+          type: None
+      responses:
+        '200':
+          description: Campaign statistics
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  message:
+                    type: object
+                  website:
+                    type: string
+                  status:
+                    type: integer
+                  send:
+                    type: string
+                  delivered:
+                    type: integer
+                  redirect:
+                    type: integer
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+security:
+  - apiKey: []
+  - oauth2: []
+components:
+  securitySchemes:
+    apiKey:
+      type: http
+      scheme: bearer
+      bearerFormat: API Key
+      description: >
+        Static API Key authentication.  A long-lived token generated manually in
+        the SendPulse account settings.
+      x-ai-description: >
+        Permanent authentication token. Ideal for simple integrations without
+        token refresh logic.
+    oauth2:
+      type: oauth2
+      description: OAuth 2.0 Client Credentials flow for temporary access tokens.
+      flows:
+        clientCredentials:
+          tokenUrl: https://api.sendpulse.com/oauth/access_token
+          scopes: {}
+      x-ai-description: >
+        Standard OAuth 2.0 flow using Client ID and Client Secret.  Provides
+        temporary tokens (valid for 1 hour) for enhanced security.

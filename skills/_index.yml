@@ -1,0 +1,40 @@
+generated: '2026-08-13'
+method: generated
+source: openapi/*.yml (19 first-party SendPulse specs) + https://sendpulse.com/integrations/api
+note: >-
+  Packaged Agent Skills for the marquee SendPulse flows. Every operationId referenced was
+  grepped out of the published specs under openapi/; none is invented. Each skill carries the
+  cross-cutting rules an agent gets wrong on this API — no idempotency key, four different
+  pagination idioms, no rate-limit headers, and a proprietary numeric error registry.
+searched_for_provider_published_skills: true
+provider_published_skills: none
+provider_published_skills_note: >-
+  No AGENTS.md, /skills surface or provider-published Agent Skill was found. SendPulse's agent
+  investment is instead in x-ai-* vendor extensions inside the specs themselves and in the
+  hosted MCP server.
+skills:
+  - name: sendpulse-bulk-email-campaign
+    file: sendpulse-bulk-email-campaign.md
+    api: SendPulse Bulk Email API
+    spec: openapi/sendpulse-bulk-email-openapi.yml
+    operations: 13
+  - name: sendpulse-transactional-smtp
+    file: sendpulse-transactional-smtp.md
+    api: SendPulse SMTP API
+    spec: openapi/sendpulse-smtp-openapi.yml
+    operations: 15
+  - name: sendpulse-crm-deal-pipeline
+    file: sendpulse-crm-deal-pipeline.md
+    api: SendPulse CRM Public API
+    spec: openapi/sendpulse-crm-openapi.yml
+    operations: 16
+  - name: sendpulse-whatsapp-chatbot-messaging
+    file: sendpulse-whatsapp-chatbot-messaging.md
+    api: WhatsApp service API
+    spec: openapi/sendpulse-whatsapp-openapi.yml
+    operations: 14
+  - name: sendpulse-mailing-list-verification
+    file: sendpulse-mailing-list-verification.md
+    api: SendPulse Verifier API
+    spec: openapi/sendpulse-verifier-openapi.yml
+    operations: 9

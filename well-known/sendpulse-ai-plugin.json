@@ -1,0 +1,23 @@
+{
+  "schema_version": "v1",
+  "name_for_human": "SendPulse",
+  "name_for_model": "sendpulse",
+  "description_for_human": "Multi-channel marketing automation: email campaigns, SMS, chatbots (WhatsApp, Telegram, Facebook, Instagram, Viber, TikTok, LiveChat), CRM, automation flows, web push, and pop-ups.",
+  "description_for_model": "SendPulse API for managing multi-channel marketing automation. Capabilities: email campaigns and mailing lists, transactional SMTP, SMS messaging, chatbots for WhatsApp/Telegram/Facebook/Instagram/Viber/TikTok/LiveChat, CRM with pipelines and deals, Automation 360 event-driven flows, web push notifications, pop-ups, email verifier, and file manager. Authentication: OAuth2 client_credentials flow via /oauth/access_token (token TTL 3600s) or static API key. All endpoints are under https://api.sendpulse.com. Full OpenAPI specs available at https://api.sendpulse.com/.well-known/openapi/index.yaml",
+  "auth": {
+    "type": "oauth",
+    "client_url": "https://login.sendpulse.com/settings/#api",
+    "scope": "",
+    "authorization_url": "https://api.sendpulse.com/oauth/access_token",
+    "authorization_content_type": "application/json",
+    "verification_tokens": {}
+  },
+  "api": {
+    "type": "openapi",
+    "url": "https://api.sendpulse.com/.well-known/openapi/index.yaml",
+    "is_user_authenticated": false
+  },
+  "logo_url": "https://sendpulse.com/favicon.ico",
+  "contact_email": "support@sendpulse.com",
+  "legal_info_url": "https://sendpulse.com/legal/pp"
+}

@@ -1,0 +1,181 @@
+generated: '2026-08-13'
+method: searched
+source: https://sendpulse.com/integrations/api
+format: proprietary
+note: SendPulse does NOT use RFC 9457 application/problem+json. Errors come back as a JSON envelope with a numeric
+  "error_code" plus a "message", and the numeric codes below are the account-wide registry published on the API
+  documentation page. HTTP status codes are taken from the 19 published OpenAPI specs.
+envelope:
+  content_type: application/json
+  shape:
+    message: string — human-readable description
+    error_code: integer — the code from the registry below
+  observed_example: '{"message":"Unauthorized!","error_code":401}'
+  observed_at: https://api.sendpulse.com/ (any unauthenticated request)
+  alternate_shape: '{"success": false, "data": {...}} — used by several bulk-email endpoints'
+http_statuses:
+- status: 200
+  count: 571
+  meaning: Success
+- status: 201
+  count: 24
+  meaning: Created
+- status: 204
+  count: 40
+  meaning: No content
+- status: 400
+  count: 17
+  meaning: Bad request
+- status: 401
+  count: 152
+  meaning: Unauthorized — missing/expired Bearer token or API key
+- status: 403
+  count: 144
+  meaning: Forbidden — plan or role does not permit the operation
+- status: 404
+  count: 31
+  meaning: Not found
+- status: 422
+  count: 23
+  meaning: Unprocessable entity — validation failure
+- status: 429
+  count: 0
+  meaning: Too many requests — quota exceeded. Documented on the API page but NOT declared in any of the 19 OpenAPI
+    specs.
+source_note: http_statuses counts are derived from openapi/*.yml; the 429 row is from the docs only.
+error_codes:
+- code: 8
+  message: No data
+  class: application
+- code: 10
+  message: Sender email address missing
+  class: application
+- code: 11
+  message: Can't find recipients addresses
+  class: application
+- code: 13
+  message: Empty email message content field
+  class: application
+- code: 14
+  message: Can't find email address with the specified ID
+  class: application
+- code: 17
+  message: Can't find the email address
+  class: application
+- code: 19
+  message: Email address already exists
+  class: application
+- code: 20
+  message: Using free email services (not allowed)
+  class: compliance
+- code: 21
+  message: No such email address awaiting activation
+  class: application
+- code: 97
+  message: Invalid email address type. Using free email services is not allowed.
+  class: compliance
+- code: 201
+  message: Empty mailing list name
+  class: application
+- code: 203
+  message: This mailing list name already exists
+  class: application
+- code: 211
+  message: Mailing list empty
+  class: application
+- code: 213
+  message: Mailing list not found
+  class: application
+- code: 303
+  message: Can't find email addresses in the mailing list
+  class: application
+- code: 400
+  message: Specified SMTP user doesn't exist. Create an SMTP account.
+  class: application
+- code: 502
+  message: Can't find the email address
+  class: application
+- code: 602
+  message: Can't find the campaign. Probably, it has already been sent.
+  class: application
+- code: 701
+  message: Sender email address or name not specified.
+  class: application
+- code: 703
+  message: Can't find the mailing list
+  class: application
+- code: 704
+  message: Can't find the sender
+  class: application
+- code: 707
+  message: Account balance depleted
+  class: billing
+- code: 708
+  message: The number of campaign recipients exceeds your current pricing plan limits
+  class: quota
+- code: 711
+  message: Wait before create new push campaign by this website
+  class: application
+- code: 720
+  message: Empty subject field
+  class: application
+- code: 721
+  message: Email message empty
+  class: application
+- code: 722
+  message: Mailing list ID not specified
+  class: application
+- code: 791
+  message: API-campaigns limit exceeded (4 per hour)
+  class: rate-limit
+- code: 799
+  message: Incorrect date format. Use YYYY-MM-DD hh:ii:ss that equals or greater than the current date
+  class: application
+- code: 800
+  message: Invalid operation
+  class: application
+- code: 802
+  message: Campaign not found
+  class: application
+- code: 901
+  message: Sender name not specified
+  class: application
+- code: 902
+  message: Selected email address already in use
+  class: application
+- code: 903
+  message: Sender email address not specified
+  class: application
+- code: 904
+  message: Email address blacklisted
+  class: compliance
+- code: 905
+  message: Sender address quota reached
+  class: quota
+- code: 906
+  message: Email address syntax error
+  class: application
+- code: 1101
+  message: Email address not specified
+  class: application
+- code: 1003
+  message: The specified sender doesn't exist
+  class: application
+- code: 1004
+  message: The activation code has been sent. Wait 15 minutes to retry
+  class: application
+- code: 1005
+  message: Error sending confirmation
+  class: application
+- code: 1104
+  message: Activation code not specified
+  class: application
+- code: 2020202020
+  message: More than 10 requests per second
+  class: rate-limit
+error_code_count: 43
+gaps:
+- No 429 response is declared in any published OpenAPI spec even though the docs state a 429 is returned on quota
+  exhaustion.
+- No Retry-After or RateLimit-* response header is documented.
+- Numeric error codes are not mapped to HTTP statuses anywhere in the docs or the specs.

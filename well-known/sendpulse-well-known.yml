@@ -1,0 +1,92 @@
+generated: '2026-08-13'
+method: probed
+source: live GET of /.well-known/* on every apis.yml baseURL host, every OpenAPI servers[] host, the website
+  host and the MCP host
+summary:
+  hosts_probed: 3
+  paths_probed: 20
+  documents_found: 5
+hosts:
+- host: https://api.sendpulse.com
+  documents:
+  - path: /.well-known/ai-plugin.json
+    status: 200
+    file: sendpulse-ai-plugin.json
+    note: Real OpenAI plugin descriptor. Points api.type=openapi at /.well-known/openapi/index.yaml and
+      auth at /oauth/access_token.
+  - path: /.well-known/openapi/index.yaml
+    status: 200
+    file: ../openapi/sendpulse-index-openapi.yml
+    note: OpenAPI 3.1.0 master index; x-services lists 19 sub-service specs, all saved under openapi/.
+  - path: /service-directory.json
+    status: 200
+    file: sendpulse-service-directory.json
+    note: Not an RFC 8615 path, but a real first-party machine-readable service directory advertised in
+      the API docs; captured for completeness.
+  - path: /llms.txt
+    status: 200
+    file: ../llms/sendpulse-llms.txt
+  - path: /llms-full.txt
+    status: 200
+    file: null
+    note: Real 7.7KB document. Deliberately not committed — *-llms-full.txt is gitignored across this
+      network.
+  - path: /.well-known/security.txt
+    status: 404
+  - path: /.well-known/openid-configuration
+    status: 404
+  - path: /.well-known/oauth-authorization-server
+    status: 404
+  - path: /.well-known/oauth-protected-resource
+    status: 404
+  - path: /.well-known/api-catalog
+    status: 404
+  - path: /.well-known/agent-card.json
+    status: 404
+  - path: /.well-known/agent.json
+    status: 404
+- host: https://mcp.sendpulse.com
+  documents:
+  - path: /.well-known/oauth-authorization-server
+    status: 200
+    file: sendpulse-oauth-authorization-server.json
+    note: 'RFC 8414 authorization server metadata for the remote MCP server. Advertises dynamic client
+      registration, PKCE (S256), authorization_code + refresh_token, and scopes_supported: ["rest"].'
+  - path: /.well-known/oauth-protected-resource
+    status: 404
+    note: RFC 9728 protected-resource metadata is NOT served, so an MCP client cannot discover the authorization
+      server from the resource itself.
+  - path: /.well-known/openid-configuration
+    status: 404
+  - path: /.well-known/agent-card.json
+    status: 404
+  - path: /.well-known/agent.json
+    status: 404
+- host: https://sendpulse.com
+  documents:
+  - path: /security.txt
+    status: 200
+    file: sendpulse-security.txt
+    note: 'Real RFC 9116-style document, but served at the legacy top-level path. The canonical /.well-known/security.txt
+      returns 404 (soft 404: HTTP 404 with the site HTML shell).'
+  - path: /llms.txt
+    status: 200
+    file: ../llms/sendpulse-llms.txt
+    note: Byte-identical to the copy on api.sendpulse.com.
+  - path: /.well-known/security.txt
+    status: 404
+  - path: /.well-known/openid-configuration
+    status: 404
+  - path: /.well-known/oauth-authorization-server
+    status: 404
+  - path: /.well-known/api-catalog
+    status: 404
+  - path: /.well-known/ai-plugin.json
+    status: 404
+  - path: /.well-known/agent-card.json
+    status: 404
+  - path: /.well-known/agent.json
+    status: 404
+notes:
+- No A2A Agent Card on any host — no a2a/ artifact is written.
+- security.txt has no Expires field, which RFC 9116 requires, and lives at /security.txt rather than /.well-known/security.txt.

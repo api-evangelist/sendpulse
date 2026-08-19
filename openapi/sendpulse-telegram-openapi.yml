@@ -1,0 +1,4455 @@
+components:
+  securitySchemes:
+    apiKey:
+      type: http
+      scheme: bearer
+      bearerFormat: API Key
+      description: >
+        Static API Key authentication.  A long-lived token generated manually in
+        the SendPulse account settings.
+      x-ai-description: >
+        Permanent authentication token. Ideal for simple integrations without
+        token refresh logic.
+    outh2:
+      type: oauth2
+      description: OAuth 2.0 Client Credentials flow for temporary access tokens.
+      flows:
+        clientCredentials:
+          tokenUrl: https://api.sendpulse.com/oauth/access_token
+          scopes: {}
+      x-ai-description: >
+        Standard OAuth 2.0 flow using Client ID and Client Secret.  Provides
+        temporary tokens (valid for 1 hour) for enhanced security.
+  schemas:
+    SuccessResponse:
+      properties:
+        success:
+          type: boolean
+        data:
+          anyOf:
+            - type: array
+              items:
+                type: object
+            - type: object
+            - type: boolean
+      type: object
+    Account:
+      properties:
+        plan:
+          type: object
+          description: '`-1` - unlimited'
+          properties:
+            code:
+              type: string
+            max_bots:
+              type: integer
+            max_contacts:
+              type: integer
+              example: -1
+            max_messages:
+              type: integer
+            max_tags:
+              type: integer
+            max_variables:
+              type: integer
+            branding:
+              type: boolean
+            is_exceeded:
+              type: boolean
+            is_expired:
+              type: boolean
+            expired_at:
+              type: string
+              example: 2020-12-11T21:00:00.000Z
+        statistics:
+          type: object
+          description: ''
+          properties:
+            messages:
+              type: integer
+            bots:
+              type: integer
+            contacts:
+              type: integer
+            variables:
+              type: integer
+    Bot:
+      properties:
+        id:
+          type: string
+        channel_data:
+          type: object
+          properties:
+            id:
+              type: integer
+            name:
+              type: string
+            username:
+              type: string
+        inbox:
+          type: object
+          properties:
+            total:
+              type: integer
+            unread:
+              type: integer
+        commands_menu:
+          type: object
+          properties:
+            status:
+              type: integer
+              enum:
+                - 1
+                - 2
+              description: |2-
+
+                                    * `1` - active
+
+                                    * `2` - inactive
+            commands:
+              type: array
+              items:
+                type: object
+                properties:
+                  description:
+                    type:
+                      - string
+                      - 'null'
+                  command:
+                    type: string
+                  flow_id:
+                    type: string
+        status:
+          type: integer
+          enum:
+            - 3
+            - 4
+          description: |2-
+
+                                * `3` - active
+
+                                * `4` - inactive
+        created_at:
+          type: string
+          example: 2020-12-11T21:00:00.000Z
+    Contact:
+      properties:
+        id:
+          type: string
+        bot_id:
+          type: string
+        status:
+          type: integer
+          enum:
+            - 1
+            - 2
+            - 3
+            - 4
+          description: |2-
+
+                                * `1` - active
+
+                                * `2` - unsubscribed
+
+                                * `3` - disabled
+
+                                * `4` - blocked by user
+        channel_data:
+          type: object
+          properties:
+            username:
+              type:
+                - string
+                - 'null'
+            first_name:
+              type: string
+            last_name:
+              type:
+                - string
+                - 'null'
+            name:
+              type: string
+            language_code:
+              type:
+                - string
+                - 'null'
+        tags:
+          type: array
+          uniqueItems: true
+          items:
+            type: string
+        variables:
+          type: object
+          description: 'variable_name: variable_value'
+        is_chat_opened:
+          type: boolean
+        last_activity_at:
+          type: string
+          example: 2020-12-11T21:00:00.000Z
+        automation_paused_until:
+          type:
+            - string
+            - 'null'
+          example: 2020-12-11T21:00:00.000Z
+        telegram_id:
+          type: string
+        created_at:
+          type: string
+          example: 2020-12-11T21:00:00.000Z
+    Variable:
+      properties:
+        id:
+          type: string
+        bot_id:
+          type: string
+        name:
+          type: string
+        description:
+          type:
+            - string
+            - 'null'
+        type:
+          type: integer
+          enum:
+            - 1
+            - 2
+          description: |2-
+
+                                * `1` - contact variable
+
+                                * `2` - bot variable
+        value_type:
+          type: integer
+          example: 1
+          enum:
+            - 1
+            - 2
+            - 3
+            - 4
+            - 5
+            - 6
+            - 7
+          description: |2-
+
+                            this type of variable can have the following values:
+
+                                * `1` - string
+
+                                * `2` - number
+
+                                * `3` - date
+
+                                * `4` - boolean
+
+                                * `5` - phone
+
+                                * `6` - email
+
+                                * `7` - url
+        status:
+          type: integer
+          enum:
+            - 1
+            - 2
+          description: |2-
+
+                                * `1` - active
+
+                                * `2` - trashed
+        created_at:
+          type: string
+          example: 2020-12-11T21:00:00.000Z
+    Flow:
+      properties:
+        id:
+          type: string
+        bot_id:
+          type: string
+        name:
+          type: string
+        status:
+          type: integer
+          enum:
+            - 1
+            - 2
+          description: |2-
+
+                                * `1` - active
+
+                                * `2` - inactive
+        triggers:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+              name:
+                type: string
+              type:
+                type: integer
+                enum:
+                  - 1
+                  - 2
+                  - 3
+                  - 4
+                  - 5
+                description: |2-
+
+                                      * `1` - starts immediately upon subscription
+
+                                      * `2` - starts when unsubscribed
+
+                                      * `3` - default reply
+
+                                      * `4` - starts when the specified keyword is entered
+
+                                      * `5` - starts at the specified time when subscribing
+        created_at:
+          type: string
+          example: 2020-12-11T21:00:00.000Z
+    Trigger:
+      properties:
+        id:
+          type: string
+        bot_id:
+          type: string
+        flow_id:
+          type:
+            - string
+            - 'null'
+        name:
+          type: string
+        type:
+          type: integer
+          enum:
+            - 1
+            - 2
+            - 3
+            - 4
+            - 5
+          description: |2-
+
+                                * `1` - starts immediately upon subscription
+
+                                * `2` - starts when unsubscribed
+
+                                * `3` - default reply
+
+                                * `4` - starts when the specified keyword is entered
+
+                                * `5` - starts at the specified time when subscribing
+        status:
+          type: integer
+          enum:
+            - 1
+            - 2
+          description: |2-
+
+                                * `1` - active
+
+                                * `2` - inactive
+        keywords:
+          type: array
+          items:
+            type: string
+        execution:
+          type: object
+          properties:
+            interval:
+              type: integer
+            units:
+              type: integer
+              enum:
+                - 1
+                - 2
+                - 3
+              description: |2-
+
+                                        * `1` - minutes
+
+                                        * `2` - hours
+
+                                        * `3` - days
+        created_at:
+          type: string
+          example: 2020-12-11T21:00:00.000Z
+    Campaign:
+      properties:
+        id:
+          type: string
+        bot_id:
+          type: string
+        title:
+          type: string
+        send_at:
+          type: string
+          example: 2020-12-11T21:00:00.000Z
+        messages:
+          type: array
+          items:
+            type: object
+        created_at:
+          type: string
+          example: 2020-12-11T21:00:00.000Z
+    Chat:
+      properties:
+        contact:
+          $ref: '#/components/schemas/Contact'
+        inbox_last_message:
+          $ref: '#/components/schemas/Message'
+        inbox_unread:
+          type: integer
+    Message:
+      properties:
+        id:
+          type: string
+        contact_id:
+          type: string
+        bot_id:
+          type: string
+        campaign_id:
+          type:
+            - string
+            - 'null'
+        data:
+          type: object
+          description: https://core.telegram.org/bots/api#message
+          example:
+            text: hello
+        direction:
+          type: integer
+          enum:
+            - 1
+            - 2
+          description: |2-
+
+                                * `1` - in
+
+                                * `2` - out
+        status:
+          type: integer
+          enum:
+            - 1
+          description: |2-
+
+                                * `1` - new
+
+                                * `2` - sent
+
+                                * `3` - delivered
+
+                                * `4` - opened
+
+                                * `5` - redirected
+
+                                * `6` - rejected
+        created_at:
+          type: string
+          example: 2020-12-11T21:00:00.000Z
+        sent_by:
+          type:
+            - object
+            - 'null'
+          description: Operator data, which send a message
+        type:
+          type: integer
+          enum:
+            - 1
+            - 2
+            - 3
+            - 4
+            - 5
+            - 6
+          description: |-
+            Internal type of message
+
+                                * `1` - 'Internal chat',
+                                * `2` - 'External chat',
+                                * `3` - 'Payment',
+                                * `4` - 'Campaign',
+                                * `5` - 'Operator',
+                                * `6` - 'Operator note',
+                                * `7` - 'Feed comment',
+                            
+        channel:
+          type: string
+          enum:
+            - ma
+            - ma_chat
+            - api
+            - rss
+            - echo
+            - jivo
+            - open_ai
+            - payment
+    Tag:
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        contact_count:
+          type: integer
+        created_at:
+          type: string
+          example: 2020-12-11T21:00:00.000Z
+info:
+  description: >-
+    Using the API for Telegram chatbots, you can integrate your system with
+    SendPulse’s chatbots service and get detailed information about your
+    account, bots, subscribers, variables, flows, and chats. You can also create
+    campaigns, launch flows, assign and remove variables and tags.
+
+                
+    On the right, there is a button for authorizing requests made on this page.
+    Click “Authorize,” then insert the ID and Secret from your account.
+
+                
+    To perform a request directly from the page, click the "Try it out" button
+    within each method block. Then fill in input fields if any (for URL
+    parameters, the description is right below the URL request; for body
+    parameters, the description is under the “Scheme” button to the right of the
+    example), and click “Run.” You'll find the server response and description
+    of received parameters below.
+            
+  title: Telegram service API
+  version: 0.0.1
+openapi: 3.1.2
+paths:
+  /contacts/get:
+    get:
+      summary: Get contact info via a contact ID
+      description: >-
+        Returns information on the selected contact: bot and contact ID,
+        information from messenger, list of tags and variables, activity data
+        and date added
+      security:
+        - oAuth2ClientCredentials: []
+      tags:
+        - contacts
+      parameters:
+        - in: query
+          name: id
+          required: true
+          schema:
+            type: string
+          description: >-
+            Contact ID. Can be obtained with a contact search by tag or
+            variable. You can also find it in your account in the address bar of
+            a chat window with the desired contact.
+      responses:
+        '200':
+          description: Operation successful
+          content:
+            application/json:
+              schema:
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/Contact'
+                type: object
+      operationId: getContact
+      x-ai-role: crm_data_analyst
+      x-ai-description: >-
+        Retrieves the full profile of a single chatbot contact by their unique
+        ID. This is the primary lookup endpoint for resolving a contact ID into
+        a rich profile — including messenger metadata, segmentation tags, custom
+        variables, and engagement history. Typically used before performing
+        personalised actions (sending messages, updating variables) or after a
+        search that returned only an ID.
+      x-ai-reasoning-instructions:
+        - >-
+          Ensure the contact ID is obtained from a prior search (by tag,
+          variable, or from the account UI URL) — it is not guessable.
+        - >-
+          If the caller does not have a contact ID yet, suggest using a
+          contact-search endpoint first.
+        - >-
+          Check whether the returned data includes the fields the user needs
+          (tags, variables, activity) before deciding on follow-up actions.
+        - >-
+          Be aware that contact IDs are bot-scoped; a contact ID from one bot
+          will not resolve correctly for another bot.
+      x-ai-responding-instructions:
+        - >-
+          Summarise the contact's key identity fields (bot ID, contact ID,
+          messenger handle) first.
+        - >-
+          Highlight any tags and variables present, as these are most commonly
+          needed for segmentation or personalisation tasks.
+        - >-
+          If the activity data shows no recent engagement, flag this to the user
+          as it may affect campaign deliverability decisions.
+        - >-
+          If the contact is not found, explain that the ID may belong to a
+          different bot or may have been deleted.
+      x-ai-suggestions:
+        - >-
+          Use the returned contact ID with `sendMessageToContact` to initiate a
+          personalised message.
+        - >-
+          Inspect the `variables` array to decide whether custom data needs to
+          be updated via an update-variable endpoint.
+        - >-
+          Cross-reference tags with campaign segment rules to verify correct
+          audience inclusion.
+      x-ai-capabilities:
+        confirmation:
+          type: None
+        security_info:
+          data_handling:
+            - ReadOnly
+  /contacts/getByTag:
+    get:
+      summary: Get a list of contacts by tag
+      description: Returns a list of contacts by tag for the specified bot
+      security:
+        - oAuth2ClientCredentials: []
+      tags:
+        - contacts
+      parameters:
+        - in: query
+          name: tag
+          required: true
+          schema:
+            type: string
+          description: Created contact’s tag to search by
+        - in: query
+          name: bot_id
+          required: true
+          schema:
+            type: string
+          description: >-
+            Bot ID. Can be obtained with a method of getting a list of bots. You
+            can also find it in your account in the address bar of a chat window
+            with the desired contact.
+        - in: query
+          name: size
+          description: The limit of pagination items, that will be returned
+          schema:
+            type: integer
+        - in: query
+          name: skip
+          description: The offset of pagination items, where starts a current items batch
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Operation successful
+          content:
+            application/json:
+              schema:
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Contact'
+                type: object
+      operationId: getContactsByTag
+      x-ai-role: chatbot_audience_analyst
+      x-ai-description: >-
+        Retrieves a filtered subset of bot contacts by tag, enabling
+        segment-level analysis and targeting. Tags in SendPulse chatbots serve
+        as lightweight segmentation labels — this endpoint is the primary way to
+        enumerate a tagged audience before triggering automations, exports, or
+        bulk messaging flows.
+      x-ai-reasoning-instructions:
+        - >-
+          Ensure the bot_id belongs to the correct bot — the same tag may exist
+          across multiple bots with different audiences.
+        - >-
+          Use size/skip parameters for large contact bases to avoid response
+          timeouts; default page size is typically small.
+        - >-
+          If the result is empty, clarify whether the tag exists at all or
+          simply has no contacts assigned — consider calling a tag-listing
+          endpoint first.
+        - >-
+          Tags are case-sensitive in most implementations; confirm the exact tag
+          string with the user before querying.
+      x-ai-responding-instructions:
+        - >-
+          Report the total number of contacts returned and whether pagination
+          was applied.
+        - >-
+          If the list is partial (size limit reached), prompt the user to
+          paginate using the skip parameter.
+        - >-
+          Suggest follow-up actions such as sending a broadcast or exporting
+          contacts from this segment.
+        - >-
+          If the result is empty, propose verifying the tag name or checking if
+          contacts were tagged correctly.
+      x-ai-suggestions:
+        - >-
+          Use this endpoint before a targeted broadcast to preview the audience
+          size.
+        - >-
+          Combine with `skip` and `size` to iterate over large tagged segments
+          in batches.
+        - >-
+          Cross-reference with bot subscriber lists to verify tag assignment
+          accuracy.
+      x-ai-capabilities:
+        confirmation:
+          type: None
+        security_info:
+          data_handling:
+            - ReadOnly
+  /contacts/getByVariable:
+    get:
+      summary: Get contacts by variable
+      description: >-
+        Returns contacts by variable identifier or variable name for the
+        specified bot
+      security:
+        - oAuth2ClientCredentials: []
+      tags:
+        - contacts
+      parameters:
+        - in: query
+          name: variable_id
+          schema:
+            type: string
+          description: >-
+            Contact’s variable ID to search by; required parameter if you do not
+            pass variable_name and bot_id.
+        - in: query
+          name: variable_name
+          schema:
+            type: string
+          description: >-
+            Contact’s variable name to search by; required parameter and passed
+            with the bot_id parameter, if you do not pass variable_id.
+        - in: query
+          name: bot_id
+          schema:
+            type: string
+          description: >-
+            Bot ID; required parameter and passed with the variable_name
+            parameter, if you do not pass variable_id. Can be obtained with a
+            method of getting a list of bots. You can also find it in your
+            account in the address bar of a chat window with the desired
+            contact.
+        - in: query
+          name: variable_value
+          required: true
+          schema:
+            type: string
+          description: Contact's variable value
+        - in: query
+          name: size
+          description: The limit of pagination items, that will be returned
+          schema:
+            type: integer
+        - in: query
+          name: skip
+          description: The offset of pagination items, where starts a current items batch
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Operation successful
+          content:
+            application/json:
+              schema:
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Contact'
+                type: object
+      operationId: getContactsByVariable
+      x-ai-role: chatbot_crm_analyst
+      x-ai-description: >-
+        Performs a targeted lookup of bot contacts based on a custom variable
+        value. This is essentially a CRM query tool — instead of browsing
+        contacts manually, it lets agents find specific users who have a
+        particular value stored in a variable (e.g., all contacts where
+        `plan=premium` or `order_id=12345`). Useful for triggering follow-up
+        flows, auditing segmentation, or verifying that variable assignment
+        worked correctly.
+      x-ai-reasoning-instructions:
+        - >-
+          Determine whether the caller has a variable_id available — if yes, use
+          it directly; if not, require both variable_name and bot_id together.
+        - >-
+          Ensure variable_value is always provided; without it the request will
+          fail regardless of which identifier is used.
+        - >-
+          If the expected result set may be large, advise using size and skip
+          for paginated retrieval to avoid performance issues.
+        - >-
+          Confirm the bot_id is from the correct bot — variables with the same
+          name can exist across multiple bots and return different contacts.
+      x-ai-responding-instructions:
+        - >-
+          Report how many contacts matched and list key identifiers (contact
+          IDs, names if available) from the response.
+        - >-
+          If the result is empty, suggest verifying the variable_value spelling
+          or checking whether the variable is actually assigned to contacts in
+          that bot.
+        - >-
+          If pagination was used, indicate whether more results may exist and
+          suggest incrementing skip to fetch the next batch.
+        - >-
+          Do not expose full contact data unless the user explicitly requests it
+          — summarise instead.
+      x-ai-suggestions:
+        - >-
+          Use variable_id when you already have it from a previous variable
+          listing call — it is more reliable than name-based lookup.
+        - >-
+          Combine with `getBots` to resolve bot_id before calling this endpoint
+          if only a bot name is known.
+        - >-
+          After retrieving contacts, consider using their IDs to send targeted
+          messages or update variables via bot contact endpoints.
+      x-ai-capabilities:
+        confirmation:
+          type: None
+        security_info:
+          data_handling:
+            - ReadOnly
+            - PII — response contains contact profile data
+  /contacts/getByTelegramId:
+    get:
+      summary: Get contact by Telegram ID
+      description: Returns a bot contact by Telegram ID.
+      security:
+        - oAuth2ClientCredentials: []
+      tags:
+        - contacts
+      parameters:
+        - in: query
+          name: bot_id
+          required: true
+          schema:
+            type: string
+          description: Bot identifier
+        - in: query
+          name: telegram_id
+          required: true
+          schema:
+            type: integer
+          description: Telegram ID of the user or chat
+        - in: query
+          name: business_connection_id
+          required: false
+          schema:
+            type:
+              - string
+              - 'null'
+          description: Telegram business connection identifier (optional)
+      responses:
+        '200':
+          description: Contact successfully found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/Contact'
+      operationId: getContactByTelegramId
+      x-ai-role: telegram_bot_integration_specialist
+      x-ai-description: >-
+        Retrieves a specific bot contact by their Telegram ID. This is the
+        primary lookup mechanism when you know the user's Telegram identity but
+        not the internal SendPulse contact ID — common in webhook handlers after
+        receiving a Telegram update, or when syncing external CRM data with bot
+        subscriber records.
+      x-ai-reasoning-instructions:
+        - >-
+          Ensure bot_id belongs to an active Telegram bot in the account before
+          querying.
+        - >-
+          telegram_id refers to Telegram's internal user/chat identifier — it is
+          not a username or phone number.
+        - >-
+          If business_connection_id is provided, the lookup scope narrows to
+          that specific business connection; omit it for standard bot contacts.
+        - >-
+          If the contact is not found (non-200 or empty data), consider whether
+          the user has ever interacted with the bot — contacts are created only
+          after the first interaction.
+      x-ai-responding-instructions:
+        - >-
+          Confirm which bot the contact was found in by echoing the bot_id
+          context.
+        - >-
+          If the contact is found, highlight key identifiable fields (e.g.,
+          name, telegram_id) from the returned Contact object.
+        - >-
+          If no contact is returned, explain that the user may not have started
+          the bot yet or the telegram_id may be incorrect.
+        - >-
+          Suggest follow-up actions such as sending a message or updating
+          contact variables.
+      x-ai-suggestions:
+        - >-
+          Use this endpoint in Telegram webhook handlers to resolve incoming
+          user messages to SendPulse contacts.
+        - >-
+          Combine with sendMessage endpoints to immediately act on the retrieved
+          contact.
+        - >-
+          Pass business_connection_id only when operating in Telegram Business
+          mode.
+      x-ai-capabilities:
+        confirmation:
+          type: None
+        security_info:
+          data_handling:
+            - ReadOnly
+  /contacts/mark-read:
+    put:
+      summary: Mark messages as read
+      description: Mark contact all messages as read (set unread count 0)
+      security:
+        - oAuth2ClientCredentials: []
+      tags:
+        - contacts
+      parameters:
+        - in: query
+          name: contact_id
+          schema:
+            type: string
+          description: Contact’s ID for set unread count as 0
+      responses:
+        '200':
+          description: Operation successful
+          content:
+            application/json:
+              schema:
+                properties:
+                  count:
+                    type: integer
+                    description: Contact messages count marked as read
+                type: object
+      operationId: markContactMessagesAsRead
+      x-ai-role: customer_support_specialist
+      x-ai-description: >-
+        Resets the unread message counter for a specific contact to zero,
+        signaling that all messages in the conversation have been reviewed. This
+        is a UI/state sync operation — it does not delete or alter messages,
+        only updates the read status used for badge counts and inbox
+        prioritization.
+      x-ai-reasoning-instructions:
+        - >-
+          Confirm the contact_id exists before calling; an invalid ID will
+          silently fail or return 0.
+        - >-
+          Use this after fetching and displaying messages to keep inbox state
+          consistent.
+        - >-
+          This affects only the unread counter — do not use it as a substitute
+          for actual message acknowledgement in workflows.
+      x-ai-responding-instructions:
+        - Report the number of messages marked as read from the `count` field.
+        - >-
+          If count is 0, clarify that the contact had no unread messages — the
+          operation was a no-op.
+        - >-
+          Suggest following up with a contact list refresh to reflect the
+          updated state in the UI.
+      x-ai-suggestions:
+        - Call after rendering a conversation thread to sync read state.
+        - >-
+          Combine with `getContactMessages` to fetch and immediately mark as
+          read in one flow.
+      x-ai-capabilities:
+        confirmation:
+          type: None
+        security_info:
+          data_handling:
+            - ResourceStateUpdate
+  /contacts/mark-unread:
+    put:
+      summary: Mark a chat with the contact as unread
+      description: Marks the last message of a specific contact as unread.
+      security:
+        - oAuth2ClientCredentials: []
+      tags:
+        - contacts
+      parameters:
+        - in: query
+          name: contact_id
+          schema:
+            type: string
+          description: The ID of the contact whose last message will be marked as unread.
+      responses:
+        '200':
+          description: The number of messages successfully marked as unread.
+          content:
+            application/json:
+              schema:
+                properties:
+                  count:
+                    type: integer
+                    example: 1
+                    description: api.paths.contacts.mark-unread.responses.properties.count
+                type: object
+      operationId: markContactUnread
+      x-ai-role: customer_support_specialist
+      x-ai-description: >-
+        Flags the last message of a contact's chat as unread, signaling to
+        support agents that this conversation requires attention. This is a
+        workflow management tool — it does not alter message content, only the
+        read/unread state used to drive operator queues and notification badges.
+      x-ai-reasoning-instructions:
+        - >-
+          Confirm that `contact_id` refers to an existing contact before calling
+          — an invalid ID will silently fail or return count: 0.
+        - >-
+          Use this endpoint when an operator needs to re-queue a conversation
+          for follow-up without sending a new message.
+        - >-
+          Be aware this marks only the *last* message as unread, not the entire
+          conversation history.
+      x-ai-responding-instructions:
+        - >-
+          Report the returned `count` value to confirm how many messages were
+          affected (expected: 1).
+        - >-
+          If `count` is 0, warn the user that no message was marked — likely due
+          to an invalid or already-unread contact.
+        - >-
+          Suggest checking the contact's chat via the inbox view to verify the
+          unread flag is visible.
+      x-ai-suggestions:
+        - >-
+          Use after reading a message that requires a delayed response to keep
+          it visible in the unread queue.
+        - >-
+          Combine with contact lookup to resolve `contact_id` from an email or
+          phone number before calling.
+      x-ai-capabilities:
+        confirmation:
+          type: None
+        security_info:
+          data_handling:
+            - ResourceStateUpdate
+  /contacts/send:
+    post:
+      summary: Send a message to a contact
+      description: >-
+        Sends a text message, image, or a file to the contact with the specified
+        contact ID.  To view an example of the request body, select a message
+        type from the drop-down list
+      security:
+        - oAuth2ClientCredentials: []
+      tags:
+        - contacts
+      requestBody:
+        description: ''
+        required: true
+        content:
+          application/json:
+            schema:
+              properties:
+                contact_id:
+                  type: string
+                  description: >-
+                    Contact ID. Can be obtained with a contact search by tag or
+                    variable. You can also find it in your account in the
+                    address bar of a chat window with the desired contact.
+                message:
+                  type: object
+                  properties:
+                    type:
+                      type: string
+                      enum:
+                        - text
+                        - audio
+                        - photo
+                        - document
+                        - video
+                        - carousel
+                        - action
+                    text:
+                      type: string
+                    audio:
+                      type: string
+                      description: URL to file
+                    voice:
+                      type: string
+                      description: >-
+                        The voice you want to send. Includes the URL to the
+                        voice and caption. Should be audio/ogg and less than 1MB
+                        or will be send as general audio
+                    photo:
+                      type: string
+                      description: URL to file
+                    document:
+                      type: string
+                      description: URL to file
+                    video:
+                      type: string
+                      description: URL to file
+                    caption:
+                      type: string
+                    parse_mode:
+                      type: string
+                      description: Html text
+                    reply_markup:
+                      type: object
+                      description: The buttons of the message
+                      properties:
+                        inline_keyboard:
+                          type: array
+                          description: Every item is a separate buttons row
+                          items:
+                            type: array
+                            items:
+                              type: object
+                              properties:
+                                text:
+                                  type: string
+                                type:
+                                  type: string
+                                  enum:
+                                    - web_url
+                                    - postback
+                    carousel:
+                      type: array
+                      description: An array of carousel items
+                      items:
+                        type: object
+                        properties:
+                          photo:
+                            type: string
+                            description: URL to file
+                          text:
+                            type: string
+                          title:
+                            type: string
+                          description:
+                            type: string
+                          parse_mode:
+                            type: string
+                            description: Html text
+                          reply_markup:
+                            type: object
+                            description: The buttons of the message
+                            properties:
+                              inline_keyboard:
+                                type: array
+                                description: Every item is a separate buttons row
+                                items:
+                                  type: array
+                                  items:
+                                    type: object
+                                    properties:
+                                      text:
+                                        type: string
+                                      type:
+                                        type: string
+                                        enum:
+                                          - web_url
+                                          - postback
+                    message_effect_id:
+                      oneOf:
+                        - type: string
+                          const: '5104841245755180586'
+                          title: 🔥
+                        - type: string
+                          const: '5107584321108051014'
+                          title: 👍
+                        - type: string
+                          const: '5104858069142078462'
+                          title: 👎
+                        - type: string
+                          const: '5159385139981059251'
+                          title: ❤️
+                        - type: string
+                          const: '5046509860389126442'
+                          title: 🎉️
+                        - type: string
+                          const: '5046589136895476101'
+                          title: 💩️
+              required:
+                - contact_id
+                - message
+            examples:
+              Send a message with an image:
+                value:
+                  contact_id: string
+                  message:
+                    type: photo
+                    photo: https://www.cdn.com/photo.png
+                    caption: string
+              Send a text message:
+                value:
+                  contact_id: string
+                  message:
+                    type: text
+                    text: Example text
+              Send a text message (HTML):
+                value:
+                  contact_id: string
+                  message:
+                    type: text
+                    text: >-
+                      Example text sent via SP API <b>bold</b>, <i>italic</i>,
+                      <a href='http://example.com'>link</a>
+                    parse_mode: html
+              Send a message with a file:
+                value:
+                  contact_id: string
+                  message:
+                    type: document
+                    document: https://www.cdn.com/document.zip
+                    caption: string
+              Send a message with an audio:
+                value:
+                  contact_id: string
+                  message:
+                    type: audio
+                    audio: https://www.cdn.com/audio.mp3
+                    caption: string
+              Send the voice message:
+                value:
+                  contact_id: string
+                  message:
+                    type: voice
+                    voice: https://www.cdn.com/audio.mp3
+                    caption: string
+              Send a message with an video:
+                value:
+                  contact_id: string
+                  message:
+                    type: video
+                    video: https://www.cdn.com/video.mp4
+                    caption: string
+              Send a message with url button:
+                value:
+                  contact_id: string
+                  message:
+                    type: text
+                    text: Example text
+                    reply_markup:
+                      inline_keyboard:
+                        - - text: Example button
+                            type: web_url
+                            url: http://example.url.com/
+              Send a message with url button (Web App):
+                value:
+                  contact_id: string
+                  message:
+                    type: text
+                    text: Example text
+                    reply_markup:
+                      inline_keyboard:
+                        - - text: Example button
+                            type: web_url
+                            web_app:
+                              url: http://example.url.com/
+              Send a message with payload button:
+                value:
+                  contact_id: string
+                  message:
+                    type: text
+                    text: Example text
+                    reply_markup:
+                      inline_keyboard:
+                        - - text: Example button
+                            type: postback
+                            data:
+                              to_chain_id: string
+              Send a message with a carousel:
+                value:
+                  contact_id: string
+                  message:
+                    type: carousel
+                    carousel:
+                      - title: Slide 1 title
+                        description: Slide 1 description
+                        photo: https://www.cdn.com/photo1.png
+                      - title: Slide 2 title
+                        description: Slide 2 description
+                        photo: https://www.cdn.com/photo2.png
+                        reply_markup:
+                          inline_keyboard:
+                            - - text: Example button
+                                type: web_url
+                                url: http://example.url.com/
+                              - text: Example button
+                                type: postback
+                                data:
+                                  to_chain_id: string
+              Send typing indicator action:
+                value:
+                  contact_id: string
+                  message:
+                    type: action
+                    action: typing
+              Send text message with effect:
+                value:
+                  contact_id: string
+                  message:
+                    type: text
+                    text: Message with effect
+                    message_effect_id: string
+      responses:
+        '200':
+          description: Operation successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+      operationId: sendContactMessage
+      x-ai-role: chatbot_communication_specialist
+      x-ai-description: >-
+        Delivers a direct message to a specific chatbot contact across supported
+        channels (Telegram, Facebook, etc.). This is the primary action endpoint
+        for agent-driven conversations — it enables proactive outreach,
+        automated responses, and rich interactive flows using carousels, inline
+        buttons, and media attachments. Message delivery is one-shot and
+        immediate; for sequences, use automation chains instead.
+      x-ai-reasoning-instructions:
+        - >-
+          Resolve the contact_id first — it is not a phone or email, but an
+          internal SendPulse contact identifier. Use contact search by tag or
+          variable if the ID is not already known.
+        - >-
+          Match the message type to the content: use 'text' for plain or HTML
+          messages, 'photo'/'video'/'document'/'audio' for media with a CDN URL,
+          'voice' for ogg audio under 1MB, 'carousel' for multi-slide
+          interactive cards, 'action' for typing indicators.
+        - >-
+          For voice messages, verify the file is audio/ogg and under 1MB —
+          larger files will be delivered as generic audio, not voice bubbles.
+        - >-
+          When adding reply_markup buttons, distinguish between 'web_url' (opens
+          a URL or Web App) and 'postback' (triggers a chatbot chain via
+          to_chain_id). Do not mix up the required sub-fields.
+        - >-
+          If the user wants HTML formatting (bold, italic, links), set
+          parse_mode to 'html' and use only supported Telegram HTML tags.
+        - >-
+          message_effect_id is a Telegram-specific feature — only use it for
+          Telegram contacts and only with the predefined const values (fire,
+          thumbs up/down, heart, confetti, poop).
+        - >-
+          Carousels require at least two slides; each slide can have its own
+          reply_markup independently.
+        - >-
+          Do not send a 'typing' action as the final step — it is a UI indicator
+          meant to precede an actual message.
+      x-ai-responding-instructions:
+        - >-
+          Confirm the message was sent by echoing back the message type and
+          contact_id.
+        - >-
+          If media was sent, confirm the URL was accepted (note: the API does
+          not validate CDN availability at send time).
+        - >-
+          If the user sent a carousel, summarize the number of slides and which
+          had buttons.
+        - >-
+          On error, distinguish between an invalid contact_id (contact not
+          found) and a malformed payload (wrong type/missing fields).
+        - >-
+          Suggest follow-up actions: setting a tag on the contact, triggering an
+          automation chain, or scheduling a follow-up message.
+      x-ai-suggestions:
+        - >-
+          Send a text message: { contact_id, message: { type: 'text', text:
+          '...' } }
+        - >-
+          Send an image with caption: { contact_id, message: { type: 'photo',
+          photo: 'https://cdn.com/img.png', caption: '...' } }
+        - >-
+          Send a carousel with CTA buttons for product showcasing or onboarding
+          flows
+        - >-
+          Send a typing action before a delayed message to simulate natural
+          conversation pacing
+        - >-
+          Use parse_mode: 'html' for rich text with bold product names or
+          clickable links
+      x-ai-capabilities:
+        confirmation:
+          type: Recommended
+          message: >-
+            Confirm before sending to a contact, especially for broadcast-style
+            or irreversible messages.
+        security_info:
+          data_handling:
+            - ExternalDelivery
+            - UserFacing
+          notes: >-
+            Message is delivered immediately and cannot be recalled. Media URLs
+            must be publicly accessible at delivery time.
+  /contacts/sendText:
+    post:
+      summary: Sends a text message to the specified contact
+      description: Sends a text message to the specified contact.
+      security:
+        - oAuth2ClientCredentials: []
+      tags:
+        - contacts
+      requestBody:
+        description: ''
+        required: true
+        content:
+          application/json:
+            schema:
+              properties:
+                contact_id:
+                  type: string
+                  description: >-
+                    Contact ID. Can be obtained with a contact search by tag or
+                    variable. You can also find it in your account in the
+                    address bar of a chat window with the desired contact.
+                text:
+                  type: string
+                  description: >-
+                    The content of the text message. You can add text with emoji
+                    of up to 1024 unicode characters.
+              required:
+                - contact_id
+                - text
+      responses:
+        '200':
+          description: Operation successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+      operationId: sendTextToContact
+      x-ai-role: conversational_messaging_specialist
+      x-ai-description: >-
+        Sends a direct text message to a specific contact in a chatbot channel.
+        This is the primary one-to-one messaging primitive — use it for
+        triggered, personalized outreach (e.g., order confirmations, support
+        replies, follow-ups) rather than bulk broadcast flows. The contact must
+        already exist and be reachable (opted-in, active session or channel
+        subscription).
+      x-ai-reasoning-instructions:
+        - >-
+          Confirm the contact_id is valid before sending — use contact search by
+          tag or variable if the ID is unknown.
+        - >-
+          Verify the contact has an active channel subscription; sending to an
+          inactive or blocked contact will silently fail or return an error.
+        - >-
+          Keep the message under 1024 unicode characters; if the intended text
+          is longer, consider splitting into sequential messages or using a flow
+          instead.
+        - >-
+          Emoji are supported — if the user wants to include one, confirm it
+          renders correctly in the target channel (e.g., Telegram vs. Facebook).
+        - >-
+          This endpoint sends immediately — if the user needs scheduled or
+          conditional delivery, route to flow/automation endpoints instead.
+      x-ai-responding-instructions:
+        - Confirm the message was delivered by reporting the success status.
+        - >-
+          If the contact_id was resolved from a search, mention which contact
+          received the message (name or identifier).
+        - >-
+          If an error occurs, clarify whether it is a contact-not-found issue, a
+          channel restriction, or a quota problem.
+        - >-
+          Suggest follow-up actions such as waiting for a reply event or
+          triggering a flow if ongoing conversation is needed.
+      x-ai-suggestions:
+        - >-
+          Your order #{{order_id}} has been shipped! Track it here:
+          {{tracking_url}}
+        - >-
+          Hi {{first_name}}, just checking in — do you have any questions about
+          your recent purchase?
+        - >-
+          Your appointment is confirmed for {{date}} at {{time}}. Reply CANCEL
+          to cancel.
+      x-ai-capabilities:
+        confirmation:
+          type: Recommended
+          message: >-
+            You are about to send a message directly to a contact. Confirm
+            before proceeding.
+        security_info:
+          data_handling:
+            - ExternalMessageDelivery
+            - PersonalDataTransmission
+  /contacts/react:
+    post:
+      summary: React to a message
+      description: Send a reaction (e.g. an emoji) to a specific message of a contact.
+      security:
+        - oAuth2ClientCredentials: []
+      tags:
+        - contacts
+      requestBody:
+        required: true
+        description: Payload containing contact ID, message ID, and reaction details.
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - contact_id
+                - message_id
+                - reaction
+              properties:
+                contact_id:
+                  type: string
+                  description: The ID of the contact.
+                message_id:
+                  type: string
+                  description: The ID of the message to react to.
+                reaction:
+                  type: object
+                  description: Object with reaction details.
+                  required:
+                    - type
+                    - emoji
+                  properties:
+                    type:
+                      type: string
+                      enum:
+                        - emoji
+                      description: Type of reaction (for example, "emoji").
+                    emoji:
+                      type: string
+                      description: The emoji character to use as reaction.
+            example:
+              contact_id: string
+              message_id: string
+              reaction:
+                type: emoji
+                emoji: ❤
+      responses:
+        '200':
+          description: Indicates the reaction was successfully recorded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+      operationId: reactToMessage
+      x-ai-role: conversational_engagement_specialist
+      x-ai-description: >-
+        Sends an emoji reaction to a specific message in a contact's
+        conversation thread. Reactions are lightweight engagement signals — they
+        don't create a new message but attach sentiment metadata to an existing
+        one. Use this to simulate or automate human-like acknowledgment of
+        contact messages, which can improve perceived responsiveness in chatbot
+        flows.
+      x-ai-reasoning-instructions:
+        - >-
+          Ensure the contact_id corresponds to an active contact before sending
+          a reaction.
+        - >-
+          Verify that the message_id belongs to the conversation of the
+          specified contact — cross-contact message references will fail.
+        - >-
+          Currently only 'emoji' type is supported; validate the type field
+          before constructing the payload.
+        - >-
+          Choose semantically appropriate emojis — a ❤ or 👍 signals positive
+          acknowledgment, while ❓ may imply confusion.
+        - >-
+          Reactions are typically one-time per message per sender; avoid
+          duplicate reactions on the same message.
+      x-ai-responding-instructions:
+        - >-
+          Confirm that the reaction was recorded successfully, mentioning the
+          emoji used.
+        - >-
+          If the operation fails, check whether the message_id is valid and
+          belongs to the given contact.
+        - >-
+          Suggest follow-up actions such as sending a reply message or updating
+          the contact's tag based on engagement.
+      x-ai-suggestions:
+        - Use ❤ to acknowledge a positive message from the contact.
+        - Use 👍 to confirm receipt of information without sending a full reply.
+        - >-
+          Combine with a message send operation to create a react-then-reply
+          automation flow.
+      x-ai-capabilities:
+        confirmation:
+          type: None
+        security_info:
+          data_handling:
+            - ResourceStateUpdate
+  /contacts/setVariable:
+    post:
+      summary: Assign a variable to contact
+      description: Adds or updates the value of a variable for the selected contact.
+      security:
+        - oAuth2ClientCredentials: []
+      tags:
+        - contacts
+      requestBody:
+        description: Choose one of available request body
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - contact_id
+                - variables
+              properties:
+                contact_id:
+                  type: string
+                  description: >-
+                    Contact ID. Can be obtained with a contact search by tag or
+                    variable. You can also find it in your account in the
+                    address bar of a chat window with the desired contact.
+                variables:
+                  type: array
+                  description: api.paths.contacts.setVariable.parameters.variables
+                  items:
+                    oneOf:
+                      - type: object
+                        required:
+                          - variable_name
+                          - variable_value
+                        properties:
+                          variable_name:
+                            type: string
+                            description: Name of the variable
+                          variable_value:
+                            description: The value that is set for the variable
+                            anyOf:
+                              - type: string
+                              - type: number
+                              - type: boolean
+                      - type: object
+                        required:
+                          - variable_id
+                          - variable_value
+                        properties:
+                          variable_id:
+                            type: string
+                            description: >-
+                              The ID of the created variable can be obtained via
+                              other methods
+                          variable_value:
+                            description: The value that is set for the variable
+                            anyOf:
+                              - type: string
+                              - type: number
+                              - type: boolean
+            examples:
+              Set by variable name:
+                value:
+                  contact_id: string
+                  variables:
+                    - variable_name: string
+                      variable_value: string
+                    - variable_name: string
+                      variable_value: string
+              Set by variable ID:
+                value:
+                  contact_id: string
+                  variables:
+                    - variable_id: string
+                      variable_value: string
+                    - variable_id: string
+                      variable_value: string
+      responses:
+        '200':
+          description: Operation successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+      operationId: setContactVariable
+      x-ai-role: crm_data_specialist
+      x-ai-description: >-
+        Sets or updates one or more variables for a specific contact, enabling
+        dynamic personalization and segmentation. Variables act as structured
+        data fields attached to a contact profile — they drive conditional
+        messaging, audience filtering, and automation triggers. This endpoint is
+        the primary way to keep contact metadata in sync with external CRM or
+        product events.
+      x-ai-reasoning-instructions:
+        - >-
+          Prefer using `variable_id` over `variable_name` when available — names
+          can change, IDs are stable.
+        - >-
+          Verify that `contact_id` is valid before calling; an invalid ID will
+          silently fail or return an error. Use contact search endpoints if the
+          ID is unknown.
+        - >-
+          Multiple variables can be set in a single call — batch updates to
+          avoid redundant requests.
+        - >-
+          Check whether the variable already exists on the account level before
+          assuming it will be created; this endpoint sets values, not variable
+          definitions.
+        - >-
+          If the value type matters (e.g., numeric for scoring, boolean for
+          flags), ensure the correct type is passed — the API accepts string,
+          number, or boolean.
+      x-ai-responding-instructions:
+        - Confirm which contact was updated and how many variables were set.
+        - >-
+          If the operation is part of a sync flow (e.g., post-purchase event),
+          suggest verifying the update via a contact lookup endpoint.
+        - >-
+          On error, clarify whether the issue is with the contact ID or the
+          variable reference, and guide the user to the appropriate resolution
+          step.
+      x-ai-suggestions:
+        - >-
+          Use this after a purchase event to set `last_order_amount` or
+          `loyalty_tier`.
+        - >-
+          Combine with automation triggers to segment contacts immediately after
+          variable update.
+        - >-
+          To update variables for many contacts at once, consider using a bulk
+          contact update approach instead of calling this endpoint in a loop.
+      x-ai-capabilities:
+        confirmation:
+          type: None
+        security_info:
+          data_handling:
+            - ContactDataUpdate
+            - PersonalDataModification
+  /contacts/deleteVariable:
+    post:
+      summary: Delete a variable the selected contact
+      description: Delete the value of a variable for the selected contact.
+      security:
+        - oAuth2ClientCredentials: []
+      tags:
+        - contacts
+      requestBody:
+        description: Choose one of available request body
+        required: true
+        content:
+          application/json:
+            schema:
+              properties:
+                contact_id:
+                  type: string
+                  description: >-
+                    Contact ID. Can be obtained with a contact search by tag or
+                    variable. You can also find it in your account in the
+                    address bar of a chat window with the desired contact.
+                variable_id:
+                  type: string
+                  description: >-
+                    The ID of the created variable can be obtained via other
+                    methods
+                variable_name:
+                  type: string
+                  description: Name of the variable
+              required:
+                '0': contact_id
+                oneOf:
+                  - variable_id
+                  - variable_name
+            examples:
+              Delete by variable ID:
+                value:
+                  contact_id: string
+                  variable_id: string
+              Delete by variable name:
+                value:
+                  contact_id: string
+                  variable_name: string
+      responses:
+        '200':
+          description: Operation successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+      operationId: deleteContactVariable
+      x-ai-role: crm_data_manager
+      x-ai-description: >-
+        Removes the stored value of a specific variable from a contact record
+        without deleting the variable definition itself. Use this when a
+        contact's attribute is no longer valid or needs to be cleared — for
+        example, removing an expired promo code, resetting a lifecycle stage, or
+        clearing a temporary flag set during a campaign.
+      x-ai-reasoning-instructions:
+        - >-
+          Confirm the contact exists before attempting deletion — use a contact
+          lookup by tag or variable if the contact_id is not already known.
+        - >-
+          Prefer variable_id over variable_name when available, as names may
+          change or be non-unique across accounts.
+        - >-
+          Clarify that this operation clears the variable's value for this
+          contact only, not the variable definition globally.
+        - >-
+          If the variable_name is provided, be aware it is case-sensitive and
+          must match exactly.
+      x-ai-responding-instructions:
+        - >-
+          Confirm success by echoing which variable (by name or ID) was cleared
+          for which contact.
+        - >-
+          Distinguish between 'variable value deleted' and 'variable definition
+          deleted' — the variable still exists for other contacts.
+        - >-
+          If the contact or variable is not found, suggest verifying IDs via the
+          contact search or variable listing endpoints.
+      x-ai-capabilities:
+        confirmation:
+          type: Recommended
+          message: >-
+            This will permanently clear the variable value for this contact.
+            Proceed?
+        security_info:
+          data_handling:
+            - ResourceStateUpdate
+            - DataDeletion
+  /contacts/setTag:
+    post:
+      summary: Assign a tag to contact
+      description: Assigns tags to the selected contact
+      security:
+        - oAuth2ClientCredentials: []
+      tags:
+        - contacts
+      requestBody:
+        description: ''
+        required: true
+        content:
+          application/json:
+            schema:
+              properties:
+                contact_id:
+                  type: string
+                  description: >-
+                    Contact ID. Can be obtained with a contact search by tag or
+                    variable. You can also find it in your account in the
+                    address bar of a chat window with the desired contact.
+                tags:
+                  type: array
+                  description: List of tags to assign to the contact
+                  items:
+                    type: string
+              required:
+                - contact_id
+                - tags
+      responses:
+        '200':
+          description: Operation successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+      operationId: setContactTag
+      x-ai-role: crm_contact_segmentation_specialist
+      x-ai-description: >-
+        Assigns one or more tags to a specific contact, enabling dynamic
+        segmentation and targeting in messaging campaigns. Tags in SendPulse act
+        as behavioral or categorical labels that drive conditional flows,
+        audience filters, and automation triggers — making this endpoint a key
+        instrument for personalized communication strategies.
+      x-ai-reasoning-instructions:
+        - >-
+          Resolve the contact_id before calling — it is not the same as a phone
+          number or email; use contact search endpoints if only a tag or
+          variable is known.
+        - >-
+          Tags are case-sensitive strings; confirm spelling and casing
+          conventions before assignment to avoid fragmented tag sets (e.g.,
+          'VIP' vs 'vip').
+        - >-
+          Multiple tags can be assigned in a single call — prefer batching over
+          repeated single-tag calls to reduce API round-trips.
+        - >-
+          Verify that the tags align with existing segmentation logic in active
+          automation flows before assigning to avoid unintended trigger
+          conditions.
+      x-ai-responding-instructions:
+        - Confirm which tags were successfully assigned and to which contact.
+        - >-
+          If the contact_id was resolved programmatically, mention it explicitly
+          so the user can verify the correct contact was targeted.
+        - >-
+          Suggest follow-up actions such as triggering a flow, sending a
+          targeted message, or reviewing the contact's full tag profile.
+      x-ai-suggestions:
+        - vip
+        - churned
+        - trial_user
+        - interested_in_pricing
+        - onboarding_complete
+      x-ai-capabilities:
+        confirmation:
+          type: None
+        security_info:
+          data_handling:
+            - ResourceStateUpdate
+  /contacts/deleteTag:
+    post:
+      summary: Remove a tag from a contact
+      description: Removes the tag for the selected contact.
+      security:
+        - oAuth2ClientCredentials: []
+      tags:
+        - contacts
+      requestBody:
+        description: ''
+        required: true
+        content:
+          application/json:
+            schema:
+              properties:
+                contact_id:
+                  type: string
+                  description: >-
+                    Contact ID. Can be obtained with a contact search by tag or
+                    variable. You can also find it in your account in the
+                    address bar of a chat window with the desired contact.
+                tag:
+                  type: string
+                  description: Tag, you want to remove
+              required:
+                - contact_id
+                - tag
+      responses:
+        '200':
+          description: Operation successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+      operationId: deleteContactTag
+      x-ai-role: crm_contact_manager
+      x-ai-description: >-
+        Removes a specific tag from a contact record, allowing precise
+        segmentation cleanup or re-categorization. Tags in SendPulse CRM drive
+        automated flows, audience filters, and campaign targeting — removing one
+        immediately affects any logic that relies on it. Use when a contact has
+        changed status, lifecycle stage, or when correcting a tagging error.
+      x-ai-reasoning-instructions:
+        - >-
+          Verify the contact_id exists before attempting removal — an invalid ID
+          will produce an error.
+        - >-
+          Confirm the tag is currently assigned to the contact; removing a
+          non-existent tag may silently succeed or fail depending on API
+          behavior.
+        - >-
+          Warn the user if the tag being removed is likely used in active
+          automation flows or segment filters, as removal will immediately
+          affect those rules.
+        - >-
+          If the user wants to remove multiple tags, note that this endpoint
+          handles one tag per call — loop accordingly.
+      x-ai-responding-instructions:
+        - >-
+          Confirm that the tag was successfully removed and mention the affected
+          contact_id.
+        - >-
+          Suggest verifying the contact's remaining tags via a contact lookup if
+          the user wants to audit the full tag set.
+        - >-
+          If the operation is part of a re-tagging workflow, suggest immediately
+          calling the add-tag endpoint to apply the replacement tag.
+      x-ai-capabilities:
+        confirmation:
+          type: Recommended
+          message: >-
+            This will permanently remove the tag from the contact and may affect
+            active automations or segments that depend on it.
+        security_info:
+          data_handling:
+            - ResourceStateUpdate
+  /contacts/disable:
+    post:
+      summary: Disable contact
+      description: >-
+        Disables a contact in your audience list. Campaigns and autoflows will
+        not be sent to this contact
+      security:
+        - oAuth2ClientCredentials: []
+      tags:
+        - contacts
+      requestBody:
+        description: ''
+        required: true
+        content:
+          application/json:
+            schema:
+              properties:
+                contact_id:
+                  type: string
+                  description: >-
+                    Contact ID. Can be obtained with a contact search by tag or
+                    variable. You can also find it in your account in the
+                    address bar of a chat window with the desired contact.
+              required:
+                - contact_id
+      responses:
+        '200':
+          description: Operation successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+      operationId: disableContact
+      x-ai-role: audience_lifecycle_manager
+      x-ai-description: >-
+        Suppresses a contact from receiving any future campaigns or autoflow
+        messages without permanently deleting them from the audience. This is a
+        reversible suppression mechanism — the contact record and history are
+        preserved, making it suitable for opt-out handling, compliance
+        enforcement, or temporary exclusion during list hygiene.
+      x-ai-reasoning-instructions:
+        - >-
+          Confirm the contact_id is valid and belongs to the current account
+          before issuing the request.
+        - >-
+          Clarify with the user whether the intent is temporary suppression or
+          permanent removal — if permanent, suggest deletion instead.
+        - >-
+          Consider whether the contact is currently enrolled in an autoflow;
+          disabling will silently halt message delivery without notifying the
+          contact.
+        - >-
+          If performing bulk suppression, process contacts individually and
+          handle errors per contact rather than aborting the entire batch.
+      x-ai-responding-instructions:
+        - >-
+          Confirm that the contact has been successfully disabled and will no
+          longer receive campaigns or autoflow messages.
+        - >-
+          Remind the user that the contact record is preserved and can be
+          re-enabled at any time.
+        - >-
+          If the contact_id is not found or already disabled, explain the error
+          clearly and suggest verifying the ID via contact search.
+      x-ai-suggestions:
+        - >-
+          Use contact search by tag or variable to obtain the correct contact_id
+          before calling this endpoint.
+        - To re-enable the contact later, use the corresponding enable endpoint.
+        - >-
+          For GDPR or opt-out compliance workflows, combine this with a contact
+          tag update to track the suppression reason.
+      x-ai-capabilities:
+        confirmation:
+          type: Recommended
+          message: >-
+            This will prevent the contact from receiving any campaigns or
+            autoflow messages. Proceed?
+        security_info:
+          data_handling:
+            - ResourceStateUpdate
+  /contacts/enable:
+    post:
+      summary: Enable contact
+      description: >-
+        Enables a contact in the audience list and contact start receiving
+        campaings and autoflows
+      security:
+        - oAuth2ClientCredentials: []
+      tags:
+        - contacts
+      requestBody:
+        description: ''
+        required: true
+        content:
+          application/json:
+            schema:
+              properties:
+                contact_id:
+                  type: string
+                  description: >-
+                    Contact ID. Can be obtained with a contact search by tag or
+                    variable. You can also find it in your account in the
+                    address bar of a chat window with the desired contact.
+              required:
+                - contact_id
+      responses:
+        '200':
+          description: Operation successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+      operationId: enableContact
+      x-ai-role: crm_audience_manager
+      x-ai-description: >-
+        Reactivates a previously disabled contact, restoring full participation
+        in campaigns and autoflows. This is the counterpart to disabling a
+        contact — use it when a suppression reason (e.g., user request,
+        compliance hold) has been resolved and the contact should re-enter the
+        normal communication flow.
+      x-ai-reasoning-instructions:
+        - >-
+          Confirm the contact_id is valid before calling — use a contact search
+          by tag or variable if the ID is uncertain.
+        - >-
+          Verify why the contact was disabled before re-enabling: if it was due
+          to a spam complaint or hard bounce, re-enabling may harm sender
+          reputation.
+        - >-
+          Check whether any active autoflows or campaigns will immediately
+          target this contact upon re-enablement.
+      x-ai-responding-instructions:
+        - >-
+          Confirm the contact has been successfully re-enabled and will now
+          receive campaigns and autoflows.
+        - >-
+          Remind the user that the contact will immediately become eligible for
+          any active flows targeting their segment.
+        - >-
+          If the operation fails, suggest verifying the contact_id or checking
+          whether the contact exists in the account.
+      x-ai-suggestions:
+        - >-
+          Use `searchContactsByTag` or `searchContactsByVariable` to retrieve
+          the contact_id if not known.
+        - >-
+          After enabling, consider triggering a re-engagement autoflow to
+          welcome the contact back.
+      x-ai-capabilities:
+        confirmation:
+          type: Recommended
+          message: >-
+            Re-enabling this contact will make them eligible for all active
+            campaigns and autoflows immediately.
+        security_info:
+          data_handling:
+            - ContactStateUpdate
+  /contacts/delete:
+    post:
+      summary: Delete contact
+      description: >-
+        Removes a contact from the audience and subscribers list. The contact
+        can be added back only by subscribing to the bot.
+      security:
+        - oAuth2ClientCredentials: []
+      tags:
+        - contacts
+      requestBody:
+        description: ''
+        required: true
+        content:
+          application/json:
+            schema:
+              properties:
+                contact_id:
+                  type: string
+                  description: >-
+                    Contact ID. Can be obtained with a contact search by tag or
+                    variable. You can also find it in your account in the
+                    address bar of a chat window with the desired contact.
+              required:
+                - contact_id
+      responses:
+        '200':
+          description: Operation successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+      operationId: deleteContact
+      x-ai-role: chatbot_audience_manager
+      x-ai-description: >-
+        Permanently removes a contact from the bot's audience and all associated
+        subscriber lists. This is a destructive, non-reversible action in
+        practice — the contact can only return by actively re-subscribing to the
+        bot. Use this for GDPR deletion requests, audience cleanup, or removing
+        test contacts.
+      x-ai-reasoning-instructions:
+        - >-
+          Confirm the contact_id is correct before proceeding — deletion cannot
+          be undone programmatically.
+        - >-
+          Warn the user that all interaction history and variable data tied to
+          this contact will be lost.
+        - >-
+          If the user intends to bulk-delete contacts, suggest batching requests
+          carefully to avoid accidental removal of valid subscribers.
+        - >-
+          Check whether the contact was recently active — deleting an engaged
+          contact may indicate an unintended action.
+      x-ai-responding-instructions:
+        - >-
+          Confirm successful deletion and remind the user the contact can only
+          return by re-subscribing to the bot.
+        - >-
+          If the contact_id is invalid or not found, suggest using the contact
+          search endpoints to retrieve the correct ID.
+        - >-
+          For GDPR or compliance scenarios, confirm that the contact has been
+          removed from the audience as required.
+      x-ai-suggestions:
+        - >-
+          Use contact search by tag or variable to retrieve the correct
+          contact_id before deletion.
+        - >-
+          For bulk cleanup, consider filtering inactive contacts first using
+          search endpoints.
+      x-ai-capabilities:
+        confirmation:
+          type: Required
+          message: >-
+            This action permanently removes the contact from the bot audience.
+            The contact can only be re-added by subscribing again.
+        security_info:
+          data_handling:
+            - ResourceDeletion
+            - IrreversibleAction
+  /contacts/getPauseAutomation:
+    get:
+      summary: Get remaining time for automation pause
+      description: 'Returns the time remaining until autoflows are stopped for this contact '
+      security:
+        - oAuth2ClientCredentials: []
+      tags:
+        - contacts
+      parameters:
+        - in: query
+          name: contact_id
+          required: true
+          schema:
+            type: string
+          description: >-
+            Contact ID. Can be obtained with a contact search by tag or
+            variable. You can also find it in your account in the address bar of
+            a chat window with the desired contact.
+      responses:
+        '200':
+          description: Operation successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+      operationId: getContactPauseAutomation
+      x-ai-role: crm_automation_specialist
+      x-ai-description: >-
+        Retrieves the remaining pause duration for autoflows on a specific
+        contact. This is critical for orchestration logic — before scheduling
+        follow-up automations or resuming sequences, an agent must verify
+        whether the contact is currently in a pause window to avoid sending
+        messages during an intentional cooldown period.
+      x-ai-reasoning-instructions:
+        - >-
+          Always call this endpoint before triggering any automation sequence
+          for a contact to check for an active pause.
+        - >-
+          If the returned time is greater than zero, do not initiate new
+          autoflows — inform the user of the exact remaining duration.
+        - >-
+          Use `contact_id` obtained via contact search by tag, variable, or from
+          the account's chat window URL.
+        - >-
+          Treat a zero or null remaining time as 'no active pause' — automation
+          can proceed.
+      x-ai-responding-instructions:
+        - >-
+          State clearly how much time remains before autoflows resume (e.g., '2
+          hours 15 minutes').
+        - >-
+          If there is no active pause, confirm that automation is not paused for
+          this contact.
+        - >-
+          Suggest next steps: either wait for the pause to expire or use the
+          pause management endpoint to adjust it.
+      x-ai-suggestions:
+        - >-
+          Check before sending a broadcast to a contact who previously opted for
+          a cooldown.
+        - >-
+          Use in conjunction with the pause automation endpoint to build
+          pause/resume workflows.
+      x-ai-capabilities:
+        confirmation:
+          type: None
+        security_info:
+          data_handling:
+            - ReadOnly
+  /contacts/setPauseAutomation:
+    post:
+      summary: Pause autoflows for a contact
+      description: Pauses autoflows for the specified contact
+      security:
+        - oAuth2ClientCredentials: []
+      tags:
+        - contacts
+      requestBody:
+        description: ''
+        required: true
+        content:
+          application/json:
+            schema:
+              properties:
+                contact_id:
+                  type: string
+                  description: >-
+                    Contact ID. Can be obtained with a contact search by tag or
+                    variable. You can also find it in your account in the
+                    address bar of a chat window with the desired contact.
+                minutes:
+                  type: integer
+                  example: 60
+                  description: Minutes
+              required:
+                - contact_id
+                - minutes
+      responses:
+        '200':
+          description: Operation successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+      operationId: pauseContactAutoflows
+      x-ai-role: marketing_automation_specialist
+      x-ai-description: >-
+        Тимчасово призупиняє виконання всіх автоворонок для конкретного контакту
+        на задану кількість хвилин. Використовується для запобігання
+        перевантаженню повідомленнями під час критичних подій (наприклад,
+        нещодавня покупка, активна підтримка), або для ручного управління темпом
+        комунікації без повного видалення контакту з автоворонки.
+      x-ai-reasoning-instructions:
+        - >-
+          Перед викликом переконайся, що contact_id валідний — отримай його
+          через пошук контакту за тегом або змінною, якщо він ще невідомий.
+        - >-
+          Визнач доцільну тривалість паузи залежно від контексту: короткі паузи
+          (30–120 хв) — для тимчасових збоїв, довгі (1440+ хв) — для свідомого
+          вилучення з потоку.
+        - >-
+          Врахуй, що пауза діє на всі активні автоворонки контакту одночасно, а
+          не на одну конкретну.
+        - >-
+          Якщо користувач хоче зупинити автоворонку назавжди — запропонуй
+          альтернативу: відписку або видалення з потоку.
+      x-ai-responding-instructions:
+        - >-
+          Підтверди успішне призупинення, вказавши contact_id і тривалість паузи
+          у зрозумілому форматі (наприклад, '60 хвилин = 1 година').
+        - >-
+          Якщо пауза встановлена на великий термін — нагадай, що автоворонки
+          відновляться автоматично після її закінчення.
+        - >-
+          Запропонуй наступний крок: перевірити статус контакту або запланувати
+          ручне повідомлення на час паузи.
+      x-ai-suggestions:
+        - >-
+          Пауза на 60 хвилин після успішної транзакції, щоб уникнути зайвих
+          тригерів.
+        - >-
+          Пауза на 1440 хвилин (24 год) під час активного звернення до
+          підтримки.
+        - Пауза на 10080 хвилин (7 днів) для VIP-контактів у quiet period.
+      x-ai-capabilities:
+        confirmation:
+          type: Recommended
+          message: Це призупинить всі автоворонки для контакту. Підтвердити?
+        security_info:
+          data_handling:
+            - ResourceStateUpdate
+  /contacts/deletePauseAutomation:
+    post:
+      summary: Resume autoflows for a contact
+      description: Resumes autoflows for the specified contact
+      security:
+        - oAuth2ClientCredentials: []
+      tags:
+        - contacts
+      requestBody:
+        description: ''
+        required: true
+        content:
+          application/json:
+            schema:
+              properties:
+                contact_id:
+                  type: string
+                  description: >-
+                    Contact ID. Can be obtained with a contact search by tag or
+                    variable. You can also find it in your account in the
+                    address bar of a chat window with the desired contact.
+              required:
+                - contact_id
+      responses:
+        '200':
+          description: Operation successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+      operationId: deleteContactPauseAutomation
+      x-ai-role: crm_automation_specialist
+      x-ai-description: >-
+        Removes an active automation pause for a specific contact, restoring
+        their participation in all relevant autoflows. Use this when a temporary
+        hold (set via pauseAutomation) is no longer needed — for example, after
+        a support issue is resolved or a manual exception period ends. This is a
+        corrective action that re-enrolls the contact into the normal automation
+        lifecycle.
+      x-ai-reasoning-instructions:
+        - >-
+          Before resuming, confirm that the contact actually has an active
+          pause; resuming a non-paused contact is a no-op but may indicate a
+          logic error upstream.
+        - >-
+          Check whether the contact's pause was intentional (e.g., VIP handling,
+          complaint resolution) before proceeding — ask the user to confirm if
+          context is unclear.
+        - >-
+          The contact_id must be valid and belong to the account; suggest using
+          a contact lookup endpoint if the ID is uncertain.
+      x-ai-responding-instructions:
+        - >-
+          Confirm that the pause has been successfully removed and autoflows
+          will resume for this contact.
+        - >-
+          Remind the user that re-enrollment into active flows depends on flow
+          trigger conditions — the contact may not immediately receive new
+          messages unless a matching trigger fires.
+        - >-
+          If the operation fails, suggest verifying the contact_id via a search
+          endpoint.
+      x-ai-suggestions:
+        - Use after resolving a support ticket that caused the automation pause.
+        - >-
+          Pair with a contact status check to verify the pause was active before
+          calling.
+        - >-
+          Follow up with a contact details fetch to confirm the updated
+          automation state.
+      x-ai-capabilities:
+        confirmation:
+          type: Recommended
+          message: >-
+            This will re-enroll the contact into all applicable autoflows.
+            Confirm before proceeding if the pause was intentionally set.
+        security_info:
+          data_handling:
+            - ResourceStateUpdate
+  /contacts/notes:
+    get:
+      summary: Get a list of contact's operator notes
+      description: Returns a list of existing operator notes by contact
+      security:
+        - oAuth2ClientCredentials: []
+      tags:
+        - contacts
+      parameters:
+        - in: query
+          name: bot_id
+          required: true
+          schema:
+            type: string
+          description: >-
+            Bot ID. Can be obtained with a method of getting a list of bots. You
+            can also find it in your account in the address bar of a chat window
+            with the desired contact.
+        - in: query
+          name: contact_id
+          required: true
+          schema:
+            type: string
+          description: >-
+            Contact ID. Can be obtained with a contact search by tag or
+            variable. You can also find it in your account in the address bar of
+            a chat window with the desired contact.
+      responses:
+        '200':
+          description: Operation successful
+          content:
+            application/json:
+              properties:
+                success:
+                  type: boolean
+                data:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/Message'
+              type: object
+      operationId: getContactNotes
+      x-ai-role: customer_support_specialist
+      x-ai-description: >-
+        Retrieves the internal operator notes attached to a specific contact
+        within a bot conversation. These notes are not visible to the contact —
+        they serve as a CRM-like layer for support agents to log observations,
+        intentions, or follow-up context about a user. Essential for multi-agent
+        handoffs and maintaining continuity in customer service workflows.
+      x-ai-reasoning-instructions:
+        - >-
+          Ensure both bot_id and contact_id are provided before calling — both
+          are required and there is no fallback.
+        - >-
+          bot_id can be retrieved via the list-bots endpoint if not known;
+          contact_id via contact search by tag or variable.
+        - >-
+          Notes are operator-facing only — do not surface their content to the
+          end contact without explicit user intent.
+        - >-
+          If the response returns an empty array, inform the user that no notes
+          exist yet rather than treating it as an error.
+      x-ai-responding-instructions:
+        - >-
+          List the notes clearly, including any timestamps or author metadata if
+          present in the response.
+        - >-
+          If the data array is empty, suggest adding a note via the
+          corresponding POST endpoint.
+        - >-
+          Highlight any notes that may indicate a sensitive or high-priority
+          contact situation.
+      x-ai-capabilities:
+        confirmation:
+          type: None
+        security_info:
+          data_handling:
+            - ReadOnly
+  /contacts/createNote:
+    post:
+      summary: Send operator note
+      description: Sends operator note about contact
+      security:
+        - oAuth2ClientCredentials: []
+      tags:
+        - contacts
+      requestBody:
+        description: ''
+        required: true
+        content:
+          application/json:
+            schema:
+              properties:
+                contact_id:
+                  type: string
+                  description: >-
+                    Contact ID. Can be obtained with a contact search by tag or
+                    variable. You can also find it in your account in the
+                    address bar of a chat window with the desired contact.
+                bot_id:
+                  type: string
+                  description: >-
+                    Bot ID. Can be obtained with a method of getting a list of
+                    bots. You can also find it in your account in the address
+                    bar of a chat window with the desired contact.
+                text:
+                  type: string
+                  description: Text of note
+              required:
+                - contact_id
+                - bot_id
+                - text
+      responses:
+        '200':
+          description: Operation successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Message'
+      operationId: createContactNote
+      x-ai-role: crm_operations_specialist
+      x-ai-description: >-
+        Adds a private internal note to a contact's profile within a specific
+        bot context. Notes are visible only to operators and serve as a
+        coordination tool — allowing support agents to leave context clues,
+        warnings, or follow-up reminders about a contact without the contact
+        ever seeing them. Essential for team-based customer support workflows.
+      x-ai-reasoning-instructions:
+        - >-
+          Ensure `contact_id` is valid before submitting — retrieve it via
+          contact search by tag/variable if not already known.
+        - >-
+          Confirm that `bot_id` corresponds to the same bot context as the
+          contact to avoid cross-bot mismatches.
+        - >-
+          Keep note text concise and actionable — notes are for operators, not
+          customers.
+        - >-
+          If the user wants to attach context about a recent interaction,
+          suggest including a timestamp or reference in the text.
+      x-ai-responding-instructions:
+        - Confirm that the note was successfully attached to the contact.
+        - >-
+          Remind the user that the note is internal-only and not visible to the
+          contact.
+        - >-
+          Suggest following up with a flow trigger or tag update if the note
+          relates to a required action.
+      x-ai-suggestions:
+        - Verified email manually — skip double opt-in
+        - VIP customer — escalate to senior support if issues arise
+        - Requested callback on 2024-04-15, follow up pending
+      x-ai-capabilities:
+        confirmation:
+          type: None
+        security_info:
+          data_handling:
+            - ResourceStateUpdate
+  /contacts/updateNote:
+    post:
+      summary: Update operator note
+      description: Updates existing operator notes about contact
+      security:
+        - oAuth2ClientCredentials: []
+      tags:
+        - contacts
+      requestBody:
+        description: ''
+        required: true
+        content:
+          application/json:
+            schema:
+              properties:
+                contact_id:
+                  type: string
+                  description: >-
+                    Contact ID. Can be obtained with a contact search by tag or
+                    variable. You can also find it in your account in the
+                    address bar of a chat window with the desired contact.
+                bot_id:
+                  type: string
+                  description: >-
+                    Bot ID. Can be obtained with a method of getting a list of
+                    bots. You can also find it in your account in the address
+                    bar of a chat window with the desired contact.
+                text:
+                  type: string
+                  description: Text of note
+                note_id:
+                  type: string
+                  description: Note ID.
+              required:
+                - contact_id
+                - bot_id
+                - text
+                - note_id
+      responses:
+        '200':
+          description: Operation successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Message'
+      operationId: updateContactNote
+      x-ai-role: crm_contact_management_specialist
+      x-ai-description: >-
+        Updates an existing operator note attached to a specific contact in a
+        bot's CRM. Notes serve as internal annotations visible only to operators
+        — they capture context, history, or intent that helps support and sales
+        teams maintain continuity across sessions without exposing information
+        to the contact.
+      x-ai-reasoning-instructions:
+        - >-
+          Before updating, confirm you have the correct `note_id` — use the
+          contact's note list if uncertain, as updating the wrong note silently
+          overwrites its content.
+        - >-
+          Verify that `contact_id` and `bot_id` belong to the same contact
+          context; mismatched IDs will result in an error.
+        - >-
+          Treat note content as internal — do not include sensitive system data
+          or PII that should not persist in CRM logs.
+        - >-
+          If the user wants to append rather than replace, retrieve the current
+          note text first and merge it before sending.
+      x-ai-responding-instructions:
+        - >-
+          Confirm the note was updated successfully and reference the `note_id`
+          that was modified.
+        - >-
+          If the update fails due to a missing or invalid ID, clarify which ID
+          is incorrect and how to retrieve the correct one.
+        - >-
+          Suggest reviewing all notes for the contact if the user is unsure
+          which note to update.
+      x-ai-suggestions:
+        - Escalate to senior support — repeated billing issue
+        - VIP customer — handle with priority
+        - Awaiting callback on 2024-Q2 proposal
+      x-ai-capabilities:
+        confirmation:
+          type: None
+        security_info:
+          data_handling:
+            - ResourceStateUpdate
+  /contacts/deleteNote:
+    post:
+      summary: Update operator note
+      description: Updates existing operator notes about contact
+      security:
+        - oAuth2ClientCredentials: []
+      tags:
+        - contacts
+      requestBody:
+        description: ''
+        required: true
+        content:
+          application/json:
+            schema:
+              properties:
+                contact_id:
+                  type: string
+                  description: >-
+                    Contact ID. Can be obtained with a contact search by tag or
+                    variable. You can also find it in your account in the
+                    address bar of a chat window with the desired contact.
+                bot_id:
+                  type: string
+                  description: >-
+                    Bot ID. Can be obtained with a method of getting a list of
+                    bots. You can also find it in your account in the address
+                    bar of a chat window with the desired contact.
+                note_id:
+                  type: string
+                  description: Note ID.
+              required:
+                - contact_id
+                - bot_id
+                - note_id
+      responses:
+        '200':
+          description: Operation successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Message'
+      operationId: deleteContactNote
+      x-ai-role: crm_contact_manager
+      x-ai-description: >-
+        Removes a specific operator note attached to a contact within a bot
+        context. Notes are internal annotations visible only to operators —
+        deleting one is irreversible and may remove context that other team
+        members rely on for understanding the contact's history or status.
+      x-ai-reasoning-instructions:
+        - >-
+          Verify that contact_id, bot_id, and note_id are all available before
+          proceeding — all three are required and cannot be inferred.
+        - >-
+          Warn the user that note deletion is permanent and cannot be undone
+          through the API.
+        - >-
+          If the user intends to update a note rather than delete it, suggest
+          using the appropriate update endpoint instead.
+        - >-
+          Confirm the correct bot context: note_id is scoped to a specific bot,
+          so using a note_id from a different bot will fail.
+      x-ai-responding-instructions:
+        - >-
+          Confirm successful deletion by referencing the note_id that was
+          removed.
+        - >-
+          Remind the user that the note is permanently deleted and cannot be
+          recovered.
+        - >-
+          If the operation fails, clarify whether the issue is an invalid
+          contact_id, bot_id, or note_id, and suggest how to retrieve correct
+          values.
+      x-ai-suggestions:
+        - >-
+          Use `getContact` to retrieve contact notes and their IDs before
+          deletion.
+        - Use `getBotList` to resolve the correct bot_id if unknown.
+      x-ai-capabilities:
+        confirmation:
+          type: Recommended
+          message: This action permanently deletes the note and cannot be undone.
+        security_info:
+          data_handling:
+            - IrreversibleDelete
+  /contacts/operators/assign:
+    post:
+      summary: Assign a responsible for the chat.
+      description: >-
+        Sets the specified operator as responsible for the chat. You can find
+        the operator's ID in the https://login.sendpulse.com/settings/#users
+        section.
+      security:
+        - oAuth2ClientCredentials: []
+      tags:
+        - contacts
+      requestBody:
+        description: ''
+        required: true
+        content:
+          application/json:
+            schema:
+              properties:
+                contact_id:
+                  type: string
+                  description: >-
+                    Contact ID. Can be obtained with a contact search by tag or
+                    variable. You can also find it in your account in the
+                    address bar of a chat window with the desired contact.
+                operator_id:
+                  type: integer
+                  description: The ID of the operator to assign
+              required:
+                - contact_id
+                - operator_id
+      responses:
+        '200':
+          description: Operation successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type:
+                      - boolean
+                      - 'null'
+      operationId: assignContactOperator
+      x-ai-role: customer_support_manager
+      x-ai-description: >-
+        Assigns a specific operator as responsible for a contact's chat session.
+        This is a key routing action in support workflows — it determines who
+        owns the conversation and is accountable for response time. Use this
+        when distributing incoming chats, escalating to senior agents, or
+        reassigning after an operator goes offline.
+      x-ai-reasoning-instructions:
+        - >-
+          Verify that the contact_id is valid by performing a contact lookup
+          before assigning.
+        - >-
+          Confirm the operator_id belongs to an active operator — inactive or
+          deleted operators will cause the assignment to fail.
+        - >-
+          Check if the contact already has an assigned operator to avoid
+          unintended reassignment without user confirmation.
+        - >-
+          If assigning during a live chat, notify the user that the operator
+          change may affect ongoing conversation context.
+      x-ai-responding-instructions:
+        - >-
+          Confirm the assignment by repeating the operator ID and the contact ID
+          that was updated.
+        - >-
+          If success is true but data is null, clarify that the operation
+          completed but no state was returned — this is expected behavior.
+        - Suggest verifying the assignment by fetching the contact details.
+        - >-
+          If the request fails, check whether the operator ID is correct and
+          visible under account settings at
+          https://login.sendpulse.com/settings/#users.
+      x-ai-suggestions:
+        - >-
+          Use `getContacts` or contact search by tag to retrieve a valid
+          contact_id before calling this endpoint.
+        - >-
+          Operator IDs can be found in the SendPulse account under Settings →
+          Users.
+        - >-
+          After assigning, consider sending a greeting message via the messaging
+          API to initiate the handoff.
+      x-ai-capabilities:
+        confirmation:
+          type: Recommended
+          message: >-
+            You are about to reassign operator responsibility for this contact's
+            chat. Proceed?
+        security_info:
+          data_handling:
+            - ResourceStateUpdate
+  /contacts/operators/unAssign:
+    post:
+      summary: Unassign responsible operators for the chat.
+      description: Removes any assigned operator for the chat.
+      security:
+        - oAuth2ClientCredentials: []
+      tags:
+        - contacts
+      requestBody:
+        description: ''
+        required: true
+        content:
+          application/json:
+            schema:
+              properties:
+                contact_id:
+                  type: string
+                  description: >-
+                    Contact ID. Can be obtained with a contact search by tag or
+                    variable. You can also find it in your account in the
+                    address bar of a chat window with the desired contact.
+              required:
+                - contact_id
+      responses:
+        '200':
+          description: Operation successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: boolean
+      operationId: unAssignContactOperator
+      x-ai-role: customer_support_manager
+      x-ai-description: >-
+        Removes the operator assignment from a specific contact's chat. Use this
+        when a support agent is no longer responsible for a conversation — for
+        example, after resolution, reassignment, or team restructuring. Freeing
+        the assignment allows the chat to be picked up by another operator or
+        returned to the general queue.
+      x-ai-reasoning-instructions:
+        - >-
+          Verify that the contact_id is valid and corresponds to an existing
+          contact before calling this endpoint.
+        - >-
+          Check whether the contact actually has an assigned operator —
+          unassigning an already-unassigned contact is a no-op but may indicate
+          a logic error upstream.
+        - >-
+          Consider whether the intent is to unassign (no operator) or reassign
+          (use the assign endpoint instead).
+        - >-
+          If operating in bulk, iterate per contact_id since this endpoint
+          accepts a single contact at a time.
+      x-ai-responding-instructions:
+        - >-
+          Confirm the successful unassignment by referencing the contact_id
+          provided.
+        - >-
+          If success is false or data is false, surface this as a failure and
+          suggest verifying the contact_id.
+        - >-
+          Suggest a follow-up action: either reassign via the assign endpoint or
+          notify the team that the chat is now unassigned.
+      x-ai-capabilities:
+        confirmation:
+          type: Recommended
+          message: >-
+            This will remove the currently assigned operator from the contact's
+            chat. Proceed?
+        security_info:
+          data_handling:
+            - ResourceStateUpdate
+  /contacts/openChat:
+    post:
+      summary: Open chat for a contact
+      description: Increase the chat priority by marking it as open
+      security:
+        - oAuth2ClientCredentials: []
+      tags:
+        - contacts
+      requestBody:
+        description: ''
+        required: true
+        content:
+          application/json:
+            schema:
+              properties:
+                contact_id:
+                  type: string
+                  description: >-
+                    Contact ID. Can be obtained with a contact search by tag or
+                    variable. You can also find it in your account in the
+                    address bar of a chat window with the desired contact.
+              required:
+                - contact_id
+      responses:
+        '200':
+          description: Chat opened successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+      operationId: openContactChat
+      x-ai-role: customer_support_specialist
+      x-ai-description: >-
+        Escalates a contact's chat to active/open status, increasing its
+        priority in the agent queue. Use this when a conversation requires
+        immediate attention or when transitioning a contact from a passive state
+        to an active support session. Opening a chat signals to the system and
+        agents that this conversation needs to be handled promptly.
+      x-ai-reasoning-instructions:
+        - >-
+          Verify the contact_id is valid before calling — retrieve it via
+          contact search by tag, variable, or from the account UI address bar.
+        - Check whether the chat is already open to avoid redundant calls.
+        - >-
+          Consider whether opening the chat aligns with the current support
+          workflow — this action increases queue priority, which may affect
+          agent load.
+      x-ai-responding-instructions:
+        - Confirm that the chat has been successfully marked as open.
+        - >-
+          Suggest following up with a message to the contact or assigning the
+          chat to a specific agent.
+        - >-
+          If the contact_id is invalid or not found, explain how to retrieve the
+          correct ID (search by tag/variable or from the chat window URL).
+      x-ai-suggestions:
+        - >-
+          Use `getContactByTag` or `getContactByVariable` to retrieve the
+          contact_id before calling this endpoint.
+        - >-
+          After opening the chat, consider sending an initial message using the
+          send message endpoint.
+        - >-
+          Pair with chat assignment endpoint to route the opened chat to a
+          specific agent.
+      x-ai-capabilities:
+        confirmation:
+          type: None
+        security_info:
+          data_handling:
+            - ResourceStateUpdate
+  /contacts/closeChat:
+    post:
+      summary: Close chat for a contact
+      description: Close the chat and lower the priority.
+      security:
+        - oAuth2ClientCredentials: []
+      tags:
+        - contacts
+      requestBody:
+        description: ''
+        required: true
+        content:
+          application/json:
+            schema:
+              properties:
+                contact_id:
+                  type: string
+                  description: >-
+                    Contact ID. Can be obtained with a contact search by tag or
+                    variable. You can also find it in your account in the
+                    address bar of a chat window with the desired contact.
+              required:
+                - contact_id
+      responses:
+        '200':
+          description: Chat closed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+      operationId: closeContactChat
+      x-ai-role: customer_support_specialist
+      x-ai-description: >-
+        Closes the active chat session for a specific contact and lowers its
+        priority in the queue. This is a lifecycle management operation — use it
+        when a support issue is resolved, to free the operator's queue and
+        signal that no further response is pending. Closing a chat affects
+        prioritization logic across the inbox, so it should only be triggered
+        when the conversation is genuinely complete.
+      x-ai-reasoning-instructions:
+        - >-
+          Before closing, confirm the contact_id is valid and corresponds to an
+          active chat — closing an already-closed chat may return an error.
+        - >-
+          Consider whether the chat has unread or unresolved messages before
+          issuing this call; closing prematurely may frustrate the contact.
+        - >-
+          If the user is closing chats in bulk, verify each contact_id
+          individually — there is no batch endpoint for this operation.
+        - >-
+          Lowering priority is a side effect of closing — inform the user if
+          they intended only to reprioritize without closing.
+      x-ai-responding-instructions:
+        - >-
+          Confirm that the chat was successfully closed and mention the
+          contact_id that was affected.
+        - >-
+          Remind the user that the chat priority has been lowered as a result of
+          this action.
+        - >-
+          If the operation fails, check whether the contact_id is correct and
+          whether the chat was already closed.
+        - >-
+          Suggest reopening or sending a follow-up message if the user needs to
+          re-engage with this contact later.
+      x-ai-suggestions:
+        - >-
+          Use `getContactById` or a tag/variable search to retrieve the correct
+          contact_id before calling this endpoint.
+        - >-
+          After closing, consider tagging the contact with a resolution label
+          using the contact update endpoint.
+        - >-
+          If you need to close multiple chats, iterate over a list of
+          contact_ids and call this endpoint for each.
+      x-ai-capabilities:
+        confirmation:
+          type: Recommended
+          message: >-
+            This will close the chat and lower the priority for contact
+            {contact_id}. Proceed?
+        security_info:
+          data_handling:
+            - ResourceStateUpdate
+  /flows:
+    get:
+      summary: Get a list of flows
+      description: >-
+        Returns a list of created flows for the selected bot and information for
+        each: flow id, bot id, status, name, id and name of the trigger that
+        launches it, and creation date
+      security:
+        - oAuth2ClientCredentials: []
+      tags:
+        - flows
+      parameters:
+        - in: query
+          name: bot_id
+          required: true
+          schema:
+            type: string
+          description: >-
+            Bot ID. Can be obtained with a method of getting a list of bots. You
+            can also find it in your account in the address bar of a chat window
+            with the desired contact.
+        - in: query
+          name: size
+          description: The limit of pagination items, that will be returned
+          schema:
+            type: integer
+        - in: query
+          name: skip
+          description: The offset of pagination items, where starts a current items batch
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Operation successful
+          content:
+            application/json:
+              schema:
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/Flow'
+                type: object
+      operationId: getFlows
+      x-ai-role: chatbot_automation_engineer
+      x-ai-description: >-
+        Provides a paginated catalog of automation flows (sequences) for a
+        specific bot. Each flow represents a structured message chain triggered
+        by a specific event or user action. Use this to audit, monitor, or
+        select flows before activating, editing, or linking them to campaigns.
+      x-ai-reasoning-instructions:
+        - >-
+          Always require bot_id — without it the request is invalid; prompt the
+          user to retrieve it via the 'get bots' method if unknown.
+        - >-
+          If the user wants to find a specific flow, fetch without pagination
+          first to assess total volume, then apply size/skip if the list is
+          large.
+        - >-
+          Cross-reference the returned trigger IDs with the flow names to help
+          the user understand which user actions launch each flow.
+        - >-
+          If no flows are returned, suggest verifying bot_id correctness or
+          checking whether any flows have been created for this bot.
+      x-ai-responding-instructions:
+        - >-
+          Present results as a structured list: flow name, status
+          (active/inactive), and trigger name.
+        - >-
+          Highlight any flows with inactive status — the user may want to enable
+          them.
+        - >-
+          If pagination parameters were used, indicate how many items were
+          returned and suggest adjusting skip/size to retrieve more.
+        - >-
+          Suggest using the flow ID from results in subsequent operations such
+          as running or editing a flow.
+      x-ai-suggestions:
+        - Use `size=20` and `skip=0` as safe defaults for initial discovery.
+        - >-
+          After retrieving flows, use the flow `id` to trigger it via the 'run
+          flow' endpoint.
+        - >-
+          Filter results by status in your client logic to separate active
+          automation from drafts.
+      x-ai-capabilities:
+        confirmation:
+          type: None
+        security_info:
+          data_handling:
+            - ReadOnly
+  /flows/run:
+    post:
+      summary: Run a flow by its ID
+      description: >-
+        Launches the selected flow for the selected contact. Additional data can
+        be passed to the "external_data" field and used once in the selected
+        chain, where variables will be inserted in the "Message" element as a
+        JSON path, for example {{$['tracking_number']}}.
+      security:
+        - oAuth2ClientCredentials: []
+      tags:
+        - flows
+      requestBody:
+        description: ''
+        required: true
+        content:
+          application/json:
+            schema:
+              properties:
+                contact_id:
+                  type: string
+                  description: >-
+                    Contact ID. Can be obtained with a contact search by tag or
+                    variable. You can also find it in your account in the
+                    address bar of a chat window with the desired contact.
+                flow_id:
+                  type: string
+                  description: >-
+                    Flow ID to be launched. Can be obtained with the method of
+                    obtaining the list of flows
+                external_data:
+                  type: object
+                  description: >-
+                    Custom variables. You can pass variable values in the
+                    request and use them once in the flow you selected. To add
+                    variables to the flow, in the Message element, insert the
+                    variable names as a JSON path expression
+                    {{$['somekey']['nestedkey']}}.
+                  example:
+                    tracking_number: 1234-0987-5678-9012
+              required:
+                - contact_id
+                - flow_id
+      responses:
+        '200':
+          description: Operation successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+      operationId: runFlow
+      x-ai-role: marketing_automation_specialist
+      x-ai-description: >-
+        Triggers a pre-built automation flow for a specific contact, optionally
+        injecting one-time contextual data (e.g., order tracking numbers, coupon
+        codes) that are consumed within the flow's Message elements via JSON
+        path expressions. This is the primary entry point for event-driven or
+        transactional chatbot automation — use it when an external system event
+        (purchase, shipment, form submission) should initiate a personalised
+        messaging sequence.
+      x-ai-reasoning-instructions:
+        - >-
+          Before calling, confirm the flow_id is valid and active — use the
+          list-flows method if the ID is unknown.
+        - >-
+          Confirm the contact_id exists and belongs to the correct bot/account;
+          it can be retrieved via contact search by tag or variable.
+        - >-
+          If external_data is provided, validate that the keys match the JSON
+          path expressions used inside the flow's Message elements (e.g.,
+          'tracking_number' for {{$['tracking_number']}}).
+        - >-
+          external_data values are injected only once per run — they are not
+          stored as permanent contact variables; communicate this distinction to
+          the user.
+        - >-
+          Do not run the same flow for the same contact simultaneously without
+          verifying the flow supports re-entry, as this may cause duplicate
+          messages.
+      x-ai-responding-instructions:
+        - >-
+          Confirm that the flow was successfully triggered and mention the
+          contact and flow IDs used.
+        - >-
+          If external_data was passed, acknowledge which variables were injected
+          and remind the user they are single-use.
+        - >-
+          Suggest monitoring flow execution results or contact activity logs as
+          a next step.
+        - >-
+          On error, clarify whether the issue is with the contact_id, flow_id,
+          or payload structure, and guide the user to the correct resolution.
+      x-ai-suggestions:
+        - >-
+          Use this endpoint in post-purchase webhooks to trigger
+          order-confirmation or shipping-update flows.
+        - >-
+          Combine with contact search by tag to run a flow for a segment of
+          contacts in a loop.
+        - >-
+          Pass dynamic data such as appointment times, promo codes, or ticket
+          numbers via external_data.
+      x-ai-capabilities:
+        confirmation:
+          type: Recommended
+          message: >-
+            This will immediately trigger a live message flow for the specified
+            contact. Confirm the contact and flow are correct before proceeding.
+        security_info:
+          data_handling:
+            - ExternalDataInjection
+            - ContactInteraction
+          notes: >-
+            external_data is transient — it is not persisted to the contact
+            record. Avoid passing sensitive personal data unless required by the
+            flow logic.
+  /flows/runByTrigger:
+    post:
+      summary: Run a flow by trigger keywords
+      description: Launches a flow with the trigger keyword for the selected contact
+      security:
+        - oAuth2ClientCredentials: []
+      tags:
+        - flows
+      requestBody:
+        description: ''
+        required: true
+        content:
+          application/json:
+            schema:
+              properties:
+                contact_id:
+                  type: string
+                  description: >-
+                    Contact ID. Can be obtained with a contact search by tag or
+                    variable. You can also find it in your account in the
+                    address bar of a chat window with the desired contact.
+                trigger_keyword:
+                  type: string
+                  description: Keyword (command) that launch the flow
+                external_data:
+                  type: object
+                  description: >-
+                    Custom variables. You can pass variable values in the
+                    request and use them once in the flow you selected. To add
+                    variables to the flow, in the Message element, insert the
+                    variable names as a JSON path expression
+                    {{$['somekey']['nestedkey']}}.
+                  example:
+                    tracking_number: 1234-0987-5678-9012
+              required:
+                - contact_id
+                - trigger_keyword
+      responses:
+        '200':
+          description: Operation successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+      operationId: runFlowByTrigger
+      x-ai-role: chatbot_automation_engineer
+      x-ai-description: >-
+        Programmatically triggers a predefined automation flow for a specific
+        contact using a keyword command. This is the primary mechanism for
+        injecting external business events (e.g., order shipped, payment
+        received) into a messaging flow without requiring the contact to send a
+        message themselves. The `external_data` payload allows the flow to
+        render dynamic, contact-specific content at the moment of execution.
+      x-ai-reasoning-instructions:
+        - >-
+          Ensure `contact_id` is valid and the contact exists before calling —
+          an invalid ID will silently fail or return an error.
+        - >-
+          Verify that `trigger_keyword` exactly matches a keyword configured in
+          the target flow; it is case-sensitive in most implementations.
+        - >-
+          If `external_data` is used, confirm that the variable keys in the
+          request match the JSON path expressions referenced in the flow's
+          Message elements (e.g., `tracking_number` matches
+          `{{$['tracking_number']}}`).
+        - >-
+          Note that `external_data` variables are single-use within the
+          triggered flow execution — they are not persisted to the contact's
+          profile.
+        - >-
+          Avoid triggering the same flow for the same contact multiple times in
+          rapid succession without business justification, as it may result in
+          duplicate messages.
+      x-ai-responding-instructions:
+        - >-
+          Confirm that the flow was successfully triggered and mention the
+          contact for whom it was launched.
+        - >-
+          If `external_data` was passed, acknowledge that the dynamic variables
+          were included in the request.
+        - >-
+          Suggest verifying the outcome by checking the contact's message
+          history or flow execution logs in the SendPulse dashboard.
+        - >-
+          If the trigger fails, advise checking whether the keyword is correctly
+          configured in the flow and whether the contact ID is valid.
+      x-ai-suggestions:
+        - >-
+          Use this endpoint in post-purchase webhooks to trigger order tracking
+          flows.
+        - >-
+          Combine with a CRM event (e.g., subscription renewed) to launch a
+          re-engagement or upsell flow.
+        - >-
+          Pass `external_data` for personalized flows: delivery dates, invoice
+          numbers, appointment times.
+      x-ai-capabilities:
+        confirmation:
+          type: Recommended
+          message: >-
+            This will immediately send a message flow to the specified contact.
+            Confirm before triggering in production.
+        security_info:
+          data_handling:
+            - ExternalDataIsTransient
+            - ContactStateUpdate
+  /triggers:
+    get:
+      summary: Get a list of triggers
+      description: >-
+        Returns the list of created triggers for the selected bot with
+        information about each of them: trigger ID, bot id, id of the flow that
+        starts on it, name, type, set launch time and creation date
+      security:
+        - oAuth2ClientCredentials: []
+      tags:
+        - triggers
+      parameters:
+        - in: query
+          name: bot_id
+          required: true
+          schema:
+            type: string
+          description: >-
+            Bot ID. Can be obtained with a method of getting a list of bots. You
+            can also find it in your account in the address bar of a chat window
+            with the desired contact.
+        - in: query
+          name: size
+          description: The limit of pagination items, that will be returned
+          schema:
+            type: integer
+        - in: query
+          name: skip
+          description: The offset of pagination items, where starts a current items batch
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Operation successful
+          content:
+            application/json:
+              schema:
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/Trigger'
+                type: object
+      operationId: getTriggers
+      x-ai-role: chatbot_automation_specialist
+      x-ai-description: >-
+        Retrieves the full list of automation triggers configured for a specific
+        bot. Triggers are the entry points of chatbot flows — they define when
+        and how a flow is launched (e.g., on subscription, keyword match, or
+        scheduled time). Understanding the trigger landscape is essential before
+        modifying flows or diagnosing automation behavior.
+      x-ai-reasoning-instructions:
+        - >-
+          Always require bot_id before calling — it is mandatory and scopes the
+          entire response.
+        - >-
+          If the user wants to find a specific trigger by name or type, fetch
+          the full list first and filter client-side, as the endpoint does not
+          support search filters.
+        - >-
+          Use 'size' and 'skip' for pagination when dealing with bots that have
+          many triggers; default page size may not return all triggers.
+        - >-
+          Cross-reference returned flow IDs with the flows API to get full flow
+          details if the user needs them.
+      x-ai-responding-instructions:
+        - >-
+          Present results as a structured summary: trigger name, type, linked
+          flow ID, and status.
+        - >-
+          Highlight trigger types (e.g., keyword, subscription, scheduled) to
+          help the user understand automation entry points.
+        - >-
+          If the list is empty, suggest that no triggers have been created yet
+          and recommend using the trigger creation endpoint.
+        - >-
+          If paginating, indicate how many items were returned and whether more
+          may exist.
+      x-ai-suggestions:
+        - >-
+          Use this endpoint to audit all active automations before making
+          changes to flows.
+        - Pair with 'getFlows' to resolve flow IDs returned in trigger data.
+        - >-
+          Start with size=50 and skip=0 for initial discovery; paginate if
+          needed.
+      x-ai-capabilities:
+        confirmation:
+          type: None
+        security_info:
+          data_handling:
+            - ReadOnly
+  /bots:
+    get:
+      summary: Get a list of connected bots
+      description: >-
+        Returns lists of bots with information about each: bot ID, channel
+        information, number of received and unread messages, bot status, and
+        creation date
+      security:
+        - oAuth2ClientCredentials: []
+      tags:
+        - bots
+      parameters:
+        - in: query
+          name: size
+          description: The limit of pagination items, that will be returned
+          schema:
+            type: integer
+        - in: query
+          name: skip
+          description: The offset of pagination items, where starts a current items batch
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Operation successful
+          content:
+            application/json:
+              schema:
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Bot'
+                type: object
+      operationId: listBots
+      x-ai-role: chatbot_operations_manager
+      x-ai-description: >-
+        Returns all bots connected to the account across supported channels
+        (Telegram, WhatsApp, Facebook, etc.). This is the primary discovery
+        endpoint for bot orchestration — use it to resolve bot IDs before
+        sending messages, managing flows, or analyzing engagement. Bot status
+        and unread message counts are key signals for triage and routing logic.
+      x-ai-reasoning-instructions:
+        - >-
+          Use this endpoint first when the user doesn't know their bot ID —
+          resolve by channel or name from the returned list.
+        - >-
+          Check `status` field before triggering any bot action; inactive bots
+          won't process messages.
+        - >-
+          If the user needs bots for a specific channel, filter results by
+          `channel` field client-side — no server-side channel filter exists.
+        - >-
+          Use `size` and `skip` parameters for paginated traversal when the
+          account has many bots.
+        - >-
+          Unread message count can indicate bots needing attention — surface
+          this if the user is doing inbox monitoring.
+      x-ai-responding-instructions:
+        - >-
+          Present bots grouped by channel type for clarity if multiple channels
+          are present.
+        - >-
+          Highlight bots with high unread counts or inactive status as they
+          likely require user attention.
+        - >-
+          Always include the bot ID in the response summary — it's required for
+          all subsequent bot operations.
+        - >-
+          If the list is empty, suggest connecting a bot via the SendPulse
+          chatbot dashboard.
+      x-ai-suggestions:
+        - >-
+          Use the returned bot `id` with `sendMessage`, `getSubscribers`, or
+          `getFlows` endpoints.
+        - Poll periodically to monitor unread message counts for support triage.
+        - >-
+          Set `size=100` for bulk account audits to minimize pagination
+          round-trips.
+      x-ai-capabilities:
+        confirmation:
+          type: None
+        security_info:
+          data_handling:
+            - ReadOnly
+  /bots/statistics:
+    get:
+      summary: Get general statistics info by bot
+      description: Returns general statistics info by bot
+      security:
+        - oAuth2ClientCredentials: []
+      parameters:
+        - in: query
+          name: bot_id
+          required: true
+          schema:
+            type: string
+          description: >-
+            The bot ID. Can be obtained with a method of getting a list of bots.
+            You can also find it in your account in the address bar of a chat
+            window with the desired contact.
+      tags:
+        - bots
+      responses:
+        '200':
+          description: Operation successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      subscribedTotalCount:
+                        type: integer
+                      subscribedActiveCount:
+                        type: integer
+                      outgoingMessagesTotalCount:
+                        type: integer
+      operationId: getBotStatistics
+      x-ai-role: chatbot_analytics_specialist
+      x-ai-description: >-
+        Returns high-level engagement and reach metrics for a specific chatbot.
+        Use this endpoint to assess a bot's overall health: how many subscribers
+        it has, how many are still active, and total message volume. This is the
+        starting point for any performance audit or campaign effectiveness
+        review.
+      x-ai-reasoning-instructions:
+        - >-
+          Ensure the bot_id is valid and belongs to the authenticated account
+          before calling.
+        - >-
+          Distinguish between subscribedTotalCount and subscribedActiveCount —
+          the delta indicates churn or unsubscribes worth flagging.
+        - >-
+          If outgoingMessagesTotalCount is high but subscribedActiveCount is
+          low, proactively flag potential engagement issues to the user.
+      x-ai-responding-instructions:
+        - >-
+          Present the three metrics clearly: total subscribers, active
+          subscribers, and total messages sent.
+        - >-
+          Calculate and mention the active subscriber ratio (active / total) as
+          a percentage to give actionable insight.
+        - >-
+          If active count is significantly lower than total, suggest
+          investigating unsubscribe reasons or reviewing message frequency.
+      x-ai-suggestions:
+        - Use this before launching a campaign to baseline current reach.
+        - Combine with flow/message-level stats for a full funnel view.
+        - Track this weekly to monitor subscriber churn trends.
+      x-ai-capabilities:
+        confirmation:
+          type: None
+        security_info:
+          data_handling:
+            - ReadOnly
+  /chats:
+    get:
+      summary: Get a list of chats
+      description: >-
+        Returns a list of chats with subscribers with information about the
+        contact and the last message received from the contact
+      security:
+        - oAuth2ClientCredentials: []
+      tags:
+        - chats
+      parameters:
+        - in: query
+          name: bot_id
+          required: true
+          schema:
+            type: string
+          description: >-
+            Bot ID. Can be obtained with a method of getting a list of bots. You
+            can also find it in your account in the address bar of a chat window
+            with the desired contact.
+        - in: query
+          name: size
+          schema:
+            type: integer
+        - in: query
+          name: skip
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Operation successful
+          content:
+            application/json:
+              schema:
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/Chat'
+                type: object
+      operationId: listChats
+      x-ai-role: conversational_marketing_specialist
+      x-ai-description: >-
+        Retrieves the inbox of active subscriber conversations for a specific
+        bot. This is the primary entry point for monitoring engagement — each
+        chat reflects a real-time relationship with a contact, including their
+        last message, which signals intent or support need. Used for building
+        dashboards, routing logic, and triggering follow-up automations.
+      x-ai-reasoning-instructions:
+        - >-
+          Always require bot_id — without it the request is invalid; prompt the
+          user to call the bot listing endpoint first if they don't have it.
+        - >-
+          Use 'size' and 'skip' for pagination; when the user wants 'all chats',
+          iterate in batches rather than fetching everything at once.
+        - >-
+          If the goal is to find a specific contact, consider whether filtering
+          by contact ID or username on a subsequent endpoint would be more
+          efficient than paginating the full list.
+        - >-
+          Be aware that 'last message' reflects only inbound messages from the
+          contact — outbound bot messages are not represented here.
+      x-ai-responding-instructions:
+        - >-
+          Report the total number of chats returned and indicate whether
+          pagination is needed.
+        - >-
+          Highlight any chats where the last message suggests urgency (e.g.,
+          keywords like 'help', 'cancel', 'error') if the user is triaging.
+        - >-
+          Suggest using the contact ID from results to fetch full conversation
+          history or send a targeted message.
+      x-ai-suggestions:
+        - >-
+          Fetch the first page with size=50 and skip=0, then increment skip by
+          50 to paginate.
+        - >-
+          Use the returned contact data to segment subscribers before launching
+          a broadcast.
+        - Pair with the 'send message' endpoint to implement a reply workflow.
+      x-ai-capabilities:
+        confirmation:
+          type: None
+        security_info:
+          data_handling:
+            - ReadOnly
+  /chats/messages:
+    get:
+      summary: Get a list of messages
+      description: >-
+        Returns a list of all messages in correspondence with the specified
+        subscriber
+      security:
+        - oAuth2ClientCredentials: []
+      tags:
+        - chats
+      parameters:
+        - in: query
+          name: contact_id
+          required: true
+          schema:
+            type: string
+          description: >-
+            Contact ID. Can be obtained with a contact search by tag or
+            variable. You can also find it in your account in the address bar of
+            a chat window with the desired contact.
+        - in: query
+          name: size
+          description: The limit of pagination items, that will be returned
+          schema:
+            type: integer
+        - in: query
+          name: skip
+          description: The offset of pagination items, where starts a current items batch
+          schema:
+            type: integer
+        - in: query
+          name: search_after
+          description: The id of element after which elements will be searched
+          schema:
+            type: string
+        - in: query
+          name: order
+          description: Sort order ASC or DESC
+          schema:
+            type: string
+            enum:
+              - asc
+              - desc
+      responses:
+        '200':
+          description: Operation successful
+          content:
+            application/json:
+              schema:
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Message'
+                type: object
+      operationId: getChatMessages
+      x-ai-role: customer_communication_analyst
+      x-ai-description: >-
+        Retrieves the full paginated message history for a specific contact in
+        SendPulse Chats. This is the primary read endpoint for reconstructing a
+        conversation thread — useful for auditing, context-building before
+        responding, or feeding conversation history into an AI pipeline. The
+        contact_id is the anchor: without it the call cannot be made, so it must
+        be resolved first via contact search or from the account UI.
+      x-ai-reasoning-instructions:
+        - >-
+          Always resolve contact_id before calling — use tag/variable search or
+          instruct the user to find it in the account UI chat URL.
+        - >-
+          If the user wants recent messages, use order=desc and a small size
+          (e.g., 20) to retrieve the latest batch efficiently.
+        - >-
+          For full history traversal, implement cursor-based pagination using
+          search_after with the last returned message id.
+        - >-
+          If the user asks about a specific message, fetch a broad window first,
+          then filter client-side rather than making multiple calls.
+        - >-
+          Be aware that size and skip together enable offset pagination, but
+          search_after is preferred for large datasets to avoid drift.
+      x-ai-responding-instructions:
+        - >-
+          Present messages in chronological order regardless of the order
+          parameter used, unless the user explicitly wants reverse order.
+        - >-
+          Highlight the total number of messages returned and whether more pages
+          are available.
+        - >-
+          If data array is empty, suggest verifying the contact_id or confirming
+          the contact has an active chat history.
+        - >-
+          When surfacing message content, indicate direction (inbound/outbound)
+          and timestamp for clarity.
+        - >-
+          Suggest using search_after with the last message id as the next
+          pagination step if the result set appears truncated.
+      x-ai-suggestions:
+        - >-
+          Use order=desc with size=50 to quickly retrieve the most recent
+          messages.
+        - >-
+          Combine search_after with the last message id from the previous
+          response for efficient cursor pagination.
+        - >-
+          If contact_id is unknown, first call the contact search endpoint
+          filtering by tag or variable.
+      x-ai-capabilities:
+        confirmation:
+          type: None
+        security_info:
+          data_handling:
+            - ReadOnly
+  /variables:
+    get:
+      summary: Get a list of variables
+      description: >-
+        Returns a list of variables for the selected bot with information about
+        each: variable ID, bot ID, name, affiliation, type, status, and creation
+        date
+      security:
+        - oAuth2ClientCredentials: []
+      tags:
+        - variables
+      parameters:
+        - in: query
+          name: bot_id
+          required: true
+          schema:
+            type: string
+          description: >-
+            Bot ID. Can be obtained with a method of getting a list of bots. You
+            can also find it in your account in the address bar of a chat window
+            with the desired contact.
+        - in: query
+          name: size
+          description: The limit of pagination items, that will be returned
+          schema:
+            type: integer
+        - in: query
+          name: skip
+          description: The offset of pagination items, where starts a current items batch
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Operation successful
+          content:
+            application/json:
+              schema:
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/Variable'
+                type: object
+      operationId: getBotVariables
+      x-ai-role: chatbot_data_architect
+      x-ai-description: >-
+        Retrieves the full list of variables defined for a specific bot.
+        Variables are the dynamic data containers attached to contacts — they
+        store personalization data (e.g., name, plan, last_purchase) and drive
+        conditional flows. This endpoint is the entry point for auditing bot
+        variable schemas before building automations or bulk-updating contact
+        attributes.
+      x-ai-reasoning-instructions:
+        - >-
+          Always resolve the bot_id first — use the 'get bots list' method if
+          the user has not provided it explicitly.
+        - >-
+          Use 'size' and 'skip' for paginated retrieval when the bot has many
+          variables; default page size may be small.
+        - >-
+          Cross-reference variable names and types against intended automation
+          logic to detect type mismatches before setting values.
+        - >-
+          Check variable 'status' field to filter out inactive variables before
+          using them in flows.
+      x-ai-responding-instructions:
+        - >-
+          Present variables grouped by type (string, number, boolean, date) for
+          clarity.
+        - >-
+          Highlight variable IDs, as they are required for setting or updating
+          values via other endpoints.
+        - >-
+          If the list is empty, suggest creating variables through the bot
+          settings or the corresponding POST endpoint.
+        - Mention pagination offsets if the result appears truncated.
+      x-ai-suggestions:
+        - >-
+          After retrieving variables, use them to personalize message templates
+          or filter contacts in automations.
+        - >-
+          Use 'skip' and 'size' to paginate through large variable sets
+          efficiently.
+        - >-
+          Compare variable types against expected values before calling
+          set-variable endpoints to avoid type errors.
+      x-ai-capabilities:
+        confirmation:
+          type: None
+        security_info:
+          data_handling:
+            - ReadOnly
+  /campaigns/send:
+    post:
+      summary: Send campaign
+      description: >-
+        Sends a campaign to all of a bot's subscribers. You can send a campaign
+        with text, an image, or a file. To view an example of the request body,
+        select a message type from the drop-down list
+      security:
+        - oAuth2ClientCredentials: []
+      tags:
+        - campaigns
+      requestBody:
+        description: ''
+        required: true
+        content:
+          application/json:
+            schema:
+              properties:
+                title:
+                  type: string
+                  description: Campaign title
+                bot_id:
+                  type: string
+                  description: >-
+                    Bot ID. Can be obtained with a method of getting a list of
+                    bots. You can also find it in your account in the address
+                    bar of a chat window with the desired contact.
+                send_at:
+                  type: string
+                  description: >-
+                    Specify the date and time in the format Y-m-d H:i if you
+                    need to schedule the campaign, if you do not specify this
+                    parameter, the campaign will be sent immediately
+                messages:
+                  type: array
+                  description: >-
+                    Message to send, specifying the type and content of the
+                    campaign
+                  items:
+                    type: object
+                    properties:
+                      type:
+                        type: string
+                        enum:
+                          - text
+                        description: >-
+                          Campaign type, can have the values "text," "image," or
+                          "document"
+                        example: text
+                      filter:
+                        type: object
+                        description: Filter for campaign sending
+                        properties:
+                          type:
+                            type: string
+                            description: Filter type (and/or)
+                          expressions:
+                            type: array
+                            description: Filter expressions
+                            items:
+                              type: object
+                              properties:
+                                type:
+                                  type: string
+                                  description: Expression type (and/or)
+                                expressions:
+                                  type: array
+                                  description: List of expressions
+                                  items:
+                                    type: object
+                                    properties:
+                                      operator:
+                                        type: string
+                                        description: >-
+                                          Filter operator (e.g., eq, like, gt, lt,
+                                          etc.)
+                                      field:
+                                        type: string
+                                        description: Field to filter by (e.g., tags)
+                                      value:
+                                        type: string
+                                        description: Value to filter by
+                      message:
+                        type: object
+                        description: ''
+                        properties:
+                          text:
+                            type: string
+                            description: ''
+                          message_effect_id:
+                            oneOf:
+                              - type: string
+                                const: 66b08aae10702e7f680c4322
+                                title: 🔥
+                              - type: string
+                                const: 66b08aae10702e7f680c4323
+                                title: 👍
+                              - type: string
+                                const: 66b08aae10702e7f680c4324
+                                title: 👎
+                              - type: string
+                                const: 66b08aae10702e7f680c4325
+                                title: ❤️
+                              - type: string
+                                const: 66b08aae10702e7f680c4326
+                                title: 🎉️
+                              - type: string
+                                const: 66b08aae10702e7f680c4327
+                                title: 💩️
+              required:
+                - title
+                - bot_id
+                - messages
+            examples:
+              Send a message with an image:
+                value:
+                  title: string
+                  bot_id: string
+                  send_at: string
+                  filter:
+                    type: and
+                    expressions:
+                      - type: and
+                        expressions:
+                          - operator: eq
+                            field: tags
+                            value: SOME_TAG_HERE
+                  messages:
+                    - type: photo
+                      message:
+                        photo: https://www.cdn.com/photo.png
+                        caption: string
+              Send a text message:
+                value:
+                  title: string
+                  bot_id: string
+                  send_at: string
+                  messages:
+                    - type: text
+                      message:
+                        text: Example text
+              Send a text message (HTML):
+                value:
+                  title: string
+                  bot_id: string
+                  send_at: string
+                  messages:
+                    - type: text
+                      message:
+                        text: >-
+                          Example text sent via SP API <b>bold</b>,
+                          <i>italic</i>, <a href='http://example.com'>link</a>
+                        parse_mode: html
+              Send a message with a file:
+                value:
+                  title: string
+                  bot_id: string
+                  send_at: string
+                  messages:
+                    - type: document
+                      message:
+                        document: https://www.cdn.com/document.zip
+                        caption: string
+              Send a message with an audio:
+                value:
+                  title: string
+                  bot_id: string
+                  send_at: string
+                  messages:
+                    - type: audio
+                      message:
+                        audio: https://www.cdn.com/audio.mp3
+                        caption: string
+              Send the voice message:
+                value:
+                  title: string
+                  bot_id: string
+                  send_at: string
+                  messages:
+                    - type: voice
+                      message:
+                        voice: https://www.cdn.com/audio.mp3
+                        caption: string
+              Send a message with an video:
+                value:
+                  title: string
+                  bot_id: string
+                  send_at: string
+                  messages:
+                    - type: video
+                      message:
+                        video: https://www.cdn.com/video.mp4
+                        caption: string
+              Send a message with a carousel:
+                value:
+                  title: string
+                  bot_id: string
+                  send_at: string
+                  messages:
+                    - type: carousel
+                      message:
+                        carousel:
+                          - title: Slide 1 title
+                            description: Slide 1 description
+                            photo: https://www.cdn.com/photo1.png
+                          - title: Slide 2 title
+                            description: Slide 2 description
+                            photo: https://www.cdn.com/photo2.png
+                            reply_markup:
+                              inline_keyboard:
+                                - - text: Example button
+                                    type: web_url
+                                    url: http://example.url.com/
+              Send text message with effect:
+                value:
+                  title: string
+                  bot_id: string
+                  send_at: string
+                  messages:
+                    - type: text
+                      message:
+                        text: Example text
+                        message_effect_id: string
+      responses:
+        '200':
+          description: Operation successful
+          content:
+            application/json:
+              schema:
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/Campaign'
+                type: object
+      operationId: sendCampaign
+      x-ai-role: chatbot_campaign_manager
+      x-ai-description: >-
+        Initiates a mass broadcast to all subscribers of a specific bot, or a
+        filtered subset. This is the primary delivery mechanism for chatbot
+        marketing campaigns in SendPulse — supporting rich media (images, video,
+        audio, documents, carousels), scheduled delivery, and audience
+        segmentation via tag-based filters. Unlike transactional messages, this
+        endpoint targets audiences at scale and is subject to campaign rate
+        limits and bot-level sending quotas.
+      x-ai-reasoning-instructions:
+        - >-
+          Confirm that `bot_id` is valid and the bot is active before sending —
+          use the 'get list of bots' endpoint if the user is unsure which bot to
+          target.
+        - >-
+          If the user wants to schedule the campaign, ensure `send_at` is
+          formatted strictly as `Y-m-d H:i` (e.g., '2026-04-01 09:00') and is in
+          the future relative to the account's timezone.
+        - >-
+          If no `send_at` is provided, the campaign is sent immediately — warn
+          the user if they haven't reviewed the message content.
+        - >-
+          When building the `messages` array, validate that the `type` field
+          matches the actual content keys inside `message` (e.g., type `photo`
+          requires a `photo` URL, not `text`).
+        - >-
+          Carousel messages require at least two slides; validate this
+          constraint before submitting.
+        - >-
+          If a `filter` is provided, ensure the filter structure is complete
+          (type + expressions) to avoid unintended full-audience sends.
+        - >-
+          Media URLs (photo, document, audio, voice, video) must be publicly
+          accessible CDN links — warn the user if they provide internal or
+          authenticated URLs.
+        - >-
+          If `message_effect_id` is used, remind the user it only applies to
+          text messages and requires the receiving platform to support message
+          effects (e.g., Telegram).
+      x-ai-responding-instructions:
+        - >-
+          On success, confirm that the campaign was queued or sent, and mention
+          the campaign ID from the response for future reference.
+        - >-
+          If the campaign was scheduled, explicitly state the scheduled time so
+          the user can verify it.
+        - >-
+          Suggest using the campaign status endpoint to monitor delivery
+          progress after sending.
+        - >-
+          If an error occurs, diagnose whether it is related to an invalid
+          bot_id, malformed message structure, or an invalid media URL, and
+          guide the user accordingly.
+        - >-
+          Remind the user that mass campaigns cannot be individually recalled
+          once sent — encourage review before immediate dispatch.
+      x-ai-suggestions:
+        - >-
+          Schedule promotional campaigns during peak engagement hours (e.g.,
+          10:00–12:00 local time).
+        - >-
+          Use tag filters to segment audiences and avoid sending irrelevant
+          content to uninterested subscribers.
+        - >-
+          Use carousels for product showcases or multi-option CTAs for higher
+          engagement rates.
+        - >-
+          Prefer `parse_mode: html` for text messages that require formatting
+          (bold, italic, links).
+      x-ai-capabilities:
+        confirmation:
+          type: Required
+          message: >-
+            This action will send a campaign to all (or filtered) subscribers of
+            the specified bot. Immediate sends cannot be cancelled. Please
+            confirm before proceeding.
+        security_info:
+          data_handling:
+            - MassBroadcast
+            - IrreversibleAction
+  /account:
+    get:
+      summary: Get account info
+      description: >-
+        Returns information about your current account pricing plan, the number
+        of messages in your plan, bots, contacts, list of tags, and variables
+      security:
+        - oAuth2ClientCredentials: []
+      tags:
+        - account
+      responses:
+        '200':
+          description: Operation successful
+          content:
+            application/json:
+              schema:
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/Account'
+                type: object
+      operationId: getAccount
+      x-ai-role: account_manager
+      x-ai-description: >-
+        Returns a snapshot of the current account's subscription state and
+        resource consumption. Use this as a pre-flight check before scheduling
+        campaigns, creating bots, or importing contacts — it reveals plan
+        limits, remaining message quotas, and available tags/variables that
+        govern what operations are actually permitted.
+      x-ai-reasoning-instructions:
+        - >-
+          Call this endpoint first when the user asks about plan limits, quotas,
+          or available features.
+        - >-
+          Use returned message counts to validate whether a planned campaign
+          fits within the current billing period.
+        - >-
+          Cross-reference available tags and variables with user intent before
+          constructing segmentation logic.
+        - >-
+          If the user encounters a quota error elsewhere, retrieve this data to
+          explain the specific limit that was hit.
+      x-ai-responding-instructions:
+        - >-
+          Summarise the active pricing plan and remaining message quota in plain
+          language.
+        - >-
+          Highlight any near-exhausted limits (e.g., <10% messages remaining) as
+          actionable warnings.
+        - >-
+          List available tags and variables only if the user is planning
+          audience segmentation or personalisation.
+        - >-
+          If the plan restricts a requested feature, reference the plan name
+          from the response when explaining the constraint.
+      x-ai-suggestions:
+        - Check account quota before launching a bulk email campaign.
+        - >-
+          Inspect available variables before building a personalisation
+          template.
+        - Verify bot count against plan limits before creating a new chatbot.
+      x-ai-capabilities:
+        confirmation:
+          type: None
+        security_info:
+          data_handling:
+            - ReadOnly
+  /tags:
+    get:
+      summary: Get a list of tags
+      description: >-
+        Returns the list of created tags for the selected bot with information
+        about each of them: tag ID, name, contact_count and creation date
+      security:
+        - oAuth2ClientCredentials: []
+      tags:
+        - tags
+      parameters:
+        - in: query
+          name: bot_id
+          required: true
+          schema:
+            type: string
+          description: >-
+            Bot ID. Can be obtained with a method of getting a list of bots. You
+            can also find it in your account in the address bar of a chat window
+            with the desired contact.
+        - in: query
+          name: size
+          description: The limit of pagination items, that will be returned
+          schema:
+            type: integer
+        - in: query
+          name: skip
+          description: The offset of pagination items, where starts a current items batch
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Operation successful
+          content:
+            application/json:
+              schema:
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Tag'
+                type: object
+      operationId: getTags
+      x-ai-role: chatbot_audience_manager
+      x-ai-description: >-
+        Retrieves the full catalog of tags defined for a specific bot, including
+        usage statistics (contact_count) per tag. Tags are the primary
+        segmentation mechanism in SendPulse chatbots — they drive conditional
+        flows, audience filters, and targeted broadcasts. This endpoint is the
+        foundation for any tag-based automation audit or contact segmentation
+        analysis.
+      x-ai-reasoning-instructions:
+        - >-
+          Always require bot_id before calling — tags are bot-scoped, not
+          account-scoped.
+        - >-
+          If the caller is building a segmentation report, fetch all pages by
+          iterating skip/size until the returned array is smaller than size.
+        - >-
+          When contact_count is 0 for a tag, flag it as a candidate for cleanup
+          to reduce tag namespace clutter.
+        - >-
+          Use this endpoint to validate that a tag exists before attempting to
+          assign or filter by it in downstream operations.
+      x-ai-responding-instructions:
+        - >-
+          Present results as a structured list with tag name, ID, and
+          contact_count for each entry.
+        - >-
+          If contact_count is available, highlight the most-used tags as the
+          user's primary segments.
+        - >-
+          If the list is empty, inform the user that no tags have been created
+          for this bot yet and suggest creating tags via the contact update or
+          flow builder.
+        - >-
+          When pagination parameters were used, indicate whether more pages may
+          exist.
+      x-ai-suggestions:
+        - >-
+          Use the returned tag IDs with broadcast or flow-targeting endpoints to
+          reach specific segments.
+        - >-
+          Cross-reference contact_count with total bot subscribers to calculate
+          segment coverage percentage.
+        - >-
+          Start with size=100 and skip=0 for an initial full fetch on smaller
+          bots.
+      x-ai-capabilities:
+        confirmation:
+          type: None
+        security_info:
+          data_handling:
+            - ReadOnly
+security:
+  - apiKey: []
+  - oauth2: []
+servers:
+  - description: ''
+    url: https://api.sendpulse.com/telegram
+tags:
+  - description: ''
+    name: account
+  - description: ''
+    name: bots
+  - description: (subscribers)
+    name: contacts
+  - description: ''
+    name: variables
+  - description: ''
+    name: flows
+  - description: (keywords)
+    name: triggers
+  - description: ''
+    name: chats
+  - description: (broadcasts)
+    name: campaigns

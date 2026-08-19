@@ -1,0 +1,56 @@
+openapi: 3.1.0
+info:
+  title: SendPulse API
+  description: >-
+    Master index of all SendPulse public APIs.
+    Each sub-service has its own specification linked below.
+  version: '1.0'
+
+servers:
+  - url: https://api.sendpulse.com
+
+paths: {}
+
+externalDocs:
+  description: Full API documentation
+  url: https://sendpulse.com/integrations/api
+
+x-services:
+  - name: SendPulse Automation 360 API
+    url: https://api.sendpulse.com/.well-known/openapi/a360.yaml
+  - name: SendPulse Bulk Email API
+    url: https://api.sendpulse.com/.well-known/openapi/bulk-email.yaml
+  - name: Chatbots service API
+    url: https://api.sendpulse.com/.well-known/openapi/chatbots.yaml
+  - name: SendPulse CRM Public API
+    url: https://api.sendpulse.com/.well-known/openapi/crm.yaml
+  - name: Education SendPulse Project API Definition
+    url: https://api.sendpulse.com/.well-known/openapi/edu.yaml
+  - name: Facebook Messenger service API
+    url: https://api.sendpulse.com/.well-known/openapi/facebook.yaml
+  - name: SendPulse FileManager Public API
+    url: https://api.sendpulse.com/.well-known/openapi/file-manager.yaml
+  - name: Instagram service API
+    url: https://api.sendpulse.com/.well-known/openapi/instagram.yaml
+  - name: LiveChat service API
+    url: https://api.sendpulse.com/.well-known/openapi/live-chat.yaml
+  - name: SendPulse Pop-up API
+    url: https://api.sendpulse.com/.well-known/openapi/popups.yaml
+  - name: SendPulse SMS API
+    url: https://api.sendpulse.com/.well-known/openapi/sms.yaml
+  - name: SendPulse SMTP API
+    url: https://api.sendpulse.com/.well-known/openapi/smtp.yaml
+  - name: Telegram service API
+    url: https://api.sendpulse.com/.well-known/openapi/telegram.yaml
+  - name: TikTok service API
+    url: https://api.sendpulse.com/.well-known/openapi/tiktok.yaml
+  - name: SendPulse Verifier API
+    url: https://api.sendpulse.com/.well-known/openapi/verifier.yaml
+  - name: Viber service API
+    url: https://api.sendpulse.com/.well-known/openapi/viber-chatbot.yaml
+  - name: SendPulse Viber API
+    url: https://api.sendpulse.com/.well-known/openapi/viber.yaml
+  - name: SendPulse Web Push API
+    url: https://api.sendpulse.com/.well-known/openapi/web-push.yaml
+  - name: WhatsApp service API
+    url: https://api.sendpulse.com/.well-known/openapi/whatsapp.yaml

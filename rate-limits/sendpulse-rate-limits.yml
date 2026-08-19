@@ -3,9 +3,12 @@ specificationVersion: '0.1'
 schema: https://raw.githubusercontent.com/api-evangelist/interface-research/main/schema/api-commons.yml#/$defs/RateLimits
 provider: SendPulse
 providerId: sendpulse
+generated: '2026-08-13'
+method: searched
+source: https://sendpulse.com/integrations/api
 created: '2026-06-25'
-modified: '2026-06-25'
-reconciled: false
+modified: '2026-08-13'
+reconciled: true
 tags:
 - Marketing
 - Email
@@ -15,57 +18,74 @@ tags:
 - Rate Limiting
 - Quotas
 - Throttling
-description: >-
-  The SendPulse REST API authenticates with short-lived OAuth2 Bearer tokens
-  (valid roughly one hour) issued via POST /oauth/access_token. Beyond the
-  token lifetime, the practical throughput constraints are the per-plan sending
-  quotas (subscribers, emails per month, SMS credits, chatbot subscribers)
-  rather than published per-second request limits. SendPulse may throttle
-  abusive request volume; specific per-endpoint request-rate values are not
-  published and are not reconciled in this artifact.
-notes: >-
-  SendPulse does not publish explicit per-second/per-minute REST request-rate
-  numbers in its public API documentation; the binding limits are plan sending
-  quotas and the one-hour access-token lifetime. Verify on the API
-  documentation and account dashboard during reconciliation.
+description: SendPulse publishes explicit REST request quotas tiered by pricing plan, in requests per minute and
+  requests per day, on its API documentation page. Exceeding the quota returns HTTP 429. A separate hard ceiling
+  of 10 requests per second is enforced and surfaces as proprietary error code 2020202020. OAuth2 access tokens
+  are additionally short-lived (3600s).
 sources:
 - https://sendpulse.com/integrations/api
-- https://sendpulse.com/prices
+- https://api.sendpulse.com/service-directory.json
 responseCodes:
   throttled: 429
+headers:
+  published: false
+  note: SendPulse documents NO rate-limit response headers — no X-RateLimit-*, no RateLimit-*, no Retry-After. An
+    agent cannot read remaining quota from a response and must infer exhaustion from the 429 status or error code
+    2020202020. This is the single biggest runtime-semantics gap in the API.
 limits:
-- name: Access Token Lifetime
+- name: Free tier requests per minute
+  scope: account
+  metric: requests
+  limit: '1000'
+  window: minute
+  applies_to: All free pricing plans in Email, SMTP, Push, Chatbot, Courses, CRM and Pop-ups
+- name: Free tier requests per day
+  scope: account
+  metric: requests
+  limit: '500000'
+  window: day
+  applies_to: All free pricing plans
+- name: Standard tier requests per minute
+  scope: account
+  metric: requests
+  limit: '2000'
+  window: minute
+  applies_to: All pricing plans from Free to Enterprise; Pop-ups and Courses on the Pro plan
+- name: Standard tier requests per day
+  scope: account
+  metric: requests
+  limit: '1000000'
+  window: day
+  applies_to: All pricing plans from Free to Enterprise
+- name: Enterprise tier requests per minute
+  scope: account
+  metric: requests
+  limit: '3000'
+  window: minute
+  applies_to: Email Enterprise; Push Pro with >50,000 subscribers; Chatbots Pro with >5,000 subscribers; SMTP with
+    >100,000 emails; CRM Pro. Not available in Pop-ups or Courses.
+- name: Enterprise tier requests per day
+  scope: account
+  metric: requests
+  limit: '3000000'
+  window: day
+  applies_to: Email Enterprise and equivalent tiers
+- name: Burst ceiling
+  scope: account
+  metric: requests
+  limit: '10'
+  window: second
+  note: Exceeding it returns proprietary error code 2020202020 ("More than 10 requests per second").
+- name: API campaign creation
+  scope: account
+  metric: campaigns
+  limit: '4'
+  window: hour
+  note: Exceeding it returns proprietary error code 791 ("API-campaigns limit exceeded (4 per hour)").
+- name: OAuth2 access token lifetime
   scope: account
   metric: seconds
   limit: '3600'
-  notes: OAuth2 client_credentials access tokens are valid for approximately one hour; refresh by re-requesting a token.
-- name: Emails Per Month (plan quota)
-  scope: account
-  metric: emails
-  limit: see plan
-  notes: Bounded by the active email plan (for example 15,000/month on Free); unlimited on Standard/Pro/Enterprise subscriptions.
-- name: Subscribers (plan quota)
-  scope: account
-  metric: subscribers
-  limit: see plan
-  notes: Maximum stored subscribers/contacts is set by the plan tier.
-- name: SMS Credits
-  scope: account
-  metric: messages
-  limit: see balance
-  notes: SMS sending is bounded by prepaid balance and per-country pricing.
-- name: REST Request Rate
-  scope: account
-  metric: requests
-  limit: see provider documentation
-  notes: No explicit per-second/per-minute request rate is published; excessive request volume may be throttled.
-policies:
-- name: Token Refresh
-  description: Re-request an access token via POST /oauth/access_token when the current token expires (~1 hour).
-- name: Backoff Strategy
-  description: Clients should implement exponential backoff with jitter and honor Retry-After on 429 responses.
-- name: Quota Scaling
-  description: Sending quotas raise as accounts move to higher plan tiers or purchase additional email/SMS credits.
-maintainers:
-- FN: Kin Lane
-  email: kin@apievangelist.com
+  note: Tokens issued by POST /oauth/access_token expire after one hour. Static API keys do not expire; max 5 per
+    account.
+limit_count: 9

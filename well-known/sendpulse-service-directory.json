@@ -1,0 +1,52 @@
+{
+  "$schema": "https://api.sendpulse.com/.well-known/service-directory-schema.json",
+  "name": "SendPulse API",
+  "version": "1.0.0",
+  "description": "Multi-channel marketing automation platform: email campaigns, SMS, transactional SMTP, chatbots (WhatsApp, Telegram, Facebook, Instagram, Viber, TikTok, LiveChat), CRM, automation flows, web push, pop-ups, and more.",
+  "base_url": "https://api.sendpulse.com",
+  "auth": {
+    "header": "Authorization: Bearer {token}",
+    "methods": [
+      {
+        "type": "api_key",
+        "description": "Static API key generated in account settings, no expiration",
+        "setup_url": "https://login.sendpulse.com/settings/#api",
+        "max_keys": 5
+      },
+      {
+        "type": "oauth2",
+        "flow": "client_credentials",
+        "token_endpoint": "/oauth/access_token",
+        "token_ttl_seconds": 3600
+      }
+    ]
+  },
+  "discovery": {
+    "llms_txt": "/llms.txt",
+    "llms_full_txt": "/llms-full.txt",
+    "openapi_index": "/.well-known/openapi/index.yaml",
+    "sitemap": "/sitemap.xml",
+    "documentation": "https://sendpulse.com/integrations/api"
+  },
+  "services": [
+    { "name": "bulk-email",    "spec": "/.well-known/openapi/bulk-email.yaml",    "description": "Mailing lists, email campaigns, templates, and sender management" },
+    { "name": "smtp",          "spec": "/.well-known/openapi/smtp.yaml",          "description": "Transactional emails, bounce tracking, and sender identity configuration" },
+    { "name": "sms",           "spec": "/.well-known/openapi/sms.yaml",           "description": "Mobile messaging, contact management, and SMS campaign orchestration" },
+    { "name": "chatbots",      "spec": "/.well-known/openapi/chatbots.yaml",      "description": "General cross-channel chatbot service — account info, bot listing, and dialog management" },
+    { "name": "whatsapp",      "spec": "/.well-known/openapi/whatsapp.yaml",      "description": "WhatsApp chatbot integration — bots, subscribers, flows, campaigns, and chats" },
+    { "name": "telegram",      "spec": "/.well-known/openapi/telegram.yaml",      "description": "Telegram chatbot integration — bots, subscribers, flows, campaigns, and chats" },
+    { "name": "facebook",      "spec": "/.well-known/openapi/facebook.yaml",      "description": "Facebook Messenger chatbot integration — bots, subscribers, flows, and campaigns" },
+    { "name": "instagram",     "spec": "/.well-known/openapi/instagram.yaml",     "description": "Instagram chatbot integration — bots, subscribers, flows, and campaigns" },
+    { "name": "viber-chatbot", "spec": "/.well-known/openapi/viber-chatbot.yaml", "description": "Viber chatbot integration — bots, subscribers, flows, and campaigns" },
+    { "name": "tiktok",        "spec": "/.well-known/openapi/tiktok.yaml",        "description": "TikTok chatbot integration — bots, subscribers, flows, and campaigns" },
+    { "name": "live-chat",     "spec": "/.well-known/openapi/live-chat.yaml",     "description": "SendPulse live chat widget chatbot — bots, subscribers, flows, and campaigns" },
+    { "name": "crm",           "spec": "/.well-known/openapi/crm.yaml",           "description": "Pipelines, deals, contacts, attributes, tags, and user management" },
+    { "name": "a360",          "spec": "/.well-known/openapi/a360.yaml",          "description": "Event-driven automation flows across email, SMS, push, and messengers" },
+    { "name": "web-push",      "spec": "/.well-known/openapi/web-push.yaml",      "description": "Browser push notifications, subscriber segmentation, and delivery tracking" },
+    { "name": "verifier",      "spec": "/.well-known/openapi/verifier.yaml",      "description": "Email address verification and mailing list cleaning to reduce bounces and protect sender reputation" },
+    { "name": "popups",        "spec": "/.well-known/openapi/popups.yaml",        "description": "Pop-up creation, management, and performance statistics" },
+    { "name": "file-manager",  "spec": "/.well-known/openapi/file-manager.yaml", "description": "File upload and storage management" },
+    { "name": "viber",         "spec": "/.well-known/openapi/viber.yaml",         "description": "Viber rich messaging with images, buttons, and SMS fallback (non-chatbot)" },
+    { "name": "edu",           "spec": "/.well-known/openapi/edu.yaml",           "description": "Online courses, students, and certificate management" }
+  ]
+}

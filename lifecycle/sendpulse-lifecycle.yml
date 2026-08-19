@@ -1,0 +1,50 @@
+generated: '2026-08-13'
+method: searched
+source: https://sendpulse.com/integrations/api + https://sendpulse.com/updates + https://status.sendpulse.com/
+versioning:
+  scheme: per-service path prefix, inconsistent across services
+  current:
+    bulk-email: 1.0.0
+    smtp: 1.0.0
+    sms: 1.0.0
+    crm: 0.1.0
+    edu: 1.0.0
+    a360: 1.0.0
+    web-push: 1.0.0
+    verifier: 1.0.0
+    viber: 1.0.0
+    popups: '1.0'
+    file-manager: 1.0.0
+    chatbots: 0.0.1
+    whatsapp: 0.0.1
+    telegram: 0.0.1
+    facebook: 0.0.1
+    instagram: 0.0.1
+    viber-chatbot: 0.0.1
+    live-chat: 0.0.1
+    tiktok: 0.0.1
+  note: info.version read from each published spec. Eight of the nineteen services are still declared 0.0.1 / 0.1.0
+    — pre-1.0 — including the entire chatbot family and CRM.
+status_page:
+  url: https://status.sendpulse.com/
+  verified: '2026-08-13'
+  http_status: 200
+  title: SendPulse - Status
+  note: Linked from the site footer as "Service status".
+change_log:
+  url: https://sendpulse.com/updates
+  feed: https://sendpulse.com/updates/feed.json
+  note: Dated, categorised platform updates with a machine-readable JSON feed. See changelog/sendpulse-changelog.yml.
+deprecation_policy:
+  published: false
+  note: 'No deprecation or sunset policy is published anywhere on sendpulse.com, and no RFC 8594 Sunset or Deprecation
+    header is documented. No operation in the 19 published specs carries deprecated: true. No Deprecation pointer
+    is emitted.'
+sla:
+  published: false
+  note: No public SLA / uptime commitment found; the status page publishes current state only.
+deprecated_operations: []
+support:
+  email: support@sendpulse.com
+  help_center: https://sendpulse.com/knowledge-base/
+  contacts: https://sendpulse.com/contacts

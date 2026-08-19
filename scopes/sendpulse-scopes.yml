@@ -1,0 +1,46 @@
+generated: '2026-08-13'
+method: probed
+source: https://mcp.sendpulse.com/.well-known/oauth-authorization-server (HTTP 200) + openapi/*.yml
+docs: https://sendpulse.com/integrations/api
+note: 'SendPulse operates TWO distinct OAuth surfaces and only one of them has scopes at all.
+
+  1. The REST API (api.sendpulse.com) uses client_credentials and declares an EMPTY scopes object in all 19 published
+  specs. There is no scope, permission or consent reference page — an API key or client-credentials token carries
+  the full permissions of the account that issued it. Least-privilege is not expressible.
+
+  2. The remote MCP server (mcp.sendpulse.com) publishes RFC 8414 metadata advertising exactly one scope, "rest",
+  which is coarse — a single scope granting the whole REST surface.'
+authorization_servers:
+- name: SendPulse REST API
+  issuer: https://api.sendpulse.com
+  flow: clientCredentials
+  token_endpoint: https://api.sendpulse.com/oauth/access_token
+  scopes_declared: 0
+  scopes: []
+  evidence: components.securitySchemes.oauth2.flows.clientCredentials.scopes == {} in all 19 specs under openapi/
+- name: SendPulse MCP Server
+  issuer: https://mcp.sendpulse.com
+  metadata: https://mcp.sendpulse.com/.well-known/oauth-authorization-server
+  http_status: 200
+  flows:
+  - authorization_code
+  - refresh_token
+  pkce:
+  - S256
+  - plain
+  dynamic_client_registration: https://mcp.sendpulse.com/oauth/register
+  scopes_declared: 1
+  scopes:
+  - scope: rest
+    description: Access to the SendPulse REST API on behalf of the authorising account. The only scope advertised;
+      it is not decomposed by service or by read/write.
+    source: scopes_supported in the RFC 8414 metadata
+scopes:
+- scope: rest
+  issuer: https://mcp.sendpulse.com
+  description: Access to the SendPulse REST API on behalf of the authorising account.
+scope_count: 1
+gaps:
+- No per-service or read/write scope decomposition anywhere.
+- The REST API has no scope model at all — a leaked API key is a full-account credential.
+- No consent/permissions reference page is published.

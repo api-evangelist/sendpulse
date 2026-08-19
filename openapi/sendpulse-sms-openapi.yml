@@ -1,0 +1,1054 @@
+openapi: 3.1.2
+info:
+  title: SendPulse SMS API
+  description: >
+    The SendPulse SMS API enables global mobile messaging, contact management, 
+    and campaign orchestration. It supports alphanumeric sender IDs, bulk
+    messaging,  and advanced segmentation through variables.
+  version: 1.0.0
+  x-ai-description: >
+    Comprehensive SMS gateway for global mobile marketing and transactional
+    notifications.  This API provides direct access to telecommunication routes
+    with localized routing  intelligence and high-speed delivery capabilities.
+  license:
+    name: Apache 2.0
+    identifier: Apache-2.0
+servers:
+  - url: https://api.sendpulse.com
+paths:
+  /sms/numbers:
+    post:
+      summary: Add phone numbers to a mailing list
+      operationId: addSmsNumbers
+      tags:
+        - Contacts
+      x-ai-role: sms_marketing_specialist
+      x-ai-description: >
+        Imports a batch of phone numbers into a designated address book.  This
+        is the baseline operation for building a mobile audience.
+      x-ai-reasoning-instructions:
+        - Verify the `addressBookId` exists before attempting the import.
+        - Ensure phone numbers are in international E.164 format (e.g., 380...).
+      x-ai-responding-instructions:
+        - Report the total number of successfully added contacts.
+        - Note if any numbers were skipped due to existing in the list.
+      x-ai-suggestions:
+        - >-
+          Use `addSmsNumbersWithVariables` if you have metadata like names or
+          dates.
+      x-ai-capabilities:
+        confirmation:
+          type: None
+        security_info:
+          data_handling:
+            - ResourceStateUpdate
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - addressBookId
+                - phones
+              properties:
+                addressBookId:
+                  type: integer
+                phones:
+                  type: array
+                  items:
+                    type: string
+      responses:
+        '200':
+          description: Import result
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  result:
+                    type: boolean
+                  counters:
+                    type: object
+                    properties:
+                      added:
+                        type: integer
+                      exceptions:
+                        type: integer
+                      exists:
+                        type: integer
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+    put:
+      summary: Update variables for multiple phone numbers
+      operationId: updateSmsVariablesBatch
+      tags:
+        - Contacts
+      x-ai-role: sms_marketing_specialist
+      x-ai-description: >
+        Batch updates variable values for a set of phone numbers.  Critical for
+        keeping contact data like 'Last Purchase' or 'Loyalty Points'
+        synchronized.
+      x-ai-reasoning-instructions:
+        - >-
+          Validate that the `variables` array contains correctly structured
+          objects (name, type, value).
+      x-ai-responding-instructions:
+        - Confirm the number of contacts updated.
+      x-ai-suggestions:
+        - Use this to refresh campaign-specific variables before a blast.
+      x-ai-capabilities:
+        confirmation:
+          type: None
+        security_info:
+          data_handling:
+            - ResourceStateUpdate
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - addressBookId
+                - phones
+                - variables
+              properties:
+                addressBookId:
+                  type: integer
+                phones:
+                  type: array
+                  items:
+                    type: string
+                variables:
+                  type: array
+                  items:
+                    type: object
+                    required:
+                      - name
+                      - type
+                      - value
+                    properties:
+                      name:
+                        type: string
+                      type:
+                        type: string
+                        enum:
+                          - string
+                          - number
+                          - date
+                      value:
+                        oneOf:
+                          - type: string
+                          - type: number
+      responses:
+        '200':
+          description: Update result
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    result:
+                      type: boolean
+                    counters:
+                      type: object
+                      properties:
+                        updated:
+                          type: integer
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+    delete:
+      summary: Remove phone numbers from a mailing list
+      operationId: removeSmsNumbers
+      tags:
+        - Contacts
+      x-ai-role: compliance_officer
+      x-ai-description: >
+        Surgically removes specific mobile contacts from an address book. 
+        Unlike the blacklist, this does not prevent future re-subscription.
+      x-ai-reasoning-instructions:
+        - Confirm the exact `addressBookId` to avoid cross-list deletions.
+      x-ai-responding-instructions:
+        - State clearly how many numbers were removed.
+      x-ai-suggestions:
+        - Use this for list hygiene (e.g., removing unengaged users).
+      x-ai-capabilities:
+        confirmation:
+          type: Required
+        security_info:
+          data_handling:
+            - ResourceStateUpdate
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - addressBookId
+                - phones
+              properties:
+                addressBookId:
+                  type: integer
+                phones:
+                  type: array
+                  items:
+                    type: string
+      responses:
+        '200':
+          description: Deletion result
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  result:
+                    type: boolean
+                  counters:
+                    type: object
+                    properties:
+                      deleted:
+                        type: integer
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+  /sms/numbers/variables:
+    post:
+      summary: Add phone numbers with complex variables
+      operationId: addSmsNumbersWithVariables
+      tags:
+        - Contacts
+      x-ai-role: sms_marketing_specialist
+      x-ai-description: >
+        Advanced contact ingestion endpoint that maps specific variables to 
+        each phone number in a single payload. Ideal for personalized
+        onboarding.
+      x-ai-reasoning-instructions:
+        - Note that `date` variable format must be `YYYY-MM-DD` (no time).
+      x-ai-responding-instructions:
+        - Confirm successful ingestion and variable mapping.
+      x-ai-suggestions:
+        - Structure your CRM export to match this schema for seamless sync.
+      x-ai-capabilities:
+        confirmation:
+          type: None
+        security_info:
+          data_handling:
+            - ResourceStateUpdate
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - addressBookId
+                - phones
+              properties:
+                addressBookId:
+                  type: integer
+                phones:
+                  type: object
+                  additionalProperties:
+                    type: array
+                    items:
+                      type: array
+                      items:
+                        type: object
+                        required:
+                          - name
+                          - type
+                          - value
+                        properties:
+                          name:
+                            type: string
+                          type:
+                            type: string
+                          value:
+                            type: string
+      responses:
+        '200':
+          description: Batch result
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    result:
+                      type: boolean
+                    counters:
+                      type: object
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+  /addressbooks/{id}/phone:
+    put:
+      summary: Change a phone number for a contact
+      operationId: updateContactPhone
+      tags:
+        - Contacts
+      parameters: []
+      x-ai-role: customer_engagement_specialist
+      x-ai-description: >
+        Maps an SMS identity to an existing email-based contact record.  Enables
+        multi-channel communication (Email + SMS) for a single user entity.
+      x-ai-reasoning-instructions:
+        - Check if the contact exists by email first.
+      x-ai-responding-instructions:
+        - Confirm the user is now reachable via both Email and SMS.
+      x-ai-suggestions:
+        - >-
+          Check if the phone number is already associated with another email to
+          prevent duplication.
+      x-ai-capabilities:
+        confirmation:
+          type: None
+        security_info:
+          data_handling:
+            - ResourceStateUpdate
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+                - phone
+              properties:
+                email:
+                  type: string
+                phone:
+                  type: string
+      responses:
+        '200':
+          description: Successfully updated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  result:
+                    type: boolean
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+  /addressbooks/{id}/phones/variable:
+    post:
+      summary: Change variables for a single phone contact
+      operationId: updateSmsVariablesSingle
+      tags:
+        - Contacts
+      parameters: []
+      x-ai-role: customer_engagement_specialist
+      x-ai-description: >
+        Targeted update of metadata for a specific SMS contact within a list. 
+        Useful for real-time updates (e.g., updating 'Last Visited' after a
+        store visit).
+      x-ai-reasoning-instructions:
+        - Strictly follow the `YYYY-MM-DD` format for date variables.
+      x-ai-responding-instructions:
+        - Confirm the variables have been updated for the contact.
+      x-ai-suggestions:
+        - Ensure the `id` corresponds to the correct address book.
+      x-ai-capabilities:
+        confirmation:
+          type: None
+        security_info:
+          data_handling:
+            - ResourceStateUpdate
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - phone
+                - variables
+              properties:
+                phone:
+                  type: string
+                variables:
+                  type: array
+                  items:
+                    type: object
+                    required:
+                      - name
+                      - value
+                    properties:
+                      name:
+                        type: string
+                      value:
+                        oneOf:
+                          - type: string
+                          - type: number
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  result:
+                    type: boolean
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+  /sms/numbers/info/{addressBookId}/{phoneNumber}:
+    get:
+      summary: Get information for a specific phone number
+      operationId: getSmsNumberInfo
+      tags:
+        - Contacts
+      parameters: []
+      x-ai-role: customer_engagement_specialist
+      x-ai-description: >
+        Retrieves the profile of a mobile contact, including their current 
+        variable values and the date they were added to the list.
+      x-ai-reasoning-instructions:
+        - Verify the status (e.g., 1 for active).
+      x-ai-responding-instructions:
+        - Summarize the contact's current metadata.
+      x-ai-suggestions:
+        - If status is inactive, investigate if the user was blacklisted.
+      x-ai-capabilities:
+        confirmation:
+          type: None
+      responses:
+        '200':
+          description: Contact profile
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    result:
+                      type: boolean
+                    data:
+                      type: object
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+    parameters:
+      - name: addressBookId
+        in: path
+        required: true
+        schema:
+          type: integer
+      - name: phoneNumber
+        in: path
+        required: true
+        schema:
+          type: string
+  /sms/black_list:
+    post:
+      summary: Add phone numbers to the blacklist
+      operationId: addSmsBlacklist
+      tags:
+        - Compliance
+      x-ai-role: compliance_officer
+      x-ai-description: >
+        Global suppression for SMS. Prevents any future messages from being 
+        sent to these numbers across all address books.
+      x-ai-reasoning-instructions:
+        - >-
+          Require a `description` to track the reason for blacklisting (e.g.,
+          'Spam complaint').
+      x-ai-responding-instructions:
+        - Confirm global suppression is active for these numbers.
+      x-ai-suggestions:
+        - Use this for 'Do Not Call' requests.
+      x-ai-capabilities:
+        confirmation:
+          type: Required
+        security_info:
+          data_handling:
+            - ResourceStateUpdate
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - phones
+                - description
+              properties:
+                phones:
+                  type: array
+                  items:
+                    type: string
+                description:
+                  type: string
+      responses:
+        '200':
+          description: Blacklist result
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+    delete:
+      summary: Remove a phone number from the blacklist
+      operationId: removeSmsBlacklist
+      tags:
+        - Compliance
+      x-ai-role: compliance_officer
+      x-ai-description: >
+        Lifts the global suppression for specific numbers.  Only perform this if
+        the user has explicitly re-consented.
+      x-ai-reasoning-instructions:
+        - Ensure audit logs reflect why the suppression was lifted.
+      x-ai-responding-instructions:
+        - Confirm the numbers are no longer suppressed.
+      x-ai-capabilities:
+        confirmation:
+          type: Required
+        security_info:
+          data_handling:
+            - ResourceStateUpdate
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - phones
+              properties:
+                phones:
+                  type: array
+                  items:
+                    type: string
+      responses:
+        '200':
+          description: Removal result
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+    get:
+      summary: Get a list of contacts in the blacklist
+      operationId: getSmsBlacklist
+      tags:
+        - Compliance
+      x-ai-role: compliance_officer
+      x-ai-description: |
+        Retrieves the master suppression list for auditing and external sync.
+      x-ai-responding-instructions:
+        - Present the current list of suppressed numbers.
+      x-ai-suggestions:
+        - Export this list for internal CRM synchronization.
+      x-ai-capabilities:
+        confirmation:
+          type: None
+      responses:
+        '200':
+          description: Blacklist data
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  result:
+                    type: boolean
+                  data:
+                    type: array
+                    items:
+                      type: object
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+  /sms/campaigns:
+    post:
+      summary: Create a campaign for a mailing list
+      operationId: createSmsCampaign
+      tags:
+        - Campaigns
+      x-ai-role: sms_marketing_specialist
+      x-ai-description: >
+        Triggers a bulk SMS broadcast to an entire address book.  Supports
+        dynamic content, link tracking, and scheduled delivery.
+      x-ai-reasoning-instructions:
+        - 'Note: `sender` ID must be pre-registered (max 11 chars).'
+        - 'Use `emulate: true` to test logic without burning credits.'
+        - >-
+          Consider `use_dynamic_list: true` for scheduled campaigns to include
+          late subscribers.
+      x-ai-responding-instructions:
+        - Report the unique `campaign_id` generated.
+        - Remind the user that moderation may delay delivery by a few minutes.
+      x-ai-suggestions:
+        - Newsletter_Launch
+        - Flash_Sale_Promo
+      x-ai-capabilities:
+        confirmation:
+          type: Required
+        security_info:
+          data_handling:
+            - ResourceStateUpdate
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - sender
+                - addressBookId
+                - body
+              properties:
+                sender:
+                  type: string
+                  maxLength: 11
+                addressBookId:
+                  type: integer
+                body:
+                  type: string
+                route:
+                  type: object
+                  description: e.g. {'UA':'national'}
+                date:
+                  type: string
+                  format: date-time
+                emulate:
+                  type: boolean
+                  default: false
+                use_dynamic_list:
+                  type: boolean
+                  default: false
+                stat_link_tracking:
+                  type: boolean
+                  default: false
+                stat_link_need_protocol:
+                  type: boolean
+                  default: false
+      responses:
+        '200':
+          description: Campaign created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  result:
+                    type: boolean
+                  campaign_id:
+                    type: integer
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+    delete:
+      summary: Delete a campaign
+      operationId: deleteSmsCampaign
+      tags:
+        - Campaigns
+      x-ai-role: sms_marketing_specialist
+      x-ai-description: >
+        Permanently deletes a campaign record. Only available for campaigns that
+        haven't started.
+      x-ai-reasoning-instructions:
+        - Check campaign status before attempting deletion.
+      x-ai-responding-instructions:
+        - Confirm deletion of the campaign.
+      x-ai-capabilities:
+        confirmation:
+          type: Required
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - id
+              properties:
+                id:
+                  type: integer
+      responses:
+        '200':
+          description: Deleted successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  result:
+                    type: boolean
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+  /sms/send:
+    post:
+      summary: Create a campaign for a list of phone numbers
+      operationId: sendSmsToNumbers
+      tags:
+        - Campaigns
+      x-ai-role: sms_marketing_specialist
+      x-ai-description: >
+        Fast-track broadcast for ad-hoc lists not stored in an address book. 
+        Perfect for one-off alerts or external CRM triggers.
+      x-ai-reasoning-instructions:
+        - Validate all numbers in the `phones` array are valid.
+      x-ai-responding-instructions:
+        - Report how many messages were successfully queued.
+      x-ai-suggestions:
+        - Use for 2FA codes or urgent system alerts.
+      x-ai-capabilities:
+        confirmation:
+          type: Required
+        security_info:
+          data_handling:
+            - ResourceStateUpdate
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - sender
+                - phones
+                - body
+              properties:
+                sender:
+                  type: string
+                phones:
+                  type: array
+                  items:
+                    type: string
+                body:
+                  type: string
+                date:
+                  type: string
+                route:
+                  type: object
+                emulate:
+                  type: boolean
+                stat_link_tracking:
+                  type: boolean
+                stat_link_need_protocol:
+                  type: boolean
+      responses:
+        '200':
+          description: Send result
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  result:
+                    type: boolean
+                  campaign_id:
+                    type: integer
+                  counters:
+                    type: object
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+  /sms/campaigns/list:
+    get:
+      summary: Get a list of campaigns by date
+      operationId: getSmsCampaigns
+      tags:
+        - Campaigns
+      x-ai-role: marketing_automation_specialist
+      x-ai-description: >
+        Retrieves campaign history within a specific time window.  Useful for
+        building performance dashboards.
+      x-ai-reasoning-instructions:
+        - Use `dateFrom` and `dateTo` to avoid over-fetching.
+      x-ai-responding-instructions:
+        - Summarize the campaigns found in the requested period.
+      x-ai-suggestions:
+        - Track `company_price` to monitor spend trends.
+      x-ai-capabilities:
+        confirmation:
+          type: None
+      parameters:
+        - name: dateFrom
+          in: query
+          schema:
+            type: string
+        - name: dateTo
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Campaign list
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  result:
+                    type: boolean
+                  data:
+                    type: array
+                    items:
+                      type: object
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+  /sms/campaigns/info/{id}:
+    get:
+      summary: Get campaign information
+      operationId: getSmsCampaignInfo
+      tags:
+        - Campaigns
+      parameters: []
+      x-ai-role: sms_marketing_specialist
+      x-ai-description: >
+        Returns granular status for a campaign, including delivery breakdowns
+        per phone.
+      x-ai-reasoning-instructions:
+        - Examine `status` (2 for Delivered, 12 for Not Delivered).
+      x-ai-responding-instructions:
+        - Report delivery success rates and spend for this campaign.
+      x-ai-suggestions:
+        - Re-send to 'Not delivered' contacts if the failure was transient.
+      x-ai-capabilities:
+        confirmation:
+          type: None
+      responses:
+        '200':
+          description: Campaign stats
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+  /sms/campaigns/cancel/{id}:
+    put:
+      summary: Cancel a campaign before sending has started
+      operationId: cancelSmsCampaign
+      tags:
+        - Campaigns
+      parameters: []
+      x-ai-role: sms_marketing_specialist
+      x-ai-description: >
+        Stops a scheduled campaign from being sent.  Emergency override for
+        erroneous scheduling.
+      x-ai-reasoning-instructions:
+        - Verify that sending has not already commenced.
+      x-ai-responding-instructions:
+        - Confirm the campaign has been successfully halted.
+      x-ai-suggestions:
+        - Check account balance to ensure credits are released.
+      x-ai-capabilities:
+        confirmation:
+          type: Required
+      responses:
+        '200':
+          description: Cancellation result
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  result:
+                    type: boolean
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+  /sms/campaigns/cost:
+    get:
+      summary: Calculate the cost of a campaign
+      operationId: calculateSmsCost
+      tags:
+        - Campaigns
+      x-ai-role: compliance_officer
+      x-ai-description: >
+        Estimates the total credit expenditure for a proposed campaign.  Crucial
+        for budget planning before actual broadcast.
+      x-ai-reasoning-instructions:
+        - Note that parameters must be URL-encoded.
+        - Provide either `addressBookId` or `phones` array.
+      x-ai-responding-instructions:
+        - Report the estimated price and currency.
+      x-ai-suggestions:
+        - >-
+          Adjust the message `body` to fit within single SMS segments (160
+          chars) to save costs.
+      x-ai-capabilities:
+        confirmation:
+          type: None
+      parameters:
+        - name: addressBookId
+          in: query
+          schema:
+            type: integer
+        - name: phones
+          in: query
+          schema:
+            type: array
+            items:
+              type: string
+        - name: body
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: sender
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: route
+          in: query
+          schema:
+            type: object
+      responses:
+        '200':
+          description: Cost estimate
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  result:
+                    type: boolean
+                  data:
+                    type: object
+                    properties:
+                      price:
+                        type: number
+                      currency:
+                        type: string
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+  /sms/senders:
+    get:
+      summary: Get list of sender IDs
+      operationId: getSmsSenders
+      tags:
+        - Configuration
+      x-ai-role: sms_marketing_specialist
+      x-ai-description: >
+        Retrieves all approved Alphanumeric Sender IDs.  Only IDs with status
+        'Active' (1) can be used for campaigns.
+      x-ai-reasoning-instructions:
+        - 'Check `status` (0: Moderation, 1: Active, 2: Rejected).'
+      x-ai-responding-instructions:
+        - Present the list of available sender identities.
+      x-ai-suggestions:
+        - If a sender is 'On moderation', wait before scheduling campaigns.
+      x-ai-capabilities:
+        confirmation:
+          type: None
+      responses:
+        '200':
+          description: Sender ID list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                    sender:
+                      type: string
+                    country:
+                      type: string
+                    status:
+                      type: integer
+                    status_explain:
+                      type: string
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+security:
+  - apiKey: []
+  - oauth2: []
+components:
+  securitySchemes:
+    apiKey:
+      type: http
+      scheme: bearer
+      bearerFormat: API Key
+      description: >
+        Static API Key authentication.  A long-lived token generated manually in
+        the SendPulse account settings.
+      x-ai-description: >
+        Permanent authentication token. Ideal for simple integrations without
+        token refresh logic.
+    oauth2:
+      type: oauth2
+      description: OAuth 2.0 Client Credentials flow for temporary access tokens.
+      flows:
+        clientCredentials:
+          tokenUrl: https://api.sendpulse.com/oauth/access_token
+          scopes: {}
+      x-ai-description: >
+        Standard OAuth 2.0 flow using Client ID and Client Secret.  Provides
+        temporary tokens (valid for 1 hour) for enhanced security.

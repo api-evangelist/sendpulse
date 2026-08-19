@@ -1,0 +1,2016 @@
+components:
+  schemas:
+    project:
+      title: Project
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Project ID
+        name:
+          type: string
+          description: Project name
+        urls:
+          type: array
+          items:
+            type: string
+            format: uri
+          description: Project website URL
+        domains:
+          type: array
+          items:
+            type: string
+            format: hostname
+          description: Project site domains
+        integrationCode:
+          type: string
+          description: Code that allows you to install a project on your website
+        updatedAt:
+          type: string
+          example: 2023-08-07T20:14:15.000Z
+          description: >-
+            The date and time your project was last updated. Output in the
+            YYYY-MM-DD hh: mm: ss format with a decimal fraction of a second and
+            time zone designator.
+        createdAt:
+          type: string
+          example: 2023-08-07T20:14:15.000Z
+          description: >-
+            The date and time your project was created. Output in the YYYY-MM-DD
+            hh: mm: ss format with a decimal fraction of a second and time zone
+            designator.
+      type: object
+    popup:
+      title: Popup
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Project ID
+        widgetId:
+          type: string
+          format: uuid
+          description: Pop-up ID
+        isEnabled:
+          type: boolean
+          description: >-
+            Sets a pop-up state. If you want to show your pop-up, pass "true",
+            and if you want to hide it, pass "false".
+        type:
+          type: integer
+          enum:
+            - 1
+            - 2
+            - 3
+            - 4
+            - 5
+            - 6
+            - 7
+            - 8
+          description: |
+            Popup type:
+             * `2` - modal window;
+             * `3` - overlay;
+             * `4` - floating;
+             * `5` - cookie request;
+             * `6` - horizontal;
+             * `7` - video;
+             * `8` - launcher.
+        style:
+          type: integer
+          enum:
+            - 1
+            - 2
+            - 3
+          description: |
+            Popup style:
+             * `1` - white;
+             * `2` - dark;
+             * `3` - colored.
+        position:
+          type: integer
+          enum:
+            - 1
+            - 2
+            - 3
+            - 4
+            - 5
+            - 6
+            - 7
+            - 8
+            - 9
+            - 10
+            - 11
+          description: |
+            Popup position:
+             * `1` - bottom-left;
+             * `2` - bottom-right;
+             * `3` - automatic;
+             * `4` - bottom;
+             * `5` - bottom-center;
+             * `6` - left;
+             * `7` - right;
+             * `8` - center;
+             * `9` - top-left;
+             * `10` - top-right;
+             * `11` - top-center.
+        text:
+          type:
+            - string
+            - 'null'
+          description: Text message
+        name:
+          type: string
+          description: Pop-up name
+        color:
+          type:
+            - string
+            - 'null'
+          description: Button style color
+        image:
+          properties:
+            url:
+              type: string
+              description: URL of your image uploaded to the SendPulse file manager
+            position:
+              type: integer
+              enum:
+                - 1
+                - 2
+                - 3
+                - 4
+              description: |
+                Popup image position:
+                 * `1` - left;
+                 * `2` - right;
+                 * `3` - top;
+                 * `4` - background.
+          type: object
+        video:
+          properties:
+            url:
+              type: string
+              description: URL of your video uploaded to the SendPulse file manager
+            format:
+              type: integer
+              description: |
+                Video format:
+                 * `1` - vertical;
+                 * `2` - horizontal.
+            playbackType:
+              type: integer
+              description: |
+                Video playing image:
+                 * `1` - automatic;
+                 * `2` - on click.
+          type: object
+        containsNPS:
+          type: boolean
+          description: Show of popup contains NPS
+        statistic:
+          title: Popup statistic
+          properties:
+            peopleReached:
+              type: integer
+              description: The number of times your widget was viewed
+            engagements:
+              type: integer
+              description: >-
+                The number of visitors who interacted with your widget, expanded
+                it, read its message, clicked its button, and followed the link.
+            subscriptions:
+              type: integer
+              description: >-
+                The number of email addresses or phone numbers customers entered
+                in the "Email Address Request" or "Phone Number Request" form.
+            formEngagements:
+              type: integer
+              description: The number of leads who submitted your form
+            wereClosed:
+              type: integer
+              description: >-
+                The number of visitors who closed your widget (clicked the
+                "cross" icon).
+          type: object
+        preview:
+          type: string
+          description: Preview image url
+        abtest:
+          title: AB test information
+          properties:
+            status:
+              type: integer
+              description: >
+                AB test status. Possible variants: * `0` - finished; * `1` -
+                active.
+            finishInitiator:
+              type: integer
+              description: >
+                AB test finish initiator. Possible values: * `1` - manal (by
+                user); * `2` - auto (reached finish condition).
+            finishCondition:
+              type: array
+              description: List of finish conditions for AB test
+              items:
+                properties:
+                  trigger:
+                    type: integer
+                    description: >
+                      Trigger for AB test finish. Possible values: * `1` - by
+                      date (timestamp in value); * `2` - by views
+                      (peopleReached); * `3` - by subscriptions.
+                  value:
+                    type: integer
+                    description: Max value for trigger
+                type: object
+            winner:
+              type: string
+              description: Winner variant ID. Empty if test not finished yet.
+            separatedConditions:
+              type: boolean
+              description: True if variants use different show conditions.
+            statistic:
+              properties:
+                peopleReached:
+                  type: integer
+                  description: Total amount of views for both variants
+                subscriptions:
+                  type: integer
+                  description: Total amount of subscriptions for both variants
+              type: object
+            participants:
+              properties:
+                A:
+                  properties:
+                    id:
+                      type: string
+                    preview:
+                      type: string
+                      description: Preview image url
+                    statistic:
+                      properties:
+                        peopleReached:
+                          type: integer
+                          description: Total amount of views
+                        subscriptions:
+                          type: integer
+                          description: Total amount of subscriptions
+                      type: object
+                  type: object
+                B:
+                  properties:
+                    id:
+                      type: string
+                    preview:
+                      type: string
+                      description: Preview image url
+                    statistic:
+                      properties:
+                        peopleReached:
+                          type: integer
+                          description: Total amount of views
+                        subscriptions:
+                          type: integer
+                          description: Total amount of subscriptions
+                      type: object
+                  type: object
+              type: object
+            createdAt:
+              type: string
+              example: 2023-08-07T20:14:15.000Z
+              description: >-
+                The date and time your AB test was created. Output in the
+                YYYY-MM-DD hh: mm: ss format with a decimal fraction of a second
+                and time zone designator.
+          type: object
+        updatedAt:
+          type: string
+          example: 2023-08-07T20:14:15.000Z
+          description: >-
+            The date and time your project was last updated. Output in the
+            YYYY-MM-DD hh: mm: ss format with a decimal fraction of a second and
+            time zone designator.
+        createdAt:
+          type: string
+          example: 2023-08-07T20:14:15.000Z
+          description: >-
+            The date and time your project was created. Output in the YYYY-MM-DD
+            hh: mm: ss format with a decimal fraction of a second and time zone
+            designator.
+      type: object
+    popupStatistic:
+      title: Popup statistic
+      properties:
+        peopleReached:
+          type: integer
+          description: The number of times your widget was viewed
+        engagements:
+          type: integer
+          description: >-
+            The number of visitors who interacted with your widget, expanded it,
+            read its message, clicked its button, and followed the link.
+        subscriptions:
+          type: integer
+          description: >-
+            The number of email addresses or phone numbers customers entered in
+            the "Email Address Request" or "Phone Number Request" form.
+        formEngagements:
+          type: integer
+          description: The number of leads who submitted your form
+        wereClosed:
+          type: integer
+          description: >-
+            The number of visitors who closed your widget (clicked the "cross"
+            icon).
+      type: object
+    NPSStatistic:
+      title: NPS variant statistic
+      properties:
+        button:
+          title: NPS button base information
+          properties:
+            id:
+              type: string
+              format: UUID
+              description: Uniq ID
+            caption:
+              type: string
+            contactVariableName:
+              type: string
+              description: Variable name from CRM
+            variants:
+              type: array
+              items:
+                properties:
+                  title:
+                    type: string
+                    description: Variant display name
+                  option:
+                    type: string
+                    description: Variant value
+                type: object
+            variantsCount:
+              type: integer
+              description: Total amount of variants
+            displayType:
+              type: integer
+              description: NPS variants display type
+          type: object
+        date:
+          type: string
+        option:
+          type: string
+          description: Variant value
+        total:
+          type: integer
+          description: Total amount of voices for this variant
+      type: object
+    aggregatedNPSStatistic:
+      title: Aggregated NPS statistic
+      properties:
+        average:
+          type: integer
+          description: NPS score
+        total:
+          type: integer
+          description: Total number of results
+        promoter:
+          type: integer
+          description: Total promoters
+        neutral:
+          type: integer
+          description: Total neutral
+        critic:
+          type: integer
+          description: Total critic
+        promoterPercent:
+          type: integer
+          description: Percent of promoters
+        neutralPercent:
+          type: integer
+          description: Percent of neutrals
+        criticPercent:
+          type: integer
+          description: Percent of critics
+      type: object
+    projectStatistic:
+      title: Project statistic
+      properties:
+        peopleReached:
+          type: integer
+          description: The number of times your widget was viewed
+        engagements:
+          type: integer
+          description: >-
+            The number of visitors who interacted with your widget, expanded it,
+            read its message, clicked its button, and followed the link.
+        subscriptions:
+          type: integer
+          description: >-
+            The number of email addresses or phone numbers customers entered in
+            the "Email Address Request" or "Phone Number Request" form.
+        formEngagements:
+          type: integer
+          description: The number of leads who submitted your form
+        wereClosed:
+          type: integer
+          description: >-
+            The number of visitors who closed your widget (clicked the "cross"
+            icon).
+        widget:
+          type: integer
+          description: The number of visitors who use widget buttons.
+      type: object
+    pageInfo:
+      title: Page Info
+      properties:
+        total:
+          type: integer
+          description: Total number of records
+        offset:
+          type: integer
+          description: Limit on the number of displayed records
+        first:
+          type: integer
+          description: Record count offset
+        arguments:
+          type: object
+      type: object
+    scenarioSetting:
+      title: Display condition
+      properties:
+        groupId:
+          type: integer
+          description: |
+            Behavior group:
+             * `1` - frequency;
+             * `2` - time;
+             * `3` - user behavior;
+             * `4` - clicks;
+             * `5` - pages and urls;
+             * `6` - utm parameters;
+             * `7` - visitor data.
+        dataType:
+          type: string
+          description: Data type
+        name:
+          type: string
+          description: Condition name
+        uniq:
+          type: boolean
+          description: Is unique
+      type: object
+    userPlanInfo:
+      title: Tariff info
+      properties:
+        expiredAt:
+          type: string
+          description: Expiring date
+        daysAmount:
+          type: integer
+          description: Tariff length in days
+        currentDaysAmount:
+          type: integer
+          description: Used days for this moment
+        daysLeft:
+          type: integer
+          description: Days left
+        nextLimitsDrop:
+          type: string
+          description: Date for monthly limits drop
+        options:
+          type: object
+          properties:
+            views:
+              type: object
+              properties:
+                amount:
+                  type: integer
+                  description: Total available amount
+                amountLeft:
+                  type: integer
+                  description: Left amount
+                currentAmount:
+                  type: integer
+                  description: Used amount
+          description: Tariff limits info
+      type: object
+    subscriber:
+      title: Subscriber
+      properties:
+        id:
+          type: integer
+          description: Subscriber id
+        clientId:
+          type: string
+          description: Id formed in browser
+        name:
+          type:
+            - string
+            - 'null'
+        projectId:
+          type: string
+        popupId:
+          type: string
+        gender:
+          type: integer
+          description: |
+            Available values:
+             * `0` - unknown;
+             * `1` - male;
+             * `2` - female.
+        email:
+          type:
+            - string
+            - 'null'
+        city:
+          type:
+            - string
+            - 'null'
+        phone:
+          type:
+            - string
+            - 'null'
+        createdAt:
+          type: string
+        updatedAt:
+          type: string
+      type: object
+    unauthorizedResponse:
+      description: Unauthorized
+    accessDeniedResponse:
+      description: Access denied
+  securitySchemes:
+    apiKey:
+      type: http
+      scheme: bearer
+      bearerFormat: API Key
+      description: >
+        Static API Key authentication.  A long-lived token generated manually in
+        the SendPulse account settings.
+      x-ai-description: >
+        Permanent authentication token. Ideal for simple integrations without
+        token refresh logic.
+    outh2:
+      type: oauth2
+      description: OAuth 2.0 Client Credentials flow for temporary access tokens.
+      flows:
+        clientCredentials:
+          tokenUrl: https://api.sendpulse.com/oauth/access_token
+          scopes: {}
+      x-ai-description: >
+        Standard OAuth 2.0 flow using Client ID and Client Secret.  Provides
+        temporary tokens (valid for 1 hour) for enhanced security.
+info:
+  title: SendPulse Pop-up API
+  description: >-
+    API for managing pop-ups in SendPulse. This API allows you to create,
+    update, and delete pop-ups, as well as retrieve information about them and
+    their performance.
+  version: '1.0'
+openapi: 3.1.2
+paths:
+  /public/api/widgets/list:
+    get:
+      tags:
+        - Project
+      summary: Get a list of projects
+      description: Returns a list of projects with information about each project
+      parameters:
+        - name: first
+          in: query
+          description: Limit on the number of displayed records. The default number is 10.
+          schema:
+            type: integer
+        - name: offset
+          in: query
+          description: Limit on the number of displayed records
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Operation successful
+          content:
+            application/json:
+              schema:
+                properties:
+                  result:
+                    type: boolean
+                  data:
+                    description: List projects
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/project'
+                  pageInfo:
+                    $ref: '#/components/schemas/pageInfo'
+                type: object
+        '400':
+          description: Validation error
+        '401':
+          $ref: '#/components/schemas/unauthorizedResponse'
+        '404':
+          description: Resource Not Found
+      operationId: listWidgets
+      x-ai-role: project_manager
+      x-ai-description: >-
+        Returns a paginated catalog of widgets (projects) available in the
+        account. Widgets are the core structural units in SendPulse's project
+        layer — each represents a configurable component tied to a campaign or
+        automation flow. Use this endpoint to discover existing projects before
+        creating or modifying them.
+      x-ai-reasoning-instructions:
+        - >-
+          If the user hasn't specified pagination params, default to first=10
+          and offset=0.
+        - >-
+          If the result set looks incomplete, suggest increasing 'first' or
+          paginating using 'offset' + 'pageInfo'.
+        - >-
+          Check pageInfo.hasNextPage (or equivalent) to determine if more
+          records exist beyond the current page.
+      x-ai-responding-instructions:
+        - >-
+          Summarize how many projects were returned and whether more pages are
+          available.
+        - If the list is empty, suggest the user create a new project first.
+        - >-
+          If the user is looking for a specific project, suggest filtering by
+          name on the client side or refining the query.
+      x-ai-suggestions:
+        - >-
+          Use offset-based pagination to iterate through all projects: increment
+          offset by the value of 'first' on each call.
+        - >-
+          Combine with a project-detail endpoint to fetch full configuration for
+          a specific widget.
+      x-ai-capabilities:
+        confirmation:
+          type: None
+        security_info:
+          data_handling:
+            - ReadOnly
+  /public/api/widgets:
+    post:
+      tags:
+        - Project
+      summary: Create a project
+      description: >-
+        Creates a new project with the specified properties and returns a copy
+        of the information with the project ID
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                name:
+                  type: string
+                  description: Project name
+                url:
+                  type: string
+                  description: Project website URL
+              type: object
+      responses:
+        '201':
+          description: Operation successful
+          content:
+            application/json:
+              schema:
+                properties:
+                  result:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/project'
+                type: object
+        '400':
+          description: Validation error
+          content:
+            application/json:
+              example:
+                result: false
+                errors:
+                  name.length.max: Too long, max length - {{255}}
+                  url: Invalid URL 'bad_url'
+        '401':
+          $ref: '#/components/schemas/unauthorizedResponse'
+        '404':
+          description: Resource Not Found
+      operationId: createWidget
+      x-ai-role: popup_campaign_manager
+      x-ai-description: >-
+        Initializes a new popup/widget project — the root container for all
+        popup campaigns within SendPulse. A 'project' here groups widgets by
+        website or product area, binding them to a specific URL for targeting
+        and analytics. Creating a project is the mandatory first step before any
+        popup can be designed, published, or tracked.
+      x-ai-reasoning-instructions:
+        - >-
+          Check whether a project with the same name or URL already exists
+          before creating a new one to avoid duplication.
+        - >-
+          Validate that the `url` is a well-formed absolute URL (e.g.,
+          https://example.com); relative paths and bare domains will be
+          rejected.
+        - >-
+          Ask the user to confirm the target website URL — it determines which
+          domain popups will be scoped to.
+        - >-
+          If `name` is not provided, suggest deriving it from the domain part of
+          the URL for clarity.
+      x-ai-responding-instructions:
+        - >-
+          Confirm successful creation by surfacing the new project ID from the
+          `data` object.
+        - >-
+          Remind the user that the next step is creating individual widgets
+          (popups) within this project.
+        - >-
+          On a 400 error, parse the `errors` object and explain each field-level
+          constraint violation in plain language.
+        - >-
+          On a 401, inform the user that OAuth2 client credentials are required
+          and guide them through obtaining a token.
+      x-ai-suggestions:
+        - Main Website — https://mycompany.com
+        - Blog — https://blog.mycompany.com
+        - Landing Page Q2 — https://promo.mycompany.com/q2
+      x-ai-capabilities:
+        confirmation:
+          type: None
+        security_info:
+          data_handling:
+            - ResourceStateUpdate
+  /public/api/popups/conditions:
+    get:
+      tags:
+        - Popup
+      summary: Get a list of available display conditions for popups
+      description: >-
+        Returns a list of available display conditions for popups with detailed
+        information
+      responses:
+        '200':
+          description: Operation successful
+          content:
+            application/json:
+              schema:
+                properties:
+                  result:
+                    type: boolean
+                  data:
+                    description: List of available display conditions
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/scenarioSetting'
+                  pageInfo:
+                    $ref: '#/components/schemas/pageInfo'
+                type: object
+      operationId: getPopupConditions
+      x-ai-role: conversion_optimization_specialist
+      x-ai-description: >-
+        Returns the full catalog of display conditions available for popup
+        targeting rules. Display conditions are the fundamental building blocks
+        of popup triggers — they define WHEN and FOR WHOM a popup appears (e.g.,
+        time on page, scroll depth, exit intent, URL match, device type).
+        Knowing available conditions is a prerequisite before constructing or
+        modifying any popup scenario.
+      x-ai-reasoning-instructions:
+        - >-
+          Always fetch this list before building or explaining popup targeting
+          scenarios — available conditions may vary by account tier or platform
+          version.
+        - >-
+          Use this endpoint to validate user-specified condition types before
+          applying them to a popup.
+        - >-
+          If the user asks 'how can I show a popup only to mobile users?' or
+          similar questions, map their intent to specific condition entries from
+          this list.
+        - >-
+          Correlate condition identifiers from this response with the
+          `scenarioSetting` schema when constructing popup display rules.
+      x-ai-responding-instructions:
+        - >-
+          Group conditions by logical category (e.g., behavioral, geographic,
+          device, traffic source) if the data supports it — this helps the user
+          pick the right condition faster.
+        - >-
+          If the user is new to popups, explain that conditions combine into
+          targeting rules that control popup visibility.
+        - >-
+          Highlight any conditions relevant to the user's stated goal (e.g.,
+          exit intent for cart abandonment, scroll depth for content
+          engagement).
+      x-ai-suggestions:
+        - >-
+          After retrieving conditions, use the relevant condition IDs to
+          configure a popup scenario via the popup update or create endpoint.
+        - >-
+          Combine multiple conditions with AND/OR logic to build precise
+          audience targeting.
+        - >-
+          Check `pageInfo` to determine if pagination is needed for accounts
+          with extended condition sets.
+      x-ai-capabilities:
+        confirmation:
+          type: None
+        security_info:
+          data_handling:
+            - ReadOnly
+  /public/api/popups/list/quiz/{projectId}:
+    get:
+      tags:
+        - Popup
+      summary: Get a list of quiz pop-ups by your project ID
+      description: >-
+        Returns a list of quiz pop-ups using your project ID with information
+        about each pop-up
+      parameters:
+        - name: projectId
+          in: path
+          description: Project ID
+          schema:
+            type: string
+            format: uuid
+          required: true
+        - name: first
+          in: query
+          description: Limit on the number of displayed records. The default number is 10
+          schema:
+            type: integer
+        - name: offset
+          in: query
+          description: Limit on the number of displayed records
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Operation successful
+          content:
+            application/json:
+              schema:
+                properties:
+                  result:
+                    type: boolean
+                  data:
+                    description: List of popups
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/popup'
+                  pageInfo:
+                    $ref: '#/components/schemas/pageInfo'
+                type: object
+        '400':
+          description: Validation error
+          content:
+            application/json:
+              example:
+                result: false
+                errors:
+                  widgetId: Invalid id {{'7803a6ea-4b32-44d7-a245-5cda4e4f20'}}
+        '401':
+          $ref: '#/components/schemas/unauthorizedResponse'
+        '403':
+          $ref: '#/components/schemas/accessDeniedResponse'
+        '404':
+          description: Resource Not Found
+      operationId: listQuizPopupsByProject
+      x-ai-role: conversion_optimization_specialist
+      x-ai-description: >-
+        Retrieves all quiz-type pop-ups scoped to a specific project. Quiz
+        pop-ups are interactive lead-capture tools that segment visitors based
+        on their answers — useful for personalization pipelines, audience
+        segmentation audits, and campaign performance reviews. Use this to
+        inventory active quizzes before launching new ones or to sync pop-up
+        state with external analytics.
+      x-ai-reasoning-instructions:
+        - >-
+          Verify the projectId is a valid UUID before calling; malformed IDs
+          return 400 with field-level errors.
+        - >-
+          Default page size is 10 — if the project is large, paginate using
+          `first` + `offset` to avoid incomplete results.
+        - >-
+          Cross-reference returned pop-up IDs with campaign records when
+          diagnosing conversion drop-offs.
+        - >-
+          If the response is empty, confirm the project has quiz-type widgets
+          created — other pop-up types are returned by separate endpoints.
+      x-ai-responding-instructions:
+        - >-
+          Report the total number of quiz pop-ups found and summarize key fields
+          (name, status, ID) for each.
+        - >-
+          If `pageInfo` indicates more records exist, suggest repeating the call
+          with an incremented `offset`.
+        - >-
+          On 403, clarify that the OAuth2 token may lack scope for this project
+          — advise re-authenticating with correct client credentials.
+        - >-
+          On 404, confirm the projectId exists and belongs to the authenticated
+          account.
+      x-ai-suggestions:
+        - >-
+          Start with `first: 10, offset: 0` and iterate if `pageInfo` shows more
+          pages.
+        - >-
+          After listing, use individual pop-up IDs to fetch detailed statistics
+          or update quiz content.
+        - >-
+          Filter results client-side by status field to distinguish active vs.
+          paused quizzes.
+      x-ai-capabilities:
+        confirmation:
+          type: None
+        security_info:
+          data_handling:
+            - ReadOnly
+  /public/api/popups/list/{projectId}:
+    get:
+      tags:
+        - Popup
+      summary: Get a list of pop-ups by your project ID
+      description: >-
+        Returns a list of pop-ups using your project ID with information about
+        each pop-up
+      parameters:
+        - name: projectId
+          in: path
+          description: Project ID
+          schema:
+            type: string
+            format: uuid
+          required: true
+        - name: first
+          in: query
+          description: Limit on the number of displayed records. The default number is 10
+          schema:
+            type: integer
+        - name: offset
+          in: query
+          description: Limit on the number of displayed records
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Operation successful
+          content:
+            application/json:
+              schema:
+                properties:
+                  result:
+                    type: boolean
+                  data:
+                    description: List of popups
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/popup'
+                  pageInfo:
+                    $ref: '#/components/schemas/pageInfo'
+                type: object
+        '400':
+          description: Validation error
+          content:
+            application/json:
+              example:
+                result: false
+                errors:
+                  widgetId: Invalid id {{'7803a6ea-4b32-44d7-a245-5cda4e4f20'}}
+        '401':
+          $ref: '#/components/schemas/unauthorizedResponse'
+        '403':
+          $ref: '#/components/schemas/accessDeniedResponse'
+        '404':
+          description: Resource Not Found
+      operationId: listPopupsByProjectId
+      x-ai-role: conversion_optimization_specialist
+      x-ai-description: >-
+        Retrieves the full inventory of pop-ups associated with a specific
+        project. In SendPulse, a project acts as the organizational unit
+        grouping all pop-up widgets — this endpoint is the entry point for
+        auditing, managing, or selecting pop-ups before triggering display logic
+        or analytics workflows. Pagination via `first`/`offset` is essential for
+        projects with large widget libraries.
+      x-ai-reasoning-instructions:
+        - >-
+          Confirm the projectId is a valid UUID before calling — malformed IDs
+          return a 400 with field-level error details.
+        - >-
+          If the user wants all popups, start with the default limit (10) and
+          check `pageInfo` to determine if additional pages exist.
+        - >-
+          When the user provides a project name instead of ID, first resolve the
+          project UUID via the projects listing endpoint.
+        - >-
+          If the response returns an empty array, verify the projectId belongs
+          to the authenticated account — a 404 may indicate ownership mismatch
+          rather than an empty project.
+      x-ai-responding-instructions:
+        - >-
+          Present the popup list with key identifiers (name, ID, status) to help
+          the user orient quickly.
+        - >-
+          If `pageInfo` indicates more records exist, proactively suggest
+          fetching the next page with adjusted `offset`.
+        - >-
+          On 401/403, distinguish between invalid credentials and insufficient
+          permissions — the user may need to re-authenticate or request access
+          to the project.
+        - >-
+          On 404, clarify that the projectId may not belong to the current
+          account, not just that it doesn't exist.
+      x-ai-suggestions:
+        - >-
+          Use `first=50` to retrieve a larger batch if the project is known to
+          have many popups.
+        - >-
+          Combine with a popup details endpoint to drill into a specific widget
+          after listing.
+        - >-
+          Iterate with `offset` increments equal to `first` to paginate through
+          the full list.
+      x-ai-capabilities:
+        confirmation:
+          type: None
+        security_info:
+          data_handling:
+            - ReadOnly
+  /public/api/popups/{popupId}/set-state:
+    post:
+      tags:
+        - Popup
+      summary: Set a pop-up state
+      description: Enables or disables a pop-up on your website
+      parameters:
+        - name: popupId
+          in: path
+          description: >-
+            Pop-up ID. It can be obtained using the "Get a list of projects"
+            method or in the pop-up builder address bar in your account.
+          schema:
+            type: string
+            format: uuid
+          required: true
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                is_enabled:
+                  type: boolean
+                  description: >-
+                    Sets a pop-up state. If you want to enable your pop-up, pass
+                    "true", and if you want to disable it, pass "false".
+              type: object
+      responses:
+        '200':
+          description: Operation successful
+          content:
+            application/json:
+              schema:
+                properties:
+                  result:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/popup'
+                type: object
+        '400':
+          description: Validation error
+          content:
+            application/json:
+              example:
+                result: false
+                errors:
+                  id: Invalid id {{'af1b0e2a-bff9-4d09-a7d9-99d61d2b43b'}}
+                  isEnabled: Invalid boolean value '23'
+        '401':
+          $ref: '#/components/schemas/unauthorizedResponse'
+        '404':
+          description: Resource Not Found
+      operationId: setPopupState
+      x-ai-role: conversion_optimization_specialist
+      x-ai-description: >-
+        Controls the live visibility of a pop-up on the target website. Toggling
+        a pop-up state is a high-impact, instantly effective action — enabling
+        it starts showing the pop-up to visitors immediately, while disabling it
+        suppresses it without deleting any configuration or accumulated
+        statistics. Use this as the primary on/off switch for campaigns, A/B
+        tests, or seasonal promotions.
+      x-ai-reasoning-instructions:
+        - >-
+          Confirm the popupId exists and belongs to the user's account before
+          toggling — an invalid UUID will produce a 400 error.
+        - >-
+          Before enabling, consider whether the pop-up is part of an active A/B
+          test or scheduled campaign to avoid unintended conflicts.
+        - >-
+          If the user wants to temporarily pause a pop-up (e.g., during site
+          maintenance), prefer disabling over deleting — all settings and stats
+          are preserved.
+        - >-
+          Verify the boolean value is strictly true or false, not a string like
+          '1' or 'yes', as the API rejects non-boolean values.
+      x-ai-responding-instructions:
+        - >-
+          Confirm the new state explicitly: 'Pop-up has been enabled / disabled
+          successfully.'
+        - >-
+          If enabling, mention that the pop-up will now be visible to website
+          visitors immediately.
+        - >-
+          If disabling, reassure the user that the pop-up configuration and
+          statistics are preserved and it can be re-enabled at any time.
+        - >-
+          On a 404 error, suggest verifying the popupId via the 'Get a list of
+          projects' endpoint.
+      x-ai-suggestions:
+        - 'To enable: set is_enabled to true'
+        - 'To pause a campaign without losing data: set is_enabled to false'
+        - Follow up with 'Get a list of projects' to verify the updated state
+      x-ai-capabilities:
+        confirmation:
+          type: Recommended
+          message: >-
+            This will immediately change the pop-up visibility on the live
+            website. Confirm the intended state (enable/disable).
+        security_info:
+          data_handling:
+            - ResourceStateUpdate
+  /public/api/popups/{popupId}:
+    delete:
+      tags:
+        - Popup
+      summary: Delete popup
+      description: Delete popup
+      parameters:
+        - name: popupId
+          in: path
+          description: >-
+            Pop-up ID. It can be obtained using the "Get a list of projects"
+            method or in the pop-up builder address bar in your account.
+          schema:
+            type: string
+            format: uuid
+          required: true
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                is_enabled:
+                  type: boolean
+                  description: Delete popup".
+              type: object
+      responses:
+        '200':
+          description: Operation successful
+          content:
+            application/json:
+              schema:
+                properties:
+                  result:
+                    type: boolean
+                type: object
+        '400':
+          description: Validation error
+          content:
+            application/json:
+              example:
+                result: false
+                errors:
+                  id: Invalid id {{'af1b0e2a-bff9-4d09-a7d9-99d61d2b43b'}}
+                  isEnabled: Invalid boolean value '23'
+        '401':
+          $ref: '#/components/schemas/unauthorizedResponse'
+        '403':
+          $ref: '#/components/schemas/accessDeniedResponse'
+        '404':
+          description: Resource Not Found
+      operationId: deletePopup
+      x-ai-role: conversion_optimization_specialist
+      x-ai-description: >-
+        Permanently removes a popup from the account. This is a destructive,
+        irreversible operation — once deleted, the popup and all associated
+        display rules, targeting settings, and collected statistics are gone.
+        Use this only when a popup is fully obsolete; consider disabling it
+        first via the update endpoint if you may need to reactivate it later.
+      x-ai-reasoning-instructions:
+        - >-
+          Before deleting, confirm the popupId belongs to the correct popup —
+          retrieve its details first if there is any ambiguity.
+        - >-
+          Warn the user that deletion is permanent and cannot be undone; suggest
+          disabling the popup (is_enabled: false) as a safer alternative if
+          unsure.
+        - >-
+          Check whether the popup is currently active on a live site — deleting
+          an active popup may break embedded scripts or integrations.
+        - >-
+          If the user provides a name instead of a UUID, resolve the ID via the
+          list endpoint before proceeding.
+      x-ai-responding-instructions:
+        - Confirm successful deletion by echoing the popupId that was removed.
+        - >-
+          If result is true, suggest reviewing remaining popups to ensure no
+          related funnels are broken.
+        - >-
+          On 404, clarify that the popup may have already been deleted or the ID
+          is incorrect.
+        - >-
+          On 400, surface the specific validation error (invalid UUID format or
+          invalid boolean) so the user can correct the request.
+      x-ai-suggestions:
+        - >-
+          Retrieve popup list first with `getPopupList` to confirm the correct
+          popupId before deletion.
+        - >-
+          Consider using the update endpoint to set is_enabled: false instead of
+          permanent deletion.
+        - After deletion, audit remaining popups to verify campaign integrity.
+      x-ai-capabilities:
+        confirmation:
+          type: Required
+          message: >-
+            This action permanently deletes the popup and cannot be undone.
+            Confirm the popupId before proceeding.
+        security_info:
+          data_handling:
+            - IrreversibleDelete
+  /public/api/statistics/widget/{projectId}:
+    get:
+      tags:
+        - Project statistic
+      summary: Get statistics about your project
+      description: >-
+        Returns the information about how many site visitors saw your all your
+        pop-ups in a project and interacted with them
+      parameters:
+        - name: projectId
+          in: path
+          description: Project ID
+          schema:
+            type: string
+            format: uuid
+          required: true
+        - name: start
+          in: query
+          description: Start date timestamp
+          schema:
+            type: integer
+          required: false
+        - name: end
+          in: query
+          description: End date timestamp
+          schema:
+            type: integer
+          required: false
+      responses:
+        '200':
+          description: Operation successful
+          content:
+            application/json:
+              schema:
+                properties:
+                  result:
+                    type: boolean
+                  data:
+                    description: Project statistic
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/projectStatistic'
+                type: object
+        '400':
+          description: Validation error
+          content:
+            application/json:
+              example:
+                result: false
+                errors:
+                  id: Invalid id {{'7803a6ea-4b32-44d7-a245-5cda4e4f203'}}
+        '401':
+          $ref: '#/components/schemas/unauthorizedResponse'
+        '404':
+          description: Resource Not Found
+      operationId: getProjectWidgetStatistics
+      x-ai-role: conversion_optimization_analyst
+      x-ai-description: >-
+        Provides aggregated performance metrics for all pop-up widgets within a
+        project. This is the top-level analytics endpoint — it shows the full
+        funnel from impressions to interactions across every pop-up in the
+        project scope, making it the primary entry point for evaluating overall
+        campaign effectiveness before drilling into individual widget
+        performance.
+      x-ai-reasoning-instructions:
+        - >-
+          If no date range is specified, clarify with the user whether they want
+          all-time data or a specific period, as unbounded queries may return
+          large datasets.
+        - >-
+          Validate that `projectId` is a valid UUID before calling — malformed
+          IDs return a 400 with a specific error message.
+        - >-
+          When interpreting results, calculate the interaction rate
+          (interactions / impressions) to give the user a meaningful conversion
+          metric, not just raw counts.
+        - >-
+          If the result array is empty, check whether the project has any
+          published pop-ups or whether the date range predates their creation.
+      x-ai-responding-instructions:
+        - >-
+          Summarize the aggregate impression and interaction counts across all
+          pop-ups, then highlight the overall interaction rate as a percentage.
+        - >-
+          If the date range was specified, frame the results in that context
+          (e.g., 'Over the past 30 days...').
+        - >-
+          Suggest drilling into individual widget statistics as a logical next
+          step if the project contains multiple pop-ups.
+        - >-
+          On a 404, confirm whether the projectId is correct and whether the
+          user has access to that project.
+      x-ai-suggestions:
+        - >-
+          Use Unix timestamps for `start` and `end` — e.g., last 30 days:
+          start=now-30d, end=now.
+        - >-
+          Combine with individual widget endpoints to compare top-performing
+          pop-ups against the project average.
+        - Schedule periodic calls to track conversion rate trends over time.
+      x-ai-capabilities:
+        confirmation:
+          type: None
+        security_info:
+          data_handling:
+            - ReadOnly
+  /public/api/statistics/popup/{popupId}:
+    get:
+      tags:
+        - Popup statistic
+      summary: Get statistics about your pop-up
+      description: >-
+        Returns the information about how many site visitors saw your your
+        pop-up and interacted with them
+      parameters:
+        - name: popupId
+          in: path
+          description: Pop-up ID
+          schema:
+            type: string
+            format: uuid
+          required: true
+        - name: start
+          in: query
+          description: Start date timestamp
+          schema:
+            type: integer
+          required: false
+        - name: end
+          in: query
+          description: End date timestamp
+          schema:
+            type: integer
+          required: false
+      responses:
+        '200':
+          description: Operation successful
+          content:
+            application/json:
+              schema:
+                properties:
+                  result:
+                    type: boolean
+                  data:
+                    description: Popup statistic
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/popupStatistic'
+                type: object
+        '400':
+          description: Validation error
+          content:
+            application/json:
+              example:
+                result: false
+                errors:
+                  id: Invalid id {{'7803a6ea-4b32-44d7-a245-5cda4e4f203'}}
+        '401':
+          $ref: '#/components/schemas/unauthorizedResponse'
+        '404':
+          description: Resource Not Found
+      operationId: getPopupStatistics
+      x-ai-role: conversion_rate_optimization_specialist
+      x-ai-description: >-
+        Retrieves aggregated engagement metrics for a specific pop-up over a
+        given time window. This is the primary diagnostic endpoint for
+        evaluating pop-up performance — use it to determine whether a pop-up's
+        targeting, design, or timing is driving meaningful interaction, or
+        whether it needs to be revised or deactivated.
+      x-ai-reasoning-instructions:
+        - >-
+          If no date range is provided, clarify with the user whether they want
+          all-time stats or a specific period — unbounded queries can return
+          noisy data.
+        - >-
+          Validate that `start` is chronologically before `end` before calling;
+          the API returns a 400 if the range is inverted.
+        - >-
+          Cross-reference the returned impression and interaction counts: a high
+          view-to-interaction ratio is normal; an abnormally low one may
+          indicate UX issues with the pop-up.
+        - >-
+          If popupId is sourced from user input, verify it is a valid UUID
+          (format: 8-4-4-4-12 hex digits) before calling to avoid a 400
+          validation error.
+      x-ai-responding-instructions:
+        - >-
+          Present the statistics as a human-readable summary: total views,
+          interactions, and conversion rate — not raw array dumps.
+        - >-
+          If the date range was not specified, note the time window that the
+          data covers so the user understands the scope.
+        - >-
+          If interaction count is zero, flag this proactively and suggest
+          checking whether the pop-up is still active and correctly targeted.
+        - >-
+          On 404, inform the user that the pop-up ID does not exist and suggest
+          listing available pop-ups.
+      x-ai-suggestions:
+        - >-
+          Use a 7-day or 30-day window (Unix timestamps) for actionable
+          performance snapshots.
+        - >-
+          Combine with the pop-up update endpoint to iterate on low-performing
+          pop-ups based on these stats.
+        - >-
+          Schedule periodic stat pulls to track trend changes after
+          configuration edits.
+      x-ai-capabilities:
+        confirmation:
+          type: None
+        security_info:
+          data_handling:
+            - ReadOnly
+  /public/api/statistics/nps/{popupId}:
+    get:
+      tags:
+        - Popup statistic
+      summary: Get NPS variants statistics and base NPS button/buttons info
+      description: Returns list of NPS variants with total amount of voices for each
+      parameters:
+        - name: popupId
+          in: path
+          description: Pop-up ID
+          schema:
+            type: string
+            format: uuid
+          required: true
+        - name: start
+          in: query
+          description: Start date timestamp
+          schema:
+            type: integer
+          required: false
+        - name: end
+          in: query
+          description: End date timestamp
+          schema:
+            type: integer
+          required: false
+      responses:
+        '200':
+          description: Operation successful
+          content:
+            application/json:
+              schema:
+                properties:
+                  result:
+                    type: boolean
+                  data:
+                    description: NPS aggregated statistic
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/NPSStatistic'
+                type: object
+        '400':
+          description: Validation error
+          content:
+            application/json:
+              example:
+                result: false
+                errors:
+                  id: Invalid id {{'7803a6ea-4b32-44d7-a245-5cda4e4f203'}}
+        '401':
+          $ref: '#/components/schemas/unauthorizedResponse'
+        '404':
+          description: Resource Not Found
+      operationId: getNpsStatisticsByPopupId
+      x-ai-role: ux_research_analyst
+      x-ai-description: >-
+        Retrieves aggregated NPS (Net Promoter Score) vote distribution for a
+        specific popup. Each NPS variant represents a score bucket (e.g., 0–6
+        detractors, 7–8 passives, 9–10 promoters) with its total voice count.
+        Use this to calculate the actual NPS score and analyze audience
+        sentiment trends over a given time range.
+      x-ai-reasoning-instructions:
+        - >-
+          Before calling, verify the popupId is a valid UUID and belongs to an
+          NPS-type popup — this endpoint returns an error for non-NPS popup IDs.
+        - >-
+          If no date range is provided, the API returns all-time statistics;
+          clarify with the user whether a bounded period is intended.
+        - >-
+          To compute the NPS score from the response, calculate: ((Promoters -
+          Detractors) / Total) × 100 — the API returns raw counts, not the
+          derived score.
+        - >-
+          When comparing periods, make two separate calls with different
+          start/end ranges and diff the results.
+      x-ai-responding-instructions:
+        - >-
+          Present the NPS variants as a breakdown table showing each score
+          bucket and its vote count.
+        - >-
+          If enough data is present, compute and surface the derived NPS score
+          (range: -100 to +100) to give the user actionable insight.
+        - >-
+          If the result array is empty, explain that no responses were recorded
+          in the requested period.
+        - >-
+          On a 404, confirm whether the popupId belongs to the correct account
+          and is an NPS popup type.
+      x-ai-suggestions:
+        - >-
+          Use a 30-day window (start/end as Unix timestamps) to get a meaningful
+          NPS baseline.
+        - >-
+          Follow up with a list-popups call to cross-reference popup name and
+          type before querying statistics.
+        - >-
+          Combine with response-rate data to contextualize whether a low NPS
+          reflects genuine sentiment or a small sample size.
+      x-ai-capabilities:
+        confirmation:
+          type: None
+        security_info:
+          data_handling:
+            - ReadOnly
+  /public/api/statistics/nps/{popupId}/aggregated:
+    get:
+      tags:
+        - Popup statistic
+      summary: Get NPS statistics
+      description: Returns the information about NPS results
+      parameters:
+        - name: popupId
+          in: path
+          description: Pop-up ID
+          schema:
+            type: string
+            format: uuid
+          required: true
+        - name: start
+          in: query
+          description: Start date timestamp
+          schema:
+            type: integer
+          required: false
+        - name: end
+          in: query
+          description: End date timestamp
+          schema:
+            type: integer
+          required: false
+      responses:
+        '200':
+          description: Operation successful
+          content:
+            application/json:
+              schema:
+                properties:
+                  result:
+                    type: boolean
+                  data:
+                    description: NPS aggregated statistic
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/aggregatedNPSStatistic'
+                type: object
+        '400':
+          description: Validation error
+          content:
+            application/json:
+              example:
+                result: false
+                errors:
+                  id: Invalid id {{'7803a6ea-4b32-44d7-a245-5cda4e4f203'}}
+        '401':
+          $ref: '#/components/schemas/unauthorizedResponse'
+        '404':
+          description: Resource Not Found
+      operationId: getPopupAggregatedNpsStatistics
+      x-ai-role: customer_experience_analyst
+      x-ai-description: >-
+        Retrieves aggregated Net Promoter Score (NPS) results for a specific
+        popup, optionally filtered by a date range. NPS is a loyalty metric
+        derived from responses to 'How likely are you to recommend us?' — values
+        range from 0–10 and are grouped into Detractors (0–6), Passives (7–8),
+        and Promoters (9–10). The aggregated view collapses individual responses
+        into distribution totals, enabling trend analysis and campaign
+        performance evaluation without exposing raw respondent data.
+      x-ai-reasoning-instructions:
+        - >-
+          Before fetching, verify the popupId refers to an NPS-type popup —
+          non-NPS popups will return empty or irrelevant data.
+        - >-
+          If a date range is requested, validate that `start` is strictly before
+          `end` and both are Unix timestamps in seconds.
+        - >-
+          When no date range is provided, the API returns all-time aggregated
+          data — clarify this to the user if they expect recent results.
+        - >-
+          Cross-reference the popup's active period with the requested range to
+          detect misaligned queries (e.g., querying before the popup was
+          launched).
+        - >-
+          Consider that low response counts make the NPS score statistically
+          unreliable — flag this if `data` totals are small.
+      x-ai-responding-instructions:
+        - >-
+          Present the NPS breakdown by category (Promoters, Passives,
+          Detractors) with percentages, not just raw counts.
+        - >-
+          Calculate and display the NPS score as: (% Promoters − % Detractors) ×
+          100, if not already provided in the response.
+        - >-
+          Highlight any significant shift in NPS trend if the user is comparing
+          periods.
+        - >-
+          If the result is empty, suggest widening the date range or confirming
+          the popup has received responses.
+        - >-
+          On 400 errors, surface the invalid field clearly and guide the user to
+          correct the popupId format (UUID).
+      x-ai-suggestions:
+        - >-
+          Fetch last 30 days: set `start` to current timestamp minus 2592000,
+          `end` to now.
+        - >-
+          Compare quarterly performance by making two calls with consecutive
+          90-day ranges.
+        - >-
+          Use alongside `getPopupStatistics` to correlate NPS scores with
+          impression/response volume.
+      x-ai-capabilities:
+        confirmation:
+          type: None
+        security_info:
+          data_handling:
+            - ReadOnly
+  /public/api/tariff/limits:
+    get:
+      tags:
+        - Tariff
+      summary: Get info about user tariff plan
+      description: Returns the information about user tariff plan
+      responses:
+        '200':
+          description: Operation successful
+          content:
+            application/json:
+              schema:
+                properties:
+                  result:
+                    type: boolean
+                  data:
+                    description: Tariff info
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/userPlanInfo'
+                type: object
+        '401':
+          $ref: '#/components/schemas/unauthorizedResponse'
+      operationId: getTariffLimits
+      x-ai-role: account_management_specialist
+      x-ai-description: >-
+        Returns the current tariff plan limits for the authenticated user
+        account — quota boundaries that govern what actions are permitted across
+        all SendPulse services. This is a foundational diagnostic endpoint:
+        before executing bulk operations, campaign sends, or contact imports, an
+        agent should consult these limits to avoid hitting plan restrictions
+        mid-task.
+      x-ai-reasoning-instructions:
+        - >-
+          Call this endpoint before any bulk or resource-heavy operation to
+          confirm the account has sufficient quota.
+        - >-
+          Parse the returned limits in relation to the intended action — e.g.,
+          compare available email sends against the planned campaign size.
+        - >-
+          If limits are close to exhaustion, proactively warn the user before
+          proceeding rather than letting the downstream call fail.
+        - >-
+          Do not cache this response for long periods — tariff data can change
+          after a plan upgrade or billing cycle reset.
+      x-ai-responding-instructions:
+        - >-
+          Present limits in a human-readable summary, highlighting any quotas
+          that are near their ceiling.
+        - >-
+          If a limit is zero or fully consumed, clearly flag it as a blocker for
+          the user's intended action.
+        - Suggest a plan upgrade path if the user's goal exceeds current quotas.
+        - >-
+          Avoid listing raw numbers without context — always relate them to what
+          the user is trying to accomplish.
+      x-ai-suggestions:
+        - >-
+          Check this before scheduling a large email campaign to verify send
+          quota.
+        - Use together with current usage stats to calculate remaining capacity.
+        - >-
+          Consult before importing large contact lists to verify addressbook or
+          contact limits.
+      x-ai-capabilities:
+        confirmation:
+          type: None
+        security_info:
+          data_handling:
+            - ReadOnly
+  /public/api/subscribers/get/{subscriberId}:
+    get:
+      tags:
+        - Subscribers
+      summary: Get subscriber
+      description: Returns detailed info about subscriber
+      parameters:
+        - name: subscriberId
+          in: path
+          description: Subscriber ID
+          schema:
+            type: integer
+          required: true
+      responses:
+        '200':
+          description: Operation successful
+          content:
+            application/json:
+              schema:
+                properties:
+                  result:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/subscriber'
+                type: object
+        '400':
+          description: Validation error
+          content:
+            application/json:
+              example:
+                result: false
+                errors:
+                  widgetId: Invalid id {{'7803a6ea-4b32-44d7-a245-5cda4e4f20'}}
+        '401':
+          $ref: '#/components/schemas/unauthorizedResponse'
+        '403':
+          $ref: '#/components/schemas/accessDeniedResponse'
+        '404':
+          description: Resource Not Found
+      operationId: getSubscriberById
+      x-ai-role: crm_data_analyst
+      x-ai-description: >-
+        Retrieves the full profile of a single subscriber by their unique ID.
+        This is the primary lookup endpoint when you need to inspect a
+        subscriber's current state — their contact info, custom variables,
+        activity history, and subscription status across lists. Use this before
+        performing targeted updates or when diagnosing delivery or engagement
+        issues for a specific contact.
+      x-ai-reasoning-instructions:
+        - >-
+          Ensure the subscriberId is a valid integer — UUIDs or emails will
+          cause a 400 validation error.
+        - >-
+          If the caller only has an email, first resolve it to a subscriberId
+          via a search or list-contacts endpoint before calling this one.
+        - >-
+          A 404 means the subscriber does not exist or was deleted; do not retry
+          — inform the user and suggest verifying the ID source.
+        - >-
+          A 403 may indicate the subscriber belongs to a list the current OAuth
+          scope cannot access — check credential scopes.
+      x-ai-responding-instructions:
+        - >-
+          Present the subscriber's key fields (email, name, status, lists) in a
+          human-readable summary rather than raw JSON.
+        - >-
+          Highlight the subscription status and any unsubscribe or bounce flags
+          if present, as these affect campaign eligibility.
+        - >-
+          If the result is 404, clearly state the subscriber was not found and
+          suggest the user double-check the ID.
+      x-ai-suggestions:
+        - >-
+          After fetching, use the subscriber's list IDs to call getMailingList
+          for full list context.
+        - >-
+          If the subscriber is inactive or bounced, consider calling
+          updateSubscriberStatus to manage their state.
+        - Use the returned custom variables to personalize follow-up campaigns.
+      x-ai-capabilities:
+        confirmation:
+          type: None
+        security_info:
+          data_handling:
+            - ReadOnly
+  /public/api/subscribers/by-popup/{popupId}:
+    get:
+      tags:
+        - Subscribers
+      summary: Get subscriber by popup
+      description: Returns list of subscribers for popup
+      parameters:
+        - name: popupId
+          in: path
+          description: Popup ID
+          schema:
+            type: string
+            format: uuid
+          required: true
+      responses:
+        '200':
+          description: Operation successful
+          content:
+            application/json:
+              schema:
+                properties:
+                  result:
+                    type: boolean
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/subscriber'
+                type: object
+        '400':
+          description: Validation error
+          content:
+            application/json:
+              example:
+                result: false
+                errors:
+                  widgetId: Invalid id {{'7803a6ea-4b32-44d7-a245-5cda4e4f20'}}
+        '401':
+          $ref: '#/components/schemas/unauthorizedResponse'
+        '403':
+          $ref: '#/components/schemas/accessDeniedResponse'
+        '404':
+          description: Resource Not Found
+      operationId: getSubscribersByPopup
+      x-ai-role: popup_conversion_analyst
+      x-ai-description: >-
+        Retrieves all subscribers who opted in through a specific popup widget.
+        This endpoint bridges popup performance data with your subscriber base —
+        it answers not just 'who subscribed', but 'how they subscribed',
+        enabling segmentation by acquisition channel and conversion source
+        analysis.
+      x-ai-reasoning-instructions:
+        - >-
+          Confirm the popupId is a valid UUID before calling — the 400 error
+          example shows that malformed UUIDs are rejected.
+        - >-
+          Consider that an empty data array is a valid success response — it
+          means the popup exists but has no subscribers yet.
+        - >-
+          If the caller's goal is campaign targeting, suggest pairing this data
+          with mailing list import endpoints.
+        - >-
+          A 404 response means the popup itself does not exist — distinguish
+          this from 'popup exists but has no subscribers'.
+      x-ai-responding-instructions:
+        - Report the total count of returned subscribers alongside the list.
+        - >-
+          If the list is empty, clarify that the popup may not have converted
+          any visitors yet — not that it's missing.
+        - >-
+          Suggest filtering or exporting the subscriber list as a logical next
+          step.
+        - >-
+          On 403, explain that the OAuth2 scope may not cover popup subscriber
+          access.
+      x-ai-suggestions:
+        - >-
+          Use the returned subscriber list to create a targeted segment in your
+          mailing list.
+        - >-
+          Cross-reference with popup analytics to measure opt-in conversion
+          rate.
+        - >-
+          Import subscribers into an address book using the bulk import
+          endpoint.
+      x-ai-capabilities:
+        confirmation:
+          type: None
+        security_info:
+          data_handling:
+            - ReadOnly
+  /public/api/subscribers/by-project/{projectId}:
+    get:
+      tags:
+        - Subscribers
+      summary: Get subscriber by project
+      description: Returns list of subscribers for project
+      parameters:
+        - name: projectId
+          in: path
+          description: Project ID
+          schema:
+            type: string
+            format: uuid
+          required: true
+      responses:
+        '200':
+          description: Operation successful
+          content:
+            application/json:
+              schema:
+                properties:
+                  result:
+                    type: boolean
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/subscriber'
+                type: object
+        '400':
+          description: Validation error
+          content:
+            application/json:
+              example:
+                result: false
+                errors:
+                  widgetId: Invalid id {{'7803a6ea-4b32-44d7-a245-5cda4e4f20'}}
+        '401':
+          $ref: '#/components/schemas/unauthorizedResponse'
+        '403':
+          $ref: '#/components/schemas/accessDeniedResponse'
+        '404':
+          description: Resource Not Found
+      operationId: listSubscribersByProject
+      x-ai-role: subscriber_management_specialist
+      x-ai-description: >-
+        Retrieves all subscribers associated with a specific project
+        (widget/form group) identified by its UUID. In SendPulse, a project acts
+        as a logical container for multiple subscription widgets — this endpoint
+        provides a full audience snapshot for that container, useful for
+        auditing subscriber sources, cross-referencing growth metrics, or
+        triggering downstream segmentation logic.
+      x-ai-reasoning-instructions:
+        - >-
+          Verify that the projectId is a valid UUID before calling — malformed
+          IDs return a 400 with field-level errors.
+        - >-
+          If the response data array is empty, distinguish between 'project
+          exists but has no subscribers' and 'project not found' (404) — handle
+          both cases explicitly.
+        - >-
+          For large projects, anticipate potentially large arrays and advise the
+          user if pagination or filtering is available.
+        - >-
+          Confirm the caller has the oAuth2ClientCredentials scope before
+          attempting — a 403 indicates insufficient permissions, not a bad
+          project ID.
+      x-ai-responding-instructions:
+        - Report the total count of subscribers returned alongside the list.
+        - >-
+          If the array is empty, suggest verifying the projectId or checking
+          whether any widgets are linked to the project.
+        - >-
+          On a 400 error, surface the exact field-level validation message
+          (e.g., malformed UUID) so the user can correct the input immediately.
+        - >-
+          On a 404, confirm whether the project ID itself is incorrect or has
+          been deleted.
+      x-ai-suggestions:
+        - >-
+          Use the returned subscriber list to feed a segmentation or export
+          workflow.
+        - >-
+          Cross-reference with `getProjectDetails` to confirm the project is
+          active before querying subscribers.
+        - >-
+          If you need subscribers across multiple projects, call this endpoint
+          in parallel for each projectId and merge results client-side.
+      x-ai-capabilities:
+        confirmation:
+          type: None
+        security_info:
+          data_handling:
+            - ReadOnly
+security:
+  - apiKey: []
+  - oauth2: []
+servers:
+  - description: Production server
+    url: https://api.sendpulse.com/v2/pop-ups
+tags:
+  - name: Project
+  - name: Project statistic
+  - name: Popup
+  - name: Popup statistic

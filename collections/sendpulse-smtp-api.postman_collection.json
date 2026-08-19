@@ -1,0 +1,506 @@
+{
+  "item": [
+    {
+      "id": "54ac2a09-538b-446d-9848-45ebbbc8276f",
+      "name": "SMTP",
+      "description": {
+        "content": "Transactional email sending and tracking.",
+        "type": "text/plain"
+      },
+      "item": [
+        {
+          "id": "972c4524-e193-437c-aaa9-c3f6c44f58b4",
+          "name": "List sent transactional emails.",
+          "request": {
+            "name": "List sent transactional emails.",
+            "description": {},
+            "url": {
+              "path": [
+                "smtp",
+                "emails"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [
+                {
+                  "disabled": false,
+                  "key": "limit",
+                  "value": "<integer>"
+                },
+                {
+                  "disabled": false,
+                  "key": "offset",
+                  "value": "<integer>"
+                }
+              ],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "8084c33c-69d1-43d1-bd5f-49534b538730",
+              "name": "A list of sent emails.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "smtp",
+                    "emails"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "limit",
+                      "value": "<integer>"
+                    },
+                    {
+                      "key": "offset",
+                      "value": "<integer>"
+                    }
+                  ],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "[\n  {\n    \"id\": \"string\",\n    \"sender\": \"rFuNdTlRWfM@HJHHTKZHljkyNomLIf.bsg\",\n    \"total_size\": 921,\n    \"sender_ip\": \"string\",\n    \"smtp_answer_code\": 1672,\n    \"smtp_answer_subcode\": \"string\",\n    \"smtp_answer_data\": \"string\",\n    \"used_ip\": \"string\",\n    \"recipient\": \"wMxyVsEDg@gZXFcskVYGiLFPfKlskcsQbQLtCSW.hkmy\",\n    \"subject\": \"string\",\n    \"send_date\": \"string\"\n  },\n  {\n    \"id\": \"string\",\n    \"sender\": \"nyOIITxWLkD8@zS.xisc\",\n    \"total_size\": 2438,\n    \"sender_ip\": \"string\",\n    \"smtp_answer_code\": 68,\n    \"smtp_answer_subcode\": \"string\",\n    \"smtp_answer_data\": \"string\",\n    \"used_ip\": \"string\",\n    \"recipient\": \"Q6JiD-e@ZwiktXoAMxzEeBjTWSgBurGLBPN.elrq\",\n    \"subject\": \"string\",\n    \"send_date\": \"string\"\n  }\n]",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "19255162-3b00-4860-ac3d-f82b07de61b0",
+          "name": "Send a transactional email.",
+          "request": {
+            "name": "Send a transactional email.",
+            "description": {},
+            "url": {
+              "path": [
+                "smtp",
+                "emails"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "auth": null,
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": {\n    \"subject\": \"<string>\",\n    \"from\": {\n      \"name\": \"<string>\",\n      \"email\": \"<email>\"\n    },\n    \"to\": [\n      {\n        \"name\": \"<string>\",\n        \"email\": \"<email>\"\n      },\n      {\n        \"name\": \"<string>\",\n        \"email\": \"<email>\"\n      }\n    ],\n    \"html\": \"<string>\",\n    \"text\": \"<string>\"\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "id": "df325cfb-0d60-49e3-bed5-57bfdedfc864",
+              "name": "Email accepted for delivery.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "smtp",
+                    "emails"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"email\": {\n    \"subject\": \"<string>\",\n    \"from\": {\n      \"name\": \"<string>\",\n      \"email\": \"<email>\"\n    },\n    \"to\": [\n      {\n        \"name\": \"<string>\",\n        \"email\": \"<email>\"\n      },\n      {\n        \"name\": \"<string>\",\n        \"email\": \"<email>\"\n      }\n    ],\n    \"html\": \"<string>\",\n    \"text\": \"<string>\"\n  }\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"result\": false\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "91e89794-8243-4cb8-ac6b-c641e558054c",
+          "name": "Get a transactional email by ID.",
+          "request": {
+            "name": "Get a transactional email by ID.",
+            "description": {},
+            "url": {
+              "path": [
+                "smtp",
+                "emails",
+                ":id"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<string>",
+                  "key": "id",
+                  "description": "(Required) "
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "3ea37d3c-6169-4499-a852-72354b468213",
+              "name": "Email information.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "smtp",
+                    "emails",
+                    ":id"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "id",
+                      "description": "(Required) "
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"id\": \"string\",\n  \"sender\": \"iRaz3@QyDJWhjxmQDcFtzcQf.di\",\n  \"total_size\": 5902,\n  \"sender_ip\": \"string\",\n  \"smtp_answer_code\": 7887,\n  \"smtp_answer_subcode\": \"string\",\n  \"smtp_answer_data\": \"string\",\n  \"used_ip\": \"string\",\n  \"recipient\": \"qhZjIWlyu9@YpjWXLyFhuYkhrRVkSYsOhQI.iw\",\n  \"subject\": \"string\",\n  \"send_date\": \"string\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "ba8824b2-cda4-402f-9f94-1b32ac47becc",
+          "name": "List unsubscribed emails.",
+          "request": {
+            "name": "List unsubscribed emails.",
+            "description": {},
+            "url": {
+              "path": [
+                "smtp",
+                "unsubscribe"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "f457af6b-abfb-4997-a4e4-1fc6ab5c1619",
+              "name": "A list of unsubscribed emails.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "smtp",
+                    "unsubscribe"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "[\n  \"xewAjsrsiM9F3jA@FfSxdkOIppzobcEbIkGhzYSRTqUu.sews\",\n  \"YyugBz10@QGTPHOciEnvnPDnkdPTzdKBLAYhDMjQ.zezz\"\n]",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "4ef61e78-b36b-4868-b637-85611aac356a",
+          "name": "Add emails to the unsubscribe list.",
+          "request": {
+            "name": "Add emails to the unsubscribe list.",
+            "description": {},
+            "url": {
+              "path": [
+                "smtp",
+                "unsubscribe"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "auth": null,
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"emails\": [\n    {\n      \"email\": \"<email>\",\n      \"comment\": \"<string>\"\n    },\n    {\n      \"email\": \"<email>\",\n      \"comment\": \"<string>\"\n    }\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "id": "6c91152f-f9a2-4d8b-8782-33edd99f5f2f",
+              "name": "Emails unsubscribed.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "smtp",
+                    "unsubscribe"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"emails\": [\n    {\n      \"email\": \"<email>\",\n      \"comment\": \"<string>\"\n    },\n    {\n      \"email\": \"<email>\",\n      \"comment\": \"<string>\"\n    }\n  ]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"result\": false\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        }
+      ],
+      "event": []
+    }
+  ],
+  "event": [],
+  "variable": [
+    {
+      "type": "string",
+      "value": "https://api.sendpulse.com",
+      "key": "baseUrl"
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{bearerToken}}"
+      }
+    ]
+  },
+  "info": {
+    "_postman_id": "c73f7629-c5b2-4be9-9f14-119c968a0aac",
+    "name": "SendPulse Account SMTP API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": {
+      "content": "REST API for the SendPulse multichannel marketing platform. Covers email address books and bulk campaigns, SMTP transactional email, SMS, web push notifications, chatbots, and Automation 360. All requests are made over HTTPS against https://api.sendpulse.com and authenticated with a Bearer access token obtained via the OAuth2 client_credentials grant at POST /oauth/access_token. Tokens are valid for approximately one hour.\n\nContact Support:\n Name: SendPulse Support",
+      "type": "text/plain"
+    }
+  }
+}

@@ -1,0 +1,84 @@
+generated: '2026-08-13'
+method: searched
+source: openapi/sendpulse-bulk-email-openapi.yml + https://sendpulse.com/integrations/api/bulk-email
+asyncapi:
+  published: false
+  note: SendPulse publishes no AsyncAPI document. No asyncapi/ spec file is written — this artifact records the
+    webhook surface only.
+transport: HTTP callback to a subscriber-supplied HTTPS URL
+management:
+  style: REST CRUD, one webhook row per action
+  operations:
+  - operationId: getWebhooks
+    method: get
+    path: /v2/email-service/webhook
+    summary: Get webhooks
+  - operationId: createWebhook
+    method: post
+    path: /v2/email-service/webhook
+    summary: Create a webhook
+  - operationId: getWebhookById
+    method: get
+    path: /v2/email-service/webhook/{id}
+    summary: Get webhook by ID
+  - operationId: updateWebhook
+    method: put
+    path: /v2/email-service/webhook/{id}
+    summary: Update a webhook
+  - operationId: deleteWebhook
+    method: delete
+    path: /v2/email-service/webhook/{id}
+    summary: Delete a webhook
+  create_request:
+    url: string — HTTPS handler URL (required)
+    actions: array of strings — events to subscribe to (required)
+  stored_shape:
+    id: integer
+    user_id: integer
+    url: string
+    action: string
+events:
+  documented_examples:
+  - delivered
+  - open
+  - unsubscribe
+  source_note: Only these three action values appear in the published spec examples and x-ai-reasoning-instructions
+    ("Choose specific actions to track (e.g., unsubscribe, open, delivered)"). SendPulse publishes NO enumerated
+    list of valid action values anywhere — the request schema types actions as an untyped array of strings. The
+    event names are therefore NOT fully known and none are invented here.
+  related_delivery_status_codes:
+  - code: 0
+    meaning: In queue
+  - code: 1
+    meaning: Sent
+  - code: 2
+    meaning: Delivered
+  - code: 3
+    meaning: Opened
+  - code: 4
+    meaning: Link redirected
+  - code: 5
+    meaning: User unsubscribe
+  - code: 9
+    meaning: Rejected by server as spam
+  - code: 10
+    meaning: Mailbox is full
+  - code: 11
+    meaning: Marked as spam by user
+  status_code_source: https://sendpulse.com/integrations/api/bulk-email (campaign statistics response), NOT the
+    webhook payload schema.
+signature_verification:
+  published: false
+  note: No webhook signing secret, HMAC header or replay-protection mechanism is documented. A receiver cannot verify
+    that a callback came from SendPulse.
+retry_policy:
+  published: false
+payload_schema:
+  published: false
+  note: No schema for the callback body is published in the spec or the docs.
+gaps:
+- No enumerated event catalogue
+- No callback payload schema
+- No signature/verification scheme
+- No retry or delivery-guarantee statement
+- Webhooks exist for the email service only — no webhook surface for CRM, chatbots, courses, SMS or push

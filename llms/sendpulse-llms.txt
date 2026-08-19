@@ -1,0 +1,43 @@
+# SendPulse API
+
+> Multi-channel marketing automation platform: email campaigns, SMS, transactional SMTP, chatbots (WhatsApp, Telegram, Facebook, Instagram, Viber, TikTok, LiveChat), CRM, automation flows, web push, pop-ups, and more.
+
+Base URL: `https://api.sendpulse.com`. Authentication uses OAuth 2.0 Client Credentials — POST `client_id` and `client_secret` to `/oauth/access_token` to receive a Bearer token (valid 1 hour). Alternatively, a static API Key from your account settings can be used. Include `Authorization: Bearer <token>` in all requests. Full auth documentation: https://sendpulse.com/integrations/api
+
+## Email and Messaging
+
+- [Bulk Email API](https://api.sendpulse.com/.well-known/openapi/bulk-email.yaml): Mailing lists, email campaigns, templates, and sender management
+- [SMTP API](https://api.sendpulse.com/.well-known/openapi/smtp.yaml): Transactional emails, bounce tracking, and sender identity configuration
+- [SMS API](https://api.sendpulse.com/.well-known/openapi/sms.yaml): Mobile messaging, contact management, and SMS campaign orchestration
+
+## Chatbots
+
+- [Chatbots API](https://api.sendpulse.com/.well-known/openapi/chatbots.yaml): General cross-channel chatbot service — account info, bot listing, and dialog management
+- [WhatsApp API](https://api.sendpulse.com/.well-known/openapi/whatsapp.yaml): WhatsApp chatbot integration — bots, subscribers, flows, campaigns, and chats
+- [Telegram API](https://api.sendpulse.com/.well-known/openapi/telegram.yaml): Telegram chatbot integration — bots, subscribers, flows, campaigns, and chats
+- [Facebook Messenger API](https://api.sendpulse.com/.well-known/openapi/facebook.yaml): Facebook Messenger chatbot integration — bots, subscribers, flows, and campaigns
+- [Instagram API](https://api.sendpulse.com/.well-known/openapi/instagram.yaml): Instagram chatbot integration — bots, subscribers, flows, and campaigns
+- [Viber Chatbot API](https://api.sendpulse.com/.well-known/openapi/viber-chatbot.yaml): Viber chatbot integration — bots, subscribers, flows, and campaigns
+- [LiveChat API](https://api.sendpulse.com/.well-known/openapi/live-chat.yaml): SendPulse live chat widget chatbot — bots, subscribers, flows, and campaigns
+- [TikTok API](https://api.sendpulse.com/.well-known/openapi/tiktok.yaml): TikTok chatbot integration — bots, subscribers, flows, and campaigns
+
+## CRM
+
+- [CRM API](https://api.sendpulse.com/.well-known/openapi/crm.yaml): Pipelines, deals, contacts, attributes, tags, and user management
+
+## Automation and Tools
+
+- [Automation 360 API](https://api.sendpulse.com/.well-known/openapi/a360.yaml): Event-driven automation flows across email, SMS, push, and messengers
+- [Web Push API](https://api.sendpulse.com/.well-known/openapi/web-push.yaml): Browser push notifications, subscriber segmentation, and delivery tracking
+- [Verifier API](https://api.sendpulse.com/.well-known/openapi/verifier.yaml): Email address verification and mailing list cleaning to reduce bounces and protect sender reputation
+
+## Education
+
+- [Education API](https://api.sendpulse.com/.well-known/openapi/edu.yaml): Online courses, students, and certificate management
+
+## Optional
+
+- [Viber API](https://api.sendpulse.com/.well-known/openapi/viber.yaml): Viber rich messaging with images, buttons, and SMS fallback (non-chatbot)
+- [Pop-up API](https://api.sendpulse.com/.well-known/openapi/popups.yaml): Pop-up creation, management, and performance statistics
+- [File Manager API](https://api.sendpulse.com/.well-known/openapi/file-manager.yaml): File upload and storage management
+- [SendPulse API Index](https://api.sendpulse.com/.well-known/openapi/index.yaml): Master index listing all SendPulse sub-service API specifications

@@ -1,0 +1,477 @@
+components:
+  securitySchemes:
+    apiKey:
+      type: http
+      scheme: bearer
+      bearerFormat: API Key
+      description: >
+        Static API Key authentication.  A long-lived token generated manually in
+        the SendPulse account settings.
+      x-ai-description: >
+        Permanent authentication token. Ideal for simple integrations without
+        token refresh logic.
+    outh2:
+      type: oauth2
+      description: OAuth 2.0 Client Credentials flow for temporary access tokens.
+      flows:
+        clientCredentials:
+          tokenUrl: https://api.sendpulse.com/oauth/access_token
+          scopes: {}
+      x-ai-description: >
+        Standard OAuth 2.0 flow using Client ID and Client Secret.  Provides
+        temporary tokens (valid for 1 hour) for enhanced security.
+  schemas:
+    SuccessResponse:
+      properties:
+        success:
+          type: boolean
+        data:
+          anyOf:
+            - type: array
+              items:
+                type: object
+            - type: object
+            - type: boolean
+      type: object
+    Dialog:
+      properties:
+        _id:
+          type: string
+        bot_id:
+          type: string
+        contact:
+          type: object
+          properties:
+            id:
+              type: string
+            full_name:
+              type: string
+            profile_pic:
+              type: string
+        last_inbox_message:
+          type: object
+          properties:
+            text:
+              type: string
+            date:
+              type: string
+              example: 2020-12-11T21:00:00.000Z
+        last_outbox_message:
+          type: object
+          properties:
+            text:
+              type: string
+            date:
+              type: string
+              example: 2020-12-11T21:00:00.000Z
+        service:
+          type: integer
+        user_id:
+          type: integer
+        inbox_unread_count:
+          type: integer
+        is_chat_opened:
+          type: boolean
+        created_at:
+          type: string
+          example: 2020-12-11T21:00:00.000Z
+        updated_at:
+          type: string
+          example: 2020-12-11T21:00:00.000Z
+    Account:
+      properties:
+        tariff:
+          type: object
+          description: '`-1` - unlimited'
+          properties:
+            code:
+              type: string
+              example: messengers500
+            max_bots:
+              type: integer
+              example: -1
+            max_contacts:
+              type: integer
+              example: 500
+            max_messages:
+              type: integer
+              example: -1
+            max_tags:
+              type: integer
+              example: -1
+            max_variables:
+              type: integer
+              example: -1
+            branding:
+              type: boolean
+              example: false
+            is_exceeded:
+              type: boolean
+              example: false
+            is_expired:
+              type: boolean
+            expired_at:
+              type: string
+              example: 2026-01-15T11:11:11.000Z
+        statistics:
+          type: object
+          description: ''
+          properties:
+            messages:
+              type: integer
+            bots:
+              type: integer
+            contacts:
+              type: integer
+            variables:
+              type: integer
+            active_count_by_last_month:
+              type: integer
+            active_count_by_current_tariff_period:
+              type: integer
+        services:
+          type: array
+          description: |2-
+
+                                * `1` - Messenger
+
+                                * `3` - Telegram
+
+                                * `4` - WhatsApp
+
+                                * `5` - Instagram
+
+                                * `6` - Viber
+
+                                * `7` - Livechat
+
+                                * `8` - TikTok
+
+                                * `1000` - Bridge
+
+                                * `1001` - Telegram personal
+          items:
+            type: integer
+          example:
+            - 1
+            - 3
+            - 5
+    Bot:
+      properties:
+        id:
+          type: string
+        channel_data:
+          type: object
+          properties:
+            access_token:
+              type: string
+            id:
+              type: integer
+            name:
+              type: string
+            username:
+              type: string
+        inbox:
+          type: object
+          properties:
+            total:
+              type: integer
+            unread:
+              type: integer
+        status:
+          type: integer
+          enum:
+            - 3
+            - 4
+          description: |2-
+
+                                * `3` - active
+
+                                * `4` - inactive
+        created_at:
+          type: string
+          example: 2020-12-11T21:00:00.000Z
+info:
+  description: >-
+    Using the API for Chatbots, you can integrate your system with SendPulse’s
+    chatbots service and get detailed information about your account, bots,
+    dialogs.
+
+                
+    On the right, there is a button for authorizing requests made on this page.
+    Click “Authorize,” then insert the ID and Secret from your account.
+
+                
+    To perform a request directly from the page, click the "Try it out" button
+    within each method block. Then fill in input fields if any (for URL
+    parameters, the description is right below the URL request; for body
+    parameters, the description is under the “Scheme” button to the right of the
+    example), and click “Run.” You'll find the server response and description
+    of received parameters below.
+            
+  title: Chatbots service API
+  version: 0.0.1
+openapi: 3.1.2
+paths:
+  /dialogs:
+    get:
+      summary: Get dialogs list info
+      description: Returns information about your dialogs from all channels
+      security:
+        - oAuth2ClientCredentials: []
+      tags:
+        - dialogs
+      parameters:
+        - in: query
+          name: size
+          description: The limit of pagination items, that will be returned
+          schema:
+            type: integer
+        - in: query
+          name: skip
+          description: The offset of pagination items, where starts a current items batch
+          schema:
+            type: integer
+        - in: query
+          name: search_after
+          description: >-
+            The id of last_inbox_message.id element after which elements will be
+            searched
+          schema:
+            type: string
+        - in: query
+          name: order
+          description: Sort order ASC or DESC
+          schema:
+            type: string
+            enum:
+              - asc
+              - desc
+      responses:
+        '200':
+          description: Operation successful
+          content:
+            application/json:
+              schema:
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                    properties:
+                      list:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Dialog'
+                      sort:
+                        type: object
+                      total:
+                        type: integer
+                      size:
+                        type: integer
+                      search_after:
+                        type: string
+                      order:
+                        type: string
+                        enum:
+                          - asc
+                          - desc
+                type: object
+      operationId: getDialogs
+      x-ai-role: omnichannel_support_specialist
+      x-ai-description: >-
+        Retrieves a paginated list of dialogs across all connected messaging
+        channels (Telegram, WhatsApp, Facebook, Instagram, Viber, etc.). A
+        'dialog' in SendPulse represents a conversation thread between the bot
+        and a specific contact. This endpoint is the primary entry point for
+        inbox management, agent assignment workflows, and CRM-style conversation
+        tracking across all channels simultaneously.
+      x-ai-reasoning-instructions:
+        - >-
+          Use `size` to control page volume — default is typically 20; reduce to
+          10 for faster responses when previewing.
+        - >-
+          For cursor-based pagination, always carry `search_after` from the
+          previous response into the next request instead of using `skip` for
+          large datasets, as it is more performant.
+        - >-
+          Combine `order: desc` with `search_after` to stream new incoming
+          dialogs in real time.
+        - >-
+          If the user asks about a specific channel, note that this endpoint
+          returns all channels — use the returned `Dialog` objects to filter
+          client-side by channel type.
+        - >-
+          When total exceeds size, inform the user that multiple pages exist and
+          offer to iterate.
+      x-ai-responding-instructions:
+        - >-
+          Report the total number of dialogs found and how many are returned in
+          the current page.
+        - >-
+          Highlight the `search_after` cursor value if more pages are available,
+          and explain how to use it for the next request.
+        - >-
+          If the list is empty, suggest checking whether any channels are
+          connected in the account.
+        - >-
+          Group or summarize dialogs by channel type when presenting to the
+          user, if the data allows.
+      x-ai-suggestions:
+        - Use `order=desc` to get the most recently active dialogs first.
+        - Use `size=50` for bulk exports, `size=10` for quick inbox previews.
+        - >-
+          Paginate with `search_after` using the last `last_inbox_message.id`
+          from the previous response.
+      x-ai-capabilities:
+        confirmation:
+          type: None
+        security_info:
+          data_handling:
+            - ReadOnly
+  /account:
+    get:
+      summary: Get account info
+      description: >-
+        Returns information about your current account pricing plan, the number
+        of messages in your plan, bots, contacts, list of tags, and variables
+      security:
+        - oAuth2ClientCredentials: []
+      tags:
+        - account
+      responses:
+        '200':
+          description: Operation successful
+          content:
+            application/json:
+              schema:
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/Account'
+                type: object
+      operationId: getAccount
+      x-ai-role: account_manager
+      x-ai-description: >-
+        Returns a comprehensive snapshot of the current account state: active
+        pricing plan, remaining message quotas, number of active bots and
+        contacts, as well as the full list of tags and variables defined in the
+        account. Use this endpoint to assess account capacity before planning
+        large campaigns or automation flows.
+      x-ai-reasoning-instructions:
+        - >-
+          Check the remaining message quota before recommending bulk send
+          operations — warn the user if the balance is critically low.
+        - >-
+          Use the list of tags and variables returned here to validate inputs
+          for other endpoints that accept tags or variable names.
+        - >-
+          If bot or contact counts are near plan limits, proactively suggest an
+          upgrade or cleanup.
+      x-ai-responding-instructions:
+        - >-
+          Summarize the plan name and key quotas (messages remaining, bots,
+          contacts) in a human-readable way.
+        - >-
+          If any quota is exhausted or near the limit, highlight it explicitly
+          and suggest remediation steps.
+        - >-
+          List available tags and variables only if the user explicitly needs
+          them — otherwise keep the response concise.
+      x-ai-suggestions:
+        - >-
+          Call this endpoint first to understand account constraints before
+          scheduling a campaign.
+        - >-
+          Use returned variable names as valid inputs for personalization fields
+          in other endpoints.
+      x-ai-capabilities:
+        confirmation:
+          type: None
+        security_info:
+          data_handling:
+            - ReadOnly
+  /bots:
+    get:
+      summary: Get a list of connected bots
+      description: >-
+        Returns lists of bots with information about each: bot ID, channel
+        information, number of received and unread messages, bot status, and
+        creation date
+      security:
+        - oAuth2ClientCredentials: []
+      tags:
+        - bots
+      responses:
+        '200':
+          description: Operation successful
+          content:
+            application/json:
+              schema:
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Bot'
+                type: object
+      operationId: getBots
+      x-ai-role: chatbot_operations_manager
+      x-ai-description: >-
+        Retrieves a full inventory of connected bots across all supported
+        channels (Telegram, WhatsApp, Facebook, etc.). This is the primary
+        discovery endpoint — use it to map available automation assets before
+        routing messages, checking bot health, or selecting a target bot for a
+        campaign. Bot status and unread message counts serve as lightweight
+        health indicators.
+      x-ai-reasoning-instructions:
+        - >-
+          Call this endpoint first when the user needs to interact with any bot
+          but hasn't specified a bot ID yet.
+        - >-
+          Filter the result by channel type if the user has specified a platform
+          (e.g., 'my Telegram bots').
+        - >-
+          Check `status` field to warn the user if the target bot is inactive
+          before proceeding with message sending.
+        - Use `unread` count to surface bots that may need attention.
+      x-ai-responding-instructions:
+        - >-
+          Present bots grouped by channel for clarity if multiple channels are
+          present.
+        - >-
+          Highlight any bots with non-active status and suggest investigating
+          them.
+        - >-
+          If the list is empty, inform the user that no bots are connected and
+          suggest connecting one via the SendPulse dashboard.
+        - >-
+          When the user needs a specific bot, confirm which one to use before
+          proceeding.
+      x-ai-suggestions:
+        - >-
+          Use the returned bot `id` with `sendMessage` or `getSubscribers`
+          endpoints.
+        - Check `unread` counts to prioritize bots that need follow-up.
+        - Cross-reference `created_at` to identify recently added bots.
+      x-ai-capabilities:
+        confirmation:
+          type: None
+        security_info:
+          data_handling:
+            - ReadOnly
+security:
+  - apiKey: []
+  - oauth2: []
+servers:
+  - description: ''
+    url: https://api.sendpulse.com/chatbots
+tags:
+  - description: ''
+    name: dialogs
+  - description: ''
+    name: account
+  - description: ''
+    name: bots

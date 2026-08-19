@@ -1,0 +1,94 @@
+generated: '2026-08-13'
+method: searched
+source: https://sendpulse.com/integrations/api + openapi/*.yml + https://api.sendpulse.com/service-directory.json
+base_url: https://api.sendpulse.com
+authentication:
+  style: Bearer token in the Authorization header
+  header: 'Authorization: Bearer <token_or_key>'
+  methods:
+  - type: oauth2
+    flow: client_credentials
+    token_endpoint: https://api.sendpulse.com/oauth/access_token
+    token_ttl_seconds: 3600
+    params:
+    - grant_type=client_credentials
+    - client_id
+    - client_secret
+    request_content_type: application/json
+  - type: api_key
+    description: Static API key generated in account settings, no expiration
+    max_keys: 5
+    setup_url: https://login.sendpulse.com/settings/#api
+  see: authentication/sendpulse-authentication.yml
+idempotency:
+  supported: false
+  note: No Idempotency-Key (or equivalent) request header appears in any of the 19 published OpenAPI specs, and
+    the docs define no retry-safety contract. The specs' own x-ai-reasoning-instructions repeatedly tell an agent
+    to check for an existing record first "to prevent duplicate entries if the API does not handle idempotency"
+    — an explicit admission that POSTs are not idempotent. No Idempotency pointer is emitted for this provider.
+pagination:
+  consistent: false
+  styles:
+  - style: limit/offset
+    params:
+    - limit
+    - offset
+    used_by: bulk-email (address books, campaigns), sms, smtp
+    example: https://api.sendpulse.com/addressbooks?limit=10&offset=5
+  - style: size/skip
+    params:
+    - size
+    - skip
+    used_by: chatbot channel specs (whatsapp, telegram, facebook, instagram, viber-chatbot, live-chat, tiktok)
+  - style: cursor
+    params:
+    - search_after
+    used_by: crm (7 operations)
+  - style: start/limit
+    params:
+    - start
+    - limit
+    used_by: a few crm and popups operations
+  note: Four different pagination idioms across the surface; there is no single documented convention and no response-level
+    pagination envelope.
+field_expansion:
+  supported: false
+  note: No expand / fields / include parameter is defined anywhere in the published specs.
+metadata:
+  supported: true
+  note: CRM contacts/deals and chatbot subscribers carry user-defined attributes ("variables"/"attributes") addressed
+    by ID or name.
+request_id_tracing:
+  supported: false
+  note: No request-id / correlation-id response header is documented and none appears in the specs.
+versioning:
+  style: path-prefix, per service, inconsistent
+  observed:
+  - 'https://api.sendpulse.com (unversioned: bulk-email, smtp, sms, verifier, viber, web-push)'
+  - https://api.sendpulse.com/crm/v1
+  - https://api.sendpulse.com/edu/public/v1
+  - https://api.sendpulse.com/fm/public/v1
+  - https://api.sendpulse.com/v2/pop-ups
+  - https://api.sendpulse.com/chatbots and one path per messenger channel (unversioned)
+  note: Six of the nineteen services carry no version segment at all; there is no Accept-header or query-param versioning.
+  see: lifecycle/sendpulse-lifecycle.yml
+error_envelope:
+  format: proprietary
+  see: errors/sendpulse-problem-types.yml
+  shape: '{"message": "...", "error_code": <int>}'
+  rfc9457: false
+rate_limit_signaling:
+  status: 429
+  headers: []
+  see: rate-limits/sendpulse-rate-limits.yml
+  note: No rate-limit headers are published.
+content_types:
+  request: application/json
+  response: application/json
+  note: 620 of 621 documented response bodies are application/json; one file-manager download is application/octet-stream.
+agent_affordances:
+  x_ai_extensions: true
+  note: 'The published specs carry SendPulse-authored vendor extensions aimed at LLM callers: x-ai-description (720),
+    x-ai-role (634), x-ai-capabilities (634), x-ai-responding-instructions (630), x-ai-reasoning-instructions (624)
+    and x-ai-suggestions (585). This is unusual and materially improves agent usability even though the extensions
+    are non-standard.'

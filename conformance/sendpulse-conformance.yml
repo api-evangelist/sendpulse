@@ -1,0 +1,81 @@
+generated: '2026-08-13'
+method: derived
+source: openapi/*.yml + https://sendpulse.com/integrations/api + https://mcp.sendpulse.com/.well-known/oauth-authorization-server
+standards:
+- id: openapi-3.1
+  conforms: true
+  evidence: 19 first-party specs at https://api.sendpulse.com/.well-known/openapi/*.yaml; index is OpenAPI 3.1.0,
+    the 19 service specs are 3.1.2. 635 operations.
+- id: oauth2
+  conforms: true
+  evidence: RFC 6749 client_credentials at https://api.sendpulse.com/oauth/access_token, declared as an oauth2 securityScheme
+    in all 19 specs.
+- id: oauth2-authorization-code-pkce
+  conforms: true
+  evidence: The MCP server advertises authorization_code + refresh_token with S256 PKCE at https://mcp.sendpulse.com/.well-known/oauth-authorization-server.
+- id: rfc8414
+  conforms: true
+  evidence: OAuth 2.0 Authorization Server Metadata served at https://mcp.sendpulse.com/.well-known/oauth-authorization-server
+    (HTTP 200).
+- id: rfc7591
+  conforms: true
+  evidence: Dynamic Client Registration endpoint advertised at https://mcp.sendpulse.com/oauth/register.
+- id: rfc9728
+  conforms: false
+  evidence: /.well-known/oauth-protected-resource returns 404 on both api.sendpulse.com and mcp.sendpulse.com.
+- id: oidc
+  conforms: false
+  evidence: /.well-known/openid-configuration returns 404 on every host probed.
+- id: rfc9457
+  conforms: false
+  evidence: No application/problem+json anywhere in the 19 specs; errors use a proprietary {message, error_code}
+    envelope.
+- id: rfc9116
+  conforms: false
+  evidence: A real security.txt is served at https://sendpulse.com/security.txt but not at /.well-known/security.txt,
+    and it has no Expires field.
+- id: rfc8594
+  conforms: false
+  evidence: No Sunset or Deprecation header documented; no deprecation policy published.
+- id: idempotency
+  conforms: false
+  evidence: No Idempotency-Key header in any spec; the specs' own agent instructions warn that the API does not
+    handle idempotency.
+- id: pagination
+  conforms: false
+  evidence: Four incompatible idioms in use (limit/offset, size/skip, search_after, start/limit) with no documented
+    convention.
+- id: rate-limit-headers
+  conforms: false
+  evidence: No X-RateLimit-*, RateLimit-* or Retry-After header is documented; only a bare 429.
+- id: mcp
+  conforms: true
+  evidence: First-party remote MCP server over Streamable HTTP at https://mcp.sendpulse.com/mcp with 147 published
+    tools.
+- id: llms-txt
+  conforms: true
+  evidence: https://api.sendpulse.com/llms.txt and https://sendpulse.com/llms.txt both HTTP 200, plus /llms-full.txt.
+- id: openai-plugin
+  conforms: true
+  evidence: https://api.sendpulse.com/.well-known/ai-plugin.json HTTP 200 with schema_version v1.
+- id: a2a
+  conforms: false
+  evidence: /.well-known/agent-card.json and /.well-known/agent.json return 404 on sendpulse.com, api.sendpulse.com
+    and mcp.sendpulse.com.
+- id: asyncapi
+  conforms: false
+  evidence: No AsyncAPI document published. Webhooks exist but are only manageable through five REST operations
+    in bulk-email.
+- id: graphql
+  conforms: false
+  evidence: No GraphQL surface documented or discovered.
+- id: gdpr
+  conforms: true
+  evidence: Privacy Policy, Cookie Statement and a Data Processing Agreement are published and linked from the site
+    footer.
+- id: casa-tier-2
+  conforms: true
+  evidence: Annual App Defense Alliance CASA Tier 2 certification completed 2025-12-19 per https://sendpulse.com/legal/security.
+summary:
+  conforms: 11
+  does_not_conform: 10

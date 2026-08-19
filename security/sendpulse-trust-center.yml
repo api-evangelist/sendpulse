@@ -1,0 +1,46 @@
+generated: '2026-08-13'
+method: searched
+source: https://sendpulse.com/legal/security
+trust_page: https://sendpulse.com/legal/security
+http_status: 200
+dedicated_trust_center: false
+note: SendPulse publishes a security page under /legal rather than a dedicated trust portal; there is no downloadable
+  evidence pack or auditor report.
+certifications:
+- name: CASA Tier 2
+  full_name: Cloud Application Security Assessment, Tier 2
+  body: App Defense Alliance
+  status: certified
+  date: '2025-12-19'
+  recurrence: annual
+  evidence: https://sendpulse.com/legal/security
+  quote: On December 19, 2025, SendPulse completed the annual Tier 2 CASA security certification.
+certifications_not_claimed:
+- SOC 2
+- ISO/IEC 27001
+- PCI DSS
+- HIPAA
+- FedRAMP
+controls_published:
+- control: Two-factor authentication
+  detail: One-time code by email on top of username/password.
+- control: IP address access restrictions
+  detail: Restrict account access to known static IPs; login notifications with time and IP.
+- control: SMTP sender IP limitations
+  detail: Limits sending IPs to prevent unauthorised sending if an SMTP password leaks.
+- control: reCAPTCHA bot protection
+  detail: Challenges suspicious automated access.
+- control: Suspicious login alerts
+  detail: Blocks and notifies on logins from unrecognised devices/browsers.
+- control: Vulnerability management
+  detail: Automated and manual remediation plus the Open Bug Bounty programme.
+- control: Payment data protection
+  detail: Card details are not stored; sent directly to certified payment providers over TLS.
+- control: Service availability
+  detail: Daily full-redundancy database backups for recovery.
+legal:
+  privacy_policy: https://sendpulse.com/legal/pp
+  terms: https://sendpulse.com/legal/terms
+  data_processing_agreement: https://sendpulse.com/legal/dpa-form
+  cookie_statement: https://sendpulse.com/legal/cookie
+  note: DPA and Cookie Statement are linked from the site footer; exact paths not individually probed on this run.

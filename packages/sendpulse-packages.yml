@@ -1,0 +1,99 @@
+generated: '2026-08-13'
+method: searched
+source: https://github.com/sendpulse + registry.npmjs.org + pypi.org + repo.packagist.org
+note: First-party client libraries are published from the github.com/sendpulse account and linked from
+  https://sendpulse.com/integrations/api. Only PHP, Python and Node.js are on a package registry; the
+  Ruby, C#, Java and Objective-C libraries are source-only GitHub repositories with no registry release,
+  and all four have been dormant since 2018-2022.
+packages:
+- language: php
+  registry: packagist
+  name: sendpulse/rest-api
+  url: https://packagist.org/packages/sendpulse/rest-api
+  install: composer require sendpulse/rest-api
+  repository: https://github.com/sendpulse/sendpulse-rest-api-php
+  official: true
+  version: 3.0.0
+  published: '2026-08-13'
+  note: Official PHP SDK per its own composer.json ("Official PHP SDK for the SendPulse REST API"); 33
+    published versions; requires PHP >= 8.3.
+- language: python
+  registry: pypi
+  name: pysendpulse
+  url: https://pypi.org/project/pysendpulse/
+  install: pip install pysendpulse
+  repository: https://github.com/sendpulse/sendpulse-rest-api-python
+  official: true
+  version: 0.1.8
+  published: '2025-02-11'
+  note: Published from the sendpulse GitHub account; last release predates the 2026 .well-known OpenAPI
+    set, so it does not cover CRM, chatbots, courses or pop-ups.
+- language: javascript
+  registry: npm
+  name: sendpulse-api
+  url: https://www.npmjs.com/package/sendpulse-api
+  install: npm install sendpulse-api
+  repository: https://github.com/sendpulse/sendpulse-rest-api-node.js
+  official: true
+  version: 1.1.7
+  published: '2024-06-19'
+  note: Last release 2024-06-19 — over two years older than the published API surface it wraps.
+- language: ruby
+  registry: null
+  name: sendpulse-rest-api-ruby
+  url: https://github.com/sendpulse/sendpulse-rest-api-ruby
+  install: null
+  repository: https://github.com/sendpulse/sendpulse-rest-api-ruby
+  official: true
+  version: null
+  published: null
+  note: 'Checked RubyGems: the gem named "sendpulse" (0.0.5, 2017-05-23) is third-party (author Yoga Hapriana),
+    not this repo. SendPulse ships no official Ruby gem; the repo has had no commit since 2018-03-26.'
+- language: csharp
+  registry: null
+  name: sendpulse-rest-api-csharp
+  url: https://github.com/sendpulse/sendpulse-rest-api-csharp
+  install: null
+  repository: https://github.com/sendpulse/sendpulse-rest-api-csharp
+  official: true
+  version: null
+  published: null
+  note: 'Checked NuGet: every sendpulse-named package there is third-party (SendPulse.Net, Phnx.SendPulse,
+    Tenogy.SendPulse.Client...). No official NuGet release; repo last pushed 2022-07-01.'
+- language: java
+  registry: null
+  name: sendpulse-rest-api-java
+  url: https://github.com/sendpulse/sendpulse-rest-api-java
+  install: null
+  repository: https://github.com/sendpulse/sendpulse-rest-api-java
+  official: true
+  version: null
+  published: null
+  note: No Maven Central coordinate found (search.maven.org timed out on this run and no groupId is documented);
+    repo last pushed 2018-02-12.
+- language: objective-c
+  registry: null
+  name: sendpulse-rest-api-objective-c
+  url: https://github.com/sendpulse/sendpulse-rest-api-objective-c
+  install: null
+  repository: https://github.com/sendpulse/sendpulse-rest-api-objective-c
+  official: true
+  version: null
+  published: null
+  note: Source-only; no CocoaPods/SPM release located. Repo last pushed 2016-08-19.
+related_repositories:
+- name: sendpulse/mcp-server
+  url: https://github.com/sendpulse/mcp-server
+  note: Documentation-only repo for the hosted remote MCP server (README + .gitignore). No installable
+    package — see mcp/sendpulse-mcp.yml.
+- name: sendpulse/mageia
+  url: https://github.com/sendpulse/mageia
+  note: Magento integration module.
+- name: sendpulse/sendpulse-market-rest-api-php
+  url: https://github.com/sendpulse/sendpulse-market-rest-api-php
+  note: Marketplace REST API PHP client.
+currency:
+  checked: '2026-08-13'
+  finding: PHP is current (3.0.0 shipped 2026-08-13). Python (2025-02-11) and Node.js (2024-06-19) both
+    predate the machine-readable API surface SendPulse now publishes, and four of the seven first-party
+    libraries have never had a registry release at all.

@@ -1,0 +1,316 @@
+{
+  "item": [
+    {
+      "id": "77201c9b-6cc8-4a51-8490-f6ba420d916e",
+      "name": "SMS",
+      "description": {
+        "content": "SMS phone management and campaigns.",
+        "type": "text/plain"
+      },
+      "item": [
+        {
+          "id": "b2198471-8d86-4fd6-8f3d-c4c00fca02e0",
+          "name": "Send SMS to a list of phone numbers.",
+          "request": {
+            "name": "Send SMS to a list of phone numbers.",
+            "description": {},
+            "url": {
+              "path": [
+                "sms",
+                "send"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "auth": null,
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"phones\": [\n    \"<string>\",\n    \"<string>\"\n  ],\n  \"body\": \"<string>\",\n  \"sender\": \"<string>\",\n  \"transliterate\": \"<integer>\",\n  \"route\": {\n    \"key_0\": 1903.921731563627\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "id": "ec59ea69-5484-413d-ba4f-08a8d65a3a51",
+              "name": "SMS accepted.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "sms",
+                    "send"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"phones\": [\n    \"<string>\",\n    \"<string>\"\n  ],\n  \"body\": \"<string>\",\n  \"sender\": \"<string>\",\n  \"transliterate\": \"<integer>\",\n  \"route\": {\n    \"key_0\": 3934.796636645914,\n    \"key_1\": 8528.469532786668\n  }\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"result\": false\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "39e60c30-f5ef-4e7e-90c0-e45449dcf969",
+          "name": "Create an SMS campaign from an address book.",
+          "request": {
+            "name": "Create an SMS campaign from an address book.",
+            "description": {},
+            "url": {
+              "path": [
+                "sms",
+                "campaigns"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "auth": null,
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"addressBookId\": \"<integer>\",\n  \"body\": \"<string>\",\n  \"transliterate\": \"<integer>\",\n  \"sender\": \"<string>\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "id": "f4ccee8c-8161-408b-aa93-4d2b6bfb954b",
+              "name": "SMS campaign created.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "sms",
+                    "campaigns"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"addressBookId\": \"<integer>\",\n  \"body\": \"<string>\",\n  \"transliterate\": \"<integer>\",\n  \"sender\": \"<string>\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"result\": false\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "a0351aac-b73d-44e7-94b2-960d772042a9",
+          "name": "List SMS campaigns.",
+          "request": {
+            "name": "List SMS campaigns.",
+            "description": {},
+            "url": {
+              "path": [
+                "sms",
+                "campaigns",
+                "list"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "9139e88b-7e97-4c23-89e9-c94d17a30db3",
+              "name": "A list of SMS campaigns.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "sms",
+                    "campaigns",
+                    "list"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "[\n  {\n    \"id\": 4776,\n    \"address_book_id\": 7276,\n    \"company_price\": 3547.0000007203917,\n    \"company_currency\": \"string\",\n    \"send_date\": \"string\",\n    \"status\": 3796,\n    \"task_phones\": 3073\n  },\n  {\n    \"id\": 3713,\n    \"address_book_id\": 6999,\n    \"company_price\": 9827.623205761212,\n    \"company_currency\": \"string\",\n    \"send_date\": \"string\",\n    \"status\": 526,\n    \"task_phones\": 9988\n  }\n]",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        }
+      ],
+      "event": []
+    }
+  ],
+  "event": [],
+  "variable": [
+    {
+      "type": "string",
+      "value": "https://api.sendpulse.com",
+      "key": "baseUrl"
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{bearerToken}}"
+      }
+    ]
+  },
+  "info": {
+    "_postman_id": "b47bd809-010b-4f1b-908c-e3a81da5f785",
+    "name": "SendPulse Account SMS API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": {
+      "content": "REST API for the SendPulse multichannel marketing platform. Covers email address books and bulk campaigns, SMTP transactional email, SMS, web push notifications, chatbots, and Automation 360. All requests are made over HTTPS against https://api.sendpulse.com and authenticated with a Bearer access token obtained via the OAuth2 client_credentials grant at POST /oauth/access_token. Tokens are valid for approximately one hour.\n\nContact Support:\n Name: SendPulse Support",
+      "type": "text/plain"
+    }
+  }
+}

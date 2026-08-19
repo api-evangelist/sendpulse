@@ -1,0 +1,106 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "SendPulse Account SMTP API",
+    "version": "1.0"
+  },
+  "request": {
+    "auth": {
+      "type": "bearer",
+      "token": "{{bearerToken}}"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "SMTP",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List sent transactional emails.",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.sendpulse.com/smtp/emails",
+            "params": [
+              {
+                "name": "limit",
+                "value": "",
+                "type": "query"
+              },
+              {
+                "name": "offset",
+                "value": "",
+                "type": "query"
+              }
+            ]
+          },
+          "docs": "List sent transactional emails."
+        },
+        {
+          "info": {
+            "name": "Send a transactional email.",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.sendpulse.com/smtp/emails",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Send a transactional email."
+        },
+        {
+          "info": {
+            "name": "Get a transactional email by ID.",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.sendpulse.com/smtp/emails/:id",
+            "params": [
+              {
+                "name": "id",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Get a transactional email by ID."
+        },
+        {
+          "info": {
+            "name": "List unsubscribed emails.",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.sendpulse.com/smtp/unsubscribe"
+          },
+          "docs": "List unsubscribed emails."
+        },
+        {
+          "info": {
+            "name": "Add emails to the unsubscribe list.",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.sendpulse.com/smtp/unsubscribe",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Add emails to the unsubscribe list."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}
