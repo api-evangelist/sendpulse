@@ -34,6 +34,22 @@ tags:
 - Web Push
 - Chatbots
 - CRM
+- Multi-Channel
+- Messaging
+- Online Courses
+- Popups
+- Email Verification
+- MCP
+- Agent Ready
+tags_raw:
+- Marketing
+- Marketing Automation
+- Email
+- Transactional Email
+- SMS
+- Web Push
+- Chatbots
+- CRM
 - Multichannel
 - Messaging
 - Online Courses
@@ -52,6 +68,11 @@ apis:
   humanURL: https://sendpulse.com/integrations/api/bulk-email
   baseURL: https://api.sendpulse.com
   tags:
+  - Email
+  - Campaigns
+  - Mailing Lists
+  - Webhook
+  tags_raw:
   - Email
   - Campaigns
   - Mailing Lists
@@ -141,6 +162,10 @@ apis:
   humanURL: https://sendpulse.com/integrations/api
   baseURL: https://api.sendpulse.com
   tags:
+  - Automation
+  - Workflows
+  - Event
+  tags_raw:
   - Automation
   - Workflows
   - Events
@@ -339,6 +364,9 @@ apis:
   baseURL: https://api.sendpulse.com
   tags:
   - Web Push
+  - Notification
+  tags_raw:
+  - Web Push
   - Notifications
   properties:
   - type: OpenAPI
@@ -358,6 +386,10 @@ apis:
   humanURL: https://sendpulse.com/integrations/api/bulk-sms
   baseURL: https://api.sendpulse.com
   tags:
+  - Viber
+  - Messaging
+  - Notification
+  tags_raw:
   - Viber
   - Messaging
   - Notifications
@@ -424,6 +456,10 @@ apis:
   humanURL: https://sendpulse.com/integrations/api
   baseURL: https://api.sendpulse.com/v2/pop-ups
   tags:
+  - Popups
+  - Lead Capture
+  - Conversion
+  tags_raw:
   - Pop-ups
   - Lead Capture
   - Conversion
