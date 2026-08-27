@@ -61,442 +61,2088 @@ created: '2026-06-25'
 modified: '2026-08-13'
 specificationVersion: '0.23'
 apis:
-- aid: sendpulse:sendpulse-bulk-email-api
-  name: SendPulse Bulk Email API
-  description: Mailing lists, email campaigns, templates, subscribers, senders, blacklist, balance and
-    email-service webhooks.
+- aid: sendpulse:sendpulse-account-api
+  name: SendPulse Account API
+  description: The account API from SendPulse — 1 operation(s) for account.
   humanURL: https://sendpulse.com/integrations/api/bulk-email
   baseURL: https://api.sendpulse.com
   tags:
-  - Email
-  - Campaigns
-  - Mailing Lists
-  - Webhook
-  tags_raw:
-  - Email
-  - Campaigns
-  - Mailing Lists
-  - Webhooks
+  - account
   properties:
   - type: OpenAPI
-    url: openapi/sendpulse-bulk-email-openapi.yml
-  - type: Overlay
-    url: overlays/sendpulse-bulk-email-overlay.yaml
+    url: openapi/sendpulse-account-api-openapi.yml
   - type: Documentation
     url: https://sendpulse.com/integrations/api/bulk-email
   - type: APIReference
     url: https://sendpulse.com/integrations/api
-  x-operations: 60
-  x-spec-version: 1.0.0
-  x-spec-source: https://api.sendpulse.com/.well-known/openapi/bulk-email.yaml
-- aid: sendpulse:sendpulse-smtp-api
-  name: SendPulse SMTP API
-  description: Transactional email sending, delivery and bounce tracking, unsubscribe management and sender-domain
-    identity.
-  humanURL: https://sendpulse.com/integrations/api/smtp
-  baseURL: https://api.sendpulse.com
-  tags:
-  - Transactional Email
-  - SMTP
-  - Deliverability
-  properties:
-  - type: OpenAPI
-    url: openapi/sendpulse-smtp-openapi.yml
-  - type: Overlay
-    url: overlays/sendpulse-smtp-overlay.yaml
   - type: Documentation
     url: https://sendpulse.com/integrations/api/smtp
-  - type: APIReference
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/bulk-sms
+  - type: Documentation
     url: https://sendpulse.com/integrations/api
-  x-operations: 17
-  x-spec-version: 1.0.0
-  x-spec-source: https://api.sendpulse.com/.well-known/openapi/smtp.yaml
-- aid: sendpulse:sendpulse-sms-api
-  name: SendPulse SMS API
-  description: 'Mobile messaging: phone-book management, SMS campaign orchestration and delivery reporting.'
-  humanURL: https://sendpulse.com/integrations/api/bulk-sms
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/chatbot
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/web-push
+- aid: sendpulse:sendpulse-attachments-api
+  name: SendPulse Attachments API
+  description: The Attachments API from SendPulse — 3 operation(s) for attachments.
+  humanURL: https://sendpulse.com/integrations/api/bulk-email
   baseURL: https://api.sendpulse.com
   tags:
-  - SMS
-  - Messaging
+  - Attachments
+  properties:
+  - type: OpenAPI
+    url: openapi/sendpulse-attachments-api-openapi.yml
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/bulk-email
+  - type: APIReference
+    url: https://sendpulse.com/integrations/api
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/smtp
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/bulk-sms
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/chatbot
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/web-push
+- aid: sendpulse:sendpulse-automation-flows-api
+  name: SendPulse Automation Flows API
+  description: Endpoints related to Automation Flows.
+  humanURL: https://sendpulse.com/integrations/api/bulk-email
+  baseURL: https://api.sendpulse.com
+  tags:
+  - Automation Flows
+  properties:
+  - type: OpenAPI
+    url: openapi/sendpulse-automation-flows-api-openapi.yml
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/bulk-email
+  - type: APIReference
+    url: https://sendpulse.com/integrations/api
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/smtp
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/bulk-sms
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/chatbot
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/web-push
+- aid: sendpulse:sendpulse-balance-api
+  name: SendPulse Balance API
+  description: Endpoints related to Balance.
+  humanURL: https://sendpulse.com/integrations/api/bulk-email
+  baseURL: https://api.sendpulse.com
+  tags:
+  - Balance
+  properties:
+  - type: OpenAPI
+    url: openapi/sendpulse-balance-api-openapi.yml
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/bulk-email
+  - type: APIReference
+    url: https://sendpulse.com/integrations/api
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/smtp
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/bulk-sms
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/chatbot
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/web-push
+- aid: sendpulse:sendpulse-blacklist-api
+  name: SendPulse Blacklist API
+  description: Endpoints related to Blacklist.
+  humanURL: https://sendpulse.com/integrations/api/bulk-email
+  baseURL: https://api.sendpulse.com
+  tags:
+  - Blacklist
+  properties:
+  - type: OpenAPI
+    url: openapi/sendpulse-blacklist-api-openapi.yml
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/bulk-email
+  - type: APIReference
+    url: https://sendpulse.com/integrations/api
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/smtp
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/bulk-sms
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/chatbot
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/web-push
+- aid: sendpulse:sendpulse-board-attributes-api
+  name: SendPulse Board attributes API
+  description: The Board attributes API from SendPulse — 2 operation(s) for board attributes.
+  humanURL: https://sendpulse.com/integrations/api/bulk-email
+  baseURL: https://api.sendpulse.com
+  tags:
+  - Board attributes
+  properties:
+  - type: OpenAPI
+    url: openapi/sendpulse-board-attributes-api-openapi.yml
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/bulk-email
+  - type: APIReference
+    url: https://sendpulse.com/integrations/api
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/smtp
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/bulk-sms
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/chatbot
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/web-push
+- aid: sendpulse:sendpulse-bots-api
+  name: SendPulse Bots API
+  description: The bots API from SendPulse — 2 operation(s) for bots.
+  humanURL: https://sendpulse.com/integrations/api/bulk-email
+  baseURL: https://api.sendpulse.com
+  tags:
+  - bots
+  properties:
+  - type: OpenAPI
+    url: openapi/sendpulse-bots-api-openapi.yml
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/bulk-email
+  - type: APIReference
+    url: https://sendpulse.com/integrations/api
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/smtp
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/bulk-sms
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/chatbot
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/web-push
+- aid: sendpulse:sendpulse-bounces-api
+  name: SendPulse Bounces API
+  description: The Bounces API from SendPulse — 2 operation(s) for bounces.
+  humanURL: https://sendpulse.com/integrations/api/bulk-email
+  baseURL: https://api.sendpulse.com
+  tags:
+  - Bounces
+  properties:
+  - type: OpenAPI
+    url: openapi/sendpulse-bounces-api-openapi.yml
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/bulk-email
+  - type: APIReference
+    url: https://sendpulse.com/integrations/api
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/smtp
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/bulk-sms
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/chatbot
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/web-push
+- aid: sendpulse:sendpulse-campaigns-api
+  name: SendPulse Campaigns API
+  description: Endpoints related to Campaigns.
+  humanURL: https://sendpulse.com/integrations/api/bulk-email
+  baseURL: https://api.sendpulse.com
+  tags:
   - Campaigns
   properties:
   - type: OpenAPI
-    url: openapi/sendpulse-sms-openapi.yml
-  - type: Overlay
-    url: overlays/sendpulse-sms-overlay.yaml
+    url: openapi/sendpulse-campaigns-api-openapi.yml
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/bulk-email
+  - type: APIReference
+    url: https://sendpulse.com/integrations/api
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/smtp
   - type: Documentation
     url: https://sendpulse.com/integrations/api/bulk-sms
-  - type: APIReference
-    url: https://sendpulse.com/integrations/api
-  x-operations: 18
-  x-spec-version: 1.0.0
-  x-spec-source: https://api.sendpulse.com/.well-known/openapi/sms.yaml
-- aid: sendpulse:sendpulse-crm-api
-  name: SendPulse CRM Public API
-  description: Pipelines, deals, contacts, companies, tasks, boards, products and payments — the largest
-    surface SendPulse publishes at 191 operations.
-  humanURL: https://sendpulse.com/integrations/api
-  baseURL: https://api.sendpulse.com/crm/v1
-  tags:
-  - CRM
-  - Sales
-  - Deals
-  - Pipelines
-  properties:
-  - type: OpenAPI
-    url: openapi/sendpulse-crm-openapi.yml
-  - type: Overlay
-    url: overlays/sendpulse-crm-overlay.yaml
   - type: Documentation
     url: https://sendpulse.com/integrations/api
-  - type: APIReference
-    url: https://sendpulse.com/integrations/api
-  x-operations: 191
-  x-spec-version: 0.1.0
-  x-spec-source: https://api.sendpulse.com/.well-known/openapi/crm.yaml
-- aid: sendpulse:sendpulse-a360-api
-  name: SendPulse Automation 360 API
-  description: Event-driven automation flows across email, SMS, web push and messengers, with element-level
-    statistics and conversion tracking.
-  humanURL: https://sendpulse.com/integrations/api
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/chatbot
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/web-push
+- aid: sendpulse:sendpulse-chats-api
+  name: SendPulse Chats API
+  description: The chats API from SendPulse — 3 operation(s) for chats.
+  humanURL: https://sendpulse.com/integrations/api/bulk-email
   baseURL: https://api.sendpulse.com
   tags:
-  - Automation
-  - Workflows
-  - Event
-  tags_raw:
-  - Automation
-  - Workflows
+  - chats
+  properties:
+  - type: OpenAPI
+    url: openapi/sendpulse-chats-api-openapi.yml
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/bulk-email
+  - type: APIReference
+    url: https://sendpulse.com/integrations/api
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/smtp
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/bulk-sms
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/chatbot
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/web-push
+- aid: sendpulse:sendpulse-checklist-items-api
+  name: SendPulse Checklist Items API
+  description: The Checklist Items API from SendPulse — 2 operation(s) for checklist items.
+  humanURL: https://sendpulse.com/integrations/api/bulk-email
+  baseURL: https://api.sendpulse.com
+  tags:
+  - Checklist Items
+  properties:
+  - type: OpenAPI
+    url: openapi/sendpulse-checklist-items-api-openapi.yml
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/bulk-email
+  - type: APIReference
+    url: https://sendpulse.com/integrations/api
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/smtp
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/bulk-sms
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/chatbot
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/web-push
+- aid: sendpulse:sendpulse-company-api
+  name: SendPulse Company API
+  description: The Company API from SendPulse — 4 operation(s) for company.
+  humanURL: https://sendpulse.com/integrations/api/bulk-email
+  baseURL: https://api.sendpulse.com
+  tags:
+  - Company
+  properties:
+  - type: OpenAPI
+    url: openapi/sendpulse-company-api-openapi.yml
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/bulk-email
+  - type: APIReference
+    url: https://sendpulse.com/integrations/api
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/smtp
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/bulk-sms
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/chatbot
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/web-push
+- aid: sendpulse:sendpulse-company-attributes-api
+  name: SendPulse Company Attributes API
+  description: The Company Attributes API from SendPulse — 2 operation(s) for company attributes.
+  humanURL: https://sendpulse.com/integrations/api/bulk-email
+  baseURL: https://api.sendpulse.com
+  tags:
+  - Company Attributes
+  properties:
+  - type: OpenAPI
+    url: openapi/sendpulse-company-attributes-api-openapi.yml
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/bulk-email
+  - type: APIReference
+    url: https://sendpulse.com/integrations/api
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/smtp
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/bulk-sms
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/chatbot
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/web-push
+- aid: sendpulse:sendpulse-company-history-api
+  name: SendPulse Company history API
+  description: The Company history API from SendPulse — 1 operation(s) for company history.
+  humanURL: https://sendpulse.com/integrations/api/bulk-email
+  baseURL: https://api.sendpulse.com
+  tags:
+  - Company history
+  properties:
+  - type: OpenAPI
+    url: openapi/sendpulse-company-history-api-openapi.yml
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/bulk-email
+  - type: APIReference
+    url: https://sendpulse.com/integrations/api
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/smtp
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/bulk-sms
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/chatbot
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/web-push
+- aid: sendpulse:sendpulse-compliance-api
+  name: SendPulse Compliance API
+  description: The Compliance API from SendPulse — 2 operation(s) for compliance.
+  humanURL: https://sendpulse.com/integrations/api/bulk-email
+  baseURL: https://api.sendpulse.com
+  tags:
+  - Compliance
+  properties:
+  - type: OpenAPI
+    url: openapi/sendpulse-compliance-api-openapi.yml
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/bulk-email
+  - type: APIReference
+    url: https://sendpulse.com/integrations/api
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/smtp
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/bulk-sms
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/chatbot
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/web-push
+- aid: sendpulse:sendpulse-configuration-api
+  name: SendPulse Configuration API
+  description: The Configuration API from SendPulse — 9 operation(s) for configuration.
+  humanURL: https://sendpulse.com/integrations/api/bulk-email
+  baseURL: https://api.sendpulse.com
+  tags:
+  - Configuration
+  properties:
+  - type: OpenAPI
+    url: openapi/sendpulse-configuration-api-openapi.yml
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/bulk-email
+  - type: APIReference
+    url: https://sendpulse.com/integrations/api
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/smtp
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/bulk-sms
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/chatbot
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/web-push
+- aid: sendpulse:sendpulse-contact-attributes-api
+  name: SendPulse Contact Attributes API
+  description: The Contact Attributes API from SendPulse — 2 operation(s) for contact attributes.
+  humanURL: https://sendpulse.com/integrations/api/bulk-email
+  baseURL: https://api.sendpulse.com
+  tags:
+  - Contact Attributes
+  properties:
+  - type: OpenAPI
+    url: openapi/sendpulse-contact-attributes-api-openapi.yml
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/bulk-email
+  - type: APIReference
+    url: https://sendpulse.com/integrations/api
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/smtp
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/bulk-sms
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/chatbot
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/web-push
+- aid: sendpulse:sendpulse-contact-attributes-value-api
+  name: SendPulse Contact attributes Value API
+  description: >-
+    The Contact attributes Value API from SendPulse — 2 operation(s) for contact attributes value.
+  humanURL: https://sendpulse.com/integrations/api/bulk-email
+  baseURL: https://api.sendpulse.com
+  tags:
+  - Contact attributes Value
+  properties:
+  - type: OpenAPI
+    url: openapi/sendpulse-contact-attributes-value-api-openapi.yml
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/bulk-email
+  - type: APIReference
+    url: https://sendpulse.com/integrations/api
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/smtp
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/bulk-sms
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/chatbot
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/web-push
+- aid: sendpulse:sendpulse-contact-attributes-values-api
+  name: SendPulse Contact Attributes Values API
+  description: >-
+    The Contact Attributes Values API from SendPulse — 1 operation(s) for contact attributes values.
+  humanURL: https://sendpulse.com/integrations/api/bulk-email
+  baseURL: https://api.sendpulse.com
+  tags:
+  - Contact Attributes Values
+  properties:
+  - type: OpenAPI
+    url: openapi/sendpulse-contact-attributes-values-api-openapi.yml
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/bulk-email
+  - type: APIReference
+    url: https://sendpulse.com/integrations/api
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/smtp
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/bulk-sms
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/chatbot
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/web-push
+- aid: sendpulse:sendpulse-contact-email-addresses-api
+  name: SendPulse Contact email addresses API
+  description: >-
+    The Contact email addresses API from SendPulse — 2 operation(s) for contact email addresses.
+  humanURL: https://sendpulse.com/integrations/api/bulk-email
+  baseURL: https://api.sendpulse.com
+  tags:
+  - Contact email addresses
+  properties:
+  - type: OpenAPI
+    url: openapi/sendpulse-contact-email-addresses-api-openapi.yml
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/bulk-email
+  - type: APIReference
+    url: https://sendpulse.com/integrations/api
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/smtp
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/bulk-sms
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/chatbot
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/web-push
+- aid: sendpulse:sendpulse-contact-history-api
+  name: SendPulse Contact history API
+  description: The Contact history API from SendPulse — 1 operation(s) for contact history.
+  humanURL: https://sendpulse.com/integrations/api/bulk-email
+  baseURL: https://api.sendpulse.com
+  tags:
+  - Contact history
+  properties:
+  - type: OpenAPI
+    url: openapi/sendpulse-contact-history-api-openapi.yml
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/bulk-email
+  - type: APIReference
+    url: https://sendpulse.com/integrations/api
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/smtp
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/bulk-sms
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/chatbot
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/web-push
+- aid: sendpulse:sendpulse-contact-phone-number-api
+  name: SendPulse Contact phone number API
+  description: The Contact phone number API from SendPulse — 2 operation(s) for contact phone number.
+  humanURL: https://sendpulse.com/integrations/api/bulk-email
+  baseURL: https://api.sendpulse.com
+  tags:
+  - Contact phone number
+  properties:
+  - type: OpenAPI
+    url: openapi/sendpulse-contact-phone-number-api-openapi.yml
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/bulk-email
+  - type: APIReference
+    url: https://sendpulse.com/integrations/api
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/smtp
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/bulk-sms
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/chatbot
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/web-push
+- aid: sendpulse:sendpulse-contact-tags-api
+  name: SendPulse Contact tags API
+  description: The Contact tags API from SendPulse — 3 operation(s) for contact tags.
+  humanURL: https://sendpulse.com/integrations/api/bulk-email
+  baseURL: https://api.sendpulse.com
+  tags:
+  - Contact tags
+  properties:
+  - type: OpenAPI
+    url: openapi/sendpulse-contact-tags-api-openapi.yml
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/bulk-email
+  - type: APIReference
+    url: https://sendpulse.com/integrations/api
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/smtp
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/bulk-sms
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/chatbot
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/web-push
+- aid: sendpulse:sendpulse-contacts-api
+  name: SendPulse Contacts API
+  description: The Contacts API from SendPulse — 51 operation(s) for contacts.
+  humanURL: https://sendpulse.com/integrations/api/bulk-email
+  baseURL: https://api.sendpulse.com
+  tags:
+  - Contacts
+  properties:
+  - type: OpenAPI
+    url: openapi/sendpulse-contacts-api-openapi.yml
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/bulk-email
+  - type: APIReference
+    url: https://sendpulse.com/integrations/api
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/smtp
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/bulk-sms
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/chatbot
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/web-push
+- aid: sendpulse:sendpulse-contacts-messengers-api
+  name: SendPulse Contacts messengers API
+  description: The Contacts messengers API from SendPulse — 2 operation(s) for contacts messengers.
+  humanURL: https://sendpulse.com/integrations/api/bulk-email
+  baseURL: https://api.sendpulse.com
+  tags:
+  - Contacts messengers
+  properties:
+  - type: OpenAPI
+    url: openapi/sendpulse-contacts-messengers-api-openapi.yml
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/bulk-email
+  - type: APIReference
+    url: https://sendpulse.com/integrations/api
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/smtp
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/bulk-sms
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/chatbot
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/web-push
+- aid: sendpulse:sendpulse-conversions-api
+  name: SendPulse Conversions API
+  description: Endpoints related to Conversions.
+  humanURL: https://sendpulse.com/integrations/api/bulk-email
+  baseURL: https://api.sendpulse.com
+  tags:
+  - Conversions
+  properties:
+  - type: OpenAPI
+    url: openapi/sendpulse-conversions-api-openapi.yml
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/bulk-email
+  - type: APIReference
+    url: https://sendpulse.com/integrations/api
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/smtp
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/bulk-sms
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/chatbot
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/web-push
+- aid: sendpulse:sendpulse-course-tariffs-api
+  name: SendPulse Course tariffs API
+  description: The Course tariffs API from SendPulse — 1 operation(s) for course tariffs.
+  humanURL: https://sendpulse.com/integrations/api/bulk-email
+  baseURL: https://api.sendpulse.com
+  tags:
+  - Course tariffs
+  properties:
+  - type: OpenAPI
+    url: openapi/sendpulse-course-tariffs-api-openapi.yml
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/bulk-email
+  - type: APIReference
+    url: https://sendpulse.com/integrations/api
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/smtp
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/bulk-sms
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/chatbot
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/web-push
+- aid: sendpulse:sendpulse-courses-api
+  name: SendPulse Courses API
+  description: The Courses API from SendPulse — 1 operation(s) for courses.
+  humanURL: https://sendpulse.com/integrations/api/bulk-email
+  baseURL: https://api.sendpulse.com
+  tags:
+  - Courses
+  properties:
+  - type: OpenAPI
+    url: openapi/sendpulse-courses-api-openapi.yml
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/bulk-email
+  - type: APIReference
+    url: https://sendpulse.com/integrations/api
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/smtp
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/bulk-sms
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/chatbot
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/web-push
+- aid: sendpulse:sendpulse-custom-tab-api
+  name: SendPulse Custom Tab API
+  description: The Custom Tab API from SendPulse — 3 operation(s) for custom tab.
+  humanURL: https://sendpulse.com/integrations/api/bulk-email
+  baseURL: https://api.sendpulse.com
+  tags:
+  - Custom Tab
+  properties:
+  - type: OpenAPI
+    url: openapi/sendpulse-custom-tab-api-openapi.yml
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/bulk-email
+  - type: APIReference
+    url: https://sendpulse.com/integrations/api
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/smtp
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/bulk-sms
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/chatbot
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/web-push
+- aid: sendpulse:sendpulse-deal-attribute-value-api
+  name: SendPulse Deal attribute Value API
+  description: The Deal attribute Value API from SendPulse — 3 operation(s) for deal attribute value.
+  humanURL: https://sendpulse.com/integrations/api/bulk-email
+  baseURL: https://api.sendpulse.com
+  tags:
+  - Deal attribute Value
+  properties:
+  - type: OpenAPI
+    url: openapi/sendpulse-deal-attribute-value-api-openapi.yml
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/bulk-email
+  - type: APIReference
+    url: https://sendpulse.com/integrations/api
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/smtp
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/bulk-sms
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/chatbot
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/web-push
+- aid: sendpulse:sendpulse-deal-attributes-api
+  name: SendPulse Deal Attributes API
+  description: The Deal Attributes API from SendPulse — 3 operation(s) for deal attributes.
+  humanURL: https://sendpulse.com/integrations/api/bulk-email
+  baseURL: https://api.sendpulse.com
+  tags:
+  - Deal Attributes
+  properties:
+  - type: OpenAPI
+    url: openapi/sendpulse-deal-attributes-api-openapi.yml
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/bulk-email
+  - type: APIReference
+    url: https://sendpulse.com/integrations/api
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/smtp
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/bulk-sms
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/chatbot
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/web-push
+- aid: sendpulse:sendpulse-deal-contacts-api
+  name: SendPulse Deal contacts API
+  description: The Deal contacts API from SendPulse — 2 operation(s) for deal contacts.
+  humanURL: https://sendpulse.com/integrations/api/bulk-email
+  baseURL: https://api.sendpulse.com
+  tags:
+  - Deal contacts
+  properties:
+  - type: OpenAPI
+    url: openapi/sendpulse-deal-contacts-api-openapi.yml
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/bulk-email
+  - type: APIReference
+    url: https://sendpulse.com/integrations/api
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/smtp
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/bulk-sms
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/chatbot
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/web-push
+- aid: sendpulse:sendpulse-deal-expiration-api
+  name: SendPulse Deal Expiration API
+  description: The Deal Expiration API from SendPulse — 1 operation(s) for deal expiration.
+  humanURL: https://sendpulse.com/integrations/api/bulk-email
+  baseURL: https://api.sendpulse.com
+  tags:
+  - Deal Expiration
+  properties:
+  - type: OpenAPI
+    url: openapi/sendpulse-deal-expiration-api-openapi.yml
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/bulk-email
+  - type: APIReference
+    url: https://sendpulse.com/integrations/api
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/smtp
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/bulk-sms
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/chatbot
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/web-push
+- aid: sendpulse:sendpulse-deal-history-api
+  name: SendPulse Deal history API
+  description: The Deal history API from SendPulse — 1 operation(s) for deal history.
+  humanURL: https://sendpulse.com/integrations/api/bulk-email
+  baseURL: https://api.sendpulse.com
+  tags:
+  - Deal history
+  properties:
+  - type: OpenAPI
+    url: openapi/sendpulse-deal-history-api-openapi.yml
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/bulk-email
+  - type: APIReference
+    url: https://sendpulse.com/integrations/api
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/smtp
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/bulk-sms
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/chatbot
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/web-push
+- aid: sendpulse:sendpulse-deal-notes-api
+  name: SendPulse Deal notes API
+  description: The Deal notes API from SendPulse — 2 operation(s) for deal notes.
+  humanURL: https://sendpulse.com/integrations/api/bulk-email
+  baseURL: https://api.sendpulse.com
+  tags:
+  - Deal notes
+  properties:
+  - type: OpenAPI
+    url: openapi/sendpulse-deal-notes-api-openapi.yml
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/bulk-email
+  - type: APIReference
+    url: https://sendpulse.com/integrations/api
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/smtp
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/bulk-sms
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/chatbot
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/web-push
+- aid: sendpulse:sendpulse-deals-api
+  name: SendPulse Deals API
+  description: The Deals API from SendPulse — 4 operation(s) for deals.
+  humanURL: https://sendpulse.com/integrations/api/bulk-email
+  baseURL: https://api.sendpulse.com
+  tags:
+  - Deals
+  properties:
+  - type: OpenAPI
+    url: openapi/sendpulse-deals-api-openapi.yml
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/bulk-email
+  - type: APIReference
+    url: https://sendpulse.com/integrations/api
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/smtp
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/bulk-sms
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/chatbot
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/web-push
+- aid: sendpulse:sendpulse-dialogs-api
+  name: SendPulse Dialogs API
+  description: The dialogs API from SendPulse — 1 operation(s) for dialogs.
+  humanURL: https://sendpulse.com/integrations/api/bulk-email
+  baseURL: https://api.sendpulse.com
+  tags:
+  - dialogs
+  properties:
+  - type: OpenAPI
+    url: openapi/sendpulse-dialogs-api-openapi.yml
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/bulk-email
+  - type: APIReference
+    url: https://sendpulse.com/integrations/api
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/smtp
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/bulk-sms
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/chatbot
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/web-push
+- aid: sendpulse:sendpulse-directory-api
+  name: SendPulse Directory API
+  description: directory entity
+  humanURL: https://sendpulse.com/integrations/api/bulk-email
+  baseURL: https://api.sendpulse.com
+  tags:
+  - Directory
+  properties:
+  - type: OpenAPI
+    url: openapi/sendpulse-directory-api-openapi.yml
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/bulk-email
+  - type: APIReference
+    url: https://sendpulse.com/integrations/api
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/smtp
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/bulk-sms
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/chatbot
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/web-push
+- aid: sendpulse:sendpulse-ecommerce-product-api
+  name: SendPulse ECommerce Product API
+  description: The ECommerce Product API from SendPulse — 14 operation(s) for ecommerce product.
+  humanURL: https://sendpulse.com/integrations/api/bulk-email
+  baseURL: https://api.sendpulse.com
+  tags:
+  - ECommerce Product
+  properties:
+  - type: OpenAPI
+    url: openapi/sendpulse-ecommerce-product-api-openapi.yml
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/bulk-email
+  - type: APIReference
+    url: https://sendpulse.com/integrations/api
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/smtp
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/bulk-sms
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/chatbot
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/web-push
+- aid: sendpulse:sendpulse-element-statistics-api
+  name: SendPulse Element Statistics API
+  description: Endpoints related to Element Statistics.
+  humanURL: https://sendpulse.com/integrations/api/bulk-email
+  baseURL: https://api.sendpulse.com
+  tags:
+  - Element Statistics
+  properties:
+  - type: OpenAPI
+    url: openapi/sendpulse-element-statistics-api-openapi.yml
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/bulk-email
+  - type: APIReference
+    url: https://sendpulse.com/integrations/api
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/smtp
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/bulk-sms
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/chatbot
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/web-push
+- aid: sendpulse:sendpulse-email-address-api
+  name: SendPulse Email address API
+  description: Endpoints related to Email address.
+  humanURL: https://sendpulse.com/integrations/api/bulk-email
+  baseURL: https://api.sendpulse.com
+  tags:
+  - Email address
+  properties:
+  - type: OpenAPI
+    url: openapi/sendpulse-email-address-api-openapi.yml
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/bulk-email
+  - type: APIReference
+    url: https://sendpulse.com/integrations/api
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/smtp
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/bulk-sms
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/chatbot
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/web-push
+- aid: sendpulse:sendpulse-emails-api
+  name: SendPulse Emails API
+  description: The Emails API from SendPulse — 7 operation(s) for emails.
+  humanURL: https://sendpulse.com/integrations/api/bulk-email
+  baseURL: https://api.sendpulse.com
+  tags:
+  - Emails
+  properties:
+  - type: OpenAPI
+    url: openapi/sendpulse-emails-api-openapi.yml
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/bulk-email
+  - type: APIReference
+    url: https://sendpulse.com/integrations/api
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/smtp
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/bulk-sms
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/chatbot
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/web-push
+- aid: sendpulse:sendpulse-events-api
+  name: SendPulse Events API
+  description: Endpoints related to Events.
+  humanURL: https://sendpulse.com/integrations/api/bulk-email
+  baseURL: https://api.sendpulse.com
+  tags:
   - Events
   properties:
   - type: OpenAPI
-    url: openapi/sendpulse-a360-openapi.yml
-  - type: Overlay
-    url: overlays/sendpulse-a360-overlay.yaml
+    url: openapi/sendpulse-events-api-openapi.yml
   - type: Documentation
-    url: https://sendpulse.com/integrations/api
+    url: https://sendpulse.com/integrations/api/bulk-email
   - type: APIReference
     url: https://sendpulse.com/integrations/api
-  x-operations: 14
-  x-spec-version: 1.0.0
-  x-spec-source: https://api.sendpulse.com/.well-known/openapi/a360.yaml
-- aid: sendpulse:sendpulse-chatbots-api
-  name: SendPulse Chatbots Service API
-  description: Cross-channel chatbot service — account information, listing bots across every messenger
-    channel, and dialog management.
-  humanURL: https://sendpulse.com/integrations/api/chatbot
-  baseURL: https://api.sendpulse.com/chatbots
-  tags:
-  - Chatbots
-  - Messaging
-  properties:
-  - type: OpenAPI
-    url: openapi/sendpulse-chatbots-openapi.yml
-  - type: Overlay
-    url: overlays/sendpulse-chatbots-overlay.yaml
   - type: Documentation
-    url: https://sendpulse.com/integrations/api/chatbot
-  - type: APIReference
-    url: https://sendpulse.com/integrations/api
-  x-operations: 3
-  x-spec-version: 0.0.1
-  x-spec-source: https://api.sendpulse.com/.well-known/openapi/chatbots.yaml
-- aid: sendpulse:sendpulse-whatsapp-api
-  name: SendPulse WhatsApp Chatbot API
-  description: WhatsApp Business chatbots — bots, subscribers, variables, flows, campaigns, chats and
-    pre-approved template messages.
-  humanURL: https://sendpulse.com/integrations/api/chatbot
-  baseURL: https://api.sendpulse.com/whatsapp
-  tags:
-  - Chatbots
-  - WhatsApp
-  - Messaging
-  properties:
-  - type: OpenAPI
-    url: openapi/sendpulse-whatsapp-openapi.yml
-  - type: Overlay
-    url: overlays/sendpulse-whatsapp-overlay.yaml
-  - type: Documentation
-    url: https://sendpulse.com/integrations/api/chatbot
-  - type: APIReference
-    url: https://sendpulse.com/integrations/api
-  x-operations: 46
-  x-spec-version: 0.0.1
-  x-spec-source: https://api.sendpulse.com/.well-known/openapi/whatsapp.yaml
-- aid: sendpulse:sendpulse-telegram-api
-  name: SendPulse Telegram Chatbot API
-  description: Telegram chatbots — bots, subscribers, variables, flows, campaigns, chats, inline keyboards
-    and custom commands.
-  humanURL: https://sendpulse.com/integrations/api/chatbot
-  baseURL: https://api.sendpulse.com/telegram
-  tags:
-  - Chatbots
-  - Telegram
-  - Messaging
-  properties:
-  - type: OpenAPI
-    url: openapi/sendpulse-telegram-openapi.yml
-  - type: Overlay
-    url: overlays/sendpulse-telegram-overlay.yaml
-  - type: Documentation
-    url: https://sendpulse.com/integrations/api/chatbot
-  - type: APIReference
-    url: https://sendpulse.com/integrations/api
-  x-operations: 39
-  x-spec-version: 0.0.1
-  x-spec-source: https://api.sendpulse.com/.well-known/openapi/telegram.yaml
-- aid: sendpulse:sendpulse-facebook-api
-  name: SendPulse Facebook Messenger Chatbot API
-  description: Facebook Messenger chatbots — bots, subscribers, variables, flows and campaigns, with persistent
-    menus and quick replies.
-  humanURL: https://sendpulse.com/integrations/api/chatbot
-  baseURL: https://api.sendpulse.com/messenger
-  tags:
-  - Chatbots
-  - Facebook
-  - Messaging
-  properties:
-  - type: OpenAPI
-    url: openapi/sendpulse-facebook-openapi.yml
-  - type: Overlay
-    url: overlays/sendpulse-facebook-overlay.yaml
-  - type: Documentation
-    url: https://sendpulse.com/integrations/api/chatbot
-  - type: APIReference
-    url: https://sendpulse.com/integrations/api
-  x-operations: 38
-  x-spec-version: 0.0.1
-  x-spec-source: https://api.sendpulse.com/.well-known/openapi/facebook.yaml
-- aid: sendpulse:sendpulse-instagram-api
-  name: SendPulse Instagram Chatbot API
-  description: Instagram chatbots — bots, subscribers, variables, flows and campaigns, including comment-triggered
-    flows and story mentions.
-  humanURL: https://sendpulse.com/integrations/api/chatbot
-  baseURL: https://api.sendpulse.com/instagram
-  tags:
-  - Chatbots
-  - Instagram
-  - Messaging
-  properties:
-  - type: OpenAPI
-    url: openapi/sendpulse-instagram-openapi.yml
-  - type: Overlay
-    url: overlays/sendpulse-instagram-overlay.yaml
-  - type: Documentation
-    url: https://sendpulse.com/integrations/api/chatbot
-  - type: APIReference
-    url: https://sendpulse.com/integrations/api
-  x-operations: 36
-  x-spec-version: 0.0.1
-  x-spec-source: https://api.sendpulse.com/.well-known/openapi/instagram.yaml
-- aid: sendpulse:sendpulse-viber-chatbot-api
-  name: SendPulse Viber Chatbot API
-  description: Viber chatbots — bots, subscribers, variables, flows and campaigns with rich media, buttons
-    and carousels.
-  humanURL: https://sendpulse.com/integrations/api/chatbot
-  baseURL: https://api.sendpulse.com/viber/chatbots
-  tags:
-  - Chatbots
-  - Viber
-  - Messaging
-  properties:
-  - type: OpenAPI
-    url: openapi/sendpulse-viber-chatbot-openapi.yml
-  - type: Overlay
-    url: overlays/sendpulse-viber-chatbot-overlay.yaml
-  - type: Documentation
-    url: https://sendpulse.com/integrations/api/chatbot
-  - type: APIReference
-    url: https://sendpulse.com/integrations/api
-  x-operations: 36
-  x-spec-version: 0.0.1
-  x-spec-source: https://api.sendpulse.com/.well-known/openapi/viber-chatbot.yaml
-- aid: sendpulse:sendpulse-tiktok-api
-  name: SendPulse TikTok Chatbot API
-  description: TikTok chatbots — direct-message automation and comment-reply workflows for TikTok Business
-    accounts.
-  humanURL: https://sendpulse.com/integrations/api/chatbot
-  baseURL: https://api.sendpulse.com/tiktok
-  tags:
-  - Chatbots
-  - TikTok
-  - Messaging
-  properties:
-  - type: OpenAPI
-    url: openapi/sendpulse-tiktok-openapi.yml
-  - type: Overlay
-    url: overlays/sendpulse-tiktok-overlay.yaml
-  - type: Documentation
-    url: https://sendpulse.com/integrations/api/chatbot
-  - type: APIReference
-    url: https://sendpulse.com/integrations/api
-  x-operations: 36
-  x-spec-version: 0.0.1
-  x-spec-source: https://api.sendpulse.com/.well-known/openapi/tiktok.yaml
-- aid: sendpulse:sendpulse-live-chat-api
-  name: SendPulse LiveChat API
-  description: Chatbots embedded in the SendPulse live chat website widget — bots, subscribers, variables,
-    flows and campaigns.
-  humanURL: https://sendpulse.com/integrations/api/chatbot
-  baseURL: https://api.sendpulse.com/live-chat
-  tags:
-  - Chatbots
-  - Live Chat
-  - Support
-  properties:
-  - type: OpenAPI
-    url: openapi/sendpulse-live-chat-openapi.yml
-  - type: Overlay
-    url: overlays/sendpulse-live-chat-overlay.yaml
-  - type: Documentation
-    url: https://sendpulse.com/integrations/api/chatbot
-  - type: APIReference
-    url: https://sendpulse.com/integrations/api
-  x-operations: 36
-  x-spec-version: 0.0.1
-  x-spec-source: https://api.sendpulse.com/.well-known/openapi/live-chat.yaml
-- aid: sendpulse:sendpulse-web-push-api
-  name: SendPulse Web Push API
-  description: Browser push notifications — websites, subscriptions, segmentation, scheduled broadcasts
-    and delivery statistics.
-  humanURL: https://sendpulse.com/integrations/api/web-push
-  baseURL: https://api.sendpulse.com
-  tags:
-  - Web Push
-  - Notification
-  tags_raw:
-  - Web Push
-  - Notifications
-  properties:
-  - type: OpenAPI
-    url: openapi/sendpulse-web-push-openapi.yml
-  - type: Overlay
-    url: overlays/sendpulse-web-push-overlay.yaml
-  - type: Documentation
-    url: https://sendpulse.com/integrations/api/web-push
-  - type: APIReference
-    url: https://sendpulse.com/integrations/api
-  x-operations: 11
-  x-spec-version: 1.0.0
-  x-spec-source: https://api.sendpulse.com/.well-known/openapi/web-push.yaml
-- aid: sendpulse:sendpulse-viber-api
-  name: SendPulse Viber API
-  description: Viber rich-media broadcast messaging with images, buttons and automatic SMS fallback (non-chatbot).
-  humanURL: https://sendpulse.com/integrations/api/bulk-sms
-  baseURL: https://api.sendpulse.com
-  tags:
-  - Viber
-  - Messaging
-  - Notification
-  tags_raw:
-  - Viber
-  - Messaging
-  - Notifications
-  properties:
-  - type: OpenAPI
-    url: openapi/sendpulse-viber-openapi.yml
-  - type: Overlay
-    url: overlays/sendpulse-viber-overlay.yaml
+    url: https://sendpulse.com/integrations/api/smtp
   - type: Documentation
     url: https://sendpulse.com/integrations/api/bulk-sms
-  - type: APIReference
+  - type: Documentation
     url: https://sendpulse.com/integrations/api
-  x-operations: 9
-  x-spec-version: 1.0.0
-  x-spec-source: https://api.sendpulse.com/.well-known/openapi/viber.yaml
-- aid: sendpulse:sendpulse-verifier-api
-  name: SendPulse Verifier API
-  description: Email address verification and mailing-list cleaning to identify invalid, disposable or
-    high-risk contacts before a send.
-  humanURL: https://sendpulse.com/integrations/api
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/chatbot
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/web-push
+- aid: sendpulse:sendpulse-file-api
+  name: SendPulse File API
+  description: file entity
+  humanURL: https://sendpulse.com/integrations/api/bulk-email
   baseURL: https://api.sendpulse.com
   tags:
-  - Email Verification
-  - Deliverability
-  - Data Quality
+  - File
   properties:
   - type: OpenAPI
-    url: openapi/sendpulse-verifier-openapi.yml
-  - type: Overlay
-    url: overlays/sendpulse-verifier-overlay.yaml
+    url: openapi/sendpulse-file-api-openapi.yml
   - type: Documentation
-    url: https://sendpulse.com/integrations/api
+    url: https://sendpulse.com/integrations/api/bulk-email
   - type: APIReference
     url: https://sendpulse.com/integrations/api
-  x-operations: 9
-  x-spec-version: 1.0.0
-  x-spec-source: https://api.sendpulse.com/.well-known/openapi/verifier.yaml
-- aid: sendpulse:sendpulse-edu-api
-  name: SendPulse Education API
-  description: Online course platform — schools, courses, students, groups, pricing plans, enrolments
-    and certificates.
-  humanURL: https://sendpulse.com/integrations/api
-  baseURL: https://api.sendpulse.com/edu/public/v1
-  tags:
-  - Education
-  - Courses
-  - LMS
-  properties:
-  - type: OpenAPI
-    url: openapi/sendpulse-edu-openapi.yml
-  - type: Overlay
-    url: overlays/sendpulse-edu-overlay.yaml
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/smtp
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/bulk-sms
   - type: Documentation
     url: https://sendpulse.com/integrations/api
-  - type: APIReference
-    url: https://sendpulse.com/integrations/api
-  x-operations: 12
-  x-spec-version: 1.0.0
-  x-spec-source: https://api.sendpulse.com/.well-known/openapi/edu.yaml
-- aid: sendpulse:sendpulse-popups-api
-  name: SendPulse Pop-up API
-  description: Website pop-up creation and management, project organisation, and delivery and conversion
-    statistics.
-  humanURL: https://sendpulse.com/integrations/api
-  baseURL: https://api.sendpulse.com/v2/pop-ups
-  tags:
-  - Popups
-  - Lead Capture
-  - Conversion
-  tags_raw:
-  - Pop-ups
-  - Lead Capture
-  - Conversion
-  properties:
-  - type: OpenAPI
-    url: openapi/sendpulse-popups-openapi.yml
-  - type: Overlay
-    url: overlays/sendpulse-popups-overlay.yaml
   - type: Documentation
-    url: https://sendpulse.com/integrations/api
-  - type: APIReference
-    url: https://sendpulse.com/integrations/api
-  x-operations: 15
-  x-spec-version: '1.0'
-  x-spec-source: https://api.sendpulse.com/.well-known/openapi/popups.yaml
+    url: https://sendpulse.com/integrations/api/chatbot
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/web-push
 - aid: sendpulse:sendpulse-file-manager-api
   name: SendPulse File Manager API
-  description: File upload, directory organisation and asset retrieval for use in campaigns, templates
-    and chatbot flows.
-  humanURL: https://sendpulse.com/integrations/api
-  baseURL: https://api.sendpulse.com/fm/public/v1
+  description: The File Manager API from SendPulse — 1 operation(s) for file manager.
+  humanURL: https://sendpulse.com/integrations/api/bulk-email
+  baseURL: https://api.sendpulse.com
   tags:
-  - File Storage
-  - Assets
+  - File Manager
   properties:
   - type: OpenAPI
-    url: openapi/sendpulse-file-manager-openapi.yml
-  - type: Overlay
-    url: overlays/sendpulse-file-manager-overlay.yaml
+    url: openapi/sendpulse-file-manager-api-openapi.yml
   - type: Documentation
-    url: https://sendpulse.com/integrations/api
+    url: https://sendpulse.com/integrations/api/bulk-email
   - type: APIReference
     url: https://sendpulse.com/integrations/api
-  x-operations: 9
-  x-spec-version: 1.0.0
-  x-spec-source: https://api.sendpulse.com/.well-known/openapi/file-manager.yaml
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/smtp
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/bulk-sms
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/chatbot
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/web-push
+- aid: sendpulse:sendpulse-flows-api
+  name: SendPulse Flows API
+  description: The flows API from SendPulse — 3 operation(s) for flows.
+  humanURL: https://sendpulse.com/integrations/api/bulk-email
+  baseURL: https://api.sendpulse.com
+  tags:
+  - flows
+  properties:
+  - type: OpenAPI
+    url: openapi/sendpulse-flows-api-openapi.yml
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/bulk-email
+  - type: APIReference
+    url: https://sendpulse.com/integrations/api
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/smtp
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/bulk-sms
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/chatbot
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/web-push
+- aid: sendpulse:sendpulse-mailing-list-verification-api
+  name: SendPulse Mailing List Verification API
+  description: Endpoints related to Mailing List Verification.
+  humanURL: https://sendpulse.com/integrations/api/bulk-email
+  baseURL: https://api.sendpulse.com
+  tags:
+  - Mailing List Verification
+  properties:
+  - type: OpenAPI
+    url: openapi/sendpulse-mailing-list-verification-api-openapi.yml
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/bulk-email
+  - type: APIReference
+    url: https://sendpulse.com/integrations/api
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/smtp
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/bulk-sms
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/chatbot
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/web-push
+- aid: sendpulse:sendpulse-mailing-lists-api
+  name: SendPulse Mailing lists API
+  description: Endpoints related to Mailing lists.
+  humanURL: https://sendpulse.com/integrations/api/bulk-email
+  baseURL: https://api.sendpulse.com
+  tags:
+  - Mailing lists
+  properties:
+  - type: OpenAPI
+    url: openapi/sendpulse-mailing-lists-api-openapi.yml
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/bulk-email
+  - type: APIReference
+    url: https://sendpulse.com/integrations/api
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/smtp
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/bulk-sms
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/chatbot
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/web-push
+- aid: sendpulse:sendpulse-managersettings-api
+  name: SendPulse Manager Settings API
+  description: The ManagerSettings API from SendPulse — 5 operation(s) for managersettings.
+  humanURL: https://sendpulse.com/integrations/api/bulk-email
+  baseURL: https://api.sendpulse.com
+  tags:
+  - ManagerSettings
+  properties:
+  - type: OpenAPI
+    url: openapi/sendpulse-managersettings-api-openapi.yml
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/bulk-email
+  - type: APIReference
+    url: https://sendpulse.com/integrations/api
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/smtp
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/bulk-sms
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/chatbot
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/web-push
+- aid: sendpulse:sendpulse-messengers-api
+  name: SendPulse Messengers API
+  description: The messengers API from SendPulse — 3 operation(s) for messengers.
+  humanURL: https://sendpulse.com/integrations/api/bulk-email
+  baseURL: https://api.sendpulse.com
+  tags:
+  - messengers
+  properties:
+  - type: OpenAPI
+    url: openapi/sendpulse-messengers-api-openapi.yml
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/bulk-email
+  - type: APIReference
+    url: https://sendpulse.com/integrations/api
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/smtp
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/bulk-sms
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/chatbot
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/web-push
+- aid: sendpulse:sendpulse-messengers-types-api
+  name: SendPulse Messengers types API
+  description: The Messengers types API from SendPulse — 1 operation(s) for messengers types.
+  humanURL: https://sendpulse.com/integrations/api/bulk-email
+  baseURL: https://api.sendpulse.com
+  tags:
+  - Messengers types
+  properties:
+  - type: OpenAPI
+    url: openapi/sendpulse-messengers-types-api-openapi.yml
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/bulk-email
+  - type: APIReference
+    url: https://sendpulse.com/integrations/api
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/smtp
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/bulk-sms
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/chatbot
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/web-push
+- aid: sendpulse:sendpulse-payments-api
+  name: SendPulse Payments API
+  description: The Payments API from SendPulse — 6 operation(s) for payments.
+  humanURL: https://sendpulse.com/integrations/api/bulk-email
+  baseURL: https://api.sendpulse.com
+  tags:
+  - Payments
+  properties:
+  - type: OpenAPI
+    url: openapi/sendpulse-payments-api-openapi.yml
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/bulk-email
+  - type: APIReference
+    url: https://sendpulse.com/integrations/api
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/smtp
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/bulk-sms
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/chatbot
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/web-push
+- aid: sendpulse:sendpulse-phones-api
+  name: SendPulse Phones API
+  description: The Phones API from SendPulse — 3 operation(s) for phones.
+  humanURL: https://sendpulse.com/integrations/api/bulk-email
+  baseURL: https://api.sendpulse.com
+  tags:
+  - Phones
+  properties:
+  - type: OpenAPI
+    url: openapi/sendpulse-phones-api-openapi.yml
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/bulk-email
+  - type: APIReference
+    url: https://sendpulse.com/integrations/api
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/smtp
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/bulk-sms
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/chatbot
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/web-push
+- aid: sendpulse:sendpulse-pipeline-steps-api
+  name: SendPulse Pipeline Steps API
+  description: The Pipeline Steps API from SendPulse — 2 operation(s) for pipeline steps.
+  humanURL: https://sendpulse.com/integrations/api/bulk-email
+  baseURL: https://api.sendpulse.com
+  tags:
+  - Pipeline Steps
+  properties:
+  - type: OpenAPI
+    url: openapi/sendpulse-pipeline-steps-api-openapi.yml
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/bulk-email
+  - type: APIReference
+    url: https://sendpulse.com/integrations/api
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/smtp
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/bulk-sms
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/chatbot
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/web-push
+- aid: sendpulse:sendpulse-pipelines-api
+  name: SendPulse Pipelines API
+  description: The Pipelines API from SendPulse — 2 operation(s) for pipelines.
+  humanURL: https://sendpulse.com/integrations/api/bulk-email
+  baseURL: https://api.sendpulse.com
+  tags:
+  - Pipelines
+  properties:
+  - type: OpenAPI
+    url: openapi/sendpulse-pipelines-api-openapi.yml
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/bulk-email
+  - type: APIReference
+    url: https://sendpulse.com/integrations/api
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/smtp
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/bulk-sms
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/chatbot
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/web-push
+- aid: sendpulse:sendpulse-popup-api
+  name: SendPulse Popup API
+  description: The Popup API from SendPulse — 5 operation(s) for popup.
+  humanURL: https://sendpulse.com/integrations/api/bulk-email
+  baseURL: https://api.sendpulse.com
+  tags:
+  - Popup
+  properties:
+  - type: OpenAPI
+    url: openapi/sendpulse-popup-api-openapi.yml
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/bulk-email
+  - type: APIReference
+    url: https://sendpulse.com/integrations/api
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/smtp
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/bulk-sms
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/chatbot
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/web-push
+- aid: sendpulse:sendpulse-popup-statistic-api
+  name: SendPulse Popup statistic API
+  description: The Popup statistic API from SendPulse — 3 operation(s) for popup statistic.
+  humanURL: https://sendpulse.com/integrations/api/bulk-email
+  baseURL: https://api.sendpulse.com
+  tags:
+  - Popup statistic
+  properties:
+  - type: OpenAPI
+    url: openapi/sendpulse-popup-statistic-api-openapi.yml
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/bulk-email
+  - type: APIReference
+    url: https://sendpulse.com/integrations/api
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/smtp
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/bulk-sms
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/chatbot
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/web-push
+- aid: sendpulse:sendpulse-project-api
+  name: SendPulse Project API
+  description: The Project API from SendPulse — 2 operation(s) for project.
+  humanURL: https://sendpulse.com/integrations/api/bulk-email
+  baseURL: https://api.sendpulse.com
+  tags:
+  - Project
+  properties:
+  - type: OpenAPI
+    url: openapi/sendpulse-project-api-openapi.yml
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/bulk-email
+  - type: APIReference
+    url: https://sendpulse.com/integrations/api
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/smtp
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/bulk-sms
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/chatbot
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/web-push
+- aid: sendpulse:sendpulse-project-statistic-api
+  name: SendPulse Project statistic API
+  description: The Project statistic API from SendPulse — 1 operation(s) for project statistic.
+  humanURL: https://sendpulse.com/integrations/api/bulk-email
+  baseURL: https://api.sendpulse.com
+  tags:
+  - Project statistic
+  properties:
+  - type: OpenAPI
+    url: openapi/sendpulse-project-statistic-api-openapi.yml
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/bulk-email
+  - type: APIReference
+    url: https://sendpulse.com/integrations/api
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/smtp
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/bulk-sms
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/chatbot
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/web-push
+- aid: sendpulse:sendpulse-reports-api
+  name: SendPulse Reports API
+  description: Endpoints related to Reports.
+  humanURL: https://sendpulse.com/integrations/api/bulk-email
+  baseURL: https://api.sendpulse.com
+  tags:
+  - Reports
+  properties:
+  - type: OpenAPI
+    url: openapi/sendpulse-reports-api-openapi.yml
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/bulk-email
+  - type: APIReference
+    url: https://sendpulse.com/integrations/api
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/smtp
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/bulk-sms
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/chatbot
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/web-push
+- aid: sendpulse:sendpulse-schools-api
+  name: SendPulse Schools API
+  description: The Schools API from SendPulse — 1 operation(s) for schools.
+  humanURL: https://sendpulse.com/integrations/api/bulk-email
+  baseURL: https://api.sendpulse.com
+  tags:
+  - Schools
+  properties:
+  - type: OpenAPI
+    url: openapi/sendpulse-schools-api-openapi.yml
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/bulk-email
+  - type: APIReference
+    url: https://sendpulse.com/integrations/api
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/smtp
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/bulk-sms
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/chatbot
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/web-push
+- aid: sendpulse:sendpulse-senders-api
+  name: SendPulse Senders API
+  description: Endpoints related to Senders.
+  humanURL: https://sendpulse.com/integrations/api/bulk-email
+  baseURL: https://api.sendpulse.com
+  tags:
+  - Senders
+  properties:
+  - type: OpenAPI
+    url: openapi/sendpulse-senders-api-openapi.yml
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/bulk-email
+  - type: APIReference
+    url: https://sendpulse.com/integrations/api
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/smtp
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/bulk-sms
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/chatbot
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/web-push
+- aid: sendpulse:sendpulse-single-email-verification-api
+  name: SendPulse Single Email Verification API
+  description: Endpoints related to Single Email Verification.
+  humanURL: https://sendpulse.com/integrations/api/bulk-email
+  baseURL: https://api.sendpulse.com
+  tags:
+  - Single Email Verification
+  properties:
+  - type: OpenAPI
+    url: openapi/sendpulse-single-email-verification-api-openapi.yml
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/bulk-email
+  - type: APIReference
+    url: https://sendpulse.com/integrations/api
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/smtp
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/bulk-sms
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/chatbot
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/web-push
+- aid: sendpulse:sendpulse-students-api
+  name: SendPulse Students API
+  description: The Students API from SendPulse — 7 operation(s) for students.
+  humanURL: https://sendpulse.com/integrations/api/bulk-email
+  baseURL: https://api.sendpulse.com
+  tags:
+  - Students
+  properties:
+  - type: OpenAPI
+    url: openapi/sendpulse-students-api-openapi.yml
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/bulk-email
+  - type: APIReference
+    url: https://sendpulse.com/integrations/api
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/smtp
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/bulk-sms
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/chatbot
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/web-push
+- aid: sendpulse:sendpulse-students-groups-api
+  name: SendPulse Students groups API
+  description: The Students groups API from SendPulse — 1 operation(s) for students groups.
+  humanURL: https://sendpulse.com/integrations/api/bulk-email
+  baseURL: https://api.sendpulse.com
+  tags:
+  - Students groups
+  properties:
+  - type: OpenAPI
+    url: openapi/sendpulse-students-groups-api-openapi.yml
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/bulk-email
+  - type: APIReference
+    url: https://sendpulse.com/integrations/api
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/smtp
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/bulk-sms
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/chatbot
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/web-push
+- aid: sendpulse:sendpulse-subscribers-api
+  name: SendPulse Subscribers API
+  description: The Subscribers API from SendPulse — 6 operation(s) for subscribers.
+  humanURL: https://sendpulse.com/integrations/api/bulk-email
+  baseURL: https://api.sendpulse.com
+  tags:
+  - Subscribers
+  properties:
+  - type: OpenAPI
+    url: openapi/sendpulse-subscribers-api-openapi.yml
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/bulk-email
+  - type: APIReference
+    url: https://sendpulse.com/integrations/api
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/smtp
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/bulk-sms
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/chatbot
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/web-push
+- aid: sendpulse:sendpulse-tags-api
+  name: SendPulse Tags API
+  description: Endpoints related to Tags.
+  humanURL: https://sendpulse.com/integrations/api/bulk-email
+  baseURL: https://api.sendpulse.com
+  tags:
+  - Tags
+  properties:
+  - type: OpenAPI
+    url: openapi/sendpulse-tags-api-openapi.yml
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/bulk-email
+  - type: APIReference
+    url: https://sendpulse.com/integrations/api
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/smtp
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/bulk-sms
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/chatbot
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/web-push
+- aid: sendpulse:sendpulse-tariff-api
+  name: SendPulse Tariff API
+  description: The Tariff API from SendPulse — 1 operation(s) for tariff.
+  humanURL: https://sendpulse.com/integrations/api/bulk-email
+  baseURL: https://api.sendpulse.com
+  tags:
+  - Tariff
+  properties:
+  - type: OpenAPI
+    url: openapi/sendpulse-tariff-api-openapi.yml
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/bulk-email
+  - type: APIReference
+    url: https://sendpulse.com/integrations/api
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/smtp
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/bulk-sms
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/chatbot
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/web-push
+- aid: sendpulse:sendpulse-task-attributes-api
+  name: SendPulse Task Attributes API
+  description: The Task Attributes API from SendPulse — 2 operation(s) for task attributes.
+  humanURL: https://sendpulse.com/integrations/api/bulk-email
+  baseURL: https://api.sendpulse.com
+  tags:
+  - Task Attributes
+  properties:
+  - type: OpenAPI
+    url: openapi/sendpulse-task-attributes-api-openapi.yml
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/bulk-email
+  - type: APIReference
+    url: https://sendpulse.com/integrations/api
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/smtp
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/bulk-sms
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/chatbot
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/web-push
+- aid: sendpulse:sendpulse-task-checklist-api
+  name: SendPulse Task Checklist API
+  description: The Task Checklist API from SendPulse — 4 operation(s) for task checklist.
+  humanURL: https://sendpulse.com/integrations/api/bulk-email
+  baseURL: https://api.sendpulse.com
+  tags:
+  - Task Checklist
+  properties:
+  - type: OpenAPI
+    url: openapi/sendpulse-task-checklist-api-openapi.yml
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/bulk-email
+  - type: APIReference
+    url: https://sendpulse.com/integrations/api
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/smtp
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/bulk-sms
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/chatbot
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/web-push
+- aid: sendpulse:sendpulse-task-comments-api
+  name: SendPulse Task Comments API
+  description: The Task Comments API from SendPulse — 2 operation(s) for task comments.
+  humanURL: https://sendpulse.com/integrations/api/bulk-email
+  baseURL: https://api.sendpulse.com
+  tags:
+  - Task Comments
+  properties:
+  - type: OpenAPI
+    url: openapi/sendpulse-task-comments-api-openapi.yml
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/bulk-email
+  - type: APIReference
+    url: https://sendpulse.com/integrations/api
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/smtp
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/bulk-sms
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/chatbot
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/web-push
+- aid: sendpulse:sendpulse-task-entity-api
+  name: SendPulse Task Entity API
+  description: The Task Entity API from SendPulse — 4 operation(s) for task entity.
+  humanURL: https://sendpulse.com/integrations/api/bulk-email
+  baseURL: https://api.sendpulse.com
+  tags:
+  - Task Entity
+  properties:
+  - type: OpenAPI
+    url: openapi/sendpulse-task-entity-api-openapi.yml
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/bulk-email
+  - type: APIReference
+    url: https://sendpulse.com/integrations/api
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/smtp
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/bulk-sms
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/chatbot
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/web-push
+- aid: sendpulse:sendpulse-task-history-api
+  name: SendPulse Task history API
+  description: The Task history API from SendPulse — 1 operation(s) for task history.
+  humanURL: https://sendpulse.com/integrations/api/bulk-email
+  baseURL: https://api.sendpulse.com
+  tags:
+  - Task history
+  properties:
+  - type: OpenAPI
+    url: openapi/sendpulse-task-history-api-openapi.yml
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/bulk-email
+  - type: APIReference
+    url: https://sendpulse.com/integrations/api
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/smtp
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/bulk-sms
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/chatbot
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/web-push
+- aid: sendpulse:sendpulse-task-tags-api
+  name: SendPulse Task Tags API
+  description: The Task Tags API from SendPulse — 3 operation(s) for task tags.
+  humanURL: https://sendpulse.com/integrations/api/bulk-email
+  baseURL: https://api.sendpulse.com
+  tags:
+  - Task Tags
+  properties:
+  - type: OpenAPI
+    url: openapi/sendpulse-task-tags-api-openapi.yml
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/bulk-email
+  - type: APIReference
+    url: https://sendpulse.com/integrations/api
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/smtp
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/bulk-sms
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/chatbot
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/web-push
+- aid: sendpulse:sendpulse-tasks-api
+  name: SendPulse Tasks API
+  description: The Tasks API from SendPulse — 6 operation(s) for tasks.
+  humanURL: https://sendpulse.com/integrations/api/bulk-email
+  baseURL: https://api.sendpulse.com
+  tags:
+  - Tasks
+  properties:
+  - type: OpenAPI
+    url: openapi/sendpulse-tasks-api-openapi.yml
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/bulk-email
+  - type: APIReference
+    url: https://sendpulse.com/integrations/api
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/smtp
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/bulk-sms
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/chatbot
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/web-push
+- aid: sendpulse:sendpulse-tasks-boards-api
+  name: SendPulse Tasks boards API
+  description: The Tasks boards API from SendPulse — 2 operation(s) for tasks boards.
+  humanURL: https://sendpulse.com/integrations/api/bulk-email
+  baseURL: https://api.sendpulse.com
+  tags:
+  - Tasks boards
+  properties:
+  - type: OpenAPI
+    url: openapi/sendpulse-tasks-boards-api-openapi.yml
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/bulk-email
+  - type: APIReference
+    url: https://sendpulse.com/integrations/api
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/smtp
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/bulk-sms
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/chatbot
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/web-push
+- aid: sendpulse:sendpulse-tasks-steps-api
+  name: SendPulse Tasks steps API
+  description: The Tasks steps API from SendPulse — 2 operation(s) for tasks steps.
+  humanURL: https://sendpulse.com/integrations/api/bulk-email
+  baseURL: https://api.sendpulse.com
+  tags:
+  - Tasks steps
+  properties:
+  - type: OpenAPI
+    url: openapi/sendpulse-tasks-steps-api-openapi.yml
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/bulk-email
+  - type: APIReference
+    url: https://sendpulse.com/integrations/api
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/smtp
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/bulk-sms
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/chatbot
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/web-push
+- aid: sendpulse:sendpulse-telephony-api
+  name: SendPulse Telephony API
+  description: The Telephony API from SendPulse — 4 operation(s) for telephony.
+  humanURL: https://sendpulse.com/integrations/api/bulk-email
+  baseURL: https://api.sendpulse.com
+  tags:
+  - Telephony
+  properties:
+  - type: OpenAPI
+    url: openapi/sendpulse-telephony-api-openapi.yml
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/bulk-email
+  - type: APIReference
+    url: https://sendpulse.com/integrations/api
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/smtp
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/bulk-sms
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/chatbot
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/web-push
+- aid: sendpulse:sendpulse-templates-api
+  name: SendPulse Templates API
+  description: Endpoints related to Templates.
+  humanURL: https://sendpulse.com/integrations/api/bulk-email
+  baseURL: https://api.sendpulse.com
+  tags:
+  - Templates
+  properties:
+  - type: OpenAPI
+    url: openapi/sendpulse-templates-api-openapi.yml
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/bulk-email
+  - type: APIReference
+    url: https://sendpulse.com/integrations/api
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/smtp
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/bulk-sms
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/chatbot
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/web-push
+- aid: sendpulse:sendpulse-triggers-api
+  name: SendPulse Triggers API
+  description: (keywords)
+  humanURL: https://sendpulse.com/integrations/api/bulk-email
+  baseURL: https://api.sendpulse.com
+  tags:
+  - triggers
+  properties:
+  - type: OpenAPI
+    url: openapi/sendpulse-triggers-api-openapi.yml
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/bulk-email
+  - type: APIReference
+    url: https://sendpulse.com/integrations/api
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/smtp
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/bulk-sms
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/chatbot
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/web-push
+- aid: sendpulse:sendpulse-unsubscribe-api
+  name: SendPulse Unsubscribe API
+  description: The Unsubscribe API from SendPulse — 3 operation(s) for unsubscribe.
+  humanURL: https://sendpulse.com/integrations/api/bulk-email
+  baseURL: https://api.sendpulse.com
+  tags:
+  - Unsubscribe
+  properties:
+  - type: OpenAPI
+    url: openapi/sendpulse-unsubscribe-api-openapi.yml
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/bulk-email
+  - type: APIReference
+    url: https://sendpulse.com/integrations/api
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/smtp
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/bulk-sms
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/chatbot
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/web-push
+- aid: sendpulse:sendpulse-users-api
+  name: SendPulse Users API
+  description: The Users API from SendPulse — 1 operation(s) for users.
+  humanURL: https://sendpulse.com/integrations/api/bulk-email
+  baseURL: https://api.sendpulse.com
+  tags:
+  - Users
+  properties:
+  - type: OpenAPI
+    url: openapi/sendpulse-users-api-openapi.yml
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/bulk-email
+  - type: APIReference
+    url: https://sendpulse.com/integrations/api
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/smtp
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/bulk-sms
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/chatbot
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/web-push
+- aid: sendpulse:sendpulse-variables-api
+  name: SendPulse Variables API
+  description: The variables API from SendPulse — 1 operation(s) for variables.
+  humanURL: https://sendpulse.com/integrations/api/bulk-email
+  baseURL: https://api.sendpulse.com
+  tags:
+  - variables
+  properties:
+  - type: OpenAPI
+    url: openapi/sendpulse-variables-api-openapi.yml
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/bulk-email
+  - type: APIReference
+    url: https://sendpulse.com/integrations/api
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/smtp
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/bulk-sms
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/chatbot
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/web-push
+- aid: sendpulse:sendpulse-webhooks-api
+  name: SendPulse Webhooks API
+  description: Endpoints related to Webhooks.
+  humanURL: https://sendpulse.com/integrations/api/bulk-email
+  baseURL: https://api.sendpulse.com
+  tags:
+  - Webhooks
+  properties:
+  - type: OpenAPI
+    url: openapi/sendpulse-webhooks-api-openapi.yml
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/bulk-email
+  - type: APIReference
+    url: https://sendpulse.com/integrations/api
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/smtp
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/bulk-sms
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/chatbot
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/web-push
+- aid: sendpulse:sendpulse-websites-api
+  name: SendPulse Websites API
+  description: The Websites API from SendPulse — 4 operation(s) for websites.
+  humanURL: https://sendpulse.com/integrations/api/bulk-email
+  baseURL: https://api.sendpulse.com
+  tags:
+  - Websites
+  properties:
+  - type: OpenAPI
+    url: openapi/sendpulse-websites-api-openapi.yml
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/bulk-email
+  - type: APIReference
+    url: https://sendpulse.com/integrations/api
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/smtp
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/bulk-sms
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/chatbot
+  - type: Documentation
+    url: https://sendpulse.com/integrations/api/web-push
 common:
+- type: Overlay
+  url: overlays/sendpulse-bulk-email-overlay.yaml
+- type: Overlay
+  url: overlays/sendpulse-smtp-overlay.yaml
+- type: Overlay
+  url: overlays/sendpulse-sms-overlay.yaml
+- type: Overlay
+  url: overlays/sendpulse-crm-overlay.yaml
+- type: Overlay
+  url: overlays/sendpulse-a360-overlay.yaml
+- type: Overlay
+  url: overlays/sendpulse-chatbots-overlay.yaml
+- type: Overlay
+  url: overlays/sendpulse-whatsapp-overlay.yaml
+- type: Overlay
+  url: overlays/sendpulse-telegram-overlay.yaml
+- type: Overlay
+  url: overlays/sendpulse-facebook-overlay.yaml
+- type: Overlay
+  url: overlays/sendpulse-instagram-overlay.yaml
+- type: Overlay
+  url: overlays/sendpulse-viber-chatbot-overlay.yaml
+- type: Overlay
+  url: overlays/sendpulse-tiktok-overlay.yaml
+- type: Overlay
+  url: overlays/sendpulse-live-chat-overlay.yaml
+- type: Overlay
+  url: overlays/sendpulse-web-push-overlay.yaml
+- type: Overlay
+  url: overlays/sendpulse-viber-overlay.yaml
+- type: Overlay
+  url: overlays/sendpulse-verifier-overlay.yaml
+- type: Overlay
+  url: overlays/sendpulse-edu-overlay.yaml
+- type: Overlay
+  url: overlays/sendpulse-popups-overlay.yaml
+- type: Overlay
+  url: overlays/sendpulse-file-manager-overlay.yaml
 - type: Website
   url: https://sendpulse.com/
 - type: DeveloperPortal
