@@ -11,6 +11,18 @@ description: SendPulse is a multichannel marketing automation platform covering 
   (one-hour Bearer tokens) or a static account API key in the same Authorization header. SendPulse also
   operates a first-party remote MCP server at https://mcp.sendpulse.com/mcp with 147 published tools covering
   chatbots, CRM, courses, email and SMTP.
+deliveryModel:
+  model: saas
+  open_source: false
+  commercial: true
+  callable_host: true
+  label: Hosted service · you call their endpoint
+  confidence: high
+  source:
+  - openapi
+  - pricing
+  generated: '2026-08-28'
+  method: derived
 accessModel:
   pricing: freemium
   onboarding: self-serve
@@ -2105,6 +2117,9 @@ apis:
   - type: Documentation
     url: https://sendpulse.com/integrations/api/web-push
 common:
+- type: CapabilityMap
+  url: capabilities/sendpulse-capability-edges.yml
+  name: SendPulse Business Capability Map
 - type: Overlay
   url: overlays/sendpulse-bulk-email-overlay.yaml
 - type: Overlay
