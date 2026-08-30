@@ -1,0 +1,2049 @@
+openapi: 3.2.0
+info:
+  title: Sendpulse Campaigns API
+  x-refined-note:
+  - x-ai-description differs across the merged source definitions and was not carried
+  version: '1.0'
+  description: 'Operations tagged Campaigns across 10 of this provider''s published API definitions: sendpulse-bulk-email-openapi.yml, sendpulse-facebook-openapi.yml, sendpulse-instagram-openapi.yml, sendpulse-sms-openapi.yml, sendpulse-telegram-openapi.yml, sendpulse-tiktok-openapi.yml, sendpulse-viber-chatbot-openapi.yml, sendpulse-viber-openapi.yml, sendpulse-web-push-openapi.yml, sendpulse-whatsapp-openapi.yml. Each path carries the servers of the definition it was published in.'
+servers:
+- url: https://api.sendpulse.com
+  description: Production server
+- description: ''
+  url: https://api.sendpulse.com/messenger
+- description: ''
+  url: https://api.sendpulse.com/instagram
+- description: ''
+  url: https://api.sendpulse.com/telegram
+- description: ''
+  url: https://api.sendpulse.com/tiktok
+- description: ''
+  url: https://api.sendpulse.com/viber/chatbots
+- description: ''
+  url: https://api.sendpulse.com/whatsapp
+security:
+- apiKey: []
+- oauth2: []
+tags:
+- name: Campaigns
+  description: Endpoints related to Campaigns.
+paths:
+  /campaigns:
+    post:
+      tags:
+      - Campaigns
+      summary: Create a campaign
+      operationId: createCampaign
+      description: Create and send or schedule a campaign. One of 'body' or 'template_id' is required. One of 'list_id' or 'segment_id' is required.
+      x-ai-role: marketing_automation_specialist
+      x-ai-description: The primary engine for launching marketing broadcasts. This endpoint allows for direct HTML injection, template usage, and sophisticated segmentation. It supports both immediate sends and future scheduling with dynamic list updates.
+      x-ai-reasoning-instructions:
+      - Validate that either `body` or `template_id` is present.
+      - Validate that either `list_id` or `segment_id` is present.
+      - If `send_date` is provided, ensure it is in `Y-m-d H:i:s` format and in the future.
+      - Check if `sender_email` is a pre-verified sender for the account.
+      - For large lists, advise calculating cost using `/addressbooks/{id}/cost` first.
+      - If `is_test` is true, remind the user that only one `list_id` can be used.
+      x-ai-responding-instructions:
+      - Provide the new Campaign ID and its initial task status.
+      - Clearly state if the campaign is a draft (status 26) or entering the send queue (status 13).
+      - If scheduled, confirm the exact time it will be sent.
+      - Highlight the estimated recipient count if provided in the response.
+      x-ai-suggestions:
+      - Monitor campaign statistics using `/campaigns/{id}`.
+      - Check referral statistics with `/campaigns/{id}/referrals`.
+      - 'Send a test campaign first by setting `is_test: true`.'
+      x-ai-capabilities:
+        security_info:
+          data_handling:
+          - ResourceStateUpdate
+          - SensitiveAction
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CampaignCreateRequest'
+      responses:
+        '200':
+          description: Campaign created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CampaignCreateResponse'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+    get:
+      tags:
+      - Campaigns
+      summary: Get a list of campaigns
+      operationId: getCampaigns
+      description: Retrieve history and status of all campaigns.
+      x-ai-role: data_analyst
+      x-ai-description: Retrieves the history and status of all email campaigns.
+      x-ai-reasoning-instructions:
+      - Use pagination for accounts with high volume.
+      - Filter by status to find drafts or pending campaigns.
+      - Sort by date descending to see recent activity.
+      x-ai-responding-instructions:
+      - Summarize recent campaigns and their statuses.
+      - Highlight any blocked or failed campaigns.
+      x-ai-suggestions:
+      - View details for a specific campaign.
+      x-ai-capabilities:
+        security_info:
+          data_handling:
+          - InformationRetrieval
+      parameters:
+      - name: limit
+        in: query
+        schema:
+          type: integer
+      - name: offset
+        in: query
+        schema:
+          type: integer
+      - name: order
+        in: query
+        schema:
+          type: string
+          enum:
+          - asc
+          - desc
+      - name: status
+        in: query
+        schema:
+          type: array
+          items:
+            type: integer
+      - name: planed
+        in: query
+        schema:
+          type: boolean
+      responses:
+        '200':
+          description: List of campaigns
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CampaignSummary'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+    servers:
+    - url: https://api.sendpulse.com
+      description: Production server
+  /campaigns/{id}:
+    parameters:
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: integer
+    get:
+      tags:
+      - Campaigns
+      summary: Get campaign information
+      operationId: getCampaignById
+      description: Get detailed stats for a specific campaign.
+      x-ai-role: data_analyst
+      x-ai-description: Provides full performance metrics, including opens and clicks.
+      x-ai-reasoning-instructions:
+      - Check if the campaign status indicates it has finished sending.
+      - Calculate open and click-through rates from the statistics block.
+      - Identify high bounce or unsubscribe rates.
+      x-ai-responding-instructions:
+      - Provide a clear summary of delivery, opens, and clicks.
+      - Diagnose any deliverability issues found in the error logs.
+      x-ai-suggestions:
+      - Check country statistics.
+      - Check referral statistics.
+      x-ai-capabilities:
+        security_info:
+          data_handling:
+          - InformationRetrieval
+      responses:
+        '200':
+          description: Detailed campaign stats
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CampaignDetails'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+    patch:
+      tags:
+      - Campaigns
+      summary: Edit scheduled campaign
+      operationId: updateCampaign
+      description: Update a pending campaign.
+      x-ai-role: marketing_automation_specialist
+      x-ai-description: Allows corrections to pending campaigns.
+      x-ai-reasoning-instructions:
+      - Verify the campaign is still in a scheduled/draft state.
+      - Ensure base64 encoding if the body is updated.
+      - Confirm new send_date is in the future.
+      x-ai-responding-instructions:
+      - Confirm the updates were saved successfully.
+      - State the new scheduled time if changed.
+      x-ai-suggestions:
+      - Review the campaign details again.
+      x-ai-capabilities:
+        security_info:
+          data_handling:
+          - ResourceStateUpdate
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CampaignUpdateRequest'
+      responses:
+        '200':
+          description: Campaign updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResultTrueWithId'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+    delete:
+      tags:
+      - Campaigns
+      summary: Cancel a campaign
+      operationId: cancelCampaign
+      description: Stops a pending or processing campaign.
+      x-ai-role: marketing_automation_specialist
+      x-ai-description: Cancels campaigns before they are fully sent.
+      x-ai-reasoning-instructions:
+      - Check campaign status; already sent campaigns cannot be cancelled.
+      - Act quickly if the status is 'processing'.
+      - Verify the result is true.
+      x-ai-responding-instructions:
+      - Confirm the campaign has been stopped.
+      - Explain that partially sent emails cannot be recalled.
+      x-ai-suggestions:
+      - Create a new corrected campaign.
+      x-ai-capabilities:
+        security_info:
+          data_handling:
+          - ResourceStateUpdate
+      responses:
+        '200':
+          description: Campaign cancelled
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResultTrue'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+    servers:
+    - url: https://api.sendpulse.com
+      description: Production server
+  /campaigns/{id}/countries:
+    parameters:
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: integer
+    get:
+      tags:
+      - Campaigns
+      summary: Get country statistics
+      operationId: getCampaignCountryStats
+      description: Geographic breakdown of email opens.
+      x-ai-role: data_analyst
+      x-ai-description: Provides geographic breakdown of engagement.
+      x-ai-reasoning-instructions:
+      - Sort the data to find the top performing countries.
+      - Correlate with sending times to optimize future schedules.
+      - Handle empty responses for un-opened campaigns.
+      x-ai-responding-instructions:
+      - List the top 3-5 countries by open volume.
+      - Suggest localization strategies if audience is diverse.
+      x-ai-suggestions:
+      - Segment future campaigns by top regions.
+      x-ai-capabilities:
+        security_info:
+          data_handling:
+          - InformationRetrieval
+      parameters: []
+      responses:
+        '200':
+          description: Country stats
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties:
+                  type: integer
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+    servers:
+    - url: https://api.sendpulse.com
+      description: Production server
+  /campaigns/{id}/referrals:
+    parameters:
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: integer
+    get:
+      tags:
+      - Campaigns
+      summary: Get referrals statistics
+      operationId: getCampaignReferralStats
+      description: Breakdown of link clicks.
+      x-ai-role: data_analyst
+      x-ai-description: Analyzes which links performed best in a campaign.
+      x-ai-reasoning-instructions:
+      - Identify the most popular links.
+      - Check for broken links (0 clicks could indicate issues).
+      - Compare click distributions against CTAs.
+      x-ai-responding-instructions:
+      - Provide a sorted list of the most clicked URLs.
+      - Highlight the primary CTA performance.
+      x-ai-suggestions:
+      - Use these insights to design better templates.
+      x-ai-capabilities:
+        security_info:
+          data_handling:
+          - InformationRetrieval
+      parameters: []
+      responses:
+        '200':
+          description: Referral stats
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ReferralStat'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+    servers:
+    - url: https://api.sendpulse.com
+      description: Production server
+  /addressbooks/{id}/campaigns:
+    parameters:
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: integer
+    get:
+      tags:
+      - Campaigns
+      summary: Get campaigns by mailing list
+      operationId: getCampaignsByList
+      description: Lists all campaigns targeting a specific list.
+      x-ai-role: data_analyst
+      x-ai-description: Traces the communication history for a specific audience segment.
+      x-ai-reasoning-instructions:
+      - Use this to check contact fatigue (too many campaigns).
+      - Evaluate the success trajectory of this specific list.
+      - Apply pagination as lists age and accumulate campaigns.
+      x-ai-responding-instructions:
+      - Summarize the recent campaigns sent to this list.
+      - Point out any trends in task statuses.
+      x-ai-suggestions:
+      - Check the detailed stats of the most recent campaign.
+      x-ai-capabilities:
+        security_info:
+          data_handling:
+          - InformationRetrieval
+      parameters:
+      - name: limit
+        in: query
+        schema:
+          type: integer
+      - name: offset
+        in: query
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: List of campaigns
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CampaignByListSummary'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                book.not_found:
+                  summary: book.not_found
+                  value:
+                    message: Book not found
+                    error_code: 213
+    servers:
+    - url: https://api.sendpulse.com
+      description: Production server
+  /campaigns/send:
+    post:
+      summary: Send campaign
+      description: Sends a text campaign to all subscribers of the specified bot
+      security:
+      - oAuth2ClientCredentials: []
+      tags:
+      - Campaigns
+      requestBody:
+        description: ''
+        required: true
+        content:
+          application/json:
+            schema:
+              properties:
+                title:
+                  type: string
+                  description: Campaign title
+                bot_id:
+                  type: string
+                  description: Bot ID. Can be obtained with a method of getting a list of bots. You can also find it in your account in the address bar of a chat window with the desired contact.
+                message_tag:
+                  $ref: '#/components/schemas/Campaign/properties/message_tag'
+                message_notification_type:
+                  $ref: '#/components/schemas/Campaign/properties/message_notification_type'
+                send_at:
+                  type: string
+                  description: Specify the date and time in the format Y-m-d H:i if you need to schedule the campaign, if you do not specify this parameter, the campaign will be sent immediately
+                filter:
+                  type: object
+                  description: Filter for campaign sending
+                  properties:
+                    type:
+                      type: string
+                      description: Filter type (and/or)
+                    expressions:
+                      type: array
+                      description: Filter expressions
+                      items:
+                        type: object
+                        properties:
+                          type:
+                            type: string
+                            description: Expression type (and/or)
+                          expressions:
+                            type: array
+                            description: List of expressions
+                            items:
+                              type: object
+                              properties:
+                                operator:
+                                  type: string
+                                  description: Filter operator (e.g., eq, like, gt, lt, etc.)
+                                field:
+                                  type: string
+                                  description: Field to filter by (e.g., tags)
+                                value:
+                                  type: string
+                                  description: Value to filter by
+                messages:
+                  $ref: '#/components/schemas/Campaign/properties/messages'
+              required:
+              - title
+              - bot_id
+              - messages
+            examples:
+              Send a text message:
+                value:
+                  title: string
+                  bot_id: string
+                  message_tag: HUMAN_AGENT
+                  message_notification_type: REGULAR
+                  send_at: string
+                  filter:
+                    type: and
+                    expressions:
+                    - type: and
+                      expressions:
+                      - operator: eq
+                        field: tags
+                        value: SOME_TAG_HERE
+                  messages:
+                  - type: RESPONSE
+                    tag: CUSTOMER_FEEDBACK
+                    content_type: message
+                    data:
+                      text: Hello world!
+              Send a message with an image:
+                value:
+                  title: string
+                  bot_id: string
+                  message_tag: HUMAN_AGENT
+                  message_notification_type: REGULAR
+                  send_at: string
+                  messages:
+                  - type: RESPONSE
+                    tag: CUSTOMER_FEEDBACK
+                    content_type: media_img
+                    data:
+                      attachment:
+                        type: template
+                        payload:
+                          template_type: generic
+                          elements:
+                          - title: Example title
+                            subtitle: Example subtitle
+                            image_url: https://www.spcdn.org/images/promo-logo/correct/sendpulse-logo-13.png
+              Send a message with a carousel:
+                value:
+                  title: string
+                  bot_id: string
+                  message_tag: HUMAN_AGENT
+                  message_notification_type: REGULAR
+                  send_at: string
+                  messages:
+                  - type: RESPONSE
+                    tag: CUSTOMER_FEEDBACK
+                    content_type: template
+                    data:
+                      attachment:
+                        type: template
+                        payload:
+                          template_type: generic
+                          elements:
+                          - title: Example title
+                            subtitle: Example subtitle
+                            image_url: https://example.com/image.png
+                            buttons:
+                            - type: web_url
+                              title: Example button
+                              url: https://example.com/
+      responses:
+        '200':
+          description: Operation successful
+          content:
+            application/json:
+              schema:
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/Campaign'
+                type: object
+      operationId: sendCampaign
+      x-ai-role: chatbot_campaign_manager
+      x-ai-description: Initiates a broadcast message to all subscribers of a specific chatbot, either immediately or at a scheduled time. This is the primary activation endpoint for bot campaigns — it orchestrates message delivery across an entire subscriber base and supports segmentation via filters, making it suitable for targeted re-engagement, announcements, and transactional notifications. The `message_tag` and `message_notification_type` fields are critical for Facebook Messenger policy compliance and must be set correctly to avoid delivery failures.
+      x-ai-reasoning-instructions:
+      - Before sending, confirm the `bot_id` is valid and active — use the bot list endpoint if the user is unsure which bot to target.
+      - 'Check whether `send_at` is required: if the user wants immediate delivery, omit it; if scheduling, validate that the datetime is in the future and formatted as Y-m-d H:i.'
+      - Warn the user that `message_tag` is required for sending outside the standard 24-hour messaging window on Facebook Messenger — clarify the available tags and their policy implications.
+      - 'If a `filter` is provided, validate the filter structure: `type` must be ''and'' or ''or'', and nested `expressions` must include valid `operator`, `field`, and `value` triples.'
+      - Remind the user that `messages` must be a non-empty array and that each message's `content_type` determines the structure of `data` — text messages use `data.text`, images and carousels use `data.attachment`.
+      - For carousel messages, ensure each element in `payload.elements` has at minimum a `title`; `buttons` are optional but require a valid `type` (e.g., `web_url`) and a `url`.
+      - If no filter is specified, the campaign will be sent to all active subscribers of the bot — confirm this is intentional if the bot has a large audience.
+      x-ai-responding-instructions:
+      - Confirm whether the campaign was scheduled or sent immediately based on the presence of `send_at` in the request.
+      - Reference the returned `Campaign` object ID so the user can track or manage the campaign later.
+      - 'If the operation fails, explain the most likely causes: invalid `bot_id`, malformed message structure, or policy violation due to incorrect `message_tag`.'
+      - Suggest using the campaign status endpoint to monitor delivery progress after a successful send.
+      - If a filter was applied, summarize the targeting criteria used so the user can verify the intended audience.
+      x-ai-suggestions:
+      - Schedule the campaign with `send_at` during peak engagement hours for the target audience's timezone.
+      - 'Use `message_tag: CONFIRMED_EVENT_UPDATE` for event reminders to stay within Messenger policy.'
+      - Segment subscribers by tag using the `filter` object to avoid messaging disengaged users.
+      x-ai-capabilities:
+        confirmation:
+          type: Recommended
+          message: This action will broadcast a message to all matching subscribers of the selected bot. Confirm the target audience, message content, and send time before proceeding.
+        security_info:
+          data_handling:
+          - MassMessageDelivery
+          - ExternalPlatformInteraction
+    servers:
+    - description: ''
+      url: https://api.sendpulse.com/messenger
+  /sms/campaigns:
+    post:
+      summary: Create a campaign for a mailing list
+      operationId: createSmsCampaign
+      tags:
+      - Campaigns
+      x-ai-role: sms_marketing_specialist
+      x-ai-description: 'Triggers a bulk SMS broadcast to an entire address book.  Supports dynamic content, link tracking, and scheduled delivery.
+
+        '
+      x-ai-reasoning-instructions:
+      - 'Note: `sender` ID must be pre-registered (max 11 chars).'
+      - 'Use `emulate: true` to test logic without burning credits.'
+      - 'Consider `use_dynamic_list: true` for scheduled campaigns to include late subscribers.'
+      x-ai-responding-instructions:
+      - Report the unique `campaign_id` generated.
+      - Remind the user that moderation may delay delivery by a few minutes.
+      x-ai-suggestions:
+      - Newsletter_Launch
+      - Flash_Sale_Promo
+      x-ai-capabilities:
+        confirmation:
+          type: Required
+        security_info:
+          data_handling:
+          - ResourceStateUpdate
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - sender
+              - addressBookId
+              - body
+              properties:
+                sender:
+                  type: string
+                  maxLength: 11
+                addressBookId:
+                  type: integer
+                body:
+                  type: string
+                route:
+                  type: object
+                  description: e.g. {'UA':'national'}
+                date:
+                  type: string
+                  format: date-time
+                emulate:
+                  type: boolean
+                  default: false
+                use_dynamic_list:
+                  type: boolean
+                  default: false
+                stat_link_tracking:
+                  type: boolean
+                  default: false
+                stat_link_need_protocol:
+                  type: boolean
+                  default: false
+      responses:
+        '200':
+          description: Campaign created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  result:
+                    type: boolean
+                  campaign_id:
+                    type: integer
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+    delete:
+      summary: Delete a campaign
+      operationId: deleteSmsCampaign
+      tags:
+      - Campaigns
+      x-ai-role: sms_marketing_specialist
+      x-ai-description: 'Permanently deletes a campaign record. Only available for campaigns that haven''t started.
+
+        '
+      x-ai-reasoning-instructions:
+      - Check campaign status before attempting deletion.
+      x-ai-responding-instructions:
+      - Confirm deletion of the campaign.
+      x-ai-capabilities:
+        confirmation:
+          type: Required
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - id
+              properties:
+                id:
+                  type: integer
+      responses:
+        '200':
+          description: Deleted successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  result:
+                    type: boolean
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+    servers:
+    - url: https://api.sendpulse.com
+  /sms/send:
+    post:
+      summary: Create a campaign for a list of phone numbers
+      operationId: sendSmsToNumbers
+      tags:
+      - Campaigns
+      x-ai-role: sms_marketing_specialist
+      x-ai-description: 'Fast-track broadcast for ad-hoc lists not stored in an address book.  Perfect for one-off alerts or external CRM triggers.
+
+        '
+      x-ai-reasoning-instructions:
+      - Validate all numbers in the `phones` array are valid.
+      x-ai-responding-instructions:
+      - Report how many messages were successfully queued.
+      x-ai-suggestions:
+      - Use for 2FA codes or urgent system alerts.
+      x-ai-capabilities:
+        confirmation:
+          type: Required
+        security_info:
+          data_handling:
+          - ResourceStateUpdate
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - sender
+              - phones
+              - body
+              properties:
+                sender:
+                  type: string
+                phones:
+                  type: array
+                  items:
+                    type: string
+                body:
+                  type: string
+                date:
+                  type: string
+                route:
+                  type: object
+                emulate:
+                  type: boolean
+                stat_link_tracking:
+                  type: boolean
+                stat_link_need_protocol:
+                  type: boolean
+      responses:
+        '200':
+          description: Send result
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  result:
+                    type: boolean
+                  campaign_id:
+                    type: integer
+                  counters:
+                    type: object
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+    servers:
+    - url: https://api.sendpulse.com
+  /sms/campaigns/list:
+    get:
+      summary: Get a list of campaigns by date
+      operationId: getSmsCampaigns
+      tags:
+      - Campaigns
+      x-ai-role: marketing_automation_specialist
+      x-ai-description: 'Retrieves campaign history within a specific time window.  Useful for building performance dashboards.
+
+        '
+      x-ai-reasoning-instructions:
+      - Use `dateFrom` and `dateTo` to avoid over-fetching.
+      x-ai-responding-instructions:
+      - Summarize the campaigns found in the requested period.
+      x-ai-suggestions:
+      - Track `company_price` to monitor spend trends.
+      x-ai-capabilities:
+        confirmation:
+          type: None
+      parameters:
+      - name: dateFrom
+        in: query
+        schema:
+          type: string
+      - name: dateTo
+        in: query
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Campaign list
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  result:
+                    type: boolean
+                  data:
+                    type: array
+                    items:
+                      type: object
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+    servers:
+    - url: https://api.sendpulse.com
+  /sms/campaigns/info/{id}:
+    parameters:
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: integer
+    get:
+      summary: Get campaign information
+      operationId: getSmsCampaignInfo
+      tags:
+      - Campaigns
+      parameters: []
+      x-ai-role: sms_marketing_specialist
+      x-ai-description: 'Returns granular status for a campaign, including delivery breakdowns per phone.
+
+        '
+      x-ai-reasoning-instructions:
+      - Examine `status` (2 for Delivered, 12 for Not Delivered).
+      x-ai-responding-instructions:
+      - Report delivery success rates and spend for this campaign.
+      x-ai-suggestions:
+      - Re-send to 'Not delivered' contacts if the failure was transient.
+      x-ai-capabilities:
+        confirmation:
+          type: None
+      responses:
+        '200':
+          description: Campaign stats
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+    servers:
+    - url: https://api.sendpulse.com
+  /sms/campaigns/cancel/{id}:
+    parameters:
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: integer
+    put:
+      summary: Cancel a campaign before sending has started
+      operationId: cancelSmsCampaign
+      tags:
+      - Campaigns
+      parameters: []
+      x-ai-role: sms_marketing_specialist
+      x-ai-description: 'Stops a scheduled campaign from being sent.  Emergency override for erroneous scheduling.
+
+        '
+      x-ai-reasoning-instructions:
+      - Verify that sending has not already commenced.
+      x-ai-responding-instructions:
+      - Confirm the campaign has been successfully halted.
+      x-ai-suggestions:
+      - Check account balance to ensure credits are released.
+      x-ai-capabilities:
+        confirmation:
+          type: Required
+      responses:
+        '200':
+          description: Cancellation result
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  result:
+                    type: boolean
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+    servers:
+    - url: https://api.sendpulse.com
+  /sms/campaigns/cost:
+    get:
+      summary: Calculate the cost of a campaign
+      operationId: calculateSmsCost
+      tags:
+      - Campaigns
+      x-ai-role: compliance_officer
+      x-ai-description: 'Estimates the total credit expenditure for a proposed campaign.  Crucial for budget planning before actual broadcast.
+
+        '
+      x-ai-reasoning-instructions:
+      - Note that parameters must be URL-encoded.
+      - Provide either `addressBookId` or `phones` array.
+      x-ai-responding-instructions:
+      - Report the estimated price and currency.
+      x-ai-suggestions:
+      - Adjust the message `body` to fit within single SMS segments (160 chars) to save costs.
+      x-ai-capabilities:
+        confirmation:
+          type: None
+      parameters:
+      - name: addressBookId
+        in: query
+        schema:
+          type: integer
+      - name: phones
+        in: query
+        schema:
+          type: array
+          items:
+            type: string
+      - name: body
+        in: query
+        required: true
+        schema:
+          type: string
+      - name: sender
+        in: query
+        required: true
+        schema:
+          type: string
+      - name: route
+        in: query
+        schema:
+          type: object
+      responses:
+        '200':
+          description: Cost estimate
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  result:
+                    type: boolean
+                  data:
+                    type: object
+                    properties:
+                      price:
+                        type: number
+                      currency:
+                        type: string
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+    servers:
+    - url: https://api.sendpulse.com
+  /viber:
+    post:
+      summary: Create a Viber campaign
+      operationId: createViberCampaign
+      tags:
+      - Campaigns
+      x-ai-role: customer_engagement_specialist
+      x-ai-description: 'Orchestrates a Viber broadcast. This endpoint supports sophisticated  payloads including rich media and interactive buttons. It also  manages the ''Resend via SMS'' logic for recipients who don''t have Viber  or are offline.
+
+        '
+      x-ai-reasoning-instructions:
+      - Determine if the campaign is 'promo' (type 2) or 'system' (type 3).
+      - If 'system', verify the `message` matches a pre-approved template.
+      - Check if `address_book` or `recipients` array is provided (one is required).
+      - Validate `message_live_time` is between 60 and 86400 seconds.
+      x-ai-responding-instructions:
+      - Confirm the campaign creation and return the `task_id`.
+      - Highlight if the 'SMS fallback' was successfully configured.
+      - State the scheduled `send_date` clearly.
+      x-ai-suggestions:
+      - Use `stretch_time` for large lists to avoid overwhelming your customer support.
+      - Include a clear 'Buy Now' or 'Check Info' button to increase CTR.
+      x-ai-capabilities:
+        confirmation:
+          type: Required
+        security_info:
+          data_handling:
+          - ResourceStateUpdate
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - message_type
+              - sender_id
+              - message_live_time
+              - send_date
+              oneOf:
+              - required:
+                - address_book
+              - required:
+                - recipients
+              properties:
+                task_name:
+                  type: string
+                message_type:
+                  type: integer
+                  enum:
+                  - 2
+                  - 3
+                  description: 2 - promo, 3 - system
+                sender_id:
+                  type: integer
+                message_live_time:
+                  type: integer
+                  minimum: 60
+                  maximum: 86400
+                send_date:
+                  type: string
+                  description: '''now'' or ''YYYY-MM-DD HH:MM:SS'''
+                address_book:
+                  type:
+                  - integer
+                  - 'null'
+                recipients:
+                  type: array
+                  items:
+                    type: integer
+                message:
+                  type: string
+                  maxLength: 1000
+                stretch_time:
+                  type: integer
+                  minimum: 0
+                  maximum: 5
+                additional:
+                  type: object
+                  properties:
+                    button:
+                      type: object
+                      properties:
+                        text:
+                          type: string
+                        link:
+                          type: string
+                    image:
+                      type: object
+                      properties:
+                        link:
+                          type: string
+                    resend_sms:
+                      type: object
+                      properties:
+                        status:
+                          type: boolean
+                        sms_text:
+                          type: string
+                        sms_sender_name:
+                          type: string
+      responses:
+        '200':
+          description: Campaign created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  result:
+                    type: boolean
+                  data:
+                    type: object
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+    servers:
+    - url: https://api.sendpulse.com
+  /viber/task:
+    get:
+      summary: Get a list of campaigns
+      operationId: getViberCampaigns
+      tags:
+      - Campaigns
+      x-ai-role: marketing_automation_specialist
+      x-ai-description: 'Retrieves a paginated list of Viber campaigns.  Provides high-level status (moderation, sent, etc.) for oversight.
+
+        '
+      x-ai-reasoning-instructions:
+      - Use `limit` and `offset` for efficient data retrieval.
+      x-ai-responding-instructions:
+      - List the campaigns found, highlighting their current status.
+      x-ai-suggestions:
+      - Monitor 'moderation' status for newly created campaigns.
+      x-ai-capabilities:
+        confirmation:
+          type: None
+      parameters:
+      - name: limit
+        in: query
+        schema:
+          type: integer
+      - name: offset
+        in: query
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: List of campaigns
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ViberCampaign'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+    servers:
+    - url: https://api.sendpulse.com
+  /viber/task/{id}:
+    parameters:
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: integer
+    get:
+      summary: Get statistics on a campaign
+      operationId: getViberCampaignStats
+      tags:
+      - Campaigns
+      parameters: []
+      x-ai-role: customer_engagement_specialist
+      x-ai-description: 'Detailed performance analytics for a Viber campaign.  Includes delivered, read, and click-through (redirected) metrics.
+
+        '
+      x-ai-reasoning-instructions:
+      - Examine `resend_sms_status` if fallback was enabled.
+      - Analyze the `statistic` object to calculate ROI.
+      x-ai-responding-instructions:
+      - Provide a breakdown of campaign reach and engagement.
+      - Highlight the 'Read' rate as a primary engagement KPI.
+      x-ai-suggestions:
+      - If 'errors' are high, check the sender name status.
+      x-ai-capabilities:
+        confirmation:
+          type: None
+      responses:
+        '200':
+          description: Campaign statistics
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  statistic:
+                    type: object
+                    properties:
+                      sent:
+                        type: integer
+                      delivered:
+                        type: integer
+                      read:
+                        type: integer
+                      redirected:
+                        type: integer
+                      undelivered:
+                        type: integer
+                      errors:
+                        type: integer
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+    servers:
+    - url: https://api.sendpulse.com
+  /viber/task/{id}/recipients:
+    parameters:
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: integer
+    get:
+      summary: Get a list of Viber campaign recipients
+      operationId: getViberRecipients
+      tags:
+      - Campaigns
+      parameters: []
+      x-ai-role: customer_engagement_specialist
+      x-ai-description: 'Granular recipient-level delivery report.  Identifies exactly who received, read, or clicked the message.
+
+        '
+      x-ai-reasoning-instructions:
+      - Filter by `status` to find undelivered contacts.
+      x-ai-responding-instructions:
+      - Confirm the list of recipients and their individual interaction states.
+      x-ai-suggestions:
+      - Export this to re-target 'opened but not clicked' users.
+      x-ai-capabilities:
+        confirmation:
+          type: None
+      responses:
+        '200':
+          description: Recipient list
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  task_id:
+                    type: integer
+                  recipients:
+                    type: array
+                    items:
+                      type: object
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+    servers:
+    - url: https://api.sendpulse.com
+  /push/tasks:
+    get:
+      summary: Get a list of sent web push campaigns
+      operationId: getWebPushCampaigns
+      tags:
+      - Campaigns
+      x-ai-role: marketing_automation_specialist
+      x-ai-description: 'Retrieves the history of web push broadcasts. Provides a snapshot of  campaign status and timing for cross-referencing with website traffic.
+
+        '
+      x-ai-reasoning-instructions:
+      - Use `limit` and `offset` for pagination (max 100 entries per reply).
+      - Apply date filters (`from`, `to`) in `YYYY-MM-DD HH:MM:SS` format.
+      x-ai-responding-instructions:
+      - Summarize the recent web push activity.
+      x-ai-suggestions:
+      - Filter by `website_id` if managing multiple digital properties.
+      x-ai-capabilities:
+        confirmation:
+          type: None
+      parameters:
+      - name: limit
+        in: query
+        schema:
+          type: integer
+      - name: offset
+        in: query
+        schema:
+          type: integer
+      - name: from
+        in: query
+        schema:
+          type: string
+      - name: to
+        in: query
+        schema:
+          type: string
+      - name: website_id
+        in: query
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: List of web push campaigns
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                    title:
+                      type: string
+                    body:
+                      type: string
+                    website_id:
+                      type: integer
+                    from:
+                      type: string
+                    to:
+                      type: string
+                    status:
+                      type: integer
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+    post:
+      summary: Create a new web push campaign
+      operationId: createWebPushCampaign
+      tags:
+      - Campaigns
+      x-ai-role: web_engagement_specialist
+      x-ai-description: 'Triggers a new browser notification broadcast. This endpoint supports  rich content (icons, large images) and deep segmentation logic to  target specific user cohorts based on language, browser, or custom variables.
+
+        '
+      x-ai-reasoning-instructions:
+      - 'Note the limit: 1 campaign per 15 minutes per website.'
+      - Ensure the `ttl` (lifetime) does not exceed 86400 seconds.
+      - If using buttons, ensure the payload is a valid JSON string (max 2 buttons).
+      - Validate that image data is Base64 encoded and under 200KB.
+      x-ai-responding-instructions:
+      - Confirm the campaign has been queued and return the `id`.
+      - Mention any filters applied to the broadcast.
+      x-ai-suggestions:
+      - New_Feature_Alert
+      - Breaking_News_Update
+      x-ai-capabilities:
+        confirmation:
+          type: Required
+        security_info:
+          data_handling:
+          - ResourceStateUpdate
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - title
+              - website_id
+              - body
+              - ttl
+              properties:
+                title:
+                  type: string
+                website_id:
+                  type: integer
+                body:
+                  type: string
+                ttl:
+                  type: integer
+                  maximum: 86400
+                link:
+                  type: string
+                filter_lang:
+                  type: string
+                filter_browser:
+                  type: string
+                filter_region:
+                  type: string
+                  description: JSON string of country codes, e.g. ['UK']
+                filter_url:
+                  type: string
+                  description: JSON string for URL filtering
+                filter_subscription_date_from:
+                  type: string
+                filter_subscription_date_to:
+                  type: string
+                filter:
+                  type: object
+                  description: Segmentation by custom variables
+                stretch_time:
+                  type: integer
+                send_date:
+                  type: string
+                  format: date-time
+                buttons:
+                  type: string
+                  description: JSON string for buttons
+                image:
+                  type: string
+                  description: JSON string with name and Base64 data
+                icon:
+                  type: string
+                  description: JSON string with name and Base64 data
+      responses:
+        '200':
+          description: Campaign created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  result:
+                    type: boolean
+                  id:
+                    type: integer
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+    servers:
+    - url: https://api.sendpulse.com
+  /push/tasks/{id}:
+    parameters:
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: integer
+    get:
+      summary: Get statistics on sent campaigns
+      operationId: getWebPushCampaignStats
+      tags:
+      - Campaigns
+      parameters: []
+      x-ai-role: marketing_automation_specialist
+      x-ai-description: 'Retrieves final performance metrics for a web push broadcast,  including delivered counts and click-through (redirect) rates.
+
+        '
+      x-ai-reasoning-instructions:
+      - Analyze the `redirect` vs `delivered` ratio to measure campaign effectiveness.
+      x-ai-responding-instructions:
+      - Report the engagement metrics for the specific campaign.
+      x-ai-capabilities:
+        confirmation:
+          type: None
+      responses:
+        '200':
+          description: Campaign statistics
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  message:
+                    type: object
+                  website:
+                    type: string
+                  status:
+                    type: integer
+                  send:
+                    type: string
+                  delivered:
+                    type: integer
+                  redirect:
+                    type: integer
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+    servers:
+    - url: https://api.sendpulse.com
+  /campaigns/sendTemplate:
+    post:
+      summary: Send a campaign by template
+      description: Sends a template message to all of a bot's subsribers. You can send a campaign with text, an image, or a file. To view an example of the request body, select a message template from the drop-down list
+      security:
+      - oAuth2ClientCredentials: []
+      tags:
+      - Campaigns
+      requestBody:
+        description: ''
+        required: true
+        content:
+          application/json:
+            schema:
+              properties:
+                title:
+                  type: string
+                  description: Campaign title
+                bot_id:
+                  type: string
+                  description: Bot ID. Can be obtained with a method of getting a list of bots. You can also find it in your account in the address bar of a chat window with the desired contact.
+                send_at:
+                  type: string
+                  description: Specify the date and time in the format Y-m-d H:i if you need to schedule the campaign, if you do not specify this parameter, the campaign will be sent immediately
+                  example: Y-m-d H:i
+                template:
+                  type: object
+                  description: Content of the template. To get a template code in your account, go to the "Templates" tab of your bot and, opposite the desired template, click "Copy code." In the opened window, copy the value of the "template" parameter.
+                  properties:
+                    name:
+                      type: string
+                      example: event_started
+                      description: Template name
+                    language:
+                      type: object
+                      description: Template language
+                      properties:
+                        code:
+                          type: string
+                          example: en
+                      required:
+                      - code
+                    components:
+                      type: array
+                      description: The set of additional parameters differs depending on the included template components and can include variables, an image, or a file.
+                      items:
+                        type: object
+                        properties:
+                          type:
+                            type: string
+                            description: 'Accepted values: header / body / footer depending on where you want to insert the component'
+                          sub_type:
+                            type: string
+                            description: 'Accepted values: url / quick_reply / catalog. Required when type=button. Not used for the other types. Type of button to create'
+                          index:
+                            type: int
+                            description: Required when type=button. Not used for the other types. Position index of the button. You can have up to 3 buttons using index values of 0 to 2.
+                          parameters:
+                            type: array
+                            description: Сustom template variables. Specify the type, name and value of the variable
+                            items:
+                              type: object
+                              properties:
+                                type:
+                                  type: string
+                                  description: Variable type
+                                image:
+                                  type: object
+                                  description: The image you want to send. Includes the URL to the image and caption
+                                  properties:
+                                    link:
+                                      type: string
+                                      description: Full URL of the file you want to send, including the "https" protocol part. You can only send links to SSL-secured sites
+                                    caption:
+                                      type: string
+                                      description: Caption for the image
+                                payload:
+                                  type: string
+                                  description: Required for quick_reply buttons. Developer-defined payload that is returned when the button is clicked in addition to the display text on the button.
+                  required:
+                  - name
+                  - language
+              required:
+              - title
+              - bot_id
+              - template
+            examples:
+              Send a campaign by template with text:
+                value:
+                  title: Thanks for buying
+                  bot_id: xxxxxxxxxxxxxxxxxxxxxxxx
+                  send_at: 2021-01-21 12:00
+                  template:
+                    name: thanks_for_buying
+                    language:
+                      code: en
+                    components: []
+              Send a campaign by template with an image:
+                value:
+                  title: Thanks for buying
+                  bot_id: xxxxxxxxxxxxxxxxxxxxxxxx
+                  send_at: 2021-01-21 12:00
+                  template:
+                    name: thanks_for_buying_image
+                    language:
+                      code: en
+                    components:
+                      type: header
+                      parameters:
+                      - type: image
+                        image:
+                          link: https://www.example.com/image.jpg
+              Send a template message with payload buttons:
+                value:
+                  title: Thanks for buying
+                  bot_id: xxxxxxxxxxxxxxxxxxxxxxxx
+                  send_at: 2021-01-21 12:00
+                  template:
+                    name: thanks_for_buying_payload
+                    language:
+                      code: en
+                    components:
+                    - type: body
+                      parameters:
+                      - type: text
+                        text: some text
+                    - type: button
+                      sub_type: quick_reply
+                      index: 0
+                      parameters:
+                      - type: payload
+                        to_chain_id: xxxxxxxxxxxxxxxxxxxxxxxx
+      responses:
+        '200':
+          description: Operation successful
+          content:
+            application/json:
+              schema:
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/Campaign_6'
+                type: object
+      operationId: sendTemplateCampaign
+      x-ai-role: chatbot_campaign_manager
+      x-ai-description: Initiates a mass broadcast to all subscribers of a WhatsApp bot using a pre-approved template. Unlike free-form messages, WhatsApp Business requires approved templates for outbound campaigns — this endpoint is the primary mechanism for scheduled or immediate bulk outreach. Template selection, language match, and component substitution (variables, images, buttons) must be correct before sending, as failed campaigns cannot be recalled.
+      x-ai-reasoning-instructions:
+      - Verify the bot_id is valid and belongs to an active WhatsApp bot before constructing the request.
+      - Check that the template name matches an approved template in the account — unapproved or misspelled template names will cause the campaign to fail silently or return an error.
+      - If send_at is provided, validate the datetime format strictly as 'Y-m-d H:i' (e.g., '2025-04-01 09:00'); incorrect format will prevent scheduling.
+      - If components are included, ensure the type values ('header', 'body', 'button') match the actual structure of the selected template — mismatched components cause API rejection.
+      - For button components (type=button), sub_type and index are required; remind the user that index must be 0–2 and quick_reply requires a payload.
+      - If the campaign is immediate (no send_at), warn the user that it will be dispatched to all subscribers instantly with no undo option.
+      - Image links must use HTTPS — HTTP links will be rejected.
+      x-ai-responding-instructions:
+      - On success, confirm the campaign was queued or scheduled and surface the campaign ID from the response data for tracking.
+      - If send_at was provided, explicitly state the scheduled dispatch time in a human-readable format.
+      - If success is false, surface the error reason clearly and suggest corrective action (e.g., wrong template name, invalid bot_id, malformed component).
+      - Remind the user that this sends to ALL bot subscribers — suggest using filters or segments if partial targeting was intended.
+      - After a successful send, suggest checking campaign delivery stats via the campaigns list or analytics endpoints.
+      x-ai-suggestions:
+      - Use `send_at` to schedule campaigns during high-engagement hours (e.g., 10:00–12:00 local time).
+      - Retrieve valid template names from the 'Templates' tab of the bot or via the templates API before calling this endpoint.
+      - For personalized campaigns, populate `components[].parameters` with per-variable values matching template placeholders.
+      x-ai-capabilities:
+        confirmation:
+          type: Required
+          message: This will immediately send a message to ALL subscribers of the selected bot. Confirm before proceeding.
+        security_info:
+          data_handling:
+          - MassBroadcast
+          - IrreversibleAction
+    servers:
+    - description: ''
+      url: https://api.sendpulse.com/whatsapp
+components:
+  schemas:
+    CampaignByListSummary:
+      type: object
+      x-ai-description: Campaigns for a list.
+      properties:
+        task_id:
+          type: integer
+    ResultTrue:
+      type: object
+      x-ai-description: Success indicator.
+      properties:
+        result:
+          type: boolean
+    CampaignUpdateRequest:
+      type: object
+      x-ai-description: Payload for updating a campaign.
+      properties:
+        name:
+          type: string
+        subject:
+          type: string
+    ResultTrueWithId:
+      type: object
+      x-ai-description: Success indicator with ID.
+      properties:
+        result:
+          type: boolean
+        id:
+          type: integer
+    CampaignDetails:
+      type: object
+      x-ai-description: Detailed campaign stats.
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        status:
+          type: integer
+    CampaignSummary:
+      type: object
+      x-ai-description: Campaign summary.
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        status:
+          type: integer
+    ReferralStat:
+      type: object
+      x-ai-description: Click statistics.
+      properties:
+        link:
+          type: string
+        count:
+          type: integer
+    CampaignCreateResponse:
+      type: object
+      x-ai-description: Response from campaign creation.
+      properties:
+        id:
+          type: integer
+          description: Email campaign ID
+          example: 245587
+        status:
+          type: integer
+          description: Task status for sending (13 - copying addresses, 26 - draft)
+          example: 13
+        count:
+          type: integer
+          description: Number of recipients
+          example: 1
+        tariff_email_qty:
+          type: integer
+          description: Number of emails written off from balance
+          example: 1
+        overdraft_price:
+          type: string
+          description: Price for one email at an increase
+          example: '0.0044'
+        ovedraft_currency:
+          type: string
+          description: Currency
+          example: USD
+    CampaignCreateRequest:
+      type: object
+      required:
+      - sender_name
+      - sender_email
+      - subject
+      x-ai-description: Payload to create an email campaign. One of 'body' or 'template_id' is required. One of 'list_id' or 'segment_id' is required.
+      properties:
+        sender_name:
+          type: string
+          description: Sender's name
+          example: my_sender_name
+        sender_email:
+          type: string
+          description: Sender's email address
+          example: my_sender@test.com
+        subject:
+          type: string
+          description: Email subject
+          example: hello customer
+        body:
+          type: string
+          description: HTML code of the template, encoded in Base64. Required if template_id is not provided.
+          example: SmFja2llIENoYW4=
+        template_id:
+          oneOf:
+          - type: integer
+          - type: string
+          description: Template ID uploaded or created in the service. Required if body is not provided.
+          example: '775667'
+        list_id:
+          oneOf:
+          - type: integer
+          - type: array
+            items:
+              type: integer
+            maxItems: 10
+          description: Mailing list ID or array of mailing list IDs. Required if segment_id is not provided. Max 10 IDs.
+          example: 756589
+        segment_id:
+          type: integer
+          description: Segment ID created in your account.
+          example: 12345
+        is_test:
+          type: boolean
+          description: Send a test email to the sender's address specified in sender_email.
+          example: false
+        send_date:
+          type: string
+          description: Scheduled date and time (Y-m-d H:i:s). Must not be in the past.
+          example: '2016-02-02 23:34:23'
+        name:
+          type: string
+          description: Campaign name.
+          example: my_api_campaign
+        use_dynamic_list:
+          type: boolean
+          description: Send to contacts added after campaign creation but before sending.
+          example: true
+        attachments:
+          type: object
+          description: Attached files (max 5). Key is filename, value is content.
+          additionalProperties:
+            type: string
+          example:
+            text.txt: my content file
+        attachments_binary:
+          type: object
+          description: Attached files (max 5). Key is filename, value is Base64 content.
+          additionalProperties:
+            type: string
+          example:
+            text.txt: bXkgY29udGVudCBmaWxlIGluIGJhc2U2NA==
+        type:
+          type: string
+          enum:
+          - draft
+          description: Create campaign as a draft.
+          example: draft
+        body_amp:
+          type: string
+          description: AMP version of the email, encoded in base64.
+          example: bXkgYW1wIGJvZHk=
+        stats:
+          type: object
+          description: Enable collection of statistics on opens and clicks.
+          properties:
+            clicks:
+              type: boolean
+              default: true
+              description: Track link clicks.
+            opens:
+              type: boolean
+              default: true
+              description: Track email opens.
+            utm_campaign:
+              type: string
+              description: Custom UTM tags for Google Analytics.
+          example:
+            opens: true
+            clicks: false
+            utm_campaign: MY_UTM
+    Campaign:
+      properties:
+        id:
+          type: string
+        bot_id:
+          type: string
+        title:
+          type: string
+        message_tag:
+          type: string
+          enum:
+          - HUMAN_AGENT
+          - CUSTOMER_FEEDBACK
+          description: ''
+          example: HUMAN_AGENT
+        message_notification_type:
+          type: string
+          enum:
+          - REGULAR
+          - SILENT_PUSH
+          - NO_PUSH
+          description: ''
+          example: REGULAR
+        send_at:
+          type: string
+          example: 2020-12-11 21:00:00+00:00
+        messages:
+          type: array
+          description: A list of messages to send
+          items:
+            type: object
+            properties:
+              type:
+                type: string
+                enum:
+                - text
+                - media_img
+                - media_file
+                - media_audio
+                - media_video
+                - template
+                - list
+                description: '* `text` - text message
+
+                  '
+                example: text
+              data:
+                type: object
+                description: ''
+                properties:
+                  attachment:
+                    type: object
+                    properties:
+                      payload:
+                        type: object
+                        properties:
+                          elements:
+                            type: array
+                            items:
+                              type: object
+                              properties:
+                                filename:
+                                  type: string
+                                is_external_attachment:
+                                  type: boolean
+        created_at:
+          type: string
+          example: 2020-12-11 21:00:00+00:00
+    Campaign_2:
+      properties:
+        id:
+          type: string
+        bot_id:
+          type: string
+        title:
+          type: string
+        send_at:
+          type: string
+          example: 2020-12-11 21:00:00+00:00
+        messages:
+          type: array
+          items:
+            type: object
+        created_at:
+          type: string
+          example: 2020-12-11 21:00:00+00:00
+    Campaign_3:
+      properties:
+        id:
+          type: string
+        bot_id:
+          type: string
+        title:
+          type: string
+        send_at:
+          type: string
+          example: 2020-12-11 21:00:00+00:00
+        messages:
+          type: array
+          items:
+            type: object
+        created_at:
+          type: string
+          example: 2020-12-11 21:00:00+00:00
+    Campaign_4:
+      properties:
+        id:
+          type: string
+        bot_id:
+          type: string
+        title:
+          type: string
+        send_at:
+          type: string
+          example: 2020-12-11 21:00:00+00:00
+        messages:
+          type: array
+          items:
+            type: object
+        created_at:
+          type: string
+          example: 2020-12-11 21:00:00+00:00
+    Campaign_5:
+      properties:
+        id:
+          type: string
+        bot_id:
+          type: string
+        title:
+          type: string
+        send_at:
+          type: string
+          example: 2020-12-11 21:00:00+00:00
+        messages:
+          type: array
+          items:
+            type: object
+        created_at:
+          type: string
+          example: 2020-12-11 21:00:00+00:00
+    ViberCampaign:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        message:
+          type: string
+        sender_name:
+          type: string
+        send_date:
+          type: string
+        status:
+          type: string
+        created:
+          type: string
+    Campaign_6:
+      properties:
+        id:
+          type: string
+        bot_id:
+          type: string
+        title:
+          type: string
+        send_at:
+          type: string
+          example: 2020-12-11 21:00:00+00:00
+        messages:
+          type: array
+          items:
+            type: object
+        cost:
+          type: object
+          properties:
+            amount:
+              type: number
+              example: 0.56
+            currency:
+              type: string
+              example: USD
+        created_at:
+          type: string
+          example: 2020-12-11 21:00:00+00:00
+  securitySchemes:
+    apiKey:
+      type: http
+      scheme: bearer
+      bearerFormat: API Key
+      description: 'Static API Key authentication.  A long-lived token generated manually in the SendPulse account settings.
+
+        '
+      x-ai-description: 'Permanent authentication token. Ideal for simple integrations without token refresh logic.
+
+        '
+    oauth2:
+      type: oauth2
+      description: OAuth 2.0 Client Credentials flow for temporary access tokens.
+      flows:
+        clientCredentials:
+          tokenUrl: https://api.sendpulse.com/oauth/access_token
+          scopes: {}
+      x-ai-description: 'Standard OAuth 2.0 flow using Client ID and Client Secret.  Provides temporary tokens (valid for 1 hour) for enhanced security.
+
+        '
+    outh2:
+      type: oauth2
+      description: OAuth 2.0 Client Credentials flow for temporary access tokens.
+      flows:
+        clientCredentials:
+          tokenUrl: https://api.sendpulse.com/oauth/access_token
+          scopes: {}
+      x-ai-description: 'Standard OAuth 2.0 flow using Client ID and Client Secret.  Provides temporary tokens (valid for 1 hour) for enhanced security.
+
+        '
+x-refined-from:
+- sendpulse-bulk-email-openapi.yml
+- sendpulse-facebook-openapi.yml
+- sendpulse-instagram-openapi.yml
+- sendpulse-sms-openapi.yml
+- sendpulse-telegram-openapi.yml
+- sendpulse-tiktok-openapi.yml
+- sendpulse-viber-chatbot-openapi.yml
+- sendpulse-viber-openapi.yml
+- sendpulse-web-push-openapi.yml
+- sendpulse-whatsapp-openapi.yml

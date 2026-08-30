@@ -1,0 +1,182 @@
+openapi: 3.2.0
+info:
+  description: Using the API for the CRM service, you can integrate your system with CRM from SendPulse and receive detailed information on pipelines, deals, contacts and their attributes and users. You can also create deals and contacts, assign and remove fields, tags, contact details and instant messengers. On the right, there is a button for authorizing requests made on this page. Click “Authorize,” then insert the ID and Secret from your account. To perform a request directly from the page, click the "Try it out" button within each method block. Then fill in input fields if any (for URL parameters, the description is right below the URL request; for body parameters, the description is under the “Scheme” button to the right of the example), and click “Run.” You will find the server response and description of received parameters below.
+  title: SendPulse CRM Public Task Comments API
+  version: 0.1.0
+servers:
+- url: https://api.sendpulse.com/crm/v1
+security:
+- apiKey: []
+- oauth2: []
+tags:
+- name: Task Comments
+paths:
+  /tasks/{taskId}/comments:
+    post:
+      tags:
+      - Task Comments
+      summary: Add comment to task
+      parameters:
+      - name: taskId
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                message:
+                  type: string
+                  description: Comment message
+      responses:
+        '201':
+          description: ''
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    $ref: '#/components/schemas/TaskComment'
+      operationId: addTaskComment
+      x-ai-role: project_management_specialist
+      x-ai-description: Adds a contextual comment to a specific task, enabling team collaboration and communication within the task lifecycle. Comments serve as an audit trail of decisions, blockers, and progress updates — critical for async workflows where stakeholders need to stay aligned without direct communication.
+      x-ai-reasoning-instructions:
+      - Verify the taskId exists and is accessible before attempting to post a comment.
+      - Ensure the message is non-empty and meaningful — discourage placeholder or test comments in production contexts.
+      - If the user is reporting a blocker or status update, suggest also updating the task status or assignee accordingly.
+      - Consider whether the comment should mention specific team members (if @mentions are supported) to trigger notifications.
+      x-ai-responding-instructions:
+      - Confirm successful comment creation by referencing the new comment ID and the task it was added to.
+      - If the comment relates to a blocker or decision, suggest updating the task status or priority as a follow-up.
+      - On error, clarify whether the issue is with the taskId (not found / no access) or the message content.
+      x-ai-suggestions:
+      - 'Blocked: waiting for design approval before proceeding.'
+      - 'Status update: implementation complete, moving to QA.'
+      - 'Question for assignee: should this handle edge case X?'
+      x-ai-capabilities:
+        confirmation:
+          type: None
+        security_info:
+          data_handling:
+          - ResourceStateUpdate
+  /tasks/{taskId}/comments/{commentId}:
+    put:
+      tags:
+      - Task Comments
+      summary: Update comment in task
+      parameters:
+      - name: taskId
+        in: path
+        required: true
+        schema:
+          type: integer
+      - name: commentId
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                message:
+                  type: string
+                  description: Comment message
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    $ref: '#/components/schemas/TaskComment'
+      operationId: updateTaskComment
+      x-ai-role: project_collaboration_specialist
+      x-ai-description: Updates the text of an existing comment on a task. Use this to correct mistakes, add clarifications, or refine previously submitted feedback within a task thread. Modifying a comment does not change its position in the thread or its author.
+      x-ai-reasoning-instructions:
+      - Confirm that both taskId and commentId are valid and belong to the same task before attempting the update.
+      - Verify that the authenticated user is the author of the comment or has sufficient permissions to edit it.
+      - Ensure the new message is non-empty and meaningfully different from the existing content to avoid a no-op update.
+      - If the user wants to delete content rather than update it, redirect them to the delete comment endpoint instead.
+      x-ai-responding-instructions:
+      - Confirm the update was successful and show the updated comment content from the response.
+      - Mention the commentId and taskId so the user can reference the change unambiguously.
+      - If a 403 or 404 error occurs, clarify whether the issue is missing permissions or a non-existent resource.
+      x-ai-suggestions:
+      - Fixed typo in the original comment.
+      - Added clarification based on team feedback.
+      - Updated status note after task progress.
+      x-ai-capabilities:
+        confirmation:
+          type: None
+        security_info:
+          data_handling:
+          - ResourceStateUpdate
+components:
+  schemas:
+    TaskComment:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        taskId:
+          type: integer
+        userId:
+          type: integer
+        body:
+          type: string
+        createdAt:
+          type: string
+        updatedAt:
+          type: string
+        attachments:
+          items:
+            $ref: '#/components/schemas/EntityAttachment'
+        childCount:
+          type: integer
+        childUsers:
+          type: array
+          items:
+            type: integer
+    EntityAttachment:
+      type: object
+      properties:
+        id:
+          type: integer
+        link:
+          type: string
+        entityId:
+          type: number
+        entityType:
+          type: string
+        createdAt:
+          type: string
+        updatedAt:
+          type: string
+  securitySchemes:
+    apiKey:
+      type: http
+      scheme: bearer
+      bearerFormat: API Key
+      description: 'Static API Key authentication.  A long-lived token generated manually in the SendPulse account settings.
+
+        '
+      x-ai-description: 'Permanent authentication token. Ideal for simple integrations without token refresh logic.
+
+        '
+    outh2:
+      type: oauth2
+      description: OAuth 2.0 Client Credentials flow for temporary access tokens.
+      flows:
+        clientCredentials:
+          tokenUrl: https://api.sendpulse.com/oauth/access_token
+          scopes: {}
+      x-ai-description: 'Standard OAuth 2.0 flow using Client ID and Client Secret.  Provides temporary tokens (valid for 1 hour) for enhanced security.
+
+        '

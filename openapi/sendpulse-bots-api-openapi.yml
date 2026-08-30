@@ -1,0 +1,616 @@
+openapi: 3.2.0
+info:
+  title: Sendpulse Bots API
+  version: 0.0.1
+  description: 'Operations tagged bots across 8 of this provider''s published API definitions: sendpulse-chatbots-openapi.yml, sendpulse-facebook-openapi.yml, sendpulse-instagram-openapi.yml, sendpulse-live-chat-openapi.yml, sendpulse-telegram-openapi.yml, sendpulse-tiktok-openapi.yml, sendpulse-viber-chatbot-openapi.yml, sendpulse-whatsapp-openapi.yml. Each path carries the servers of the definition it was published in.'
+servers:
+- description: ''
+  url: https://api.sendpulse.com/chatbots
+- description: ''
+  url: https://api.sendpulse.com/messenger
+- description: ''
+  url: https://api.sendpulse.com/instagram
+- description: ''
+  url: https://api.sendpulse.com/live-chat
+- description: ''
+  url: https://api.sendpulse.com/telegram
+- description: ''
+  url: https://api.sendpulse.com/tiktok
+- description: ''
+  url: https://api.sendpulse.com/viber/chatbots
+- description: ''
+  url: https://api.sendpulse.com/whatsapp
+security:
+- apiKey: []
+- oauth2: []
+tags:
+- description: ''
+  name: bots
+paths:
+  /bots:
+    get:
+      summary: Get a list of connected bots
+      description: 'Returns lists of bots with information about each: bot ID, channel information, number of received and unread messages, bot status, and creation date'
+      security:
+      - oAuth2ClientCredentials: []
+      tags:
+      - bots
+      responses:
+        '200':
+          description: Operation successful
+          content:
+            application/json:
+              schema:
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Bot'
+                type: object
+      operationId: getBots
+      x-ai-role: chatbot_operations_manager
+      x-ai-description: Retrieves a full inventory of connected bots across all supported channels (Telegram, WhatsApp, Facebook, etc.). This is the primary discovery endpoint — use it to map available automation assets before routing messages, checking bot health, or selecting a target bot for a campaign. Bot status and unread message counts serve as lightweight health indicators.
+      x-ai-reasoning-instructions:
+      - Call this endpoint first when the user needs to interact with any bot but hasn't specified a bot ID yet.
+      - Filter the result by channel type if the user has specified a platform (e.g., 'my Telegram bots').
+      - Check `status` field to warn the user if the target bot is inactive before proceeding with message sending.
+      - Use `unread` count to surface bots that may need attention.
+      x-ai-responding-instructions:
+      - Present bots grouped by channel for clarity if multiple channels are present.
+      - Highlight any bots with non-active status and suggest investigating them.
+      - If the list is empty, inform the user that no bots are connected and suggest connecting one via the SendPulse dashboard.
+      - When the user needs a specific bot, confirm which one to use before proceeding.
+      x-ai-suggestions:
+      - Use the returned bot `id` with `sendMessage` or `getSubscribers` endpoints.
+      - Check `unread` counts to prioritize bots that need follow-up.
+      - Cross-reference `created_at` to identify recently added bots.
+      x-ai-capabilities:
+        confirmation:
+          type: None
+        security_info:
+          data_handling:
+          - ReadOnly
+    servers:
+    - description: ''
+      url: https://api.sendpulse.com/chatbots
+  /bots/statistics:
+    get:
+      summary: Get general statistics info by bot
+      description: Returns general statistics info by bot
+      security:
+      - oAuth2ClientCredentials: []
+      parameters:
+      - in: query
+        name: bot_id
+        required: true
+        schema:
+          type: string
+        description: The bot ID. Can be obtained with a method of getting a list of bots. You can also find it in your account in the address bar of a chat window with the desired contact.
+      tags:
+      - bots
+      responses:
+        '200':
+          description: Operation successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      subscribedTotalCount:
+                        type: integer
+                      subscribedActiveCount:
+                        type: integer
+                      outgoingMessagesTotalCount:
+                        type: integer
+      operationId: getBotStatistics
+      x-ai-role: chatbot_performance_analyst
+      x-ai-description: 'Provides a high-level health snapshot of a specific chatbot: how many users subscribed overall versus how many remain active, and the total volume of outgoing messages. This is the primary diagnostic endpoint for assessing bot engagement quality — a large gap between total and active subscribers signals audience churn or poor re-engagement.'
+      x-ai-reasoning-instructions:
+      - Ensure the bot_id is valid and belongs to the authenticated account before calling; use the list-bots endpoint if the ID is unknown.
+      - 'Treat subscribedActiveCount vs subscribedTotalCount ratio as a health indicator: a ratio below 0.5 warrants a re-engagement campaign recommendation.'
+      - outgoingMessagesTotalCount reflects cumulative lifetime messages — do not interpret it as a per-day or per-month metric without additional context from the user.
+      x-ai-responding-instructions:
+      - Present the active/total subscriber ratio as a percentage to make the insight immediately actionable.
+      - If active subscribers are significantly lower than total, proactively suggest reviewing bot flows or launching a re-subscription campaign.
+      - Mention the bot_id used in the response so the user can confirm they queried the correct bot.
+      x-ai-suggestions:
+      - Cross-reference with message delivery stats to understand if low activity correlates with delivery failures.
+      - Use this endpoint before launching a broadcast to estimate effective audience size.
+      x-ai-capabilities:
+        confirmation:
+          type: None
+        security_info:
+          data_handling:
+          - ReadOnly
+    servers:
+    - description: ''
+      url: https://api.sendpulse.com/messenger
+components:
+  schemas:
+    Bot:
+      properties:
+        id:
+          type: string
+        channel_data:
+          type: object
+          properties:
+            access_token:
+              type: string
+            id:
+              type: integer
+            name:
+              type: string
+            username:
+              type: string
+        inbox:
+          type: object
+          properties:
+            total:
+              type: integer
+            unread:
+              type: integer
+        status:
+          type: integer
+          enum:
+          - 3
+          - 4
+          description: "\n                    * `3` - active\n\n                    * `4` - inactive"
+        created_at:
+          type: string
+          example: 2020-12-11 21:00:00+00:00
+    Bot_2:
+      properties:
+        id:
+          type: string
+        channel_data:
+          type: object
+          properties:
+            id:
+              type: string
+            name:
+              type: string
+            photo:
+              type:
+              - string
+              - 'null'
+        inbox:
+          type: object
+          properties:
+            total:
+              type: integer
+            unread:
+              type: integer
+        status:
+          type: integer
+          enum:
+          - 3
+          - 5
+          description: "\n                    * `3` - active\n\n                    * `5` - inactive"
+        created_at:
+          type: string
+          example: 2020-12-11 21:00:00+00:00
+    Bot_3:
+      properties:
+        id:
+          type: string
+        channel_data:
+          type: object
+          properties:
+            fb_user:
+              type: object
+              properties:
+                id:
+                  type: string
+                first_name:
+                  type: string
+                last_name:
+                  type: string
+                name:
+                  type: string
+                name_format:
+                  type: string
+                short_name:
+                  type: string
+                picture:
+                  type: object
+                  properties:
+                    data:
+                      type: object
+                      properties:
+                        height:
+                          type: integer
+                        is_silhouette:
+                          type: boolean
+                        url:
+                          type: string
+                        width:
+                          type: integer
+            ig_user:
+              type: object
+              properties:
+                id:
+                  type: integer
+                ig_id:
+                  type: integer
+                followers_count:
+                  type:
+                  - integer
+                  - 'null'
+                follows_count:
+                  type:
+                  - integer
+                  - 'null'
+                media_count:
+                  type:
+                  - integer
+                  - 'null'
+                profile_picture_url:
+                  type:
+                  - string
+                  - 'null'
+                username:
+                  type: string
+                website:
+                  type:
+                  - string
+                  - 'null'
+            ig_page:
+              type: object
+              properties:
+                instagram_business_account:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                    ig_id:
+                      type: integer
+                    name:
+                      type: string
+                    biography:
+                      type:
+                      - string
+                      - 'null'
+                    followers_count:
+                      type:
+                      - integer
+                      - 'null'
+                    follows_count:
+                      type:
+                      - integer
+                      - 'null'
+                    media_count:
+                      type:
+                      - integer
+                      - 'null'
+                    profile_picture_url:
+                      type:
+                      - string
+                      - 'null'
+                    website:
+                      type:
+                      - string
+                      - 'null'
+                    username:
+                      type: string
+                id:
+                  type: integer
+                category:
+                  type: string
+                category_list:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                      name:
+                        type: string
+                name:
+                  type: string
+                picture:
+                  type: object
+                  properties:
+                    data:
+                      type: object
+                      properties:
+                        height:
+                          type: integer
+                        is_silhouette:
+                          type: boolean
+                        url:
+                          type: string
+                        width:
+                          type: integer
+        inbox:
+          type: object
+          properties:
+            total:
+              type: integer
+            unread:
+              type: integer
+        status:
+          type: integer
+          enum:
+          - 3
+          - 4
+          description: "\n                    * `3` - active\n\n                    * `4` - inactive"
+        created_at:
+          type: string
+          example: 2020-12-11 21:00:00+00:00
+    Bot_4:
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        avatar:
+          type:
+          - string
+          - 'null'
+          example: null
+        variables:
+          type: array
+          items:
+            type: object
+        settings:
+          type: object
+          properties:
+            service_links:
+              type: boolean
+            open_chat_notification:
+              type: boolean
+            disable_trigger_hints:
+              type: boolean
+            standard_text_settings:
+              type: object
+        widget:
+          type: object
+          properties:
+            sp_site:
+              type:
+              - string
+              - 'null'
+              example: null
+            website_url:
+              type: string
+            website_scheme:
+              type: string
+            website_domain:
+              type: string
+            title:
+              type: string
+            position:
+              type: string
+            color:
+              type: string
+            terms:
+              type:
+              - object
+              - 'null'
+              example: null
+        inbox:
+          type: object
+          properties:
+            total:
+              type: integer
+            unread:
+              type: integer
+        status:
+          type: integer
+          enum:
+          - 3
+          - 4
+          description: "\n                    * `3` - active\n\n                    * `4` - inactive"
+        created_at:
+          type: string
+          example: 2020-12-11 21:00:00+00:00
+    Bot_5:
+      properties:
+        id:
+          type: string
+        channel_data:
+          type: object
+          properties:
+            id:
+              type: integer
+            name:
+              type: string
+            username:
+              type: string
+        inbox:
+          type: object
+          properties:
+            total:
+              type: integer
+            unread:
+              type: integer
+        commands_menu:
+          type: object
+          properties:
+            status:
+              type: integer
+              enum:
+              - 1
+              - 2
+              description: "\n                    * `1` - active\n\n                    * `2` - inactive"
+            commands:
+              type: array
+              items:
+                type: object
+                properties:
+                  description:
+                    type:
+                    - string
+                    - 'null'
+                  command:
+                    type: string
+                  flow_id:
+                    type: string
+        status:
+          type: integer
+          enum:
+          - 3
+          - 4
+          description: "\n                    * `3` - active\n\n                    * `4` - inactive"
+        created_at:
+          type: string
+          example: 2020-12-11 21:00:00+00:00
+    Bot_6:
+      properties:
+        id:
+          type: string
+        channel_data:
+          type: object
+          properties:
+            account:
+              type: object
+              properties:
+                display_name:
+                  type: string
+                username:
+                  type: string
+                profile_deep_link:
+                  type: string
+        inbox:
+          type: object
+          properties:
+            total:
+              type: integer
+            unread:
+              type: integer
+        status:
+          type: integer
+          enum:
+          - 3
+          - 4
+          description: "\n                    * `3` - active\n\n                    * `4` - inactive"
+        created_at:
+          type: string
+          example: 2020-12-11 21:00:00+00:00
+    Bot_7:
+      properties:
+        id:
+          type: string
+        channel_data:
+          type: object
+          properties:
+            vb_account_info:
+              type: object
+              properties:
+                id:
+                  type: string
+                name:
+                  type: string
+                uri:
+                  type: string
+                icon:
+                  type: string
+                background:
+                  type:
+                  - string
+                  - 'null'
+                category:
+                  type: string
+                subcategory:
+                  type: string
+                location:
+                  type: object
+                  properties:
+                    lon:
+                      type:
+                      - float
+                      - 'null'
+                    lat:
+                      type:
+                      - float
+                      - 'null'
+                country:
+                  type: string
+                webhook:
+                  type:
+                  - string
+                  - 'null'
+                event_types:
+                  type:
+                  - array
+                  - 'null'
+                  items:
+                    type: string
+        inbox:
+          type: object
+          properties:
+            total:
+              type: integer
+            unread:
+              type: integer
+        status:
+          type: integer
+          enum:
+          - 3
+          - 4
+          description: "\n                    * `3` - active\n\n                    * `4` - inactive"
+        created_at:
+          type: string
+          example: 2020-12-11 21:00:00+00:00
+    Bot_8:
+      properties:
+        id:
+          type: string
+        channel_data:
+          type: object
+          properties:
+            name:
+              type: string
+            phone:
+              type: integer
+        inbox:
+          type: object
+          properties:
+            total:
+              type: integer
+            unread:
+              type: integer
+        status:
+          type: integer
+          enum:
+          - 3
+          - 4
+          description: "\n                    * `3` - active\n\n                    * `4` - inactive"
+        created_at:
+          type: string
+          example: 2020-12-11 21:00:00+00:00
+  securitySchemes:
+    apiKey:
+      type: http
+      scheme: bearer
+      bearerFormat: API Key
+      description: 'Static API Key authentication.  A long-lived token generated manually in the SendPulse account settings.
+
+        '
+      x-ai-description: 'Permanent authentication token. Ideal for simple integrations without token refresh logic.
+
+        '
+    outh2:
+      type: oauth2
+      description: OAuth 2.0 Client Credentials flow for temporary access tokens.
+      flows:
+        clientCredentials:
+          tokenUrl: https://api.sendpulse.com/oauth/access_token
+          scopes: {}
+      x-ai-description: 'Standard OAuth 2.0 flow using Client ID and Client Secret.  Provides temporary tokens (valid for 1 hour) for enhanced security.
+
+        '
+x-refined-from:
+- sendpulse-chatbots-openapi.yml
+- sendpulse-facebook-openapi.yml
+- sendpulse-instagram-openapi.yml
+- sendpulse-live-chat-openapi.yml
+- sendpulse-telegram-openapi.yml
+- sendpulse-tiktok-openapi.yml
+- sendpulse-viber-chatbot-openapi.yml
+- sendpulse-whatsapp-openapi.yml

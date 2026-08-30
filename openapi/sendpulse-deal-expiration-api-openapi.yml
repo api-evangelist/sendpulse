@@ -1,0 +1,170 @@
+openapi: 3.2.0
+info:
+  description: Using the API for the CRM service, you can integrate your system with CRM from SendPulse and receive detailed information on pipelines, deals, contacts and their attributes and users. You can also create deals and contacts, assign and remove fields, tags, contact details and instant messengers. On the right, there is a button for authorizing requests made on this page. Click “Authorize,” then insert the ID and Secret from your account. To perform a request directly from the page, click the "Try it out" button within each method block. Then fill in input fields if any (for URL parameters, the description is right below the URL request; for body parameters, the description is under the “Scheme” button to the right of the example), and click “Run.” You will find the server response and description of received parameters below.
+  title: SendPulse CRM Public Deal Expiration API
+  version: 0.1.0
+servers:
+- url: https://api.sendpulse.com/crm/v1
+security:
+- apiKey: []
+- oauth2: []
+tags:
+- name: Deal Expiration
+paths:
+  /deals/{dealId}/expiration:
+    put:
+      tags:
+      - Deal Expiration
+      summary: Update or create deal expiration
+      parameters:
+      - name: dealId
+        in: path
+        required: true
+        description: Deal ID
+        schema:
+          type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                date:
+                  type: string
+                  format: date
+                  description: Expiration date
+                time:
+                  type: string
+                  format: time
+                  description: Expiration time
+                notifyIn:
+                  type:
+                  - string
+                  - 'null'
+                  description: Notify before deal expires (when notification is enabled). Allowed values - 0(not selected), 15min, 30min, 1h, 2h, 3h, 6h, 12h, 24h, 2d, 3d, 4d, 5d, 6d, 7d
+                dealAction:
+                  type:
+                  - integer
+                  - 'null'
+                  description: Allowed values 1 - created, 2 - updated
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    $ref: '#/components/schemas/DealExpiration'
+      operationId: upsertDealExpiration
+      x-ai-role: crm_pipeline_manager
+      x-ai-description: Sets or replaces the expiration deadline for a specific deal in the CRM pipeline. This endpoint acts as an upsert — if no expiration exists, it creates one; if it does, it overwrites it entirely. Expiration dates drive urgency-based automation, sales rep notifications, and deal auto-closure workflows. Proper use of this endpoint ensures deals don't silently stall in the pipeline past their negotiated deadlines.
+      x-ai-reasoning-instructions:
+      - Confirm the dealId exists before calling — a 404 on a missing deal is a hard failure.
+      - If the user provides only a date without a time, clarify whether a default time (e.g., end-of-business) is acceptable or if precision matters.
+      - When notifyIn is set, verify the deal has an assigned owner with a valid notification channel; otherwise the reminder will be silently dropped.
+      - The dealAction field (1=created, 2=updated) is metadata — infer '2' when the deal is known to already have an expiration, '1' when setting it for the first time.
+      - Avoid setting expiration dates in the past; validate the date is in the future before submitting.
+      - If the user wants to remove an expiration, this endpoint is not the right tool — check for a DELETE /deals/{dealId}/expiration instead.
+      x-ai-responding-instructions:
+      - Confirm the expiration was set by echoing back the date and time in a human-readable format.
+      - If notifyIn was provided, remind the user when the notification will fire relative to the expiration.
+      - Suggest reviewing related deals in the same pipeline stage that may also need expiration dates.
+      - If the response includes a DealExpiration object, highlight the effective deadline and any active notification settings.
+      x-ai-suggestions:
+      - Set expiration to end of current quarter with a 24h advance notification.
+      - 'Use notifyIn: ''2d'' for deals in the negotiation stage to give reps buffer time.'
+      - Combine with a pipeline stage update to automatically move stalled deals to 'Closing' before expiry.
+      x-ai-capabilities:
+        confirmation:
+          type: Recommended
+          message: This will overwrite any existing expiration for deal {dealId}. Proceed?
+        security_info:
+          data_handling:
+          - ResourceStateUpdate
+          - ScheduledNotificationTrigger
+    delete:
+      tags:
+      - Deal Expiration
+      summary: Remove deal expiration
+      parameters:
+      - name: dealId
+        in: path
+        required: true
+        description: Deal ID
+        schema:
+          type: integer
+      responses:
+        '204':
+          description: Successfully deleted
+      operationId: removeDealExpiration
+      x-ai-role: crm_deal_manager
+      x-ai-description: Removes the expiration deadline from a deal, effectively making it open-ended. Use this when a deal's timeline has been extended indefinitely or when a premature expiration was set by mistake. In CRM workflows, expiration dates drive automated reminders and stage transitions — removing one halts that pressure on the deal.
+      x-ai-reasoning-instructions:
+      - Confirm the deal exists and has an active expiration before attempting removal — a 204 on a non-expiring deal may still succeed but is a no-op.
+      - Check whether any automations or reminders are tied to this deal's expiration; removing it may silently disable them.
+      - If the user's intent is to extend the deadline rather than remove it entirely, suggest using the update-expiration endpoint instead.
+      x-ai-responding-instructions:
+      - On success (204 No Content), confirm that the expiration has been cleared and the deal is now open-ended.
+      - Mention that any expiration-triggered automations for this deal are now inactive.
+      - If the deal ID is not found or the operation fails, clarify whether the deal exists and whether it had an expiration set.
+      x-ai-capabilities:
+        confirmation:
+          type: Recommended
+          message: This will permanently remove the expiration date from the deal. Any automated reminders tied to this deadline will stop.
+        security_info:
+          data_handling:
+          - ResourceStateUpdate
+components:
+  schemas:
+    DealExpiration:
+      type: object
+      properties:
+        date:
+          type: string
+          format: date
+          description: Deal expiration date
+        time:
+          type:
+          - string
+          - 'null'
+          format: time
+          description: Deal expiration time
+        dateTime:
+          type: string
+          format: date-time
+          description: Deal expiration DateTime
+        notificationEnabled:
+          type: boolean
+          description: Is notification enabled
+        notifyIn:
+          type:
+          - string
+          - 'null'
+          description: Notify before deal expires (when notification is enabled). Allowed values - 0(not selected), 15min, 30min, 1h, 2h, 3h, 6h, 12h, 24h, 2d, 3d, 4d, 5d, 6d, 7d
+        expired:
+          type: boolean
+          description: The deal has expired
+        expires_within_day:
+          type: boolean
+          description: The deal expires within 24 hours
+  securitySchemes:
+    apiKey:
+      type: http
+      scheme: bearer
+      bearerFormat: API Key
+      description: 'Static API Key authentication.  A long-lived token generated manually in the SendPulse account settings.
+
+        '
+      x-ai-description: 'Permanent authentication token. Ideal for simple integrations without token refresh logic.
+
+        '
+    outh2:
+      type: oauth2
+      description: OAuth 2.0 Client Credentials flow for temporary access tokens.
+      flows:
+        clientCredentials:
+          tokenUrl: https://api.sendpulse.com/oauth/access_token
+          scopes: {}
+      x-ai-description: 'Standard OAuth 2.0 flow using Client ID and Client Secret.  Provides temporary tokens (valid for 1 hour) for enhanced security.
+
+        '

@@ -1,0 +1,557 @@
+openapi: 3.2.0
+info:
+  description: Using the API for the CRM service, you can integrate your system with CRM from SendPulse and receive detailed information on pipelines, deals, contacts and their attributes and users. You can also create deals and contacts, assign and remove fields, tags, contact details and instant messengers. On the right, there is a button for authorizing requests made on this page. Click “Authorize,” then insert the ID and Secret from your account. To perform a request directly from the page, click the "Try it out" button within each method block. Then fill in input fields if any (for URL parameters, the description is right below the URL request; for body parameters, the description is under the “Scheme” button to the right of the example), and click “Run.” You will find the server response and description of received parameters below.
+  title: SendPulse CRM Public Company API
+  version: 0.1.0
+servers:
+- url: https://api.sendpulse.com/crm/v1
+security:
+- apiKey: []
+- oauth2: []
+tags:
+- name: Company
+paths:
+  /companies/short-data:
+    post:
+      tags:
+      - Company
+      summary: Get companies short data
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              properties:
+                companyName:
+                  type: string
+                companyIds:
+                  type: array
+                email:
+                  type: string
+                phone:
+                  type: string
+                responsibleId:
+                  type: array
+                messengerLogin:
+                  type: string
+                dateFrom:
+                  type: string
+                dateTo:
+                  type: string
+                limit:
+                  type: integer
+                offset:
+                  type: integer
+                withoutContacts:
+                  type: boolean
+                searchString:
+                  type: string
+                  description: If you pass a search string, all other filters will be ignored.
+                attributes:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                      expression:
+                        type: string
+                sortBy:
+                  type: object
+                  properties:
+                    attributeId:
+                      type: integer
+                    fieldName:
+                      type: string
+                      enum:
+                      - name
+                      - address
+                      - annualBusinessVolume
+                      - createdAt
+                    direction:
+                      type: string
+                      enum:
+                      - asc
+                      - desc
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/CompanySortData'
+                  metadata:
+                    type: object
+                    properties:
+                      total:
+                        type: integer
+      operationId: getCompaniesShortData
+      x-ai-role: crm_data_analyst
+      x-ai-description: Retrieves a lightweight, paginated list of companies from the CRM with flexible multi-criteria filtering. 'Short data' means only key fields are returned — optimized for list views, dropdowns, and bulk lookups. Use this endpoint when you need to discover, search, or enumerate companies without loading full contact trees or attribute sets. The searchString param acts as a global override — when provided, all other filters are silently ignored.
+      x-ai-reasoning-instructions:
+      - Prefer searchString for freeform user queries (name fragments, email, phone) — it's faster and overrides all other filters.
+      - When filtering by attributes, use the attributes array with attribute IDs from the CRM schema; do not guess IDs.
+      - Always apply limit+offset for pagination; avoid unbounded queries on large datasets.
+      - If responsibleId or companyIds filters are used, confirm the IDs exist before calling to avoid empty result sets.
+      - Note that dateFrom/dateTo filter by company creation date — clarify with the user if they mean something else (e.g., last activity).
+      - If withoutContacts is true, the response excludes companies that have no linked contacts — use this to find active company records only.
+      x-ai-responding-instructions:
+      - Report the total count from metadata.total alongside the returned page size so the user understands how many records exist overall.
+      - If the result is empty, suggest relaxing filters or switching to searchString.
+      - When returning a list, highlight company names and IDs as the primary identifiers for follow-up operations.
+      - If searchString was used, note that other filters were ignored in this request.
+      x-ai-suggestions:
+      - Use limit=20 and offset=0 as default pagination values.
+      - To find a specific company quickly, pass searchString instead of combining multiple filters.
+      - Sort by createdAt desc to surface the most recently added companies first.
+      x-ai-capabilities:
+        confirmation:
+          type: None
+        security_info:
+          data_handling:
+          - ReadOnly
+  /companies/list:
+    post:
+      tags:
+      - Company
+      summary: Get companies
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              properties:
+                companyName:
+                  type: string
+                companyIds:
+                  type: array
+                email:
+                  type: string
+                phone:
+                  type: string
+                responsibleId:
+                  type: array
+                messengerLogin:
+                  type: string
+                dateFrom:
+                  type: string
+                dateTo:
+                  type: string
+                limit:
+                  type: integer
+                offset:
+                  type: integer
+                withoutContacts:
+                  type: boolean
+                searchString:
+                  type: string
+                  description: If you pass a search string, all other filters will be ignored.
+                attributes:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                      expression:
+                        type: string
+                sortBy:
+                  type: object
+                  properties:
+                    attributeId:
+                      type: integer
+                    fieldName:
+                      type: string
+                      enum:
+                      - name
+                      - address
+                      - annualBusinessVolume
+                      - createdAt
+                    direction:
+                      type: string
+                      enum:
+                      - asc
+                      - desc
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/CompanySortData'
+                  metadata:
+                    type: object
+                    properties:
+                      total:
+                        type: integer
+      operationId: getCompaniesList
+      x-ai-role: crm_data_analyst
+      x-ai-description: Retrieves a filtered, paginated list of companies from the CRM. Unlike a simple GET, this endpoint accepts a rich filter payload — enabling complex queries by name, contacts, responsible manager, custom attributes, and date range. The `searchString` parameter acts as a global override that bypasses all other filters, useful for quick lookups. This is the primary discovery endpoint for company records and the entry point for bulk CRM workflows.
+      x-ai-reasoning-instructions:
+      - If the user provides a search string, remind them that all other filters will be ignored — confirm this is the intended behavior.
+      - Use `limit` and `offset` for pagination; default to a reasonable page size (e.g., 20–50) if not specified.
+      - When filtering by `responsibleId`, ensure the IDs correspond to existing team members; invalid IDs may silently return empty results.
+      - Combining `attributes` filter with `sortBy.attributeId` allows for advanced CRM segmentation — suggest this pattern for power users.
+      - If `dateFrom`/`dateTo` are used, clarify which date field they apply to (likely `createdAt`) to avoid unexpected results.
+      - Prefer specific filters over `searchString` in automated pipelines to ensure predictable, reproducible queries.
+      x-ai-responding-instructions:
+      - Report the total number of matching companies from `metadata.total` alongside the current page results.
+      - If the result set is empty, suggest relaxing filters or checking the `searchString` override behavior.
+      - If `metadata.total` exceeds the requested `limit`, proactively suggest paginating with `offset` to retrieve remaining records.
+      - When presenting results to a user, highlight key identifiers and the responsible manager for each company to aid quick recognition.
+      x-ai-suggestions:
+      - Filter by `responsibleId` to get all companies assigned to a specific sales rep.
+      - Use `searchString` for quick name lookups; switch to structured filters for automated or repeatable queries.
+      - Sort by `createdAt` descending to review the most recently added companies.
+      - 'Set `withoutContacts: true` to identify orphaned company records that need contact association.'
+      x-ai-capabilities:
+        confirmation:
+          type: None
+        security_info:
+          data_handling:
+          - ReadOnly
+  /companies:
+    post:
+      tags:
+      - Company
+      summary: Create company
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              properties:
+                companyName:
+                  type: string
+                  minimum: 1
+                  maximum: 100
+                responsibleId:
+                  type: integer
+                  description: If you do not send the responsible ID, the system will automatically identify the responsible person.
+                address:
+                  type: string
+                annualBusinessVolume:
+                  type: integer
+                currency:
+                  type: string
+                  description: The parameter is required if you send a annualBusinessVolume parameter
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Company'
+      operationId: createCompany
+      x-ai-role: crm_data_manager
+      x-ai-description: Creates a new company record in the CRM. A company acts as a top-level organizational entity that groups contacts, deals, and activities. Proper setup — including responsible user and financial metadata — directly affects pipeline visibility and reporting accuracy across the account.
+      x-ai-reasoning-instructions:
+      - Before creating, check whether a company with the same name already exists to prevent duplicates.
+      - If `annualBusinessVolume` is provided, ensure `currency` is also included — the API requires it.
+      - If `responsibleId` is omitted, the system auto-assigns responsibility; clarify this with the user if ownership matters.
+      - Validate that `companyName` is between 1 and 100 characters before submitting.
+      x-ai-responding-instructions:
+      - Confirm successful creation by surfacing the new company ID from the `data` object in the response.
+      - If `responsibleId` was not sent, inform the user that responsibility was assigned automatically.
+      - Suggest adding contacts or deals linked to this company as the next logical step.
+      - If a conflict or validation error occurs, explain which field caused it and how to fix it.
+      x-ai-suggestions:
+      - Acme Corp
+      - TechStart Solutions
+      - GlobalRetail Group
+      x-ai-capabilities:
+        confirmation:
+          type: None
+        security_info:
+          data_handling:
+          - ResourceStateUpdate
+  /companies/{companyId}:
+    get:
+      tags:
+      - Company
+      summary: Get company by id
+      parameters:
+      - name: companyId
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Company'
+      operationId: getCompanyById
+      x-ai-role: crm_data_analyst
+      x-ai-description: Retrieves the full profile of a specific company entity by its unique identifier. In CRM context, a company is an organizational anchor — it groups contacts, deals, and activities under a shared business entity, enabling account-based relationship management.
+      x-ai-reasoning-instructions:
+      - Confirm the companyId is a valid integer before making the request.
+      - If the call is part of a lookup flow, prefer caching the result rather than re-fetching the same company repeatedly.
+      - If the company is not found (404), suggest the user verify the ID or list available companies first.
+      x-ai-responding-instructions:
+      - Present the company name and key identifiers prominently.
+      - If downstream actions are likely (e.g., updating the company or fetching its contacts), suggest the relevant endpoints.
+      - On a 404 response, clearly indicate the company does not exist and recommend listing companies to find the correct ID.
+      x-ai-suggestions:
+      - Use this endpoint to verify company details before updating or deleting.
+      - Combine with contact-listing endpoints to get a full account overview.
+      x-ai-capabilities:
+        confirmation:
+          type: None
+        security_info:
+          data_handling:
+          - ReadOnly
+    put:
+      tags:
+      - Company
+      summary: Update company
+      parameters:
+      - name: companyId
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              properties:
+                companyName:
+                  type: string
+                  minimum: 1
+                  maximum: 100
+                responsibleId:
+                  type: integer
+                annualBusinessVolume:
+                  type: integer
+                currency:
+                  type: string
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Company'
+      operationId: updateCompany
+      x-ai-role: crm_data_manager
+      x-ai-description: Updates the core profile of a company entity in the CRM. This is the primary way to keep account-level business data accurate — including ownership (responsibleId), revenue tier (annualBusinessVolume), and billing currency. Changes here propagate to all deals, contacts, and pipelines associated with this company.
+      x-ai-reasoning-instructions:
+      - Fetch the current company record before updating to avoid accidentally overwriting fields the user didn't intend to change.
+      - Validate that responsibleId corresponds to an existing user in the account.
+      - If annualBusinessVolume is being set, confirm the currency field is also provided to ensure consistent financial data.
+      - companyName must be between 1 and 100 characters — validate before the call.
+      - Only include fields that are explicitly being changed; omit unchanged fields to prevent data loss.
+      x-ai-responding-instructions:
+      - Confirm which fields were updated by comparing the request payload with the returned Company object.
+      - If responsibleId changed, mention the name of the newly assigned owner.
+      - If annualBusinessVolume or currency changed, briefly note the updated revenue profile.
+      - On error, explain whether the issue is a validation constraint (e.g., name too long) or a reference error (e.g., unknown responsibleId).
+      x-ai-suggestions:
+      - Use `getCompany` first to retrieve current values before a partial update.
+      - After updating responsibleId, notify the new responsible user via a task or note.
+      - Updating annualBusinessVolume is useful for dynamic lead-scoring pipelines.
+      x-ai-capabilities:
+        confirmation:
+          type: Recommended
+          message: Confirm update of company {companyId} with the provided changes.
+        security_info:
+          data_handling:
+          - ResourceStateUpdate
+    delete:
+      tags:
+      - Company
+      summary: Delete company
+      parameters:
+      - name: companyId
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '204':
+          description: Successfully deleted
+      operationId: deleteCompany
+      x-ai-role: crm_data_manager
+      x-ai-description: Permanently removes a company record and all its associated data from the CRM. This is a destructive, irreversible operation that may cascade to linked contacts, deals, or activities tied to this company.
+      x-ai-reasoning-instructions:
+      - Before deleting, confirm the companyId exists to avoid a misleading 404 error.
+      - Warn the user that deletion is permanent and cannot be undone.
+      - Check if any contacts, deals, or tasks are linked to this company — deletion may affect related records.
+      - Prefer archiving or soft-delete patterns if the business goal is data retention rather than removal.
+      x-ai-responding-instructions:
+      - Confirm the company was successfully deleted (HTTP 204 means no content returned).
+      - Remind the user that linked records (contacts, deals) may have been affected or orphaned.
+      - If a 404 is returned, clarify that the company may have already been deleted or the ID is incorrect.
+      x-ai-suggestions:
+      - Verify the companyId before calling this endpoint using getCompany.
+      - Export or back up company data before deletion if audit trails are required.
+      x-ai-capabilities:
+        confirmation:
+          type: Required
+          message: This will permanently delete the company and cannot be undone. Confirm before proceeding.
+        security_info:
+          data_handling:
+          - IrreversibleDelete
+          - CascadeRisk
+components:
+  schemas:
+    CompanySortData:
+      type: object
+      properties:
+        id:
+          type: integer
+        companyName:
+          type: string
+        responsibleId:
+          type: integer
+        address:
+          type: string
+        annualBusinessVolume:
+          type: integer
+        currency:
+          type: string
+    Attribute:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        status:
+          type: integer
+        type:
+          type: integer
+        mandatory:
+          type: boolean
+        order:
+          type: integer
+        options:
+          type: array
+          items:
+            oneOf:
+            - type: string
+            - type: integer
+    AttachmentResource:
+      type: object
+      properties:
+        id:
+          type: integer
+        link:
+          type: array
+        entityId:
+          type: integer
+        entityType:
+          type: string
+        createdAt:
+          type: string
+        updatedAt:
+          type: string
+    Phone:
+      type: object
+      properties:
+        id:
+          type: integer
+        isMain:
+          type: boolean
+        phone:
+          type: string
+    Company:
+      type: object
+      properties:
+        id:
+          type: integer
+        companyName:
+          type: string
+        responsibleId:
+          type: integer
+        address:
+          type: string
+        annualBusinessVolume:
+          type: integer
+        currency:
+          type: string
+        messengers:
+          type: array
+          items:
+            $ref: '#/components/schemas/Messenger'
+        phones:
+          type: array
+          items:
+            $ref: '#/components/schemas/Phone'
+        emails:
+          type: array
+          items:
+            $ref: '#/components/schemas/Email'
+        attributes:
+          type: array
+          items:
+            $ref: '#/components/schemas/Attribute'
+        contacts:
+          type: array
+        attachments:
+          type: array
+          items:
+            $ref: '#/components/schemas/AttachmentResource'
+        createdAt:
+          type: string
+        updatedAt:
+          type: string
+    Messenger:
+      type: object
+      properties:
+        id:
+          type: integer
+        typeId:
+          type: integer
+        login:
+          type: string
+    Email:
+      type: object
+      properties:
+        id:
+          type: integer
+        isMain:
+          type: boolean
+        email:
+          type: string
+  securitySchemes:
+    apiKey:
+      type: http
+      scheme: bearer
+      bearerFormat: API Key
+      description: 'Static API Key authentication.  A long-lived token generated manually in the SendPulse account settings.
+
+        '
+      x-ai-description: 'Permanent authentication token. Ideal for simple integrations without token refresh logic.
+
+        '
+    outh2:
+      type: oauth2
+      description: OAuth 2.0 Client Credentials flow for temporary access tokens.
+      flows:
+        clientCredentials:
+          tokenUrl: https://api.sendpulse.com/oauth/access_token
+          scopes: {}
+      x-ai-description: 'Standard OAuth 2.0 flow using Client ID and Client Secret.  Provides temporary tokens (valid for 1 hour) for enhanced security.
+
+        '

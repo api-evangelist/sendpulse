@@ -1,0 +1,926 @@
+openapi: 3.2.0
+info:
+  title: Sendpulse Emails API
+  x-refined-note:
+  - x-ai-description differs across the merged source definitions and was not carried
+  version: '1.0'
+  description: 'Operations tagged Emails across 2 of this provider''s published API definitions: sendpulse-crm-openapi.yml, sendpulse-smtp-openapi.yml. Each path carries the servers of the definition it was published in.'
+servers:
+- url: https://api.sendpulse.com/crm/v1
+- url: https://api.sendpulse.com
+security:
+- apiKey: []
+- oauth2: []
+tags:
+- name: Emails
+paths:
+  /companies/{companyId}/emails:
+    get:
+      tags:
+      - Emails
+      summary: Get emails
+      parameters:
+      - name: entityType
+        in: path
+        required: true
+        schema:
+          type: string
+          enum:
+          - company
+      - name: entityId
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Email'
+                  metadata:
+                    type: object
+                    properties:
+                      total:
+                        type: integer
+      operationId: getCompanyEmails
+      x-ai-role: crm_data_analyst
+      x-ai-description: Retrieves all email addresses associated with a specific company entity in the CRM. Use this to audit contact coverage for a company before launching targeted campaigns or to validate data completeness prior to syncing with external marketing tools.
+      x-ai-reasoning-instructions:
+      - Confirm the companyId exists before calling — a 404 indicates the company is not in the system.
+      - Note that entityType is fixed to 'company' for this endpoint; do not attempt other entity types here.
+      - Check the metadata.total field in the response to detect pagination needs if the dataset is large.
+      - If the result is empty, suggest verifying whether emails were imported or added to this company record.
+      x-ai-responding-instructions:
+      - Report the total number of emails found using metadata.total.
+      - List the returned email addresses clearly, grouping by type if the Email schema includes a type field.
+      - If the list is empty, inform the user and suggest adding emails via the appropriate create/update endpoint.
+      - If the result is partial (total > returned count), mention that pagination may be required.
+      x-ai-suggestions:
+      - Use the returned emails to pre-populate a mailing list for a targeted company-level campaign.
+      - Cross-reference with contact records to ensure all stakeholders at this company are covered.
+      - Follow up with a contact details endpoint to enrich email entries with names and roles.
+      x-ai-capabilities:
+        confirmation:
+          type: None
+        security_info:
+          data_handling:
+          - ReadOnly
+    post:
+      tags:
+      - Emails
+      summary: Create email
+      parameters:
+      - name: entityType
+        in: path
+        required: true
+        schema:
+          type: string
+          enum:
+          - company
+      - name: entityId
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              properties:
+                data:
+                  type: object
+                  properties:
+                    isMain:
+                      type: boolean
+                    email:
+                      type: string
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Email'
+      operationId: createCompanyEmail
+      x-ai-role: crm_data_manager
+      x-ai-description: Adds an email address to a company's contact profile in the CRM. This is a foundational data operation — the email stored here is used for all outbound communication, campaign targeting, and contact identification. Setting isMain=true replaces the primary email, which affects deliverability tracking and deduplication logic across the account.
+      x-ai-reasoning-instructions:
+      - Check if an email for this company already exists before adding a new one to avoid duplicate entries.
+      - If isMain is true, warn the user that this will override the current primary email, which may affect active campaigns.
+      - Validate the email format before submission to prevent storing malformed addresses.
+      - Confirm the companyId exists and is accessible before making the request.
+      x-ai-responding-instructions:
+      - Confirm the email was added successfully and mention whether it was set as the primary email.
+      - If isMain was set to true, note that outbound communications will now use this address.
+      - Suggest verifying the email or linking it to a campaign as a logical next step.
+      x-ai-suggestions:
+      - 'Set isMain: true when replacing an outdated primary contact email.'
+      - 'Use isMain: false to add secondary or billing emails without disrupting the main contact.'
+      x-ai-capabilities:
+        confirmation:
+          type: Recommended
+          message: 'Setting isMain: true will replace the current primary email for this company.'
+        security_info:
+          data_handling:
+          - ResourceStateUpdate
+          - PII
+    servers:
+    - url: https://api.sendpulse.com/crm/v1
+  /companies/{companyId}/emails/batch:
+    post:
+      tags:
+      - Emails
+      summary: Batch create email
+      parameters:
+      - name: companyId
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                emails:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      email:
+                        type: string
+                        minLength: 1
+                        maxLength: 50
+                      isMain:
+                        type: boolean
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Email'
+      operationId: batchCreateCompanyEmails
+      x-ai-role: crm_data_manager
+      x-ai-description: 'Bulk-provisions multiple email addresses for a CRM company record in a single atomic request. One of them can be flagged as the primary contact email (`isMain: true`), which affects routing of automated communications and display priority in the UI. This is the preferred method when onboarding a company with several known contact points — avoids multiple sequential calls and reduces the risk of partial state.'
+      x-ai-reasoning-instructions:
+      - Ensure the target company (`companyId`) exists before attempting the batch — a 404 here means all emails in the batch are silently dropped.
+      - 'Validate that no more than one item in the `emails` array has `isMain: true`; multiple main emails will cause ambiguity in downstream automation.'
+      - Check for duplicate email values within the array itself before sending — the API may reject the entire batch on collision.
+      - If the user provides a single email, consider whether a regular single-create endpoint is more appropriate to keep the audit trail clean.
+      x-ai-responding-instructions:
+      - Confirm how many emails were created and list their assigned IDs from the response `data` array.
+      - 'Highlight which email was set as the primary contact if `isMain: true` was used.'
+      - If the batch partially fails, clearly distinguish which emails succeeded and which did not.
+      - Suggest verifying the company's full email list via the corresponding GET endpoint as a follow-up.
+      x-ai-suggestions:
+      - 'Set exactly one email with `isMain: true` to establish a clear primary contact.'
+      - Batch all known emails for a company during initial import rather than adding them incrementally.
+      - Use this endpoint when migrating contact data from an external CRM to avoid N individual API calls.
+      x-ai-capabilities:
+        confirmation:
+          type: None
+        security_info:
+          data_handling:
+          - ResourceStateUpdate
+          - PersonalDataWrite
+    servers:
+    - url: https://api.sendpulse.com/crm/v1
+  /companies/{companyId}/emails/{emailId}:
+    put:
+      tags:
+      - Emails
+      summary: Update email
+      parameters:
+      - name: companyId
+        in: path
+        required: true
+        schema:
+          type: integer
+      - name: emailId
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              properties:
+                data:
+                  type: object
+                  properties:
+                    isMain:
+                      type: boolean
+                    email:
+                      type: string
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Messenger'
+      operationId: updateCompanyEmail
+      x-ai-role: crm_contact_data_manager
+      x-ai-description: 'Updates the email address or main status of a specific email record linked to a company. Use this to change which email is marked as the primary contact point (isMain: true) or to correct an outdated address. Only one email can be the main one — setting isMain on another will implicitly demote the current primary.'
+      x-ai-reasoning-instructions:
+      - Before updating, confirm the emailId belongs to the given companyId to avoid cross-resource mutations.
+      - If isMain is being set to true, warn the user that the current main email will lose its primary status.
+      - If updating the email string, validate the format before sending to avoid 4xx errors.
+      - Do not send empty or null values for fields you are not intending to change.
+      x-ai-responding-instructions:
+      - Confirm which field(s) were updated (email address, isMain flag, or both).
+      - If isMain was set to true, explicitly note that this email is now the primary contact for the company.
+      - If the response includes a Messenger object, highlight any fields that reflect the change.
+      x-ai-suggestions:
+      - 'Set isMain: true to promote this email to the primary company contact.'
+      - Use alongside GET /companies/{companyId}/emails to retrieve current email records before updating.
+      x-ai-capabilities:
+        confirmation:
+          type: Recommended
+          message: You are about to update an email record for a company. If isMain is being changed, this affects which address is used as the primary contact.
+        security_info:
+          data_handling:
+          - ResourceStateUpdate
+    delete:
+      tags:
+      - Emails
+      summary: Delete email
+      parameters:
+      - name: companyId
+        in: path
+        required: true
+        schema:
+          type: integer
+      - name: emailId
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '204':
+          description: Successfully deleted
+      operationId: deleteCompanyEmail
+      x-ai-role: crm_data_manager
+      x-ai-description: Permanently removes a specific email address from a company record in the CRM. This is a destructive, irreversible operation that affects contact reachability — once deleted, the email cannot be recovered via the API and any associated campaign history tied to that address may become orphaned.
+      x-ai-reasoning-instructions:
+      - Before deleting, confirm the emailId belongs to the specified companyId to avoid cross-tenant data mutation.
+      - Warn the user if the email being deleted is the only contact email for the company — this may leave the company record unreachable.
+      - Check whether any active campaigns or automations reference this email before proceeding.
+      - This operation is irreversible — require explicit user confirmation if acting autonomously.
+      x-ai-responding-instructions:
+      - On success (204), confirm the email was permanently deleted and mention the affected companyId and emailId.
+      - Suggest verifying the company's remaining contact emails using the list emails endpoint.
+      - If a 404 is returned, clarify whether the companyId or emailId was not found to help the user diagnose the issue.
+      x-ai-suggestions:
+      - After deletion, use the list company emails endpoint to confirm remaining contacts.
+      - If deletion was accidental, a new email must be added manually via the create email endpoint.
+      x-ai-capabilities:
+        confirmation:
+          type: Required
+          message: This will permanently delete email {emailId} from company {companyId}. This action cannot be undone.
+        security_info:
+          data_handling:
+          - IrreversibleDelete
+          - ResourceStateUpdate
+    servers:
+    - url: https://api.sendpulse.com/crm/v1
+  /smtp/emails:
+    post:
+      summary: Send an email
+      operationId: sendSmtpEmail
+      tags:
+      - Emails
+      x-ai-role: email_deliverability_expert
+      x-ai-description: 'Triggers the delivery of a transactional email using either custom HTML/text  or a pre-defined system template. This is the primary endpoint for  high-priority communications.
+
+        '
+      x-ai-reasoning-instructions:
+      - Determine if the user is providing raw HTML/text or using a template ID.
+      - If using attachments, ensure the file size is within limits and contents are Base64 encoded if using `attachments_binary`.
+      - Validate that the sender email is already verified in the SendPulse account.
+      x-ai-responding-instructions:
+      - Confirm successful queuing by returning the internal Message ID.
+      - If a template is used, mention that variables were mapped correctly.
+      - Advise on checking delivery status via the `id` returned.
+      x-ai-suggestions:
+      - Use `template` for consistent branding across transactional emails.
+      - 'Set `auto_plain_text: true` if you only provide HTML.'
+      x-ai-capabilities:
+        confirmation:
+          type: None
+        security_info:
+          data_handling:
+          - PIIHandling
+          - ResourceStateUpdate
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - email
+              properties:
+                email:
+                  type: object
+                  required:
+                  - subject
+                  - from
+                  - to
+                  oneOf:
+                  - required:
+                    - html
+                    - text
+                  - required:
+                    - template
+                  properties:
+                    html:
+                      type: string
+                      description: HTML version of an email, encoded in Base64
+                    text:
+                      type: string
+                      description: Text version of the email
+                    template:
+                      type: object
+                      required:
+                      - id
+                      - variables
+                      properties:
+                        id:
+                          oneOf:
+                          - type: string
+                          - type: integer
+                          description: Template ID
+                        variables:
+                          type: object
+                          description: Template variables mapping
+                    auto_plain_text:
+                      type: boolean
+                      default: false
+                    subject:
+                      type: string
+                    from:
+                      type: object
+                      required:
+                      - name
+                      - email
+                      properties:
+                        name:
+                          type: string
+                        email:
+                          type: string
+                    to:
+                      type: array
+                      items:
+                        type: object
+                        required:
+                        - email
+                        properties:
+                          name:
+                            type: string
+                          email:
+                            type: string
+                    reply_to:
+                      type: object
+                      properties:
+                        name:
+                          type: string
+                        email:
+                          type: string
+                    cc:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          name:
+                            type: string
+                          email:
+                            type: string
+                    bcc:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          name:
+                            type: string
+                          email:
+                            type: string
+                    attachments:
+                      type: object
+                      description: Filename to content mapping
+                    attachments_binary:
+                      type: object
+                      description: Filename to Base64 content mapping
+      responses:
+        '200':
+          description: Email sent successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  result:
+                    type: boolean
+                  id:
+                    type: string
+                    example: pzkic9-0afezp-fc
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                account.expired:
+                  summary: account.expired
+                  value:
+                    message: Account expired
+                    error_code: 403
+        '422':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                email.required:
+                  summary: email.required
+                  value:
+                    message: Argument email missing
+                    error_code: 422
+                from.email.required:
+                  summary: from.email.required
+                  value:
+                    message: Argument from.email missing
+                    error_code: 10
+                from.email.invalid:
+                  summary: from.email.invalid
+                  value:
+                    message: Argument from.email is invalid
+                    error_code: 10
+                email.to.invalid:
+                  summary: email.to.invalid
+                  value:
+                    message: Argument email.to is invalid
+                    error_code: 11
+                subject.required:
+                  summary: subject.required
+                  value:
+                    message: Argument subject missing
+                    error_code: 12
+                email.body.missing:
+                  summary: email.body.missing
+                  value:
+                    message: Missed email body
+                    error_code: 13
+                template.id.required:
+                  summary: template.id.required
+                  value:
+                    message: Argument template.id missing
+                    error_code: 10
+                template.invalid:
+                  summary: template.invalid
+                  value:
+                    message: Argument template is invalid
+                    error_code: 422
+                from.invalid:
+                  summary: from.invalid
+                  value:
+                    message: Argument from is invalid
+                    error_code: 422
+                attachments_binary.invalid:
+                  summary: attachments_binary.invalid
+                  value:
+                    message: Argument attachments_binary is invalid
+                    error_code: 422
+                recipients.too_many:
+                  summary: recipients.too_many
+                  value:
+                    message: 5.5.3 Too many recipients
+                    error_code: 550
+                data.malformed:
+                  summary: data.malformed
+                  value:
+                    message: Badly formed incoming data
+                    error_code: 999
+                recipient.email.invalid:
+                  summary: recipient.email.invalid
+                  value:
+                    message: Recipient email is invalid
+                    error_code: 422
+                template.not_found:
+                  summary: template.not_found
+                  value:
+                    message: Template not found
+                    error_code: 31
+                template.body.empty:
+                  summary: template.body.empty
+                  value:
+                    message: Template body is empty
+                    error_code: 32
+                variables.format_invalid:
+                  summary: variables.format_invalid
+                  value:
+                    message: Variables list passed in wrong format
+                    error_code: 731
+                smtp_user.not_found:
+                  summary: smtp_user.not_found
+                  value:
+                    message: No such SMTP user, you need to create SMTP account first
+                    error_code: 400
+                message.size_exceeded:
+                  summary: message.size_exceeded
+                  value:
+                    message: Message size limit exceeded
+                    error_code: 422
+                sending.limited:
+                  summary: sending.limited
+                  value:
+                    message: Sending from your account is currently limited. Please try later.
+                    error_code: 422
+                quota.exceeded:
+                  summary: quota.exceeded
+                  value:
+                    message: Sending quota or bandwidth exceeded
+                    error_code: 422
+                sender.invalid:
+                  summary: sender.invalid
+                  value:
+                    message: Sender is not valid
+                    error_code: 422
+    get:
+      summary: Get a list of emails
+      operationId: getSmtpEmails
+      tags:
+      - Emails
+      x-ai-role: marketing_automation_specialist
+      x-ai-description: 'Retrieves historical delivery data for sent emails. Useful for auditing  campaign performance and debugging delivery issues for specific recipients.
+
+        '
+      x-ai-reasoning-instructions:
+      - Apply date filters (`from`, `to`) to narrow down the search window.
+      - Use pagination (`limit`, `offset`) for large datasets.
+      x-ai-responding-instructions:
+      - Summarize the delivery status of the retrieved emails.
+      - Highlight any 'Bad recipients' or bounce codes if present.
+      x-ai-suggestions:
+      - Filter by `recipient` to troubleshoot specific user complaints.
+      x-ai-capabilities:
+        confirmation:
+          type: None
+      parameters:
+      - name: limit
+        in: query
+        schema:
+          type: integer
+      - name: offset
+        in: query
+        schema:
+          type: integer
+      - name: from
+        in: query
+        schema:
+          type: string
+          format: date
+      - name: to
+        in: query
+        schema:
+          type: string
+          format: date
+      - name: sender
+        in: query
+        schema:
+          type: string
+      - name: recipient
+        in: query
+        schema:
+          type: string
+      - name: country
+        in: query
+        schema:
+          type: string
+      responses:
+        '200':
+          description: List of emails
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/EmailRecord'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '422':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                tariff.not_allowed:
+                  summary: tariff.not_allowed
+                  value:
+                    message: Your tariff does not allow the operation
+                    error_code: 422
+    servers:
+    - url: https://api.sendpulse.com
+  /smtp/emails/total:
+    get:
+      summary: Get total amount of sent emails
+      operationId: getSmtpEmailsTotal
+      tags:
+      - Emails
+      x-ai-role: compliance_officer
+      x-ai-description: 'Returns the cumulative count of all emails sent through the SMTP service.  Critical for billing reconciliation and volume monitoring.
+
+        '
+      x-ai-reasoning-instructions:
+      - Check if this matches the expected volume for the current billing cycle.
+      x-ai-responding-instructions:
+      - State the total number of emails sent to date.
+      x-ai-suggestions:
+      - Monitor this periodically to detect unusual spikes in traffic.
+      x-ai-capabilities:
+        confirmation:
+          type: None
+      responses:
+        '200':
+          description: Total count
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  total:
+                    type: integer
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '422':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                smtp_user.not_found:
+                  summary: smtp_user.not_found
+                  value:
+                    message: No such SMTP user, you need to create SMTP account first
+                    error_code: 400
+                tariff.not_allowed:
+                  summary: tariff.not_allowed
+                  value:
+                    message: Your tariff does not allow the operation
+                    error_code: 422
+    servers:
+    - url: https://api.sendpulse.com
+  /smtp/emails/{id}:
+    parameters:
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: string
+    get:
+      summary: Get information about a specific email
+      operationId: getSmtpEmailInfo
+      tags:
+      - Emails
+      parameters: []
+      x-ai-role: email_deliverability_expert
+      x-ai-description: 'Provides detailed delivery and tracking metadata for a single email  transaction, including SMTP response codes and client interaction details.
+
+        '
+      x-ai-reasoning-instructions:
+      - Look for `smtp_answer_code` to identify specific delivery failures.
+      - Analyze `tracking` data to see if the recipient opened or clicked links.
+      x-ai-responding-instructions:
+      - Detail the exact delivery time and the SMTP server's response.
+      - Summarize open and click events if tracking was enabled.
+      x-ai-suggestions:
+      - If `smtp_answer_code` is 5xx, advise the user to check the recipient status.
+      x-ai-capabilities:
+        confirmation:
+          type: None
+      responses:
+        '200':
+          description: Detailed email information
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmailRecord'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                email.not_found:
+                  summary: email.not_found
+                  value:
+                    message: No such email
+                    error_code: 14
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+    servers:
+    - url: https://api.sendpulse.com
+  /smtp/emails/info:
+    post:
+      summary: Get information for a list of emails
+      operationId: getSmtpEmailsBatchInfo
+      tags:
+      - Emails
+      x-ai-role: marketing_automation_specialist
+      x-ai-description: 'Batch retrieval of delivery status for up to 500 messages at once.  Highly efficient for large-scale synchronization of delivery states.
+
+        '
+      x-ai-reasoning-instructions:
+      - Ensure the input array does not exceed 500 IDs.
+      x-ai-responding-instructions:
+      - Summarize the findings for the provided IDs.
+      x-ai-suggestions:
+      - Use this for bulk updates of internal delivery dashboards.
+      x-ai-capabilities:
+        confirmation:
+          type: None
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - emails
+              properties:
+                emails:
+                  type: array
+                  items:
+                    type: string
+                  maxItems: 500
+      responses:
+        '200':
+          description: List of email records
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/EmailRecord'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                emails.invalid:
+                  summary: emails.invalid
+                  value:
+                    message: Emails param empty or incorrect
+                    error_code: 832
+                emails.not_found:
+                  summary: emails.not_found
+                  value:
+                    message: No such emails
+                    error_code: 14
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+    servers:
+    - url: https://api.sendpulse.com
+components:
+  schemas:
+    Messenger:
+      type: object
+      properties:
+        id:
+          type: integer
+        typeId:
+          type: integer
+        login:
+          type: string
+    Email:
+      type: object
+      properties:
+        id:
+          type: integer
+        isMain:
+          type: boolean
+        email:
+          type: string
+    EmailRecord:
+      type: object
+      properties:
+        id:
+          type: string
+        sender:
+          type: string
+        total_size:
+          oneOf:
+          - type: integer
+          - type: string
+        sender_ip:
+          type: string
+        smtp_answer_code:
+          oneOf:
+          - type: integer
+          - type: string
+        smtp_answer_subcode:
+          type: string
+        smtp_answer_data:
+          type: string
+        used_ip:
+          type: string
+        recipient:
+          type:
+          - string
+          - 'null'
+        subject:
+          type: string
+        send_date:
+          type: string
+        tracking:
+          type: object
+          properties:
+            click:
+              type: integer
+            open:
+              type: integer
+            link:
+              type: array
+              items:
+                type: object
+            client_info:
+              type: array
+              items:
+                type: object
+    Error:
+      type: object
+      properties:
+        message:
+          type: string
+        error_code:
+          type: integer
+  securitySchemes:
+    apiKey:
+      type: http
+      scheme: bearer
+      bearerFormat: API Key
+      description: 'Static API Key authentication.  A long-lived token generated manually in the SendPulse account settings.
+
+        '
+      x-ai-description: 'Permanent authentication token. Ideal for simple integrations without token refresh logic.
+
+        '
+    outh2:
+      type: oauth2
+      description: OAuth 2.0 Client Credentials flow for temporary access tokens.
+      flows:
+        clientCredentials:
+          tokenUrl: https://api.sendpulse.com/oauth/access_token
+          scopes: {}
+      x-ai-description: 'Standard OAuth 2.0 flow using Client ID and Client Secret.  Provides temporary tokens (valid for 1 hour) for enhanced security.
+
+        '
+    oauth2:
+      type: oauth2
+      description: OAuth 2.0 Client Credentials flow for temporary access tokens.
+      flows:
+        clientCredentials:
+          tokenUrl: https://api.sendpulse.com/oauth/access_token
+          scopes: {}
+      x-ai-description: 'Standard OAuth 2.0 flow using Client ID and Client Secret.  Provides temporary tokens (valid for 1 hour) for enhanced security.
+
+        '
+x-refined-from:
+- sendpulse-crm-openapi.yml
+- sendpulse-smtp-openapi.yml

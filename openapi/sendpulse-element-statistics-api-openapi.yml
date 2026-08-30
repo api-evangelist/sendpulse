@@ -1,0 +1,375 @@
+openapi: 3.2.0
+info:
+  title: SendPulse Automation 360 Element Statistics API
+  version: 1.0.0
+  description: API for managing and analyzing automation flows (autoflows).
+  x-ai-description: 'Automation 360 (A360) is the brain of omnichannel marketing at SendPulse.  It allows for creating complex, event-driven subscriber journeys across email, SMS, Web Push, and Messengers.  This API provides the tools to monitor these journeys, audit performance at a granular element level, and track conversions.
+
+    '
+  license:
+    name: Apache 2.0
+    identifier: Apache-2.0
+servers:
+- url: https://api.sendpulse.com
+  description: Production server
+security:
+- apiKey: []
+- oauth2: []
+tags:
+- name: Element Statistics
+  description: Endpoints related to Element Statistics.
+paths:
+  /a360/autoresponders/{ID}/total-stats:
+    parameters:
+    - name: ID
+      in: path
+      required: true
+      schema:
+        type: integer
+    get:
+      tags:
+      - Element Statistics
+      summary: Get statistics about each element
+      operationId: getElementTotalStats
+      x-ai-role: data_analyst
+      x-ai-description: Aggregated performance metrics for every node in the automation.
+      x-ai-reasoning-instructions:
+      - Identify nodes with unexpected drop-offs or high error rates.
+      x-ai-responding-instructions:
+      - Summarize the execution counts for all elements.
+      x-ai-suggestions:
+      - 'flow_type: ''email'''
+      x-ai-capabilities:
+        security_info:
+          data_handling:
+          - InformationRetrieval
+      parameters:
+      - name: flow_type
+        in: query
+        schema:
+          type: string
+      - name: deleted
+        in: query
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Element stats
+          content:
+            application/json:
+              schema:
+                type: object
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+  /a360/stats/main-trigger/{ID}/group-stat:
+    parameters:
+    - name: ID
+      in: path
+      required: true
+      schema:
+        type: integer
+    get:
+      tags:
+      - Element Statistics
+      summary: Get Start element stats
+      operationId: getStartStats
+      x-ai-role: marketing_automation_specialist
+      x-ai-description: Entry point analysis for the automation.
+      x-ai-reasoning-instructions:
+      - Verify trigger frequency matches expectations.
+      x-ai-responding-instructions:
+      - Report entry counts.
+      x-ai-suggestions:
+      - Check triggered addresses.
+      x-ai-capabilities:
+        security_info:
+          data_handling:
+          - InformationRetrieval
+      parameters: []
+      responses:
+        '200':
+          description: OK
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+  /a360/stats/email/{ID}/group-stat:
+    parameters:
+    - name: ID
+      in: path
+      required: true
+      schema:
+        type: integer
+    get:
+      tags:
+      - Element Statistics
+      summary: Get Email element stats
+      operationId: getEmailStats
+      x-ai-role: email_deliverability_expert
+      x-ai-description: Engagement metrics for an email node.
+      x-ai-reasoning-instructions:
+      - Monitor open/click rates.
+      x-ai-responding-instructions:
+      - Provide engagement summary.
+      x-ai-suggestions:
+      - View clickers list.
+      x-ai-capabilities:
+        security_info:
+          data_handling:
+          - InformationRetrieval
+      parameters: []
+      responses:
+        '200':
+          description: OK
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+  /a360/stats/push/{ID}/group-stat:
+    parameters:
+    - name: ID
+      in: path
+      required: true
+      schema:
+        type: integer
+    get:
+      tags:
+      - Element Statistics
+      summary: Get Push element stats
+      operationId: getPushStats
+      x-ai-role: marketing_automation_specialist
+      x-ai-description: Web push notification performance.
+      x-ai-reasoning-instructions:
+      - Check delivery and click rates.
+      x-ai-responding-instructions:
+      - Report push engagement.
+      x-ai-suggestions:
+      - View push recipients.
+      x-ai-capabilities:
+        security_info:
+          data_handling:
+          - InformationRetrieval
+      parameters: []
+      responses:
+        '200':
+          description: OK
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+  /a360/stats/sms/{ID}/group-stat:
+    parameters:
+    - name: ID
+      in: path
+      required: true
+      schema:
+        type: integer
+    get:
+      tags:
+      - Element Statistics
+      summary: Get SMS element stats
+      operationId: getSmsStats
+      x-ai-role: marketing_automation_specialist
+      x-ai-description: SMS delivery and status tracking.
+      x-ai-reasoning-instructions:
+      - Monitor for delivery errors.
+      x-ai-responding-instructions:
+      - Report SMS delivery status.
+      x-ai-suggestions:
+      - View SMS logs.
+      x-ai-capabilities:
+        security_info:
+          data_handling:
+          - InformationRetrieval
+      parameters: []
+      responses:
+        '200':
+          description: OK
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+  /a360/stats/messenger/{ID}/group-stat:
+    parameters:
+    - name: ID
+      in: path
+      required: true
+      schema:
+        type: integer
+    get:
+      tags:
+      - Element Statistics
+      summary: Get Messenger element stats
+      operationId: getMessengerStats
+      x-ai-role: marketing_automation_specialist
+      x-ai-description: Chatbot and messenger interaction stats.
+      x-ai-reasoning-instructions:
+      - Track execution counts.
+      x-ai-responding-instructions:
+      - Report messenger engagement.
+      x-ai-suggestions:
+      - View messenger logs.
+      x-ai-capabilities:
+        security_info:
+          data_handling:
+          - InformationRetrieval
+      parameters: []
+      responses:
+        '200':
+          description: OK
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+  /a360/stats/filter/{ID}/group-stat:
+    parameters:
+    - name: ID
+      in: path
+      required: true
+      schema:
+        type: integer
+    get:
+      tags:
+      - Element Statistics
+      summary: Get Filter element stats
+      operationId: getFilterStats
+      x-ai-role: data_analyst
+      x-ai-description: Segmentation logic performance.
+      x-ai-reasoning-instructions:
+      - Evaluate filter pass/fail ratios.
+      x-ai-responding-instructions:
+      - Report filter execution.
+      x-ai-suggestions:
+      - View filtered contacts.
+      x-ai-capabilities:
+        security_info:
+          data_handling:
+          - InformationRetrieval
+      parameters: []
+      responses:
+        '200':
+          description: OK
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+  /a360/stats/trigger/{ID}/group-stat:
+    parameters:
+    - name: ID
+      in: path
+      required: true
+      schema:
+        type: integer
+    get:
+      tags:
+      - Element Statistics
+      summary: Get Condition element stats
+      operationId: getConditionStats
+      x-ai-role: data_analyst
+      x-ai-description: Conditional branching logic performance.
+      x-ai-reasoning-instructions:
+      - Check branch distribution.
+      x-ai-responding-instructions:
+      - Report condition outcomes.
+      x-ai-suggestions:
+      - View branched contacts.
+      x-ai-capabilities:
+        security_info:
+          data_handling:
+          - InformationRetrieval
+      parameters: []
+      responses:
+        '200':
+          description: OK
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+  /a360/stats/goal/{ID}/group-stat:
+    parameters:
+    - name: ID
+      in: path
+      required: true
+      schema:
+        type: integer
+    get:
+      tags:
+      - Element Statistics
+      summary: Get Goal element stats
+      operationId: getGoalStats
+      x-ai-role: crm_manager
+      x-ai-description: Tracking achievement of specific flow objectives.
+      x-ai-reasoning-instructions:
+      - Calculate goal conversion rate.
+      x-ai-responding-instructions:
+      - Report goal achievements.
+      x-ai-suggestions:
+      - View goal achievers.
+      x-ai-capabilities:
+        security_info:
+          data_handling:
+          - InformationRetrieval
+      parameters: []
+      responses:
+        '200':
+          description: OK
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+  /a360/stats/action/{ID}/group-stat:
+    parameters:
+    - name: ID
+      in: path
+      required: true
+      schema:
+        type: integer
+    get:
+      tags:
+      - Element Statistics
+      summary: Get Action element stats
+      operationId: getActionStats
+      x-ai-role: marketing_automation_specialist
+      x-ai-description: Back-end operations (e.g., move to list) performance.
+      x-ai-reasoning-instructions:
+      - Verify action execution.
+      x-ai-responding-instructions:
+      - Report action completions.
+      x-ai-suggestions:
+      - Check target list for updates.
+      x-ai-capabilities:
+        security_info:
+          data_handling:
+          - InformationRetrieval
+      parameters: []
+      responses:
+        '200':
+          description: OK
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+components:
+  securitySchemes:
+    apiKey:
+      type: http
+      scheme: bearer
+      bearerFormat: API Key
+      description: 'Static API Key authentication.  A long-lived token generated manually in the SendPulse account settings.
+
+        '
+      x-ai-description: 'Permanent authentication token. Ideal for simple integrations without token refresh logic.
+
+        '
+    oauth2:
+      type: oauth2
+      description: OAuth 2.0 Client Credentials flow for temporary access tokens.
+      flows:
+        clientCredentials:
+          tokenUrl: https://api.sendpulse.com/oauth/access_token
+          scopes: {}
+      x-ai-description: 'Standard OAuth 2.0 flow using Client ID and Client Secret.  Provides temporary tokens (valid for 1 hour) for enhanced security.
+
+        '

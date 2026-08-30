@@ -1,0 +1,115 @@
+openapi: 3.2.0
+info:
+  description: Using the API for the CRM service, you can integrate your system with CRM from SendPulse and receive detailed information on pipelines, deals, contacts and their attributes and users. You can also create deals and contacts, assign and remove fields, tags, contact details and instant messengers. On the right, there is a button for authorizing requests made on this page. Click “Authorize,” then insert the ID and Secret from your account. To perform a request directly from the page, click the "Try it out" button within each method block. Then fill in input fields if any (for URL parameters, the description is right below the URL request; for body parameters, the description is under the “Scheme” button to the right of the example), and click “Run.” You will find the server response and description of received parameters below.
+  title: SendPulse CRM Public Contact history API
+  version: 0.1.0
+servers:
+- url: https://api.sendpulse.com/crm/v1
+security:
+- apiKey: []
+- oauth2: []
+tags:
+- description: ''
+  name: Contact history
+paths:
+  /contacts/{contactId}/history:
+    get:
+      tags:
+      - Contact history
+      summary: Contact history
+      description: Get contact history by ID within a date range.
+      parameters:
+      - name: contactId
+        in: path
+        required: true
+        schema:
+          type: integer
+      - name: fromDate
+        in: query
+        required: true
+        schema:
+          type: string
+          format: date-time
+          example: 2024-12-12 12:12:12+00:00
+      - name: toDate
+        in: query
+        required: true
+        schema:
+          type: string
+          format: date-time
+          example: 2024-12-12 12:12:12+00:00
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ContactHistory'
+      operationId: getContactHistory
+      x-ai-role: crm_data_analyst
+      x-ai-description: Retrieves the full interaction timeline for a specific contact within a defined date window. This endpoint is the primary audit trail for understanding what happened to a contact — what messages were sent, what automations were triggered, and how the contact responded. Use it for debugging campaign flows, auditing contact activity, or building timeline views in CRM interfaces.
+      x-ai-reasoning-instructions:
+      - Verify that `fromDate` is earlier than `toDate` before making the request.
+      - If the user asks for 'recent history', default the range to the last 30 days unless specified otherwise.
+      - Note that date-time values must include time component — if only a date is provided, append 00:00:00 for `fromDate` and 23:59:59 for `toDate`.
+      - Large date ranges may return extensive arrays — advise the user to narrow the range if performance is a concern.
+      - If contactId is unknown, suggest resolving it first via a contact search endpoint.
+      x-ai-responding-instructions:
+      - Summarize the number of history entries returned and the date range covered.
+      - Highlight any notable event types (e.g., unsubscribes, bounces, automation triggers) if present in the results.
+      - If the array is empty, clarify that no activity was recorded in the given range — not that the contact doesn't exist.
+      - Suggest narrowing or widening the date range if the result set seems unexpectedly small or large.
+      x-ai-suggestions:
+      - Use a 7-day window for recent activity checks.
+      - Use a 30-day window for monthly campaign audits.
+      - Combine with contact details endpoint to build a full contact profile view.
+      x-ai-capabilities:
+        confirmation:
+          type: None
+        security_info:
+          data_handling:
+          - ReadOnly
+components:
+  schemas:
+    ContactHistory:
+      type: object
+      properties:
+        id:
+          type: integer
+        userId:
+          type: integer
+        contactId:
+          type: integer
+        eventType:
+          type: string
+        eventTime:
+          type: string
+          format: date-time
+        eventData:
+          type: object
+          properties:
+            dealName:
+              type: string
+  securitySchemes:
+    apiKey:
+      type: http
+      scheme: bearer
+      bearerFormat: API Key
+      description: 'Static API Key authentication.  A long-lived token generated manually in the SendPulse account settings.
+
+        '
+      x-ai-description: 'Permanent authentication token. Ideal for simple integrations without token refresh logic.
+
+        '
+    outh2:
+      type: oauth2
+      description: OAuth 2.0 Client Credentials flow for temporary access tokens.
+      flows:
+        clientCredentials:
+          tokenUrl: https://api.sendpulse.com/oauth/access_token
+          scopes: {}
+      x-ai-description: 'Standard OAuth 2.0 flow using Client ID and Client Secret.  Provides temporary tokens (valid for 1 hour) for enhanced security.
+
+        '

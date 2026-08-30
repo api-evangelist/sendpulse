@@ -1,0 +1,440 @@
+openapi: 3.2.0
+info:
+  title: Sendpulse Subscribers API
+  x-refined-note:
+  - x-ai-description differs across the merged source definitions and was not carried
+  version: '1.0'
+  description: 'Operations tagged Subscribers across 2 of this provider''s published API definitions: sendpulse-popups-openapi.yml, sendpulse-web-push-openapi.yml. Each path carries the servers of the definition it was published in.'
+servers:
+- description: Production server
+  url: https://api.sendpulse.com/v2/pop-ups
+- url: https://api.sendpulse.com
+security:
+- apiKey: []
+- oauth2: []
+tags:
+- name: Subscribers
+paths:
+  /public/api/subscribers/get/{subscriberId}:
+    get:
+      tags:
+      - Subscribers
+      summary: Get subscriber
+      description: Returns detailed info about subscriber
+      parameters:
+      - name: subscriberId
+        in: path
+        description: Subscriber ID
+        schema:
+          type: integer
+        required: true
+      responses:
+        '200':
+          description: Operation successful
+          content:
+            application/json:
+              schema:
+                properties:
+                  result:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/subscriber'
+                type: object
+        '400':
+          description: Validation error
+          content:
+            application/json:
+              example:
+                result: false
+                errors:
+                  widgetId: Invalid id {{'7803a6ea-4b32-44d7-a245-5cda4e4f20'}}
+        '401':
+          $ref: '#/components/schemas/unauthorizedResponse'
+        '403':
+          $ref: '#/components/schemas/accessDeniedResponse'
+        '404':
+          description: Resource Not Found
+      operationId: getSubscriberById
+      x-ai-role: crm_data_analyst
+      x-ai-description: Retrieves the full profile of a single subscriber by their unique ID. This is the primary lookup endpoint when you need to inspect a subscriber's current state — their contact info, custom variables, activity history, and subscription status across lists. Use this before performing targeted updates or when diagnosing delivery or engagement issues for a specific contact.
+      x-ai-reasoning-instructions:
+      - Ensure the subscriberId is a valid integer — UUIDs or emails will cause a 400 validation error.
+      - If the caller only has an email, first resolve it to a subscriberId via a search or list-contacts endpoint before calling this one.
+      - A 404 means the subscriber does not exist or was deleted; do not retry — inform the user and suggest verifying the ID source.
+      - A 403 may indicate the subscriber belongs to a list the current OAuth scope cannot access — check credential scopes.
+      x-ai-responding-instructions:
+      - Present the subscriber's key fields (email, name, status, lists) in a human-readable summary rather than raw JSON.
+      - Highlight the subscription status and any unsubscribe or bounce flags if present, as these affect campaign eligibility.
+      - If the result is 404, clearly state the subscriber was not found and suggest the user double-check the ID.
+      x-ai-suggestions:
+      - After fetching, use the subscriber's list IDs to call getMailingList for full list context.
+      - If the subscriber is inactive or bounced, consider calling updateSubscriberStatus to manage their state.
+      - Use the returned custom variables to personalize follow-up campaigns.
+      x-ai-capabilities:
+        confirmation:
+          type: None
+        security_info:
+          data_handling:
+          - ReadOnly
+    servers:
+    - description: Production server
+      url: https://api.sendpulse.com/v2/pop-ups
+  /public/api/subscribers/by-popup/{popupId}:
+    get:
+      tags:
+      - Subscribers
+      summary: Get subscriber by popup
+      description: Returns list of subscribers for popup
+      parameters:
+      - name: popupId
+        in: path
+        description: Popup ID
+        schema:
+          type: string
+          format: uuid
+        required: true
+      responses:
+        '200':
+          description: Operation successful
+          content:
+            application/json:
+              schema:
+                properties:
+                  result:
+                    type: boolean
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/subscriber'
+                type: object
+        '400':
+          description: Validation error
+          content:
+            application/json:
+              example:
+                result: false
+                errors:
+                  widgetId: Invalid id {{'7803a6ea-4b32-44d7-a245-5cda4e4f20'}}
+        '401':
+          $ref: '#/components/schemas/unauthorizedResponse'
+        '403':
+          $ref: '#/components/schemas/accessDeniedResponse'
+        '404':
+          description: Resource Not Found
+      operationId: getSubscribersByPopup
+      x-ai-role: popup_conversion_analyst
+      x-ai-description: Retrieves all subscribers who opted in through a specific popup widget. This endpoint bridges popup performance data with your subscriber base — it answers not just 'who subscribed', but 'how they subscribed', enabling segmentation by acquisition channel and conversion source analysis.
+      x-ai-reasoning-instructions:
+      - Confirm the popupId is a valid UUID before calling — the 400 error example shows that malformed UUIDs are rejected.
+      - Consider that an empty data array is a valid success response — it means the popup exists but has no subscribers yet.
+      - If the caller's goal is campaign targeting, suggest pairing this data with mailing list import endpoints.
+      - A 404 response means the popup itself does not exist — distinguish this from 'popup exists but has no subscribers'.
+      x-ai-responding-instructions:
+      - Report the total count of returned subscribers alongside the list.
+      - If the list is empty, clarify that the popup may not have converted any visitors yet — not that it's missing.
+      - Suggest filtering or exporting the subscriber list as a logical next step.
+      - On 403, explain that the OAuth2 scope may not cover popup subscriber access.
+      x-ai-suggestions:
+      - Use the returned subscriber list to create a targeted segment in your mailing list.
+      - Cross-reference with popup analytics to measure opt-in conversion rate.
+      - Import subscribers into an address book using the bulk import endpoint.
+      x-ai-capabilities:
+        confirmation:
+          type: None
+        security_info:
+          data_handling:
+          - ReadOnly
+    servers:
+    - description: Production server
+      url: https://api.sendpulse.com/v2/pop-ups
+  /public/api/subscribers/by-project/{projectId}:
+    get:
+      tags:
+      - Subscribers
+      summary: Get subscriber by project
+      description: Returns list of subscribers for project
+      parameters:
+      - name: projectId
+        in: path
+        description: Project ID
+        schema:
+          type: string
+          format: uuid
+        required: true
+      responses:
+        '200':
+          description: Operation successful
+          content:
+            application/json:
+              schema:
+                properties:
+                  result:
+                    type: boolean
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/subscriber'
+                type: object
+        '400':
+          description: Validation error
+          content:
+            application/json:
+              example:
+                result: false
+                errors:
+                  widgetId: Invalid id {{'7803a6ea-4b32-44d7-a245-5cda4e4f20'}}
+        '401':
+          $ref: '#/components/schemas/unauthorizedResponse'
+        '403':
+          $ref: '#/components/schemas/accessDeniedResponse'
+        '404':
+          description: Resource Not Found
+      operationId: listSubscribersByProject
+      x-ai-role: subscriber_management_specialist
+      x-ai-description: Retrieves all subscribers associated with a specific project (widget/form group) identified by its UUID. In SendPulse, a project acts as a logical container for multiple subscription widgets — this endpoint provides a full audience snapshot for that container, useful for auditing subscriber sources, cross-referencing growth metrics, or triggering downstream segmentation logic.
+      x-ai-reasoning-instructions:
+      - Verify that the projectId is a valid UUID before calling — malformed IDs return a 400 with field-level errors.
+      - If the response data array is empty, distinguish between 'project exists but has no subscribers' and 'project not found' (404) — handle both cases explicitly.
+      - For large projects, anticipate potentially large arrays and advise the user if pagination or filtering is available.
+      - Confirm the caller has the oAuth2ClientCredentials scope before attempting — a 403 indicates insufficient permissions, not a bad project ID.
+      x-ai-responding-instructions:
+      - Report the total count of subscribers returned alongside the list.
+      - If the array is empty, suggest verifying the projectId or checking whether any widgets are linked to the project.
+      - On a 400 error, surface the exact field-level validation message (e.g., malformed UUID) so the user can correct the input immediately.
+      - On a 404, confirm whether the project ID itself is incorrect or has been deleted.
+      x-ai-suggestions:
+      - Use the returned subscriber list to feed a segmentation or export workflow.
+      - Cross-reference with `getProjectDetails` to confirm the project is active before querying subscribers.
+      - If you need subscribers across multiple projects, call this endpoint in parallel for each projectId and merge results client-side.
+      x-ai-capabilities:
+        confirmation:
+          type: None
+        security_info:
+          data_handling:
+          - ReadOnly
+    servers:
+    - description: Production server
+      url: https://api.sendpulse.com/v2/pop-ups
+  /push/websites/{id}/subscriptions:
+    parameters:
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: integer
+    get:
+      summary: Get a list of website subscribers
+      operationId: getWebPushSubscriptions
+      tags:
+      - Subscribers
+      parameters:
+      - name: limit
+        in: query
+        schema:
+          type: integer
+      - name: offset
+        in: query
+        schema:
+          type: integer
+      - name: subscription_date_from
+        in: query
+        schema:
+          type: string
+          format: date
+      - name: subscription_date_to
+        in: query
+        schema:
+          type: string
+          format: date
+      x-ai-role: web_engagement_specialist
+      x-ai-description: 'Retrieves individual subscriber data including browser, OS, and geographic location.  Used for auditing the audience composition.
+
+        '
+      x-ai-reasoning-instructions:
+      - 'Note status codes: 0 (Deactivated), 1 (Active), 6 (Unsubscribed).'
+      x-ai-responding-instructions:
+      - Detail the subscriber demographics for the requested website.
+      x-ai-capabilities:
+        confirmation:
+          type: None
+      responses:
+        '200':
+          description: List of subscribers
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+    servers:
+    - url: https://api.sendpulse.com
+  /push/websites/{id}/subscriptions/total:
+    parameters:
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: integer
+    get:
+      summary: Get a total number of website subscribers
+      operationId: getWebPushSubscribersTotal
+      tags:
+      - Subscribers
+      parameters: []
+      x-ai-role: web_engagement_specialist
+      x-ai-description: 'Returns the aggregate subscriber count for a specific website.  Used to track audience growth over time.
+
+        '
+      x-ai-capabilities:
+        confirmation:
+          type: None
+      responses:
+        '200':
+          description: Total subscriber count
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  total:
+                    type: integer
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+    servers:
+    - url: https://api.sendpulse.com
+  /push/subscriptions/state:
+    post:
+      summary: Activate/deactivate a subscriber
+      operationId: setWebPushSubscriberState
+      tags:
+      - Subscribers
+      x-ai-role: web_engagement_specialist
+      x-ai-description: 'Manually toggles the active state of a subscriber.  Can be used to suppress users or re-activate them based on business logic.
+
+        '
+      x-ai-reasoning-instructions:
+      - 'Set `state: 1` for activation and `0` for deactivation.'
+      x-ai-responding-instructions:
+      - Confirm the subscriber state has been updated.
+      x-ai-capabilities:
+        confirmation:
+          type: Required
+        security_info:
+          data_handling:
+          - ResourceStateUpdate
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - id
+              - state
+              properties:
+                id:
+                  type: integer
+                state:
+                  type: integer
+                  enum:
+                  - 0
+                  - 1
+      responses:
+        '200':
+          description: State updated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  result:
+                    type: boolean
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+    servers:
+    - url: https://api.sendpulse.com
+components:
+  schemas:
+    subscriber:
+      title: Subscriber
+      properties:
+        id:
+          type: integer
+          description: Subscriber id
+        clientId:
+          type: string
+          description: Id formed in browser
+        name:
+          type:
+          - string
+          - 'null'
+        projectId:
+          type: string
+        popupId:
+          type: string
+        gender:
+          type: integer
+          description: "Available values:\n * `0` - unknown;\n * `1` - male;\n * `2` - female.\n"
+        email:
+          type:
+          - string
+          - 'null'
+        city:
+          type:
+          - string
+          - 'null'
+        phone:
+          type:
+          - string
+          - 'null'
+        createdAt:
+          type: string
+        updatedAt:
+          type: string
+      type: object
+    accessDeniedResponse:
+      description: Access denied
+    unauthorizedResponse:
+      description: Unauthorized
+  securitySchemes:
+    apiKey:
+      type: http
+      scheme: bearer
+      bearerFormat: API Key
+      description: 'Static API Key authentication.  A long-lived token generated manually in the SendPulse account settings.
+
+        '
+      x-ai-description: 'Permanent authentication token. Ideal for simple integrations without token refresh logic.
+
+        '
+    outh2:
+      type: oauth2
+      description: OAuth 2.0 Client Credentials flow for temporary access tokens.
+      flows:
+        clientCredentials:
+          tokenUrl: https://api.sendpulse.com/oauth/access_token
+          scopes: {}
+      x-ai-description: 'Standard OAuth 2.0 flow using Client ID and Client Secret.  Provides temporary tokens (valid for 1 hour) for enhanced security.
+
+        '
+    oauth2:
+      type: oauth2
+      description: OAuth 2.0 Client Credentials flow for temporary access tokens.
+      flows:
+        clientCredentials:
+          tokenUrl: https://api.sendpulse.com/oauth/access_token
+          scopes: {}
+      x-ai-description: 'Standard OAuth 2.0 flow using Client ID and Client Secret.  Provides temporary tokens (valid for 1 hour) for enhanced security.
+
+        '
+x-refined-from:
+- sendpulse-popups-openapi.yml
+- sendpulse-web-push-openapi.yml

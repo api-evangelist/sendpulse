@@ -1,0 +1,89 @@
+openapi: 3.2.0
+info:
+  description: Using the API for the CRM service, you can integrate your system with CRM from SendPulse and receive detailed information on pipelines, deals, contacts and their attributes and users. You can also create deals and contacts, assign and remove fields, tags, contact details and instant messengers. On the right, there is a button for authorizing requests made on this page. Click “Authorize,” then insert the ID and Secret from your account. To perform a request directly from the page, click the "Try it out" button within each method block. Then fill in input fields if any (for URL parameters, the description is right below the URL request; for body parameters, the description is under the “Scheme” button to the right of the example), and click “Run.” You will find the server response and description of received parameters below.
+  title: SendPulse CRM Public File Manager API
+  version: 0.1.0
+servers:
+- url: https://api.sendpulse.com/crm/v1
+security:
+- apiKey: []
+- oauth2: []
+tags:
+- name: File Manager
+paths:
+  /files/upload:
+    post:
+      tags:
+      - File Manager
+      summary: Upload files
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                files[]:
+                  type: array
+                  description: Array of file binaries
+                  items:
+                    type: string
+                    format: binary
+      responses:
+        '201':
+          description: Created successfully
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        link:
+                          type: string
+      operationId: uploadFiles
+      x-ai-role: file_storage_manager
+      x-ai-description: Uploads one or more binary files to SendPulse file storage and returns their public URLs. Use these links in email campaigns, landing pages, or chatbot messages — anywhere a publicly accessible URL to a hosted asset is needed.
+      x-ai-reasoning-instructions:
+      - Confirm the user intends to upload binary files, not reference already-hosted URLs.
+      - Check whether the files are intended for email content, chatbot flows, or landing pages — this context may affect how the returned links are used downstream.
+      - Remind the user that multiple files can be uploaded in a single request via the `files[]` array.
+      - Advise on common size or format restrictions if the user uploads large or unsupported file types.
+      x-ai-responding-instructions:
+      - Return the list of uploaded file links clearly, one per file.
+      - Suggest the immediate next step based on context — e.g., embedding the link into an email template or a chatbot message.
+      - If the upload fails for any file, indicate which file caused the error and why.
+      x-ai-suggestions:
+      - Upload a logo or banner image for use in email campaigns.
+      - Upload a PDF attachment to share via email or chatbot.
+      - Upload multiple assets in one request for batch hosting.
+      x-ai-capabilities:
+        confirmation:
+          type: None
+        security_info:
+          data_handling:
+          - ResourceCreation
+          - PubliclyAccessibleAfterUpload
+components:
+  securitySchemes:
+    apiKey:
+      type: http
+      scheme: bearer
+      bearerFormat: API Key
+      description: 'Static API Key authentication.  A long-lived token generated manually in the SendPulse account settings.
+
+        '
+      x-ai-description: 'Permanent authentication token. Ideal for simple integrations without token refresh logic.
+
+        '
+    outh2:
+      type: oauth2
+      description: OAuth 2.0 Client Credentials flow for temporary access tokens.
+      flows:
+        clientCredentials:
+          tokenUrl: https://api.sendpulse.com/oauth/access_token
+          scopes: {}
+      x-ai-description: 'Standard OAuth 2.0 flow using Client ID and Client Secret.  Provides temporary tokens (valid for 1 hour) for enhanced security.
+
+        '

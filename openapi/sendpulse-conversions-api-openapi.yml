@@ -1,0 +1,75 @@
+openapi: 3.2.0
+info:
+  title: SendPulse Automation 360 Conversions API
+  version: 1.0.0
+  description: API for managing and analyzing automation flows (autoflows).
+  x-ai-description: 'Automation 360 (A360) is the brain of omnichannel marketing at SendPulse.  It allows for creating complex, event-driven subscriber journeys across email, SMS, Web Push, and Messengers.  This API provides the tools to monitor these journeys, audit performance at a granular element level, and track conversions.
+
+    '
+  license:
+    name: Apache 2.0
+    identifier: Apache-2.0
+servers:
+- url: https://api.sendpulse.com
+  description: Production server
+security:
+- apiKey: []
+- oauth2: []
+tags:
+- name: Conversions
+  description: Endpoints related to Conversions.
+paths:
+  /a360/autoresponders/{id}/conversions:
+    parameters:
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: integer
+    get:
+      tags:
+      - Conversions
+      summary: Get flow conversions
+      operationId: getConversions
+      x-ai-role: crm_manager
+      x-ai-description: Primary success metrics for the entire automation journey.
+      x-ai-reasoning-instructions:
+      - Analyze conversion sources.
+      x-ai-responding-instructions:
+      - Report total conversions.
+      x-ai-suggestions:
+      - View converted contacts.
+      x-ai-capabilities:
+        security_info:
+          data_handling:
+          - InformationRetrieval
+      parameters: []
+      responses:
+        '200':
+          description: OK
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+components:
+  securitySchemes:
+    apiKey:
+      type: http
+      scheme: bearer
+      bearerFormat: API Key
+      description: 'Static API Key authentication.  A long-lived token generated manually in the SendPulse account settings.
+
+        '
+      x-ai-description: 'Permanent authentication token. Ideal for simple integrations without token refresh logic.
+
+        '
+    oauth2:
+      type: oauth2
+      description: OAuth 2.0 Client Credentials flow for temporary access tokens.
+      flows:
+        clientCredentials:
+          tokenUrl: https://api.sendpulse.com/oauth/access_token
+          scopes: {}
+      x-ai-description: 'Standard OAuth 2.0 flow using Client ID and Client Secret.  Provides temporary tokens (valid for 1 hour) for enhanced security.
+
+        '

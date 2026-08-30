@@ -1,0 +1,319 @@
+openapi: 3.2.0
+info:
+  description: Using the API for the CRM service, you can integrate your system with CRM from SendPulse and receive detailed information on pipelines, deals, contacts and their attributes and users. You can also create deals and contacts, assign and remove fields, tags, contact details and instant messengers. On the right, there is a button for authorizing requests made on this page. Click “Authorize,” then insert the ID and Secret from your account. To perform a request directly from the page, click the "Try it out" button within each method block. Then fill in input fields if any (for URL parameters, the description is right below the URL request; for body parameters, the description is under the “Scheme” button to the right of the example), and click “Run.” You will find the server response and description of received parameters below.
+  title: SendPulse CRM Public Pipelines API
+  version: 0.1.0
+servers:
+- url: https://api.sendpulse.com/crm/v1
+security:
+- apiKey: []
+- oauth2: []
+tags:
+- description: ''
+  name: Pipelines
+paths:
+  /pipelines:
+    post:
+      tags:
+      - Pipelines
+      summary: Create new pipeline
+      description: Create new pipeline with specified settings
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              properties:
+                name:
+                  type: string
+                  description: Pipeline name
+                settings:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/Setting'
+      responses:
+        '201':
+          description: ''
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Pipeline'
+      operationId: createPipeline
+      x-ai-role: crm_workflow_architect
+      x-ai-description: 'Initializes a new CRM pipeline — a structured, stage-based workflow for tracking deals or leads through a defined sales or support process. A pipeline is the backbone of CRM automation: it defines the stages through which contacts or deals progress and governs which automations, notifications, and conditions fire at each transition.'
+      x-ai-reasoning-instructions:
+      - Before creating, check if a pipeline with a similar name already exists to avoid duplicates.
+      - Clarify the intended use case (sales, support, onboarding) to help the user choose appropriate stage settings.
+      - Validate that `settings` values conform to the expected schema — incomplete settings may result in a non-functional pipeline.
+      - If the user hasn't specified stages or conditions, suggest starting with a minimal viable pipeline and iterating.
+      x-ai-responding-instructions:
+      - Confirm successful creation by referencing the new pipeline's ID and name.
+      - 'Suggest the next logical step: adding stages or assigning contacts/deals to the pipeline.'
+      - If settings were omitted, note that default settings were applied and they can be updated later.
+      - On failure, explain whether the issue is a naming conflict, invalid settings schema, or permission problem.
+      x-ai-suggestions:
+      - Sales_Pipeline_B2B
+      - Lead_Qualification_Flow
+      - Customer_Onboarding_Pipeline
+      - Support_Escalation_Track
+      x-ai-capabilities:
+        confirmation:
+          type: None
+        security_info:
+          data_handling:
+          - ResourceStateUpdate
+    get:
+      tags:
+      - Pipelines
+      summary: Get a list of pipelines
+      description: 'Returns a list of pipelines with information about each: pipeline ID, pipeline creator, created statuses, and pipeline settings'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Pipeline'
+      operationId: getPipelines
+      x-ai-role: crm_pipeline_analyst
+      x-ai-description: Retrieves the full list of CRM pipelines configured in the account. Pipelines define the sales or workflow stages through which contacts move. This endpoint is the entry point for understanding the current pipeline structure before creating deals, assigning stages, or automating transitions.
+      x-ai-reasoning-instructions:
+      - Use this endpoint to discover available pipeline IDs before creating or updating deals.
+      - Check pipeline statuses to determine which pipelines are active and suitable for new deals.
+      - If the user asks about a specific pipeline by name, fetch all pipelines first and filter by name client-side, as the API does not support name-based filtering.
+      x-ai-responding-instructions:
+      - Present the list with pipeline names and IDs for easy reference.
+      - If no pipelines exist, suggest creating one as a prerequisite for deal management.
+      - Highlight any pipelines with unusual configurations (e.g., no statuses defined) as potential setup issues.
+      x-ai-suggestions:
+      - Use the returned pipeline IDs with `createDeal` to assign deals to the correct pipeline.
+      - Inspect `statuses` in each pipeline to understand available deal stages before progressing contacts.
+      x-ai-capabilities:
+        confirmation:
+          type: None
+        security_info:
+          data_handling:
+          - ReadOnly
+  /pipelines/{pipelineId}:
+    get:
+      tags:
+      - Pipelines
+      summary: Get information about a pipeline by ID
+      description: 'Returns information about the specified pipeline: pipeline ID, pipeline creator, created statuses, and pipeline settings'
+      parameters:
+      - name: pipelineId
+        in: path
+        required: true
+        description: ID of a pipeline you need to get information about. It can be obtained with the "Get a list of pipelines" method
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Pipeline'
+      operationId: getPipelineById
+      x-ai-role: crm_pipeline_analyst
+      x-ai-description: Retrieves the full configuration snapshot of a single CRM pipeline — including its creator, status definitions, and behavioral settings. Use this to inspect pipeline structure before automating stage transitions or auditing workflow logic.
+      x-ai-reasoning-instructions:
+      - Ensure the pipelineId was obtained from the 'Get a list of pipelines' response — do not guess or construct IDs manually.
+      - If the user asks about a pipeline by name, resolve the ID first using the list endpoint before calling this one.
+      - Check whether the response includes all expected statuses; absence may indicate an incomplete pipeline setup.
+      x-ai-responding-instructions:
+      - Summarize the pipeline's key settings (name, creator, status count) rather than dumping the raw object.
+      - If the user needs to modify the pipeline, suggest the appropriate update endpoint as a follow-up.
+      - If a 404 is returned, confirm the pipelineId source and suggest re-fetching the pipeline list.
+      x-ai-suggestions:
+      - Use this endpoint to verify pipeline structure before creating or moving deals through stages.
+      - Combine with 'Get a list of pipelines' to build a full pipeline inventory.
+      x-ai-capabilities:
+        confirmation:
+          type: None
+        security_info:
+          data_handling:
+          - ReadOnly
+    put:
+      tags:
+      - Pipelines
+      summary: Update information about a pipeline by its ID
+      description: Updates information in the specified pipeline
+      parameters:
+      - name: pipelineId
+        in: path
+        required: true
+        description: Pipeline ID to be updated.
+        schema:
+          type: integer
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              properties:
+                name:
+                  type: string
+                  description: Pipeline name
+                order:
+                  type: integer
+                  description: Field display order
+                settings:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/Setting'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Pipeline'
+      operationId: updatePipeline
+      x-ai-role: crm_pipeline_manager
+      x-ai-description: Updates the metadata and configuration of an existing CRM pipeline. A pipeline defines the sales or processing stages through which deals progress — changing its name, order, or settings reconfigures the workflow structure for all deals currently inside it.
+      x-ai-reasoning-instructions:
+      - Before updating, confirm the pipelineId exists to avoid silent failures.
+      - If renaming, warn the user that the new name should remain unique and descriptive to avoid confusion with other pipelines.
+      - When changing `order`, consider that shifting one pipeline's position may affect the display order of other pipelines — advise a full re-check afterward.
+      - Treat `settings` as a full replacement of the pipeline's configuration array, not a partial merge — ensure all desired settings are included in the request.
+      x-ai-responding-instructions:
+      - Confirm which fields were changed by comparing the request payload against the returned `data` object.
+      - If the pipeline name was updated, highlight the new name explicitly.
+      - Suggest verifying the pipeline's stage list as a logical next step after structural changes.
+      x-ai-suggestions:
+      - Retrieve current pipeline data with GET /pipelines/{pipelineId} before updating to avoid accidental overwrites.
+      - 'Use PATCH semantics in mind: only send fields you intend to change.'
+      x-ai-capabilities:
+        confirmation:
+          type: Recommended
+          message: Updating a pipeline's settings affects all deals currently assigned to it. Confirm before proceeding.
+        security_info:
+          data_handling:
+          - ResourceStateUpdate
+components:
+  schemas:
+    Pipeline:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Pipeline ID
+        userId:
+          type: integer
+          description: ID of the user who created the pipeline
+        name:
+          type: string
+          description: Pipeline name
+        status:
+          $ref: '#/components/schemas/DefaultStatusProperty'
+        order:
+          type: integer
+          description: Pipelines order
+        steps:
+          type: array
+          items:
+            $ref: '#/components/schemas/Step'
+        settings:
+          type: array
+          items:
+            $ref: '#/components/schemas/Setting'
+    Setting:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Setting name
+        value:
+          type: string
+          description: Setting value
+    Step:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Step ID
+        pipelineId:
+          type: integer
+          description: Pipeline ID
+        name:
+          type: string
+          description: Step name
+        order:
+          type: integer
+          description: Step order
+        status:
+          $ref: '#/components/schemas/DefaultStatusProperty'
+        color:
+          type: string
+          enum:
+          - '#000000'
+          - black
+          description: Step color
+        addEndHours:
+          type: integer
+          enum:
+          - null
+          - 1
+          - 2
+          - 3
+          - 4
+          - 5
+          - 6
+          - 8
+          - 9
+          - 10
+          description: Add number of hours or null
+        notifyIn:
+          type: string
+          enum:
+          - '0'
+          - 15min
+          - 30min
+          - 1h
+          - 2h
+          - 3h
+          - 6h
+          - 12h
+          - 24h
+          - 2d
+          - 3d
+          - 4d
+          - 5d
+          - 6d
+          - 7d
+          description: Time notification
+    DefaultStatusProperty:
+      type: integer
+      description: '| Status
+
+        * 0 — inactive (deleted by user) * 1 — active'
+  securitySchemes:
+    apiKey:
+      type: http
+      scheme: bearer
+      bearerFormat: API Key
+      description: 'Static API Key authentication.  A long-lived token generated manually in the SendPulse account settings.
+
+        '
+      x-ai-description: 'Permanent authentication token. Ideal for simple integrations without token refresh logic.
+
+        '
+    outh2:
+      type: oauth2
+      description: OAuth 2.0 Client Credentials flow for temporary access tokens.
+      flows:
+        clientCredentials:
+          tokenUrl: https://api.sendpulse.com/oauth/access_token
+          scopes: {}
+      x-ai-description: 'Standard OAuth 2.0 flow using Client ID and Client Secret.  Provides temporary tokens (valid for 1 hour) for enhanced security.
+
+        '

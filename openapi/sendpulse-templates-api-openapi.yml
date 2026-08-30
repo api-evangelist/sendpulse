@@ -1,0 +1,553 @@
+openapi: 3.2.0
+info:
+  title: Sendpulse Templates API
+  x-refined-note:
+  - x-ai-description differs across the merged source definitions and was not carried
+  version: '1.0'
+  description: 'Operations tagged Templates across 2 of this provider''s published API definitions: sendpulse-bulk-email-openapi.yml, sendpulse-whatsapp-openapi.yml. Each path carries the servers of the definition it was published in.'
+servers:
+- url: https://api.sendpulse.com
+  description: Production server
+- description: ''
+  url: https://api.sendpulse.com/whatsapp
+security:
+- apiKey: []
+- oauth2: []
+tags:
+- name: Templates
+  description: Endpoints related to Templates.
+paths:
+  /template:
+    post:
+      tags:
+      - Templates
+      summary: Create a template
+      operationId: createTemplate
+      description: Uploads HTML to create a reusable template.
+      x-ai-role: email_designer
+      x-ai-description: Creates an asset that can be used across multiple campaigns.
+      x-ai-reasoning-instructions:
+      - Ensure the HTML body is properly base64 encoded.
+      - Verify language tags are correct.
+      - Suggest a descriptive name if omitted.
+      x-ai-responding-instructions:
+      - Confirm the template ID.
+      - Provide instructions on how to use it in a campaign.
+      x-ai-suggestions:
+      - Create a new campaign with this template ID.
+      x-ai-capabilities:
+        security_info:
+          data_handling:
+          - ResourceStateUpdate
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - body
+              properties:
+                name:
+                  type: string
+                  example: My Template
+                body:
+                  type: string
+                  description: HTML encoded in base64
+                  example: PGlucHV0IHR5cGU9ImVtYWlsIiBuYW1lPSJlbWFpbCIgcmVxdWlyZWQKb25pbnZhbGlkPSJ0aGlzLnNldEN1c3RvbVZhbGlkaXR5KCfQn9C
+                lang:
+                  type: string
+                  enum:
+                  - en
+                  - ru
+                  - ua
+                  - tr
+                  - es
+                  - pt
+                  example: en
+      responses:
+        '200':
+          description: Template created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  result:
+                    type: boolean
+                    example: true
+                  real_id:
+                    type: integer
+                    example: 1042220
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '422':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                body.required:
+                  summary: body.required
+                  value:
+                    message: Argument body missing
+                    error_code: 422
+                body.base64:
+                  summary: body.base64
+                  value:
+                    message: Argument body is invalid string
+                    error_code: 422
+                name.string:
+                  summary: name.string
+                  value:
+                    message: Argument name must be string
+                    error_code: 422
+                name.exists:
+                  summary: name.exists
+                  value:
+                    message: Template with such name already exist
+                    error_code: 573
+                lang.string:
+                  summary: lang.string
+                  value:
+                    message: Argument lang must be string
+                    error_code: 422
+    servers:
+    - url: https://api.sendpulse.com
+      description: Production server
+  /template/edit/{id}:
+    parameters:
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: integer
+    post:
+      tags:
+      - Templates
+      summary: Edit a template
+      operationId: updateTemplate
+      description: Updates existing template HTML.
+      x-ai-role: email_designer
+      x-ai-description: Overwrites the HTML content of an existing template asset.
+      x-ai-reasoning-instructions:
+      - Verify the template ID exists.
+      - Ensure base64 encoding for the new body.
+      - Warn that this will affect future campaigns using this ID.
+      x-ai-responding-instructions:
+      - Confirm the template was updated successfully.
+      - Remind the user to test the template before sending.
+      x-ai-suggestions:
+      - Send a test campaign.
+      x-ai-capabilities:
+        security_info:
+          data_handling:
+          - ResourceStateUpdate
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - body
+              properties:
+                body:
+                  type: string
+                  description: HTML version of the email, encoded in base64
+                  example: PCFET0NUWVBFIGh0bWw+CjxodG1sPgo8a...
+                lang:
+                  type: string
+                  enum:
+                  - en
+                  - ru
+                  - ua
+                  - tr
+                  - es
+                  - pt
+      responses:
+        '200':
+          description: Template updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResultTrue'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                template.not_found:
+                  summary: template.not_found
+                  value:
+                    message: Template not found
+                    error_code: 31
+        '422':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                template.type:
+                  summary: template.type
+                  value:
+                    message: You cant edit templates from layout template editor
+                    error_code: 2900
+                body.required:
+                  summary: body.required
+                  value:
+                    message: Argument body missing
+                    error_code: 422
+                body.base64:
+                  summary: body.base64
+                  value:
+                    message: Argument body is invalid string
+                    error_code: 422
+                lang.string:
+                  summary: lang.string
+                  value:
+                    message: Argument lang must be string
+                    error_code: 422
+    servers:
+    - url: https://api.sendpulse.com
+      description: Production server
+  /template/{template_id}:
+    parameters:
+    - name: template_id
+      in: path
+      required: true
+      schema:
+        type: string
+    get:
+      tags:
+      - Templates
+      summary: Get information about a template
+      operationId: getTemplateById
+      description: Retrieves metadata for a template.
+      x-ai-role: email_designer
+      x-ai-description: Fetches preview URLs and structural info.
+      x-ai-reasoning-instructions:
+      - Extract the preview URL to show the user.
+      - Identify tags and categories to organize assets.
+      - Check the language setting.
+      x-ai-responding-instructions:
+      - Provide the template name, language, and a link to the preview.
+      - List its categories if any.
+      x-ai-suggestions:
+      - Use this template in a campaign.
+      x-ai-capabilities:
+        security_info:
+          data_handling:
+          - InformationRetrieval
+      parameters:
+      - name: owner
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - me
+          - sendpulse
+          default: me
+      - name: lang
+        in: query
+        required: false
+        schema:
+          type: string
+          example: en
+      responses:
+        '200':
+          description: Template details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TemplateDetails'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                template.not_found:
+                  summary: template.not_found
+                  value:
+                    message: Template not found
+                    error_code: 290
+        '422':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                template.processing:
+                  summary: template.processing
+                  value:
+                    message: This template in processing. You need to wait
+                    error_code: 2900
+    servers:
+    - url: https://api.sendpulse.com
+      description: Production server
+  /template/slug/{name_slug}:
+    parameters:
+    - name: name_slug
+      in: path
+      required: true
+      schema:
+        type: string
+        example: my-welcome-template
+    get:
+      tags:
+      - Templates
+      summary: Get a template by name slug
+      operationId: getTemplateBySlug
+      description: Retrieves template details using its unique name slug identifier.
+      x-ai-role: email_designer
+      x-ai-description: Alternative lookup for templates when only the slug is known, instead of the numeric ID. Useful for referencing templates by human-readable identifiers.
+      x-ai-reasoning-instructions:
+      - Use this when the template ID is unknown but the slug is available.
+      - Pass 'owner=sendpulse' to search system templates, 'owner=me' for user templates.
+      - Optionally filter by 'lang' to get a localized version of the template.
+      x-ai-responding-instructions:
+      - Provide the template name, preview URL, and language.
+      - If not found, suggest listing all templates via GET /templates.
+      x-ai-suggestions:
+      - Use this template in a campaign.
+      - List all templates via GET /templates.
+      x-ai-capabilities:
+        security_info:
+          data_handling:
+          - InformationRetrieval
+      parameters:
+      - name: owner
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - me
+          - sendpulse
+          default: me
+      - name: lang
+        in: query
+        required: false
+        schema:
+          type: string
+          example: en
+      responses:
+        '200':
+          description: Template details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TemplateDetails'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                template.not_found:
+                  summary: template.not_found
+                  value:
+                    message: Template not found
+                    error_code: 290
+        '422':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                template.processing:
+                  summary: template.processing
+                  value:
+                    message: This template in processing. You need to wait
+                    error_code: 2900
+    servers:
+    - url: https://api.sendpulse.com
+      description: Production server
+  /templates:
+    get:
+      tags:
+      - Templates
+      summary: Get a list of templates
+      operationId: getTemplates
+      description: Retrieves system or user templates.
+      x-ai-role: email_designer
+      x-ai-description: Lists available design assets.
+      x-ai-reasoning-instructions:
+      - Determine if the user wants their own ('me') or system templates.
+      - Format the output to highlight IDs needed for campaigns.
+      - Group by category if possible.
+      x-ai-responding-instructions:
+      - Provide a summary of the available templates.
+      - Share the real_id for the most recently created ones.
+      x-ai-suggestions:
+      - Get details for a specific template.
+      x-ai-capabilities:
+        security_info:
+          data_handling:
+          - InformationRetrieval
+      parameters:
+      - name: owner
+        in: query
+        schema:
+          type: string
+          enum:
+          - me
+          - sendpulse
+          default: sendpulse
+      - name: only_active
+        in: query
+        schema:
+          type: boolean
+      - name: limit
+        in: query
+        description: Number of records
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+          default: 100
+          example: 10
+      - name: offset
+        in: query
+        description: Offset (first record to be displayed)
+        schema:
+          type: integer
+          minimum: 0
+          default: 0
+          example: 0
+      responses:
+        '200':
+          description: List of templates
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TemplateSummary'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+    servers:
+    - url: https://api.sendpulse.com
+      description: Production server
+components:
+  schemas:
+    TemplateSummary:
+      type: object
+      x-ai-description: Template summary.
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+    ResultTrue:
+      type: object
+      x-ai-description: Success indicator.
+      properties:
+        result:
+          type: boolean
+    TemplateDetails:
+      type: object
+      x-ai-description: Template metadata.
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+    Template:
+      properties:
+        id:
+          type: string
+        bot_id:
+          type: string
+        namespace:
+          type: string
+        category:
+          type: string
+        components:
+          type: array
+          description: Please see https://developers.facebook.com/docs/whatsapp/api/messages/message-templates/media-message-templates/
+          items:
+            type: object
+        language:
+          type: string
+        name:
+          type: string
+        rejected_reason:
+          type:
+          - string
+          - 'null'
+        status:
+          type: string
+          enum:
+          - APPROVED
+          - IN_APPEAL
+          - PENDING
+          - REJECTED
+          - PENDING_DELETION
+          - DELETED
+          - DISABLED
+          - PAUSED
+        created_at:
+          type: string
+          example: 2020-12-11 21:00:00+00:00
+  securitySchemes:
+    apiKey:
+      type: http
+      scheme: bearer
+      bearerFormat: API Key
+      description: 'Static API Key authentication.  A long-lived token generated manually in the SendPulse account settings.
+
+        '
+      x-ai-description: 'Permanent authentication token. Ideal for simple integrations without token refresh logic.
+
+        '
+    oauth2:
+      type: oauth2
+      description: OAuth 2.0 Client Credentials flow for temporary access tokens.
+      flows:
+        clientCredentials:
+          tokenUrl: https://api.sendpulse.com/oauth/access_token
+          scopes: {}
+      x-ai-description: 'Standard OAuth 2.0 flow using Client ID and Client Secret.  Provides temporary tokens (valid for 1 hour) for enhanced security.
+
+        '
+    outh2:
+      type: oauth2
+      description: OAuth 2.0 Client Credentials flow for temporary access tokens.
+      flows:
+        clientCredentials:
+          tokenUrl: https://api.sendpulse.com/oauth/access_token
+          scopes: {}
+      x-ai-description: 'Standard OAuth 2.0 flow using Client ID and Client Secret.  Provides temporary tokens (valid for 1 hour) for enhanced security.
+
+        '
+x-refined-from:
+- sendpulse-bulk-email-openapi.yml
+- sendpulse-whatsapp-openapi.yml

@@ -1,0 +1,345 @@
+openapi: 3.2.0
+info:
+  description: Using the API for the CRM service, you can integrate your system with CRM from SendPulse and receive detailed information on pipelines, deals, contacts and their attributes and users. You can also create deals and contacts, assign and remove fields, tags, contact details and instant messengers. On the right, there is a button for authorizing requests made on this page. Click “Authorize,” then insert the ID and Secret from your account. To perform a request directly from the page, click the "Try it out" button within each method block. Then fill in input fields if any (for URL parameters, the description is right below the URL request; for body parameters, the description is under the “Scheme” button to the right of the example), and click “Run.” You will find the server response and description of received parameters below.
+  title: SendPulse CRM Public Contact tags API
+  version: 0.1.0
+servers:
+- url: https://api.sendpulse.com/crm/v1
+security:
+- apiKey: []
+- oauth2: []
+tags:
+- description: ''
+  name: Contact tags
+paths:
+  /contact-tags/{tagId}/contact/{contactId}:
+    post:
+      tags:
+      - Contact tags
+      summary: Add a tag to the contact
+      description: Adds a tag to the specified contact
+      parameters:
+      - name: tagId
+        in: path
+        required: true
+        description: Tag ID you want to add. It can be obtained with the "Get a list of contact tags" method
+        schema:
+          type: integer
+      - name: contactId
+        in: path
+        required: true
+        description: Contact ID to which you want to add the tag. It can be obtained with the "Get a list of contacts" method
+        schema:
+          type: integer
+      responses:
+        '201':
+          description: Created
+      operationId: addTagToContact
+      x-ai-role: crm_contact_segmentation_specialist
+      x-ai-description: Associates an existing tag with a specific contact, enabling behavioral segmentation and targeted automation triggers. Tags in SendPulse CRM act as lightweight, non-exclusive labels that can drive conditional flows, filtering, and personalized outreach without modifying contact variables.
+      x-ai-reasoning-instructions:
+      - Verify that tagId exists by calling 'Get a list of contact tags' before attempting assignment.
+      - Verify that contactId is valid via 'Get a list of contacts' to avoid a silent 404.
+      - Check whether the tag is already assigned to the contact to prevent duplicate entries if the API does not handle idempotency.
+      - Consider whether a bulk-tagging endpoint exists if the user intends to tag multiple contacts — prefer it over repeated single calls.
+      x-ai-responding-instructions:
+      - Confirm the tag was successfully applied and mention both the tag name and contact identifier for clarity.
+      - Suggest triggering an automation or filter based on this tag as an immediate next step.
+      - If a 404 is returned, clarify whether the tagId or contactId is the likely culprit and guide the user to retrieve valid IDs.
+      x-ai-suggestions:
+      - Use 'Get a list of contact tags' to look up valid tagId values before calling this endpoint.
+      - After tagging, consider using 'Get contacts by tag' to verify the assignment.
+      x-ai-capabilities:
+        confirmation:
+          type: None
+        security_info:
+          data_handling:
+          - ResourceStateUpdate
+    delete:
+      tags:
+      - Contact tags
+      summary: Delete a tag from a contact
+      description: Removes the tag of the specified contact
+      parameters:
+      - name: tagId
+        in: path
+        required: true
+        description: Tag ID you want to remove. It can be obtained with the "Get a list of contact tags" method
+        schema:
+          type: integer
+      - name: contactId
+        in: path
+        required: true
+        description: Contact ID from which you want to remove the tag. It can be obtained with the "Get a list of contacts" method
+        schema:
+          type: integer
+      responses:
+        '204':
+          description: Successfully deleted
+      operationId: deleteContactTagFromContact
+      x-ai-role: crm_contact_management_specialist
+      x-ai-description: Removes a specific tag assignment from a contact without deleting the tag itself or the contact record. This is the primary mechanism for maintaining accurate audience segmentation when a contact's profile changes — e.g., after a purchase, lifecycle stage transition, or incorrect tagging. Impacts how the contact appears in tag-based filters and automations.
+      x-ai-reasoning-instructions:
+      - Before removing, verify the tag is actually assigned to the contact — a missing association returns the same 204, which could mask logic errors.
+      - Check if any active automations, segments, or campaigns rely on this tag for targeting before removing it.
+      - This operation affects segmentation silently — no downstream notification is triggered; warn the user if this contact is part of active workflows.
+      - Obtain tagId from `getContactTags` and contactId from `getContacts` if not already known.
+      x-ai-responding-instructions:
+      - Confirm that the tag was successfully removed (HTTP 204 means no response body — state this explicitly to avoid user confusion).
+      - Suggest verifying the contact's remaining tags via the 'Get a list of contacts' method.
+      - If the tag was used in segmentation or automation, proactively recommend reviewing affected workflows.
+      x-ai-capabilities:
+        confirmation:
+          type: Recommended
+          reason: Tag removal affects contact segmentation and may silently break automation targeting
+        security_info:
+          data_handling:
+          - ResourceStateUpdate
+  /contact-tags:
+    get:
+      tags:
+      - Contact tags
+      summary: Get a list of contact tags
+      description: Returns a list of contact tags with the tag ID, tag name, and the number of contacts associated with this tag
+      parameters:
+      - name: name
+        in: query
+        required: false
+        description: Exact match filter by tag name
+        schema:
+          type: string
+          maxLength: 64
+      - name: search
+        in: query
+        required: false
+        description: Partial match filter by tag name (LIKE %search%)
+        schema:
+          type: string
+          maxLength: 64
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    $ref: '#/components/schemas/ContactTag'
+      operationId: listContactTags
+      x-ai-role: crm_data_analyst
+      x-ai-description: Retrieves the taxonomy of contact tags used for audience segmentation in the CRM. Tags are lightweight labels that group contacts without requiring a dedicated field or variable — they reflect behavioural, source, or lifecycle attributes. This endpoint is the entry point for any tag-based filtering, reporting, or bulk operations on contact segments.
+      x-ai-reasoning-instructions:
+      - Use `name` for exact lookups when the full tag name is known; use `search` for discovery or autocomplete-style queries.
+      - Check the `contacts_count` in the response before performing tag-based bulk operations — a tag with 0 contacts may indicate stale taxonomy.
+      - If the user wants to filter contacts by tag, first retrieve the tag ID here, then pass it to the contacts list endpoint.
+      - Avoid calling both `name` and `search` simultaneously — they serve different precision levels and combining them may yield unexpected results depending on backend logic.
+      x-ai-responding-instructions:
+      - 'Present results as a structured list: tag name, ID, and contact count.'
+      - If no tags are returned, suggest that no tags have been created yet and recommend using the tag creation endpoint.
+      - If the user is searching for a specific tag, confirm whether an exact or partial match was used and clarify which parameter was applied.
+      - Highlight tags with high contact counts as likely candidates for segmentation or campaign targeting.
+      x-ai-suggestions:
+      - Use `search=vip` to find all tags containing 'vip' in the name.
+      - Use `name=newsletter` for an exact match when you know the precise tag label.
+      - After retrieving tag IDs, use them to filter contacts or assign tags in bulk.
+      x-ai-capabilities:
+        confirmation:
+          type: None
+        security_info:
+          data_handling:
+          - ReadOnly
+    post:
+      tags:
+      - Contact tags
+      summary: Create a tag
+      description: Creates a tag with the specified name
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                name:
+                  type: string
+                  description: Tag name to be created. The maximum number of characters is 64
+                colorText:
+                  type: string
+                  description: Text color
+                colorBackground:
+                  type: string
+                  description: Background color
+              required:
+              - name
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    $ref: '#/components/schemas/ContactTag'
+      operationId: createContactTag
+      x-ai-role: crm_data_organization_specialist
+      x-ai-description: Creates a named tag used to categorize and segment contacts in SendPulse CRM. Tags are lightweight, visual labels that enable fast filtering and targeted bulk actions across the contact base. Color customization allows teams to build consistent visual taxonomies (e.g., red for high-priority, green for qualified leads).
+      x-ai-reasoning-instructions:
+      - Before creating, check if a tag with the same or similar name already exists to avoid duplicates.
+      - Suggest meaningful, action-oriented tag names that reflect contact state or segment (e.g., 'Hot_Lead', 'Churn_Risk', 'VIP_Customer').
+      - If colorText and colorBackground are omitted, the system will apply defaults — inform the user if visual consistency matters.
+      - Remind the user that tag names are limited to 64 characters; truncate or abbreviate long names proactively.
+      x-ai-responding-instructions:
+      - Confirm the tag was created and surface the returned tag ID for reference in future operations.
+      - Suggest immediately assigning the tag to contacts using the relevant contact-update endpoint.
+      - If creation fails due to a duplicate name, offer to retrieve the existing tag instead.
+      x-ai-suggestions:
+      - Hot_Lead
+      - VIP_Customer
+      - Churn_Risk
+      - Onboarding_Complete
+      - Re_Engagement
+      x-ai-capabilities:
+        confirmation:
+          type: None
+        security_info:
+          data_handling:
+          - ResourceStateUpdate
+  /contact-tags/{tagId}:
+    put:
+      tags:
+      - Contact tags
+      summary: Update a tag
+      description: Updates the specified tag with a new name. Provided property values will be overwritten.
+      parameters:
+      - name: tagId
+        in: path
+        required: true
+        description: Tag ID you want to update. It can be obtained with the "Get a list of contact tags" method
+        schema:
+          type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                name:
+                  type: string
+                  description: New tag name. The maximum number of characters is 255
+                colorText:
+                  type: string
+                  description: Text color
+                colorBackground:
+                  type: string
+                  description: Background color
+              required:
+              - name
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    $ref: '#/components/schemas/ContactTag'
+      operationId: updateContactTag
+      x-ai-role: crm_data_architect
+      x-ai-description: Modifies the metadata of an existing contact tag — its display name and visual styling (text and background color). Tags in SendPulse CRM are classification labels attached to contacts; renaming or recoloring a tag instantly affects all contacts it is applied to, making this a high-impact bulk-update operation even though only one record is targeted.
+      x-ai-reasoning-instructions:
+      - Retrieve the current tag state via 'Get a list of contact tags' before updating to confirm the tagId is valid and to present the user with the current values.
+      - If only colorText or colorBackground is being changed without a name change, you must still supply the current name in the request body because 'name' is required.
+      - Warn the user that renaming a widely-used tag changes how it appears across all associated contacts and pipelines immediately.
+      - Validate that the new name does not exceed 255 characters before sending the request.
+      - Check for duplicate tag names in the existing tag list to avoid creating visual confusion in the CRM.
+      x-ai-responding-instructions:
+      - Confirm the update by echoing the new tag name and, if changed, the new color values.
+      - If colorText or colorBackground was updated, mention that the visual change is reflected immediately in the CRM contact view.
+      - If the tagId was not found (404), advise the user to fetch the current tag list to verify the correct ID.
+      - Suggest filtering or segmenting contacts by this tag as a logical next step after renaming.
+      x-ai-suggestions:
+      - VIP_Client
+      - Hot_Lead
+      - Churned_2024
+      - Needs_Followup
+      x-ai-capabilities:
+        confirmation:
+          type: Recommended
+          message: Renaming a tag affects all contacts it is currently applied to. Confirm the new name before proceeding.
+        security_info:
+          data_handling:
+          - ResourceStateUpdate
+    delete:
+      tags:
+      - Contact tags
+      summary: Remove tag
+      description: Removes the specified tag
+      parameters:
+      - name: tagId
+        in: path
+        required: true
+        description: Tag ID you want to remove. It can be obtained with the "Get a list of contact tags" method
+        schema:
+          type: integer
+      responses:
+        '204':
+          description: Successfully deleted
+      operationId: deleteContactTag
+      x-ai-role: crm_data_manager
+      x-ai-description: Permanently removes a contact tag from the account. Tags are used to categorize and segment contacts — deleting a tag removes it from all contacts it was applied to, which may affect segment-based automations or filters that rely on this tag.
+      x-ai-reasoning-instructions:
+      - Before deleting, verify the tag exists using 'Get a list of contact tags' to obtain the correct tagId.
+      - Warn the user that this action is irreversible — the tag will be unlinked from all contacts.
+      - Check if the tag is used in any active automations or audience segments before proceeding.
+      - If the user provides a tag name instead of an ID, resolve the ID first via the tag list endpoint.
+      x-ai-responding-instructions:
+      - Confirm successful deletion by noting the tagId that was removed (204 returns no body).
+      - Remind the user that contacts previously assigned this tag are no longer tagged — segments or automations using it may behave differently.
+      - If a 404 is returned, clarify that the tag may have already been deleted or the ID is incorrect.
+      x-ai-capabilities:
+        confirmation:
+          type: Required
+          message: This will permanently delete the tag and remove it from all associated contacts. This action cannot be undone.
+        security_info:
+          data_handling:
+          - IrreversibleDelete
+          - CascadingEffect
+components:
+  schemas:
+    ContactTag:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Tag ID
+        name:
+          type: string
+          description: Tag name
+        colorText:
+          type: string
+        colorBackground:
+          type: string
+        contactCount:
+          type: integer
+          description: Number of contacts associated with the tag
+        taskCount:
+          type: integer
+          description: Number of tasks associated with a tag
+  securitySchemes:
+    apiKey:
+      type: http
+      scheme: bearer
+      bearerFormat: API Key
+      description: 'Static API Key authentication.  A long-lived token generated manually in the SendPulse account settings.
+
+        '
+      x-ai-description: 'Permanent authentication token. Ideal for simple integrations without token refresh logic.
+
+        '
+    outh2:
+      type: oauth2
+      description: OAuth 2.0 Client Credentials flow for temporary access tokens.
+      flows:
+        clientCredentials:
+          tokenUrl: https://api.sendpulse.com/oauth/access_token
+          scopes: {}
+      x-ai-description: 'Standard OAuth 2.0 flow using Client ID and Client Secret.  Provides temporary tokens (valid for 1 hour) for enhanced security.
+
+        '

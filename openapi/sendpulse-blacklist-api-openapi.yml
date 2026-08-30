@@ -1,0 +1,179 @@
+openapi: 3.2.0
+info:
+  title: SendPulse Bulk Email Blacklist API
+  version: 1.0.0
+  description: API for managing mailing lists, email campaigns, templates, and senders.
+  x-ai-description: 'The Bulk Email API is the core engine for marketing automation at SendPulse.  It enables programmatic control over the entire email lifecycle.
+
+    '
+  license:
+    name: Apache 2.0
+    identifier: Apache-2.0
+servers:
+- url: https://api.sendpulse.com
+  description: Production server
+security:
+- apiKey: []
+- oauth2: []
+tags:
+- name: Blacklist
+  description: Endpoints related to Blacklist.
+paths:
+  /blacklist:
+    get:
+      tags:
+      - Blacklist
+      summary: Get blacklist
+      operationId: getBlacklist
+      description: Retrieve the list of blacklisted email addresses.
+      x-ai-role: compliance_officer
+      x-ai-description: Review the list of contacts who are excluded from your mailing activities.
+      x-ai-reasoning-instructions:
+      - Use this list to ensure you are not sending to unwanted contacts.
+      - Monitor the size and content of your blacklist for hygiene.
+      x-ai-responding-instructions:
+      - Provide the array of blacklisted email addresses.
+      - Explain that these contacts will not receive campaigns even if they are in mailing lists.
+      x-ai-suggestions:
+      - Remove a contact from the blacklist if needed.
+      x-ai-capabilities:
+        security_info:
+          data_handling:
+          - InformationRetrieval
+      responses:
+        '200':
+          description: Blacklist retrieved
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+    post:
+      tags:
+      - Blacklist
+      summary: Add to blacklist
+      operationId: addToBlacklist
+      description: Add one or more email addresses to the blacklist.
+      x-ai-role: compliance_officer
+      x-ai-description: Prevent specific emails from receiving any further communications.
+      x-ai-reasoning-instructions:
+      - Comma-separate multiple emails and base64 encode the entire string.
+      - Add an optional comment for record-keeping.
+      x-ai-responding-instructions:
+      - Confirm that the emails were successfully added to the blacklist.
+      x-ai-suggestions:
+      - '{"emails": "dXNlcjFAZXhhbXBsZS5jb20sdXNlcjJAZXhhbXBsZS5jb20=", "comment": "Requested removal"}'
+      x-ai-capabilities:
+        security_info:
+          data_handling:
+          - ResourceStateUpdate
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BlacklistAddRequest'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResultTrue'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+    delete:
+      tags:
+      - Blacklist
+      summary: Remove from blacklist
+      operationId: removeFromBlacklist
+      description: Remove email addresses from the account's blacklist.
+      x-ai-role: compliance_officer
+      x-ai-description: Re-enable sending to previously blacklisted emails.
+      x-ai-reasoning-instructions:
+      - Comma-separate the emails and base64 encode the string.
+      - Verify the contacts actually wish to be removed before acting.
+      x-ai-responding-instructions:
+      - Confirm that the emails were removed from the blacklist.
+      x-ai-suggestions:
+      - '{"emails": "dXNlcjFAZXhhbXBsZS5jb20="}'
+      x-ai-capabilities:
+        security_info:
+          data_handling:
+          - ResourceStateUpdate
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BlacklistDeleteRequest'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResultTrue'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+components:
+  schemas:
+    ResultTrue:
+      type: object
+      x-ai-description: Success indicator.
+      properties:
+        result:
+          type: boolean
+    BlacklistAddRequest:
+      type: object
+      x-ai-description: Payload to add emails to blacklist.
+      required:
+      - emails
+      properties:
+        emails:
+          type: string
+          description: Base64 encoded comma-separated emails.
+          example: dXNlcjFAbWFpbHNlcnZlci5jb20sdXNlcjJAbWFpbHNlcnZlci5jb20sdXNlcjNAbWFpbHNlcnZlci5jb20=
+        comment:
+          type: string
+          example: comment
+    BlacklistDeleteRequest:
+      type: object
+      x-ai-description: Payload to remove emails from blacklist.
+      required:
+      - emails
+      properties:
+        emails:
+          type: string
+          description: Base64 encoded comma-separated emails.
+          example: dXNlcjFAbWFpbHNlcnZlci5jb20sdXNlcjJAbWFpbHNlcnZlci5jb20sdXNlcjNAbWFpbHNlcnZlci5jb20=
+  securitySchemes:
+    apiKey:
+      type: http
+      scheme: bearer
+      bearerFormat: API Key
+      description: 'Static API Key authentication.  A long-lived token generated manually in the SendPulse account settings.
+
+        '
+      x-ai-description: 'Permanent authentication token. Ideal for simple integrations without token refresh logic.
+
+        '
+    oauth2:
+      type: oauth2
+      description: OAuth 2.0 Client Credentials flow for temporary access tokens.
+      flows:
+        clientCredentials:
+          tokenUrl: https://api.sendpulse.com/oauth/access_token
+          scopes: {}
+      x-ai-description: 'Standard OAuth 2.0 flow using Client ID and Client Secret.  Provides temporary tokens (valid for 1 hour) for enhanced security.
+
+        '

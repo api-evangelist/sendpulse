@@ -1,0 +1,399 @@
+openapi: 3.2.0
+info:
+  title: SendPulse SMTP Unsubscribe API
+  description: 'The SendPulse SMTP API allows you to send transactional emails, manage unsubscribed users,  monitor bounces, and configure sender identities.  SMTP is ideal for high-volume transactional messages like order confirmations,  password resets, and notifications.
+
+    '
+  version: 1.0.0
+  x-ai-description: 'Expert-level SMTP relay service for transactional and bulk email delivery.  This API provides granular control over the delivery lifecycle, including  sender IP management, bounce tracking, and multi-channel fallback support.
+
+    '
+  license:
+    name: Apache 2.0
+    identifier: Apache-2.0
+servers:
+- url: https://api.sendpulse.com
+security:
+- apiKey: []
+- oauth2: []
+tags:
+- name: Unsubscribe
+paths:
+  /smtp/unsubscribe:
+    post:
+      summary: Unsubscribe a recipient
+      operationId: unsubscribeSmtpRecipients
+      tags:
+      - Unsubscribe
+      x-ai-role: compliance_officer
+      x-ai-description: 'Manually adds email addresses to the global suppression list for SMTP.  Essential for honoring external unsubscribe requests or managing legal compliance.
+
+        '
+      x-ai-reasoning-instructions:
+      - Ensure all email addresses are validly formatted before submission.
+      x-ai-responding-instructions:
+      - Confirm that the addresses have been added to the suppression list.
+      x-ai-suggestions:
+      - Include descriptive comments for why the user was unsubscribed.
+      x-ai-capabilities:
+        confirmation:
+          type: Required
+        security_info:
+          data_handling:
+          - ResourceStateUpdate
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: object
+                required:
+                - email
+                properties:
+                  email:
+                    type: string
+                  comment:
+                    type: string
+      responses:
+        '200':
+          description: Unsubscribe successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  result:
+                    type: boolean
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                emails.empty:
+                  summary: emails.empty
+                  value:
+                    message: Empty emails
+                    error_code: 14
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+    delete:
+      summary: Remove an email from the unsubscribed list
+      operationId: removeSmtpUnsubscribe
+      tags:
+      - Unsubscribe
+      x-ai-role: compliance_officer
+      x-ai-description: 'Reinstates a suppressed email address, allowing future SMTP communications.  Should only be used when a user explicitly requests to re-engage.
+
+        '
+      x-ai-reasoning-instructions:
+      - Verify that the user has given consent to be re-added.
+      x-ai-responding-instructions:
+      - Confirm removal from the suppression list.
+      x-ai-suggestions:
+      - Suggest sending a resubscription confirmation email for double opt-in.
+      x-ai-capabilities:
+        confirmation:
+          type: Required
+        security_info:
+          data_handling:
+          - ResourceStateUpdate
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: string
+      responses:
+        '200':
+          description: Removal successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  result:
+                    type: boolean
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                emails.empty:
+                  summary: emails.empty
+                  value:
+                    message: Empty emails
+                    error_code: 14
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+    get:
+      summary: Get a list of unsubscribed users
+      operationId: getSmtpUnsubscribed
+      tags:
+      - Unsubscribe
+      x-ai-role: marketing_automation_specialist
+      x-ai-description: 'Returns a list of all emails currently in the suppression list.  Used to synchronize external CRM systems with SendPulse state.
+
+        '
+      x-ai-reasoning-instructions:
+      - Filter by date if only recent unsubscribes are needed for sync.
+      x-ai-responding-instructions:
+      - Summarize the list of unsubscribed users found.
+      x-ai-suggestions:
+      - Use `limit` and `offset` to process large suppression lists incrementally.
+      x-ai-capabilities:
+        confirmation:
+          type: None
+      parameters:
+      - name: date
+        in: query
+        schema:
+          type: string
+          format: date
+      - name: limit
+        in: query
+        schema:
+          type: integer
+      - name: offset
+        in: query
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: List of unsubscribed users
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    email:
+                      type: string
+                    unsubscribe_by_link:
+                      type: integer
+                    unsubscribe_by_user:
+                      type: integer
+                    spam_complaint:
+                      type: integer
+                    date:
+                      type: string
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '422':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                tariff.not_allowed:
+                  summary: tariff.not_allowed
+                  value:
+                    message: Your tariff does not allow the operation
+                    error_code: 422
+  /smtp/unsubscribe/search:
+    get:
+      summary: Get information about a contact's subscription status
+      operationId: searchSmtpUnsubscribe
+      tags:
+      - Unsubscribe
+      parameters:
+      - name: email
+        in: query
+        required: true
+        schema:
+          type: string
+      x-ai-role: compliance_officer
+      x-ai-description: 'Checks if a specific email address is currently suppressed.  A preventative check to avoid sending to users who have opted out.
+
+        '
+      x-ai-reasoning-instructions:
+      - Run this check before manually triggering a high-value email.
+      x-ai-responding-instructions:
+      - Clearly state if the user is currently unsubscribed or not.
+      x-ai-suggestions:
+      - If `result` is true, do not attempt to send emails to this address.
+      x-ai-capabilities:
+        confirmation:
+          type: None
+      responses:
+        '200':
+          description: Subscription status
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  result:
+                    type: boolean
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '422':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                email.empty:
+                  summary: email.empty
+                  value:
+                    message: Empty email parameter
+                    error_code: 422
+                email.invalid:
+                  summary: email.invalid
+                  value:
+                    message: Wrong email parameter
+                    error_code: 422
+  /smtp/resubscribe:
+    post:
+      summary: Resubscribe a recipient
+      operationId: resubscribeSmtpRecipient
+      tags:
+      - Unsubscribe
+      x-ai-role: marketing_automation_specialist
+      x-ai-description: 'Sends a formal resubscription request email to a suppressed contact.  This is a ''double opt-in'' safety mechanism to ensure valid re-engagement.
+
+        '
+      x-ai-reasoning-instructions:
+      - Be aware of the 24-hour limit (max 5 emails per account).
+      - Select the appropriate language (`lang`) based on the user's profile.
+      x-ai-responding-instructions:
+      - Confirm the request email has been sent.
+      - Remind the user of the daily rate limit for this action.
+      x-ai-suggestions:
+      - Default to `en` if user language is unknown.
+      x-ai-capabilities:
+        confirmation:
+          type: Required
+        security_info:
+          data_handling:
+          - ResourceStateUpdate
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - email
+              - sender
+              properties:
+                email:
+                  type: string
+                sender:
+                  type: string
+                lang:
+                  type: string
+                  enum:
+                  - ru
+                  - en
+                  - ua
+                  - tr
+                  - es
+                  - pt
+                  default: en
+      responses:
+        '200':
+          description: Resubscription email sent
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  result:
+                    type: boolean
+                  id:
+                    type: string
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '422':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                email.required:
+                  summary: email.required
+                  value:
+                    message: Argument email missing
+                    error_code: 422
+                email.invalid:
+                  summary: email.invalid
+                  value:
+                    message: Argument email is invalid
+                    error_code: 422
+                sender.required:
+                  summary: sender.required
+                  value:
+                    message: Argument sender missing
+                    error_code: 422
+                lang.string:
+                  summary: lang.string
+                  value:
+                    message: Argument lang must be string
+                    error_code: 422
+                email.not_blocked:
+                  summary: email.not_blocked
+                  value:
+                    message: Blocked email not found
+                    error_code: 422
+                smtp_user.not_found:
+                  summary: smtp_user.not_found
+                  value:
+                    message: Smtp user not found
+                    error_code: 503
+                daily_limit.exceeded:
+                  summary: daily_limit.exceeded
+                  value:
+                    message: No more than 5 are allowed per day
+                    error_code: 422
+components:
+  schemas:
+    Error:
+      type: object
+      properties:
+        message:
+          type: string
+        error_code:
+          type: integer
+  securitySchemes:
+    apiKey:
+      type: http
+      scheme: bearer
+      bearerFormat: API Key
+      description: 'Static API Key authentication.  A long-lived token generated manually in the SendPulse account settings.
+
+        '
+      x-ai-description: 'Permanent authentication token. Ideal for simple integrations without token refresh logic.
+
+        '
+    oauth2:
+      type: oauth2
+      description: OAuth 2.0 Client Credentials flow for temporary access tokens.
+      flows:
+        clientCredentials:
+          tokenUrl: https://api.sendpulse.com/oauth/access_token
+          scopes: {}
+      x-ai-description: 'Standard OAuth 2.0 flow using Client ID and Client Secret.  Provides temporary tokens (valid for 1 hour) for enhanced security.
+
+        '

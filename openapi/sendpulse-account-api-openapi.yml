@@ -1,0 +1,444 @@
+openapi: 3.2.0
+info:
+  title: Sendpulse Account API
+  version: 0.0.1
+  description: 'Operations tagged account across 8 of this provider''s published API definitions: sendpulse-chatbots-openapi.yml, sendpulse-facebook-openapi.yml, sendpulse-instagram-openapi.yml, sendpulse-live-chat-openapi.yml, sendpulse-telegram-openapi.yml, sendpulse-tiktok-openapi.yml, sendpulse-viber-chatbot-openapi.yml, sendpulse-whatsapp-openapi.yml. Each path carries the servers of the definition it was published in.'
+servers:
+- description: ''
+  url: https://api.sendpulse.com/chatbots
+- description: ''
+  url: https://api.sendpulse.com/messenger
+- description: ''
+  url: https://api.sendpulse.com/instagram
+- description: ''
+  url: https://api.sendpulse.com/live-chat
+- description: ''
+  url: https://api.sendpulse.com/telegram
+- description: ''
+  url: https://api.sendpulse.com/tiktok
+- description: ''
+  url: https://api.sendpulse.com/viber/chatbots
+- description: ''
+  url: https://api.sendpulse.com/whatsapp
+security:
+- apiKey: []
+- oauth2: []
+tags:
+- description: ''
+  name: account
+paths:
+  /account:
+    get:
+      summary: Get account info
+      description: Returns information about your current account pricing plan, the number of messages in your plan, bots, contacts, list of tags, and variables
+      security:
+      - oAuth2ClientCredentials: []
+      tags:
+      - account
+      responses:
+        '200':
+          description: Operation successful
+          content:
+            application/json:
+              schema:
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/Account'
+                type: object
+      operationId: getAccount
+      x-ai-role: account_manager
+      x-ai-description: 'Returns a comprehensive snapshot of the current account state: active pricing plan, remaining message quotas, number of active bots and contacts, as well as the full list of tags and variables defined in the account. Use this endpoint to assess account capacity before planning large campaigns or automation flows.'
+      x-ai-reasoning-instructions:
+      - Check the remaining message quota before recommending bulk send operations — warn the user if the balance is critically low.
+      - Use the list of tags and variables returned here to validate inputs for other endpoints that accept tags or variable names.
+      - If bot or contact counts are near plan limits, proactively suggest an upgrade or cleanup.
+      x-ai-responding-instructions:
+      - Summarize the plan name and key quotas (messages remaining, bots, contacts) in a human-readable way.
+      - If any quota is exhausted or near the limit, highlight it explicitly and suggest remediation steps.
+      - List available tags and variables only if the user explicitly needs them — otherwise keep the response concise.
+      x-ai-suggestions:
+      - Call this endpoint first to understand account constraints before scheduling a campaign.
+      - Use returned variable names as valid inputs for personalization fields in other endpoints.
+      x-ai-capabilities:
+        confirmation:
+          type: None
+        security_info:
+          data_handling:
+          - ReadOnly
+    servers:
+    - description: ''
+      url: https://api.sendpulse.com/chatbots
+components:
+  schemas:
+    Account:
+      properties:
+        tariff:
+          type: object
+          description: '`-1` - unlimited'
+          properties:
+            code:
+              type: string
+              example: messengers500
+            max_bots:
+              type: integer
+              example: -1
+            max_contacts:
+              type: integer
+              example: 500
+            max_messages:
+              type: integer
+              example: -1
+            max_tags:
+              type: integer
+              example: -1
+            max_variables:
+              type: integer
+              example: -1
+            branding:
+              type: boolean
+              example: false
+            is_exceeded:
+              type: boolean
+              example: false
+            is_expired:
+              type: boolean
+            expired_at:
+              type: string
+              example: 2026-01-15 11:11:11+00:00
+        statistics:
+          type: object
+          description: ''
+          properties:
+            messages:
+              type: integer
+            bots:
+              type: integer
+            contacts:
+              type: integer
+            variables:
+              type: integer
+            active_count_by_last_month:
+              type: integer
+            active_count_by_current_tariff_period:
+              type: integer
+        services:
+          type: array
+          description: "\n                    * `1` - Messenger\n\n                    * `3` - Telegram\n\n                    * `4` - WhatsApp\n\n                    * `5` - Instagram\n\n                    * `6` - Viber\n\n                    * `7` - Livechat\n\n                    * `8` - TikTok\n\n                    * `1000` - Bridge\n\n                    * `1001` - Telegram personal"
+          items:
+            type: integer
+          example:
+          - 1
+          - 3
+          - 5
+    Account_2:
+      properties:
+        plan:
+          type: object
+          description: '`-1` - unlimited'
+          properties:
+            code:
+              type: string
+            max_bots:
+              type: integer
+            max_contacts:
+              type: integer
+              example: -1
+            max_messages:
+              type: integer
+            max_tags:
+              type: integer
+            max_variables:
+              type: integer
+            branding:
+              type: boolean
+            is_exceeded:
+              type: boolean
+            is_expired:
+              type: boolean
+            expired_at:
+              type: string
+              example: 2020-12-11 21:00:00+00:00
+        statistics:
+          type: object
+          description: ''
+          properties:
+            messages:
+              type: integer
+            bots:
+              type: integer
+            contacts:
+              type: integer
+            variables:
+              type: integer
+    Account_3:
+      properties:
+        tariff:
+          type: object
+          description: '`-1` - unlimited'
+          properties:
+            code:
+              type: string
+            max_bots:
+              type: integer
+            max_contacts:
+              type: integer
+              example: -1
+            max_messages:
+              type: integer
+            max_tags:
+              type: integer
+            max_variables:
+              type: integer
+            branding:
+              type: boolean
+            is_exceeded:
+              type: boolean
+            is_expired:
+              type: boolean
+            expired_at:
+              type: string
+              example: 2020-12-11 21:00:00+00:00
+        statistics:
+          type: object
+          description: ''
+          properties:
+            messages:
+              type: integer
+            bots:
+              type: integer
+            contacts:
+              type: integer
+            variables:
+              type: integer
+    Account_4:
+      properties:
+        tariff:
+          type: object
+          description: '`-1` - unlimited'
+          properties:
+            code:
+              type: string
+            max_bots:
+              type: integer
+            max_contacts:
+              type: integer
+              example: -1
+            max_messages:
+              type: integer
+            max_tags:
+              type: integer
+            max_variables:
+              type: integer
+            branding:
+              type: boolean
+            is_exceeded:
+              type: boolean
+            is_expired:
+              type: boolean
+            expired_at:
+              type: string
+              example: 2020-12-11 21:00:00+00:00
+        statistics:
+          type: object
+          description: ''
+          properties:
+            messages:
+              type: integer
+            bots:
+              type: integer
+            contacts:
+              type: integer
+            variables:
+              type: integer
+    Account_5:
+      properties:
+        plan:
+          type: object
+          description: '`-1` - unlimited'
+          properties:
+            code:
+              type: string
+            max_bots:
+              type: integer
+            max_contacts:
+              type: integer
+              example: -1
+            max_messages:
+              type: integer
+            max_tags:
+              type: integer
+            max_variables:
+              type: integer
+            branding:
+              type: boolean
+            is_exceeded:
+              type: boolean
+            is_expired:
+              type: boolean
+            expired_at:
+              type: string
+              example: 2020-12-11 21:00:00+00:00
+        statistics:
+          type: object
+          description: ''
+          properties:
+            messages:
+              type: integer
+            bots:
+              type: integer
+            contacts:
+              type: integer
+            variables:
+              type: integer
+    Account_6:
+      properties:
+        tariff:
+          type: object
+          description: '`-1` - unlimited'
+          properties:
+            code:
+              type: string
+            max_bots:
+              type: integer
+            max_contacts:
+              type: integer
+              example: -1
+            max_messages:
+              type: integer
+            max_tags:
+              type: integer
+            max_variables:
+              type: integer
+            branding:
+              type: boolean
+            is_exceeded:
+              type: boolean
+            is_expired:
+              type: boolean
+            expired_at:
+              type: string
+              example: 2020-12-11 21:00:00+00:00
+        statistics:
+          type: object
+          description: ''
+          properties:
+            messages:
+              type: integer
+            bots:
+              type: integer
+            contacts:
+              type: integer
+            variables:
+              type: integer
+    Account_7:
+      properties:
+        tariff:
+          type: object
+          description: '`-1` - unlimited'
+          properties:
+            code:
+              type: string
+            max_bots:
+              type: integer
+            max_contacts:
+              type: integer
+              example: -1
+            max_messages:
+              type: integer
+            max_tags:
+              type: integer
+            max_variables:
+              type: integer
+            branding:
+              type: boolean
+            is_exceeded:
+              type: boolean
+            is_expired:
+              type: boolean
+            expired_at:
+              type: string
+              example: 2020-12-11 21:00:00+00:00
+        statistics:
+          type: object
+          description: ''
+          properties:
+            messages:
+              type: integer
+            bots:
+              type: integer
+            contacts:
+              type: integer
+            variables:
+              type: integer
+    Account_8:
+      properties:
+        plan:
+          type: object
+          description: '`-1` - unlimited'
+          properties:
+            code:
+              type: string
+            max_bots:
+              type: integer
+            max_contacts:
+              type: integer
+              example: -1
+            max_messages:
+              type: integer
+            max_tags:
+              type: integer
+            max_variables:
+              type: integer
+            branding:
+              type: boolean
+            is_exceeded:
+              type: boolean
+            is_expired:
+              type: boolean
+            expired_at:
+              type: string
+              example: 2020-12-11 21:00:00+00:00
+        statistics:
+          type: object
+          description: ''
+          properties:
+            messages:
+              type: integer
+            bots:
+              type: integer
+            contacts:
+              type: integer
+            variables:
+              type: integer
+  securitySchemes:
+    apiKey:
+      type: http
+      scheme: bearer
+      bearerFormat: API Key
+      description: 'Static API Key authentication.  A long-lived token generated manually in the SendPulse account settings.
+
+        '
+      x-ai-description: 'Permanent authentication token. Ideal for simple integrations without token refresh logic.
+
+        '
+    outh2:
+      type: oauth2
+      description: OAuth 2.0 Client Credentials flow for temporary access tokens.
+      flows:
+        clientCredentials:
+          tokenUrl: https://api.sendpulse.com/oauth/access_token
+          scopes: {}
+      x-ai-description: 'Standard OAuth 2.0 flow using Client ID and Client Secret.  Provides temporary tokens (valid for 1 hour) for enhanced security.
+
+        '
+x-refined-from:
+- sendpulse-chatbots-openapi.yml
+- sendpulse-facebook-openapi.yml
+- sendpulse-instagram-openapi.yml
+- sendpulse-live-chat-openapi.yml
+- sendpulse-telegram-openapi.yml
+- sendpulse-tiktok-openapi.yml
+- sendpulse-viber-chatbot-openapi.yml
+- sendpulse-whatsapp-openapi.yml

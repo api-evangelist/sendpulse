@@ -1,0 +1,112 @@
+openapi: 3.2.0
+info:
+  description: Using the API for the CRM service, you can integrate your system with CRM from SendPulse and receive detailed information on pipelines, deals, contacts and their attributes and users. You can also create deals and contacts, assign and remove fields, tags, contact details and instant messengers. On the right, there is a button for authorizing requests made on this page. Click “Authorize,” then insert the ID and Secret from your account. To perform a request directly from the page, click the "Try it out" button within each method block. Then fill in input fields if any (for URL parameters, the description is right below the URL request; for body parameters, the description is under the “Scheme” button to the right of the example), and click “Run.” You will find the server response and description of received parameters below.
+  title: SendPulse CRM Public Task history API
+  version: 0.1.0
+servers:
+- url: https://api.sendpulse.com/crm/v1
+security:
+- apiKey: []
+- oauth2: []
+tags:
+- name: Task history
+paths:
+  /tasks/{taskId}/history:
+    get:
+      tags:
+      - Task history
+      summary: Get task history
+      description: Get task history by ID within a date range.
+      parameters:
+      - name: taskId
+        in: path
+        required: true
+        schema:
+          type: integer
+      - name: fromDate
+        in: query
+        required: true
+        schema:
+          type: string
+          format: date-time
+          example: 2024-12-12 12:12:12+00:00
+      - name: toDate
+        in: query
+        required: true
+        schema:
+          type: string
+          format: date-time
+          example: 2024-12-12 12:12:12+00:00
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/TaskHistory'
+      operationId: getTaskHistory
+      x-ai-role: task_management_analyst
+      x-ai-description: Retrieves a chronological audit trail of all state changes and events for a specific task within a bounded time window. This is not just a log — it is the source of truth for diagnosing automation failures, debugging trigger sequences, and auditing task execution history in CRM or workflow pipelines.
+      x-ai-reasoning-instructions:
+      - Ensure taskId refers to an existing task before querying; a missing task will return an empty or error response.
+      - The fromDate and toDate range should be reasonable — overly broad ranges may return excessive data or hit pagination limits.
+      - If the user is debugging a specific issue, narrow the date range to the suspected incident window for clarity.
+      - Date-time values must be in the correct format (YYYY-MM-DD HH:MM:SS or ISO 8601); validate before submitting.
+      x-ai-responding-instructions:
+      - Summarize the number of history entries returned and the time range covered.
+      - If the result is empty, suggest widening the date range or verifying that the taskId is correct.
+      - Highlight any notable status transitions or anomalies in the history (e.g., repeated failures, unexpected state changes).
+      - Suggest using this data for debugging task execution issues or auditing automation workflows.
+      x-ai-suggestions:
+      - Use a 24-hour window around a known incident to isolate the root cause.
+      - Combine with task status endpoints to get current state alongside historical context.
+      - Useful for compliance audits — export the history before deleting or archiving a task.
+      x-ai-capabilities:
+        confirmation:
+          type: None
+        security_info:
+          data_handling:
+          - ReadOnly
+components:
+  schemas:
+    TaskHistory:
+      type: object
+      properties:
+        id:
+          type: integer
+        taskId:
+          type: integer
+        eventTime:
+          type: string
+        eventType:
+          type: string
+        eventData:
+          type: object
+        userId:
+          type: number
+  securitySchemes:
+    apiKey:
+      type: http
+      scheme: bearer
+      bearerFormat: API Key
+      description: 'Static API Key authentication.  A long-lived token generated manually in the SendPulse account settings.
+
+        '
+      x-ai-description: 'Permanent authentication token. Ideal for simple integrations without token refresh logic.
+
+        '
+    outh2:
+      type: oauth2
+      description: OAuth 2.0 Client Credentials flow for temporary access tokens.
+      flows:
+        clientCredentials:
+          tokenUrl: https://api.sendpulse.com/oauth/access_token
+          scopes: {}
+      x-ai-description: 'Standard OAuth 2.0 flow using Client ID and Client Secret.  Provides temporary tokens (valid for 1 hour) for enhanced security.
+
+        '

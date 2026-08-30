@@ -1,0 +1,330 @@
+openapi: 3.2.0
+info:
+  description: Using the API for the FileManager service, you can integrate your system with FileManager from SendPulse
+  title: SendPulse FileManager Public Directory API
+  version: 1.0.0
+servers:
+- description: Production server
+  url: https://api.sendpulse.com/fm/public/v1
+security:
+- apiKey: []
+- oauth2: []
+tags:
+- description: directory entity
+  name: Directory
+paths:
+  /directory:
+    post:
+      tags:
+      - Directory
+      summary: Create directory
+      description: Creates a new directory at the specified path
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - pathToStore
+              - name
+              properties:
+                pathToStore:
+                  type: string
+                  example: /test
+                  description: Path where the directory will be created
+                name:
+                  type: string
+                  example: my-folder
+                  description: Name of the directory to create
+      responses:
+        '200':
+          description: Directory successfully created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+      operationId: createDirectory
+      x-ai-role: file_system_manager
+      x-ai-description: Initializes a new directory node within the file storage hierarchy. A directory in SendPulse File Manager acts as a logical container for organizing uploaded assets. Creating a well-structured directory tree upfront simplifies future file retrieval, sharing, and cleanup operations.
+      x-ai-reasoning-instructions:
+      - Before creating, verify whether a directory with the same name already exists at the specified path to avoid silent duplicates.
+      - Validate that `pathToStore` starts with `/` and does not contain illegal characters.
+      - Advise the user to use lowercase, hyphen-separated names (e.g., `campaign-assets-2024`) for cross-platform compatibility.
+      - If the parent path does not exist, clarify whether the API creates intermediate directories or returns an error.
+      x-ai-responding-instructions:
+      - Confirm successful creation by echoing the full resulting path (pathToStore + name).
+      - Suggest uploading files into the new directory as the immediate next step.
+      - If creation fails, check whether the path is valid and the account has sufficient storage quota.
+      x-ai-suggestions:
+      - campaign-assets
+      - user-uploads-2024
+      - product-images
+      x-ai-capabilities:
+        confirmation:
+          type: None
+        security_info:
+          data_handling:
+          - ResourceStateUpdate
+    get:
+      tags:
+      - Directory
+      summary: Get directory tree
+      description: Returns tree structure of directories
+      responses:
+        '200':
+          description: Directory tree retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  tree:
+                    type: object
+                    description: Tree structure of directories
+      operationId: getDirectory
+      x-ai-role: file_system_navigator
+      x-ai-description: Retrieves the full hierarchical tree of directories in the account's file storage. Use this as the entry point for any file management workflow — it reveals the folder structure before uploading, moving, or organizing files.
+      x-ai-reasoning-instructions:
+      - Call this endpoint first when the user asks to upload or organize files — you need the tree to determine the correct target directory.
+      - If the tree is empty, inform the user that no directories have been created yet and suggest creating one before proceeding.
+      - Use the returned structure to resolve human-readable folder names to their IDs for subsequent API calls.
+      x-ai-responding-instructions:
+      - Present the directory tree in a readable hierarchical format, not as raw JSON.
+      - If the user is looking for a specific folder, highlight it in the response.
+      - Suggest a next step such as uploading a file or creating a subdirectory based on the user's context.
+      x-ai-suggestions:
+      - Use the returned directory IDs with file upload or move endpoints.
+      - If you need to create a new folder, use the directory creation endpoint with the parent ID from this tree.
+      x-ai-capabilities:
+        confirmation:
+          type: None
+        security_info:
+          data_handling:
+          - ReadOnly
+  /directory/size:
+    get:
+      tags:
+      - Directory
+      summary: Get storage statistics
+      description: Returns storage usage statistics
+      responses:
+        '200':
+          description: Storage statistics retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  fileCount:
+                    type: integer
+                    description: Number of files
+                    example: 150
+                  directoryCount:
+                    type: integer
+                    description: Number of directories
+                    example: 25
+                  usedSpace:
+                    type: number
+                    format: float
+                    description: Used space in MB
+                    example: 245.7
+                  tariffStorageSpace:
+                    type: number
+                    format: float
+                    description: Available storage space by tariff in MB
+                    example: 1024
+                  availableSpace:
+                    type: number
+                    format: float
+                    description: Available free space in MB
+                    example: 778.3
+      operationId: getDirectorySize
+      x-ai-role: storage_resource_manager
+      x-ai-description: 'Provides a snapshot of the account''s file storage state: how many files and directories exist, how much space is consumed, and how much remains under the current tariff. Use this before upload operations to prevent quota overflows, or to surface storage health to the user without navigating the UI.'
+      x-ai-reasoning-instructions:
+      - Check this endpoint before bulk upload operations to confirm sufficient free space (availableSpace) is available.
+      - If usedSpace is close to tariffStorageSpace, proactively warn the user about the risk of hitting the quota.
+      - Use fileCount and directoryCount to give the user a meaningful structural overview, not just raw numbers.
+      - Do not infer directory depth or hierarchy from this endpoint — it returns aggregate totals only.
+      x-ai-responding-instructions:
+      - Present usedSpace and availableSpace as human-readable values (e.g., '245.7 MB used of 1024 MB').
+      - If availableSpace is below 10% of tariffStorageSpace, flag it as a warning and suggest cleaning up unused files.
+      - Mention fileCount and directoryCount as context, not as primary data — the quota numbers are what matter most.
+      - If the user asks whether they can upload a specific file size, compare it against availableSpace and give a direct yes/no.
+      x-ai-suggestions:
+      - Run before any bulk file import to verify quota headroom.
+      - Use alongside `listDirectory` to correlate storage usage with specific folders.
+      - Combine with a tariff upgrade suggestion if availableSpace is critically low.
+      x-ai-capabilities:
+        confirmation:
+          type: None
+        security_info:
+          data_handling:
+          - ReadOnly
+  /directory/{path}:
+    get:
+      tags:
+      - Directory
+      summary: Get directory contents
+      description: Returns data for a specific directory
+      parameters:
+      - in: path
+        name: path
+        schema:
+          type: string
+        required: true
+        description: Directory path
+        example: /test/subfolder
+      responses:
+        '200':
+          description: Directory contents retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    path:
+                      type: string
+                      example: /test/subfolder/file.txt
+                    name:
+                      type: string
+                      example: file.txt
+                    isFolder:
+                      type: boolean
+                      example: false
+                    size:
+                      type: number
+                      format: float
+                      example: 12.5
+                    filesCount:
+                      type: integer
+                      example: 0
+      operationId: getDirectoryContents
+      x-ai-role: file_system_navigator
+      x-ai-description: Retrieves the contents of a specific directory in the SendPulse file storage. Use this to explore the file tree before performing operations — it reveals both files (with size) and nested folders (with file count), enabling informed decisions about uploads, deletions, or reorganization without blindly guessing paths.
+      x-ai-reasoning-instructions:
+      - Ensure the path starts with '/' and uses forward slashes; normalize user-provided paths before calling.
+      - If the user mentions a folder name without a full path, check parent directories first to resolve the correct absolute path.
+      - 'Distinguish between files (isFolder: false) and subdirectories (isFolder: true) in the response to guide follow-up actions.'
+      - An empty array response means the directory exists but is empty — do not assume the path is invalid.
+      - If the path does not exist, surface the error clearly rather than retrying with guessed alternatives.
+      x-ai-responding-instructions:
+      - Present the contents as a structured list separating folders from files for readability.
+      - For files, include name and size (in KB if > 1024 bytes); for folders, include name and filesCount.
+      - If the directory is empty, explicitly tell the user rather than showing a blank result.
+      - Suggest logical next steps based on what was found — e.g., upload a file, navigate into a subfolder, or delete an item.
+      x-ai-suggestions:
+      - /
+      - /images
+      - /uploads/2024
+      x-ai-capabilities:
+        confirmation:
+          type: None
+        security_info:
+          data_handling:
+          - ReadOnly
+  /directory/find:
+    get:
+      tags:
+      - Directory
+      summary: Search files
+      description: Search for files in the specified directory
+      parameters:
+      - in: query
+        name: search
+        schema:
+          type: string
+        required: true
+        description: Keyword for search
+        example: document
+      - in: query
+        name: path
+        schema:
+          type: string
+          default: /
+        required: true
+        description: Directory for recursive search
+        example: /test
+      responses:
+        '200':
+          description: Search results
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        path:
+                          type: string
+                          example: /test/document.pdf
+                        name:
+                          type: string
+                          example: document.pdf
+                        size:
+                          type: string
+                          example: 2.5
+                        date:
+                          type: string
+                          example: 2025-10-15 12:00:00+00:00
+                        extension:
+                          type: string
+                          example: pdf
+                        thumb:
+                          type: string
+                          example: /thumb/document.jpg
+      operationId: findDirectoryFiles
+      x-ai-role: file_system_navigator
+      x-ai-description: Performs a recursive keyword search across all files within a specified directory tree. This is the primary discovery tool for locating assets by name fragment — useful before operations like move, delete, or share when the exact path is unknown. Search is case-insensitive and matches partial filenames.
+      x-ai-reasoning-instructions:
+      - If the user does not specify a path, default to '/' to search the entire storage.
+      - Prefer narrow `path` scopes when the user mentions a folder context — it reduces noise in results.
+      - If the result set is large, suggest narrowing the search keyword or restricting the path.
+      - Use this endpoint before file operations (delete, move, download) when the user only knows the filename or extension, not the full path.
+      x-ai-responding-instructions:
+      - Present results as a list with name, path, size, and date — highlight the full path for direct use in follow-up operations.
+      - If no results are returned, suggest broadening the keyword or checking the path scope.
+      - If multiple files share the same name in different directories, list all matches and ask the user to confirm which one to act on.
+      x-ai-suggestions:
+      - Search by extension fragment (e.g., '.pdf') to list all files of a type.
+      - Use a parent folder path like '/projects' to scope the search to a subtree.
+      - Combine results with `deleteFile` or `moveFile` for post-discovery operations.
+      x-ai-capabilities:
+        confirmation:
+          type: None
+        security_info:
+          data_handling:
+          - ReadOnly
+components:
+  securitySchemes:
+    apiKey:
+      type: http
+      scheme: bearer
+      bearerFormat: API Key
+      description: 'Static API Key authentication.  A long-lived token generated manually in the SendPulse account settings.
+
+        '
+      x-ai-description: 'Permanent authentication token. Ideal for simple integrations without token refresh logic.
+
+        '
+    outh2:
+      type: oauth2
+      description: OAuth 2.0 Client Credentials flow for temporary access tokens.
+      flows:
+        clientCredentials:
+          tokenUrl: https://api.sendpulse.com/oauth/access_token
+          scopes: {}
+      x-ai-description: 'Standard OAuth 2.0 flow using Client ID and Client Secret.  Provides temporary tokens (valid for 1 hour) for enhanced security.
+
+        '

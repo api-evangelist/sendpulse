@@ -1,0 +1,358 @@
+openapi: 3.2.0
+info:
+  title: SendPulse Pop-up Popup statistic API
+  description: API for managing pop-ups in SendPulse. This API allows you to create, update, and delete pop-ups, as well as retrieve information about them and their performance.
+  version: '1.0'
+servers:
+- description: Production server
+  url: https://api.sendpulse.com/v2/pop-ups
+security:
+- apiKey: []
+- oauth2: []
+tags:
+- name: Popup statistic
+paths:
+  /public/api/statistics/popup/{popupId}:
+    get:
+      tags:
+      - Popup statistic
+      summary: Get statistics about your pop-up
+      description: Returns the information about how many site visitors saw your your pop-up and interacted with them
+      parameters:
+      - name: popupId
+        in: path
+        description: Pop-up ID
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - name: start
+        in: query
+        description: Start date timestamp
+        schema:
+          type: integer
+        required: false
+      - name: end
+        in: query
+        description: End date timestamp
+        schema:
+          type: integer
+        required: false
+      responses:
+        '200':
+          description: Operation successful
+          content:
+            application/json:
+              schema:
+                properties:
+                  result:
+                    type: boolean
+                  data:
+                    description: Popup statistic
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/popupStatistic'
+                type: object
+        '400':
+          description: Validation error
+          content:
+            application/json:
+              example:
+                result: false
+                errors:
+                  id: Invalid id {{'7803a6ea-4b32-44d7-a245-5cda4e4f203'}}
+        '401':
+          $ref: '#/components/schemas/unauthorizedResponse'
+        '404':
+          description: Resource Not Found
+      operationId: getPopupStatistics
+      x-ai-role: conversion_rate_optimization_specialist
+      x-ai-description: Retrieves aggregated engagement metrics for a specific pop-up over a given time window. This is the primary diagnostic endpoint for evaluating pop-up performance — use it to determine whether a pop-up's targeting, design, or timing is driving meaningful interaction, or whether it needs to be revised or deactivated.
+      x-ai-reasoning-instructions:
+      - If no date range is provided, clarify with the user whether they want all-time stats or a specific period — unbounded queries can return noisy data.
+      - Validate that `start` is chronologically before `end` before calling; the API returns a 400 if the range is inverted.
+      - 'Cross-reference the returned impression and interaction counts: a high view-to-interaction ratio is normal; an abnormally low one may indicate UX issues with the pop-up.'
+      - 'If popupId is sourced from user input, verify it is a valid UUID (format: 8-4-4-4-12 hex digits) before calling to avoid a 400 validation error.'
+      x-ai-responding-instructions:
+      - 'Present the statistics as a human-readable summary: total views, interactions, and conversion rate — not raw array dumps.'
+      - If the date range was not specified, note the time window that the data covers so the user understands the scope.
+      - If interaction count is zero, flag this proactively and suggest checking whether the pop-up is still active and correctly targeted.
+      - On 404, inform the user that the pop-up ID does not exist and suggest listing available pop-ups.
+      x-ai-suggestions:
+      - Use a 7-day or 30-day window (Unix timestamps) for actionable performance snapshots.
+      - Combine with the pop-up update endpoint to iterate on low-performing pop-ups based on these stats.
+      - Schedule periodic stat pulls to track trend changes after configuration edits.
+      x-ai-capabilities:
+        confirmation:
+          type: None
+        security_info:
+          data_handling:
+          - ReadOnly
+  /public/api/statistics/nps/{popupId}:
+    get:
+      tags:
+      - Popup statistic
+      summary: Get NPS variants statistics and base NPS button/buttons info
+      description: Returns list of NPS variants with total amount of voices for each
+      parameters:
+      - name: popupId
+        in: path
+        description: Pop-up ID
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - name: start
+        in: query
+        description: Start date timestamp
+        schema:
+          type: integer
+        required: false
+      - name: end
+        in: query
+        description: End date timestamp
+        schema:
+          type: integer
+        required: false
+      responses:
+        '200':
+          description: Operation successful
+          content:
+            application/json:
+              schema:
+                properties:
+                  result:
+                    type: boolean
+                  data:
+                    description: NPS aggregated statistic
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/NPSStatistic'
+                type: object
+        '400':
+          description: Validation error
+          content:
+            application/json:
+              example:
+                result: false
+                errors:
+                  id: Invalid id {{'7803a6ea-4b32-44d7-a245-5cda4e4f203'}}
+        '401':
+          $ref: '#/components/schemas/unauthorizedResponse'
+        '404':
+          description: Resource Not Found
+      operationId: getNpsStatisticsByPopupId
+      x-ai-role: ux_research_analyst
+      x-ai-description: Retrieves aggregated NPS (Net Promoter Score) vote distribution for a specific popup. Each NPS variant represents a score bucket (e.g., 0–6 detractors, 7–8 passives, 9–10 promoters) with its total voice count. Use this to calculate the actual NPS score and analyze audience sentiment trends over a given time range.
+      x-ai-reasoning-instructions:
+      - Before calling, verify the popupId is a valid UUID and belongs to an NPS-type popup — this endpoint returns an error for non-NPS popup IDs.
+      - If no date range is provided, the API returns all-time statistics; clarify with the user whether a bounded period is intended.
+      - 'To compute the NPS score from the response, calculate: ((Promoters - Detractors) / Total) × 100 — the API returns raw counts, not the derived score.'
+      - When comparing periods, make two separate calls with different start/end ranges and diff the results.
+      x-ai-responding-instructions:
+      - Present the NPS variants as a breakdown table showing each score bucket and its vote count.
+      - 'If enough data is present, compute and surface the derived NPS score (range: -100 to +100) to give the user actionable insight.'
+      - If the result array is empty, explain that no responses were recorded in the requested period.
+      - On a 404, confirm whether the popupId belongs to the correct account and is an NPS popup type.
+      x-ai-suggestions:
+      - Use a 30-day window (start/end as Unix timestamps) to get a meaningful NPS baseline.
+      - Follow up with a list-popups call to cross-reference popup name and type before querying statistics.
+      - Combine with response-rate data to contextualize whether a low NPS reflects genuine sentiment or a small sample size.
+      x-ai-capabilities:
+        confirmation:
+          type: None
+        security_info:
+          data_handling:
+          - ReadOnly
+  /public/api/statistics/nps/{popupId}/aggregated:
+    get:
+      tags:
+      - Popup statistic
+      summary: Get NPS statistics
+      description: Returns the information about NPS results
+      parameters:
+      - name: popupId
+        in: path
+        description: Pop-up ID
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - name: start
+        in: query
+        description: Start date timestamp
+        schema:
+          type: integer
+        required: false
+      - name: end
+        in: query
+        description: End date timestamp
+        schema:
+          type: integer
+        required: false
+      responses:
+        '200':
+          description: Operation successful
+          content:
+            application/json:
+              schema:
+                properties:
+                  result:
+                    type: boolean
+                  data:
+                    description: NPS aggregated statistic
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/aggregatedNPSStatistic'
+                type: object
+        '400':
+          description: Validation error
+          content:
+            application/json:
+              example:
+                result: false
+                errors:
+                  id: Invalid id {{'7803a6ea-4b32-44d7-a245-5cda4e4f203'}}
+        '401':
+          $ref: '#/components/schemas/unauthorizedResponse'
+        '404':
+          description: Resource Not Found
+      operationId: getPopupAggregatedNpsStatistics
+      x-ai-role: customer_experience_analyst
+      x-ai-description: Retrieves aggregated Net Promoter Score (NPS) results for a specific popup, optionally filtered by a date range. NPS is a loyalty metric derived from responses to 'How likely are you to recommend us?' — values range from 0–10 and are grouped into Detractors (0–6), Passives (7–8), and Promoters (9–10). The aggregated view collapses individual responses into distribution totals, enabling trend analysis and campaign performance evaluation without exposing raw respondent data.
+      x-ai-reasoning-instructions:
+      - Before fetching, verify the popupId refers to an NPS-type popup — non-NPS popups will return empty or irrelevant data.
+      - If a date range is requested, validate that `start` is strictly before `end` and both are Unix timestamps in seconds.
+      - When no date range is provided, the API returns all-time aggregated data — clarify this to the user if they expect recent results.
+      - Cross-reference the popup's active period with the requested range to detect misaligned queries (e.g., querying before the popup was launched).
+      - Consider that low response counts make the NPS score statistically unreliable — flag this if `data` totals are small.
+      x-ai-responding-instructions:
+      - Present the NPS breakdown by category (Promoters, Passives, Detractors) with percentages, not just raw counts.
+      - 'Calculate and display the NPS score as: (% Promoters − % Detractors) × 100, if not already provided in the response.'
+      - Highlight any significant shift in NPS trend if the user is comparing periods.
+      - If the result is empty, suggest widening the date range or confirming the popup has received responses.
+      - On 400 errors, surface the invalid field clearly and guide the user to correct the popupId format (UUID).
+      x-ai-suggestions:
+      - 'Fetch last 30 days: set `start` to current timestamp minus 2592000, `end` to now.'
+      - Compare quarterly performance by making two calls with consecutive 90-day ranges.
+      - Use alongside `getPopupStatistics` to correlate NPS scores with impression/response volume.
+      x-ai-capabilities:
+        confirmation:
+          type: None
+        security_info:
+          data_handling:
+          - ReadOnly
+components:
+  schemas:
+    NPSStatistic:
+      title: NPS variant statistic
+      properties:
+        button:
+          title: NPS button base information
+          properties:
+            id:
+              type: string
+              format: UUID
+              description: Uniq ID
+            caption:
+              type: string
+            contactVariableName:
+              type: string
+              description: Variable name from CRM
+            variants:
+              type: array
+              items:
+                properties:
+                  title:
+                    type: string
+                    description: Variant display name
+                  option:
+                    type: string
+                    description: Variant value
+                type: object
+            variantsCount:
+              type: integer
+              description: Total amount of variants
+            displayType:
+              type: integer
+              description: NPS variants display type
+          type: object
+        date:
+          type: string
+        option:
+          type: string
+          description: Variant value
+        total:
+          type: integer
+          description: Total amount of voices for this variant
+      type: object
+    popupStatistic:
+      title: Popup statistic
+      properties:
+        peopleReached:
+          type: integer
+          description: The number of times your widget was viewed
+        engagements:
+          type: integer
+          description: The number of visitors who interacted with your widget, expanded it, read its message, clicked its button, and followed the link.
+        subscriptions:
+          type: integer
+          description: The number of email addresses or phone numbers customers entered in the "Email Address Request" or "Phone Number Request" form.
+        formEngagements:
+          type: integer
+          description: The number of leads who submitted your form
+        wereClosed:
+          type: integer
+          description: The number of visitors who closed your widget (clicked the "cross" icon).
+      type: object
+    aggregatedNPSStatistic:
+      title: Aggregated NPS statistic
+      properties:
+        average:
+          type: integer
+          description: NPS score
+        total:
+          type: integer
+          description: Total number of results
+        promoter:
+          type: integer
+          description: Total promoters
+        neutral:
+          type: integer
+          description: Total neutral
+        critic:
+          type: integer
+          description: Total critic
+        promoterPercent:
+          type: integer
+          description: Percent of promoters
+        neutralPercent:
+          type: integer
+          description: Percent of neutrals
+        criticPercent:
+          type: integer
+          description: Percent of critics
+      type: object
+    unauthorizedResponse:
+      description: Unauthorized
+  securitySchemes:
+    apiKey:
+      type: http
+      scheme: bearer
+      bearerFormat: API Key
+      description: 'Static API Key authentication.  A long-lived token generated manually in the SendPulse account settings.
+
+        '
+      x-ai-description: 'Permanent authentication token. Ideal for simple integrations without token refresh logic.
+
+        '
+    outh2:
+      type: oauth2
+      description: OAuth 2.0 Client Credentials flow for temporary access tokens.
+      flows:
+        clientCredentials:
+          tokenUrl: https://api.sendpulse.com/oauth/access_token
+          scopes: {}
+      x-ai-description: 'Standard OAuth 2.0 flow using Client ID and Client Secret.  Provides temporary tokens (valid for 1 hour) for enhanced security.
+
+        '

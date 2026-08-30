@@ -1,0 +1,332 @@
+openapi: 3.2.0
+info:
+  description: Using the API for the CRM service, you can integrate your system with CRM from SendPulse and receive detailed information on pipelines, deals, contacts and their attributes and users. You can also create deals and contacts, assign and remove fields, tags, contact details and instant messengers. On the right, there is a button for authorizing requests made on this page. Click “Authorize,” then insert the ID and Secret from your account. To perform a request directly from the page, click the "Try it out" button within each method block. Then fill in input fields if any (for URL parameters, the description is right below the URL request; for body parameters, the description is under the “Scheme” button to the right of the example), and click “Run.” You will find the server response and description of received parameters below.
+  title: SendPulse CRM Public Deal Attributes API
+  version: 0.1.0
+servers:
+- url: https://api.sendpulse.com/crm/v1
+security:
+- apiKey: []
+- oauth2: []
+tags:
+- name: Deal Attributes
+paths:
+  /pipelines/{pipelineId}/attributes:
+    get:
+      tags:
+      - Deal Attributes
+      summary: Get deal attributes list
+      parameters:
+      - name: pipelineId
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    $ref: '#/components/schemas/DealAttribute'
+      operationId: listPipelineAttributes
+      x-ai-role: crm_pipeline_specialist
+      x-ai-description: Retrieves the full set of custom deal attributes defined for a specific pipeline. In SendPulse CRM, each pipeline can have its own schema of deal fields — these attributes define what structured data can be captured per deal (e.g., budget, priority, custom labels). Knowing the attribute schema is a prerequisite before creating or updating deals.
+      x-ai-reasoning-instructions:
+      - Always call this endpoint before attempting to create or update a deal in the pipeline — attribute IDs are required for setting custom field values.
+      - Verify that the provided pipelineId exists and is accessible to the current account before making the request.
+      - Cache the attribute list for a pipeline session if multiple deal operations will follow, to avoid redundant calls.
+      x-ai-responding-instructions:
+      - Present the returned attributes as a structured list with their IDs and names, so the user can identify which fields are available.
+      - If the list is empty, inform the user that no custom attributes are configured for this pipeline and suggest adding them via CRM settings.
+      - Highlight required attributes (if indicated) to help the user understand mandatory fields when creating deals.
+      x-ai-suggestions:
+      - Use returned attribute IDs when calling createDeal or updateDeal to populate custom field values.
+      - If attributes are missing, navigate to the CRM pipeline settings to define them before proceeding.
+      x-ai-capabilities:
+        confirmation:
+          type: None
+        security_info:
+          data_handling:
+          - ReadOnly
+    post:
+      tags:
+      - Deal Attributes
+      summary: Create a deal attribute
+      parameters:
+      - name: pipelineId
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                name:
+                  type: string
+                type:
+                  type: integer
+                  description: 0 = Text, 1 = Number, 2 = Date, 3 = Link, 4 = Select, 5 = MultiSelect
+                mandatory:
+                  type: boolean
+                options:
+                  type: array
+                  items:
+                    oneOf:
+                    - type: string
+                    - type: integer
+              required:
+              - name
+              - pipelineId
+              - type
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    $ref: '#/components/schemas/DealAttribute'
+      operationId: createPipelineAttribute
+      x-ai-role: crm_data_architect
+      x-ai-description: This endpoint extends the data schema of a specific CRM pipeline by defining a custom attribute for deals. Deal attributes act as typed metadata fields that shape how deals are captured, validated, and reported on. The `type` field determines the UI control and validation logic — selecting the wrong type for a field (e.g., Text instead of Date for a close date) causes downstream issues in filters, reporting, and automations. Mandatory fields enforce data completeness at deal creation time.
+      x-ai-reasoning-instructions:
+      - Confirm the target pipeline exists by its `pipelineId` before attempting to create an attribute.
+      - 'Map the user''s intent to the correct `type` integer: 0=Text, 1=Number, 2=Date, 3=Link, 4=Select, 5=MultiSelect.'
+      - If `type` is 4 (Select) or 5 (MultiSelect), the `options` array is required — prompt the user for option values if not provided.
+      - Avoid creating duplicate attribute names within the same pipeline; advise checking existing attributes first.
+      - 'Use `mandatory: true` only for fields that are genuinely required for every deal — overuse creates friction in data entry.'
+      x-ai-responding-instructions:
+      - Confirm the attribute was created by echoing its name and type in human-readable form (e.g., 'Date' instead of '2').
+      - If type is Select or MultiSelect, list the registered options back to the user.
+      - Suggest populating deals with the new attribute or reviewing pipeline attribute order as a next step.
+      - If the pipeline is not found or validation fails, explain which field caused the error and how to fix it.
+      x-ai-suggestions:
+      - 'Expected Close Date (type: 2, mandatory: true)'
+      - 'Deal Source (type: 4, options: [''Inbound'', ''Outbound'', ''Referral'', ''Partner''])'
+      - 'Contract Value (type: 1, mandatory: true)'
+      - 'Product Tags (type: 5, options: [''SaaS'', ''Enterprise'', ''Trial''])'
+      - 'Demo URL (type: 3)'
+      x-ai-capabilities:
+        confirmation:
+          type: None
+        security_info:
+          data_handling:
+          - SchemaModification
+          - ResourceStateUpdate
+  /pipelines/{pipelineId}/attributes/{attributeId}:
+    put:
+      tags:
+      - Deal Attributes
+      summary: Update a deal attribute
+      parameters:
+      - name: pipelineId
+        in: path
+        required: true
+        schema:
+          type: integer
+      - name: attributeId
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                name:
+                  type: string
+                type:
+                  type: integer
+                  description: 0 = Text, 1 = Number, 2 = Date, 3 = Link, 4 = Select, 5 = MultiSelect
+                mandatory:
+                  type: boolean
+                order:
+                  type: integer
+                status:
+                  type: integer
+                  description: 0 = Inactive, 1 = Active, 2 = Hidden
+                options:
+                  type: array
+                  items:
+                    oneOf:
+                    - type: string
+                    - type: integer
+              required:
+              - name
+              - order
+              - pipelineId
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    $ref: '#/components/schemas/DealAttribute'
+      operationId: updatePipelineAttribute
+      x-ai-role: sales_operations_specialist
+      x-ai-description: Updates a deal attribute definition within a specific pipeline, allowing reconfiguration of the deal data model — its display name, field type, visibility, sort order, and whether it is mandatory. Attribute structure changes propagate immediately to all deals in the pipeline, so type or mandatory-status edits can affect data integrity and form behavior across the entire sales workflow.
+      x-ai-reasoning-instructions:
+      - Before updating, verify both the pipelineId and attributeId exist; a missing pipeline or attribute returns an error.
+      - Warn the user if changing the `type` field on an attribute that already has values stored — type changes (e.g., Text → Number) may corrupt or discard existing deal data.
+      - If `mandatory` is being set to `true`, check whether existing deals already have this attribute populated; unpopulated mandatory fields can block deal save operations.
+      - When `type` is 4 (Select) or 5 (MultiSelect), `options` must be provided; omitting them leaves the field unusable.
+      - Use `order` to place the attribute logically relative to sibling attributes — confirm the desired position with the user if not explicitly specified.
+      - Setting `status` to 0 (Inactive) or 2 (Hidden) hides the attribute from the deal form but preserves stored data.
+      x-ai-responding-instructions:
+      - Confirm which fields were changed and echo back the updated attribute name and type for clarity.
+      - If `type` was changed, proactively warn that existing deal data for this attribute may be affected.
+      - If `mandatory` was enabled, suggest reviewing open deals for compliance.
+      - Suggest using `getPipelineAttributes` to verify the full updated attribute list after the change.
+      x-ai-suggestions:
+      - Set status to 2 (Hidden) instead of deleting the attribute to preserve historical deal data.
+      - Use descriptive names like 'Expected Close Date' or 'Contract Value (USD)' for clarity across the team.
+      - For Select/MultiSelect types, provide a complete and final list of options — partial lists confuse users filling in deals.
+      x-ai-capabilities:
+        confirmation:
+          type: Recommended
+          message: Modifying attribute type or mandatory status affects all existing deals in this pipeline. Confirm before proceeding.
+        security_info:
+          data_handling:
+          - ResourceStateUpdate
+          - PotentialDataLoss
+    delete:
+      tags:
+      - Deal Attributes
+      summary: Delete a deal attribute
+      parameters:
+      - name: pipelineId
+        in: path
+        required: true
+        schema:
+          type: integer
+      - name: attributeId
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '204':
+          description: Successfully deleted
+      operationId: deletePipelineAttribute
+      x-ai-role: crm_pipeline_administrator
+      x-ai-description: Permanently removes a custom attribute definition from a pipeline. This is a schema-level operation — it deletes the attribute field itself, not just a value. Any deal data stored under this attribute across all pipeline deals will be lost.
+      x-ai-reasoning-instructions:
+      - Confirm the attributeId belongs to the specified pipelineId before proceeding — cross-pipeline deletions are not valid.
+      - Warn the user that this operation is irreversible and will erase all stored values for this attribute across every deal in the pipeline.
+      - Check if the attribute is used in any automation, filter, or report before deletion — removing it may silently break dependent logic.
+      - Prefer archiving or disabling an attribute over deletion if the user is unsure.
+      x-ai-responding-instructions:
+      - Confirm deletion with the attributeId and pipelineId that were affected.
+      - Explicitly note that all deal-level data for this attribute has been permanently removed.
+      - Suggest reviewing pipeline deal views or automations that may have referenced this attribute.
+      x-ai-capabilities:
+        confirmation:
+          type: Required
+          message: This will permanently delete the attribute and all associated deal data. This action cannot be undone.
+        security_info:
+          data_handling:
+          - IrreversibleDelete
+          - CascadingDataLoss
+  /deals/{dealId}/attributes/{attributeId}:
+    delete:
+      tags:
+      - Deal Attributes
+      summary: Remove the deal attribute
+      description: Removes the attribute from the specified deal
+      parameters:
+      - name: dealId
+        in: path
+        required: true
+        description: Deal ID from which you want to delete the field. It can be obtained with the "Get a list of deals" method
+        schema:
+          type: integer
+      - name: attributeId
+        in: path
+        required: true
+        description: Attribute ID you want delete. It can be obtained with the "Get a list of deals" and "Get information about the deal by ID" methods
+        schema:
+          type: integer
+      responses:
+        '204':
+          description: ''
+      operationId: deleteDealAttribute
+      x-ai-role: crm_data_integrity_specialist
+      x-ai-description: Removes a specific custom attribute from a deal without deleting the deal itself. Use this when a field is no longer relevant to a particular deal — for example, after a stage transition makes certain data obsolete. This operation affects only the deal-attribute association, not the attribute definition globally.
+      x-ai-reasoning-instructions:
+      - Before deleting, confirm the attributeId belongs to the specified dealId — mismatched IDs will result in a 404.
+      - Verify whether the attribute holds data the user may want to preserve before removal, as this action is irreversible.
+      - If the user wants to remove an attribute from all deals, this endpoint must be called per deal individually — there is no bulk variant.
+      - Distinguish between removing an attribute value (this endpoint) and deleting the attribute definition globally.
+      x-ai-responding-instructions:
+      - Confirm the attribute was successfully removed from the deal (204 No Content means success).
+      - Remind the user that this does not delete the attribute definition — it only dissociates it from this deal.
+      - If the user seems to want to clean up multiple deals, suggest iterating over the deal list and calling this endpoint per deal.
+      x-ai-capabilities:
+        confirmation:
+          type: Recommended
+          message: This will permanently remove the attribute from the deal. The attribute definition will remain intact. Proceed?
+        security_info:
+          data_handling:
+          - ResourceStateUpdate
+          - IrreversibleDelete
+components:
+  schemas:
+    DealAttribute:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        status:
+          $ref: '#/components/schemas/DefaultStatusProperty'
+        type:
+          type: integer
+          description: ''
+        mandatory:
+          type: boolean
+          description: ''
+        order:
+          type: integer
+        options:
+          type: array
+          items:
+            oneOf:
+            - type: string
+            - type: integer
+          description: Items of "List" field type
+    DefaultStatusProperty:
+      type: integer
+      description: '| Status
+
+        * 0 — inactive (deleted by user) * 1 — active'
+  securitySchemes:
+    apiKey:
+      type: http
+      scheme: bearer
+      bearerFormat: API Key
+      description: 'Static API Key authentication.  A long-lived token generated manually in the SendPulse account settings.
+
+        '
+      x-ai-description: 'Permanent authentication token. Ideal for simple integrations without token refresh logic.
+
+        '
+    outh2:
+      type: oauth2
+      description: OAuth 2.0 Client Credentials flow for temporary access tokens.
+      flows:
+        clientCredentials:
+          tokenUrl: https://api.sendpulse.com/oauth/access_token
+          scopes: {}
+      x-ai-description: 'Standard OAuth 2.0 flow using Client ID and Client Secret.  Provides temporary tokens (valid for 1 hour) for enhanced security.
+
+        '

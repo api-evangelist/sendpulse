@@ -1,0 +1,363 @@
+openapi: 3.2.0
+info:
+  title: Sendpulse Variables API
+  version: 0.0.1
+  description: 'Operations tagged variables across 7 of this provider''s published API definitions: sendpulse-facebook-openapi.yml, sendpulse-instagram-openapi.yml, sendpulse-live-chat-openapi.yml, sendpulse-telegram-openapi.yml, sendpulse-tiktok-openapi.yml, sendpulse-viber-chatbot-openapi.yml, sendpulse-whatsapp-openapi.yml. Each path carries the servers of the definition it was published in.'
+servers:
+- description: ''
+  url: https://api.sendpulse.com/messenger
+- description: ''
+  url: https://api.sendpulse.com/instagram
+- description: ''
+  url: https://api.sendpulse.com/live-chat
+- description: ''
+  url: https://api.sendpulse.com/telegram
+- description: ''
+  url: https://api.sendpulse.com/tiktok
+- description: ''
+  url: https://api.sendpulse.com/viber/chatbots
+- description: ''
+  url: https://api.sendpulse.com/whatsapp
+security:
+- apiKey: []
+- oauth2: []
+tags:
+- description: ''
+  name: variables
+paths:
+  /variables:
+    get:
+      summary: Get a list of variables
+      description: 'Returns a list of variables for the selected bot with information about each: variable ID, bot ID, name, affiliation, type, status, and creation date'
+      security:
+      - oAuth2ClientCredentials: []
+      tags:
+      - variables
+      parameters:
+      - in: query
+        name: bot_id
+        required: true
+        schema:
+          type: string
+        description: Bot ID. Can be obtained with a method of getting a list of bots. You can also find it in your account in the address bar of a chat window with the desired contact.
+      - in: query
+        name: size
+        description: The limit of pagination items, that will be returned
+        schema:
+          type: integer
+      - in: query
+        name: skip
+        description: The offset of pagination items, where starts a current items batch
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Operation successful
+          content:
+            application/json:
+              schema:
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/Variable'
+                type: object
+      operationId: listBotVariables
+      x-ai-role: chatbot_automation_specialist
+      x-ai-description: Retrieves the full catalog of custom variables defined for a specific bot. Variables are the bot's memory — they store contact-level data collected during conversations (e.g., user preferences, order IDs, subscription status). Knowing which variables exist and their types is a prerequisite before reading or writing contact data.
+      x-ai-reasoning-instructions:
+      - Always resolve bot_id before calling this endpoint — use the list-bots method if the user has not provided it explicitly.
+      - Use pagination (size + skip) when working with bots that have many variables to avoid large payloads.
+      - Check variable 'type' in the response to understand what kind of data can be stored (string, number, date, etc.) before attempting to set values.
+      - If the user asks about a specific variable by name, fetch the full list and filter client-side, as there is no name-filter parameter.
+      x-ai-responding-instructions:
+      - 'Present the variable list in a structured way: name, type, and status at minimum.'
+      - If the list is empty, inform the user that no variables are defined yet for this bot and suggest creating them via the bot settings.
+      - If the user is looking for a specific variable, confirm whether it was found and highlight its ID for use in subsequent calls.
+      x-ai-suggestions:
+      - Use the returned variable IDs with contact variable endpoints to read or update per-contact values.
+      - Filter by 'status' to identify only active variables before building automation logic.
+      x-ai-capabilities:
+        confirmation:
+          type: None
+        security_info:
+          data_handling:
+          - ReadOnly
+    servers:
+    - description: ''
+      url: https://api.sendpulse.com/messenger
+components:
+  schemas:
+    Variable:
+      properties:
+        id:
+          type: string
+        bot_id:
+          type: string
+        name:
+          type: string
+        description:
+          type:
+          - string
+          - 'null'
+        type:
+          type: integer
+          enum:
+          - 1
+          - 2
+          description: "\n                    * `1` - contact variable\n\n                    * `2` - bot variable"
+        value_type:
+          type: integer
+          enum:
+          - 1
+          - 2
+          - 3
+          - 4
+          - 5
+          - 6
+          - 7
+          example: 1
+          description: "\n                this type of variable can have the following values:\n\n                    * `1` - string\n\n                    * `2` - number\n\n                    * `3` - date\n\n                    * `4` - boolean\n\n                    * `5` - phone\n\n                    * `6` - email\n\n                    * `7` - url"
+        status:
+          type: integer
+          enum:
+          - 1
+          - 2
+          description: "\n                    * `1` - active\n\n                    * `2` - trashed"
+        created_at:
+          type: string
+          example: 2020-12-11 21:00:00+00:00
+    Variable_2:
+      properties:
+        id:
+          type: string
+        bot_id:
+          type: string
+        name:
+          type: string
+        description:
+          type:
+          - string
+          - 'null'
+        type:
+          type: integer
+          enum:
+            CONTACT: 1
+          description: "\n                    * `1` - contact variable\n\n                    * `2` - bot variable"
+        value_type:
+          type: integer
+          example: 1
+          enum:
+            STRING: 1
+            NUMBER: 2
+            DATE: 3
+            BOOLEAN: 4
+            PHONE: 5
+            EMAIL: 6
+            URL: 7
+            LOCATION: 8
+            DATETIME: 9
+            TIME: 10
+          description: "\n                this type of variable can have the following values:\n\n                    * `1` - string\n\n                    * `2` - number\n\n                    * `3` - date\n\n                    * `4` - boolean\n\n                    * `5` - phone\n\n                    * `6` - email\n\n                    * `7` - url"
+        status:
+          type: integer
+          enum:
+            ACTIVE: 1
+            TRASHED: 2
+          description: "\n                    * `1` - active\n\n                    * `2` - trashed"
+        created_at:
+          type: string
+          example: 2020-12-11 21:00:00+00:00
+    Variable_3:
+      properties:
+        id:
+          type: string
+        bot_id:
+          type: string
+        name:
+          type: string
+        description:
+          type:
+          - string
+          - 'null'
+        type:
+          type: integer
+          enum:
+            CONTACT: 1
+          description: "\n                    * `1` - contact variable\n\n                    * `2` - bot variable"
+        value_type:
+          type: integer
+          example: 1
+          enum:
+            STRING: 1
+            NUMBER: 2
+            DATE: 3
+            BOOLEAN: 4
+            PHONE: 5
+            EMAIL: 6
+            URL: 7
+            LOCATION: 8
+            DATETIME: 9
+            TIME: 10
+          description: "\n                this type of variable can have the following values:\n\n                    * `1` - string\n\n                    * `2` - number\n\n                    * `3` - date\n\n                    * `4` - boolean\n\n                    * `5` - phone\n\n                    * `6` - email\n\n                    * `7` - url"
+        status:
+          type: integer
+          enum:
+            ACTIVE: 1
+            TRASHED: 2
+          description: "\n                    * `1` - active\n\n                    * `2` - trashed"
+        created_at:
+          type: string
+          example: 2020-12-11 21:00:00+00:00
+    Variable_4:
+      properties:
+        id:
+          type: string
+        bot_id:
+          type: string
+        name:
+          type: string
+        description:
+          type:
+          - string
+          - 'null'
+        type:
+          type: integer
+          enum:
+            CONTACT: 1
+          description: "\n                    * `1` - contact variable\n\n                    * `2` - bot variable"
+        value_type:
+          type: integer
+          example: 1
+          enum:
+            STRING: 1
+            NUMBER: 2
+            DATE: 3
+            BOOLEAN: 4
+            PHONE: 5
+            EMAIL: 6
+            URL: 7
+            LOCATION: 8
+            DATETIME: 9
+            TIME: 10
+          description: "\n                this type of variable can have the following values:\n\n                    * `1` - string\n\n                    * `2` - number\n\n                    * `3` - date\n\n                    * `4` - boolean\n\n                    * `5` - phone\n\n                    * `6` - email\n\n                    * `7` - url"
+        status:
+          type: integer
+          enum:
+            ACTIVE: 1
+            TRASHED: 2
+          description: "\n                    * `1` - active\n\n                    * `2` - trashed"
+        created_at:
+          type: string
+          example: 2020-12-11 21:00:00+00:00
+    Variable_5:
+      properties:
+        id:
+          type: string
+        bot_id:
+          type: string
+        name:
+          type: string
+        description:
+          type:
+          - string
+          - 'null'
+        type:
+          type: integer
+          enum:
+            CONTACT: 1
+          description: "\n                    * `1` - contact variable\n\n                    * `2` - bot variable"
+        value_type:
+          type: integer
+          example: 1
+          enum:
+            STRING: 1
+            NUMBER: 2
+            DATE: 3
+            BOOLEAN: 4
+            PHONE: 5
+            EMAIL: 6
+            URL: 7
+            LOCATION: 8
+            DATETIME: 9
+            TIME: 10
+          description: "\n                this type of variable can have the following values:\n\n                    * `1` - string\n\n                    * `2` - number\n\n                    * `3` - date\n\n                    * `4` - boolean\n\n                    * `5` - phone\n\n                    * `6` - email\n\n                    * `7` - url"
+        status:
+          type: integer
+          enum:
+            ACTIVE: 1
+            TRASHED: 2
+          description: "\n                    * `1` - active\n\n                    * `2` - trashed"
+        created_at:
+          type: string
+          example: 2020-12-11 21:00:00+00:00
+    Variable_6:
+      properties:
+        id:
+          type: string
+        bot_id:
+          type: string
+        name:
+          type: string
+        description:
+          type:
+          - string
+          - 'null'
+        type:
+          type: integer
+          enum:
+            CONTACT: 1
+          description: "\n                    * `1` - contact variable\n\n                    * `2` - bot variable"
+        value_type:
+          type: integer
+          example: 1
+          enum:
+            STRING: 1
+            NUMBER: 2
+            DATE: 3
+            BOOLEAN: 4
+            PHONE: 5
+            EMAIL: 6
+            URL: 7
+            LOCATION: 8
+            DATETIME: 9
+            TIME: 10
+          description: "\n                this type of variable can have the following values:\n\n                    * `1` - string\n\n                    * `2` - number\n\n                    * `3` - date\n\n                    * `4` - boolean\n\n                    * `5` - phone\n\n                    * `6` - email\n\n                    * `7` - url"
+        status:
+          type: integer
+          enum:
+            ACTIVE: 1
+            TRASHED: 2
+          description: "\n                    * `1` - active\n\n                    * `2` - trashed"
+        created_at:
+          type: string
+          example: 2020-12-11 21:00:00+00:00
+  securitySchemes:
+    apiKey:
+      type: http
+      scheme: bearer
+      bearerFormat: API Key
+      description: 'Static API Key authentication.  A long-lived token generated manually in the SendPulse account settings.
+
+        '
+      x-ai-description: 'Permanent authentication token. Ideal for simple integrations without token refresh logic.
+
+        '
+    outh2:
+      type: oauth2
+      description: OAuth 2.0 Client Credentials flow for temporary access tokens.
+      flows:
+        clientCredentials:
+          tokenUrl: https://api.sendpulse.com/oauth/access_token
+          scopes: {}
+      x-ai-description: 'Standard OAuth 2.0 flow using Client ID and Client Secret.  Provides temporary tokens (valid for 1 hour) for enhanced security.
+
+        '
+x-refined-from:
+- sendpulse-facebook-openapi.yml
+- sendpulse-instagram-openapi.yml
+- sendpulse-live-chat-openapi.yml
+- sendpulse-telegram-openapi.yml
+- sendpulse-tiktok-openapi.yml
+- sendpulse-viber-chatbot-openapi.yml
+- sendpulse-whatsapp-openapi.yml

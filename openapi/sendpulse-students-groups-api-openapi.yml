@@ -1,0 +1,97 @@
+openapi: 3.2.0
+info:
+  description: This is the REST API endpoints definition for Education SendPulse project
+  title: Education SendPulse Project API Definition Students groups API
+  version: 1.0.0
+servers:
+- url: https://api.sendpulse.com/edu/public/v1
+security:
+- apiKey: []
+- oauth2: []
+tags:
+- name: Students groups
+paths:
+  /groups/{courseId}:
+    get:
+      tags:
+      - Students groups
+      summary: List students groups by course
+      parameters:
+      - name: courseId
+        in: path
+        required: true
+        description: Course identifier.
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: items
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/StudentGroup'
+      operationId: listGroupsByCourse
+      x-ai-role: education_platform_manager
+      x-ai-description: Retrieves all student groups associated with a specific course. Groups are the primary organizational unit for students within a course — knowing which groups exist is a prerequisite for enrollment, attendance tracking, or bulk messaging to learners.
+      x-ai-reasoning-instructions:
+      - Verify that the courseId corresponds to an existing course before interpreting an empty result as 'no groups'.
+      - If the response is empty, suggest that no groups have been created for this course yet rather than assuming an error.
+      - Use this list to map group IDs before performing any group-scoped operations (e.g., adding students, scheduling lessons).
+      x-ai-responding-instructions:
+      - Present the groups as a structured list with their IDs and names for easy reference.
+      - If multiple groups are returned, highlight their count and suggest filtering or selecting a specific group for further actions.
+      - If the list is empty, inform the user and suggest creating a group as the next step.
+      x-ai-capabilities:
+        confirmation:
+          type: None
+        security_info:
+          data_handling:
+          - ReadOnly
+components:
+  schemas:
+    StudentGroup:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Group identifier
+        userId:
+          type: integer
+          description: Group owner (user) ID
+        responsibleId:
+          type:
+          - integer
+          - 'null'
+          description: Responsible ID for the group (may be absent)
+        courseId:
+          type: integer
+          description: Course ID the group belongs to
+        name:
+          type: string
+          description: Group name
+        color:
+          type: string
+          description: Group color (hex or other format)
+  securitySchemes:
+    apiKey:
+      type: http
+      scheme: bearer
+      bearerFormat: API Key
+      description: 'Static API Key authentication.  A long-lived token generated manually in the SendPulse account settings.
+
+        '
+      x-ai-description: 'Permanent authentication token. Ideal for simple integrations without token refresh logic.
+
+        '
+    outh2:
+      type: oauth2
+      description: OAuth 2.0 Client Credentials flow for temporary access tokens.
+      flows:
+        clientCredentials:
+          tokenUrl: https://api.sendpulse.com/oauth/access_token
+          scopes: {}
+      x-ai-description: 'Standard OAuth 2.0 flow using Client ID and Client Secret.  Provides temporary tokens (valid for 1 hour) for enhanced security.
+
+        '

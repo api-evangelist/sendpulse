@@ -1,0 +1,169 @@
+openapi: 3.2.0
+info:
+  description: "Using the API for Chatbots, you can integrate your system with SendPulse’s chatbots service and get detailed information about your account, bots, dialogs.\n\n            \nOn the right, there is a button for authorizing requests made on this page. Click “Authorize,” then insert the ID and Secret from your account.\n\n            \nTo perform a request directly from the page, click the \"Try it out\" button within each method block. Then fill in input fields if any (for URL parameters, the description is right below the URL request; for body parameters, the description is under the “Scheme” button to the right of the example), and click “Run.” You'll find the server response and description of received parameters below.\n        "
+  title: Chatbots service Dialogs API
+  version: 0.0.1
+servers:
+- description: ''
+  url: https://api.sendpulse.com/chatbots
+security:
+- apiKey: []
+- oauth2: []
+tags:
+- description: ''
+  name: dialogs
+paths:
+  /dialogs:
+    get:
+      summary: Get dialogs list info
+      description: Returns information about your dialogs from all channels
+      security:
+      - oAuth2ClientCredentials: []
+      tags:
+      - dialogs
+      parameters:
+      - in: query
+        name: size
+        description: The limit of pagination items, that will be returned
+        schema:
+          type: integer
+      - in: query
+        name: skip
+        description: The offset of pagination items, where starts a current items batch
+        schema:
+          type: integer
+      - in: query
+        name: search_after
+        description: The id of last_inbox_message.id element after which elements will be searched
+        schema:
+          type: string
+      - in: query
+        name: order
+        description: Sort order ASC or DESC
+        schema:
+          type: string
+          enum:
+          - asc
+          - desc
+      responses:
+        '200':
+          description: Operation successful
+          content:
+            application/json:
+              schema:
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                    properties:
+                      list:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Dialog'
+                      sort:
+                        type: object
+                      total:
+                        type: integer
+                      size:
+                        type: integer
+                      search_after:
+                        type: string
+                      order:
+                        type: string
+                        enum:
+                        - asc
+                        - desc
+                type: object
+      operationId: getDialogs
+      x-ai-role: omnichannel_support_specialist
+      x-ai-description: Retrieves a paginated list of dialogs across all connected messaging channels (Telegram, WhatsApp, Facebook, Instagram, Viber, etc.). A 'dialog' in SendPulse represents a conversation thread between the bot and a specific contact. This endpoint is the primary entry point for inbox management, agent assignment workflows, and CRM-style conversation tracking across all channels simultaneously.
+      x-ai-reasoning-instructions:
+      - Use `size` to control page volume — default is typically 20; reduce to 10 for faster responses when previewing.
+      - For cursor-based pagination, always carry `search_after` from the previous response into the next request instead of using `skip` for large datasets, as it is more performant.
+      - 'Combine `order: desc` with `search_after` to stream new incoming dialogs in real time.'
+      - If the user asks about a specific channel, note that this endpoint returns all channels — use the returned `Dialog` objects to filter client-side by channel type.
+      - When total exceeds size, inform the user that multiple pages exist and offer to iterate.
+      x-ai-responding-instructions:
+      - Report the total number of dialogs found and how many are returned in the current page.
+      - Highlight the `search_after` cursor value if more pages are available, and explain how to use it for the next request.
+      - If the list is empty, suggest checking whether any channels are connected in the account.
+      - Group or summarize dialogs by channel type when presenting to the user, if the data allows.
+      x-ai-suggestions:
+      - Use `order=desc` to get the most recently active dialogs first.
+      - Use `size=50` for bulk exports, `size=10` for quick inbox previews.
+      - Paginate with `search_after` using the last `last_inbox_message.id` from the previous response.
+      x-ai-capabilities:
+        confirmation:
+          type: None
+        security_info:
+          data_handling:
+          - ReadOnly
+components:
+  schemas:
+    Dialog:
+      properties:
+        _id:
+          type: string
+        bot_id:
+          type: string
+        contact:
+          type: object
+          properties:
+            id:
+              type: string
+            full_name:
+              type: string
+            profile_pic:
+              type: string
+        last_inbox_message:
+          type: object
+          properties:
+            text:
+              type: string
+            date:
+              type: string
+              example: 2020-12-11 21:00:00+00:00
+        last_outbox_message:
+          type: object
+          properties:
+            text:
+              type: string
+            date:
+              type: string
+              example: 2020-12-11 21:00:00+00:00
+        service:
+          type: integer
+        user_id:
+          type: integer
+        inbox_unread_count:
+          type: integer
+        is_chat_opened:
+          type: boolean
+        created_at:
+          type: string
+          example: 2020-12-11 21:00:00+00:00
+        updated_at:
+          type: string
+          example: 2020-12-11 21:00:00+00:00
+  securitySchemes:
+    apiKey:
+      type: http
+      scheme: bearer
+      bearerFormat: API Key
+      description: 'Static API Key authentication.  A long-lived token generated manually in the SendPulse account settings.
+
+        '
+      x-ai-description: 'Permanent authentication token. Ideal for simple integrations without token refresh logic.
+
+        '
+    outh2:
+      type: oauth2
+      description: OAuth 2.0 Client Credentials flow for temporary access tokens.
+      flows:
+        clientCredentials:
+          tokenUrl: https://api.sendpulse.com/oauth/access_token
+          scopes: {}
+      x-ai-description: 'Standard OAuth 2.0 flow using Client ID and Client Secret.  Provides temporary tokens (valid for 1 hour) for enhanced security.
+
+        '

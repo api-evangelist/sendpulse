@@ -1,0 +1,515 @@
+openapi: 3.2.0
+info:
+  title: Sendpulse Configuration API
+  version: 1.0.0
+  license:
+    name: Apache 2.0
+    identifier: Apache-2.0
+  x-refined-note:
+  - x-ai-description differs across the merged source definitions and was not carried
+  description: 'Operations tagged Configuration across 4 of this provider''s published API definitions: sendpulse-sms-openapi.yml, sendpulse-smtp-openapi.yml, sendpulse-viber-openapi.yml, sendpulse-web-push-openapi.yml. Each path carries the servers of the definition it was published in.'
+servers:
+- url: https://api.sendpulse.com
+security:
+- apiKey: []
+- oauth2: []
+tags:
+- name: Configuration
+paths:
+  /sms/senders:
+    get:
+      summary: Get list of sender IDs
+      operationId: getSmsSenders
+      tags:
+      - Configuration
+      x-ai-role: sms_marketing_specialist
+      x-ai-description: 'Retrieves all approved Alphanumeric Sender IDs.  Only IDs with status ''Active'' (1) can be used for campaigns.
+
+        '
+      x-ai-reasoning-instructions:
+      - 'Check `status` (0: Moderation, 1: Active, 2: Rejected).'
+      x-ai-responding-instructions:
+      - Present the list of available sender identities.
+      x-ai-suggestions:
+      - If a sender is 'On moderation', wait before scheduling campaigns.
+      x-ai-capabilities:
+        confirmation:
+          type: None
+      responses:
+        '200':
+          description: Sender ID list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                    sender:
+                      type: string
+                    country:
+                      type: string
+                    status:
+                      type: integer
+                    status_explain:
+                      type: string
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+    servers:
+    - url: https://api.sendpulse.com
+  /smtp/ips:
+    get:
+      summary: Get a list of sender’s IP addresses
+      operationId: getSmtpIps
+      tags:
+      - Configuration
+      x-ai-role: email_deliverability_expert
+      x-ai-description: 'Lists the outbound IP addresses used by the SendPulse SMTP relay.  Essential for customers who need to whitelist specific IPs in their firewalls.
+
+        '
+      x-ai-reasoning-instructions:
+      - Compare these IPs against any known blacklists if delivery drops.
+      x-ai-responding-instructions:
+      - Provide the list of active IP addresses.
+      x-ai-suggestions:
+      - Advise the user to add these to their allowed network configurations.
+      x-ai-capabilities:
+        confirmation:
+          type: None
+      responses:
+        '200':
+          description: List of IP addresses
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+    servers:
+    - url: https://api.sendpulse.com
+  /smtp/senders:
+    get:
+      summary: Get a list of sender’s email addresses
+      operationId: getSmtpSenders
+      tags:
+      - Configuration
+      x-ai-role: email_deliverability_expert
+      x-ai-description: 'Retrieves all verified email addresses authorized for sending.  Only these addresses can be used in the `from` field of the send request.
+
+        '
+      x-ai-reasoning-instructions:
+      - Ensure the user is selecting a valid, already verified sender.
+      x-ai-responding-instructions:
+      - List all available sender identities.
+      x-ai-suggestions:
+      - If the desired email is missing, use `addSmtpSender` to add it.
+      x-ai-capabilities:
+        confirmation:
+          type: None
+      responses:
+        '200':
+          description: List of sender emails
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+    servers:
+    - url: https://api.sendpulse.com
+  /v2/email-service/smtp/sender_domains:
+    get:
+      summary: Get a list of allowed domains
+      operationId: getSmtpAllowedDomains
+      tags:
+      - Configuration
+      x-ai-role: email_deliverability_expert
+      x-ai-description: 'Lists domains configured for authenticated sending.  Includes SPF/DKIM validation status which is critical for inbox placement.
+
+        '
+      x-ai-reasoning-instructions:
+      - Check `checks.all_checks` to see if the domain is fully authenticated.
+      - Identify missing DNS records like SPF or DKIM.
+      x-ai-responding-instructions:
+      - Summarize the authentication health of the sending domains.
+      - Highlight any domains requiring DNS configuration.
+      x-ai-suggestions:
+      - If `check_dkim` is false, provide the required records to the user.
+      x-ai-capabilities:
+        confirmation:
+          type: None
+      responses:
+        '200':
+          description: Domain list with authentication status
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      result:
+                        type: boolean
+                      data:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/DomainRecord'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+    servers:
+    - url: https://api.sendpulse.com
+  /senders:
+    post:
+      summary: Add a sender email
+      operationId: addSmtpSender
+      tags:
+      - Configuration
+      x-ai-role: email_deliverability_expert
+      x-ai-description: 'Registers a new email address as an authorized sender.  Triggers a verification process to ensure ownership and authorization.
+
+        '
+      x-ai-reasoning-instructions:
+      - Verify that the domain of the email address is also authorized.
+      x-ai-responding-instructions:
+      - Confirm the sender has been added and advise the user to check their inbox for verification.
+      x-ai-suggestions:
+      - Use business domains rather than free providers (gmail.com) for better deliverability.
+      x-ai-capabilities:
+        confirmation:
+          type: Required
+        security_info:
+          data_handling:
+          - ResourceStateUpdate
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - email
+              - name
+              properties:
+                email:
+                  type: string
+                name:
+                  type: string
+      responses:
+        '200':
+          description: Sender added successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  result:
+                    type: boolean
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '422':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                email.required:
+                  summary: email.required
+                  value:
+                    message: Argument email missing
+                    error_code: 422
+                email.invalid:
+                  summary: email.invalid
+                  value:
+                    message: Argument email is invalid
+                    error_code: 422
+                email.dmarc_error:
+                  summary: email.dmarc_error
+                  value:
+                    message: DMARC policy error. Please, use another sender domain.
+                    error_code: 422
+                name.required:
+                  summary: name.required
+                  value:
+                    message: Argument name missing
+                    error_code: 422
+                name.invalid:
+                  summary: name.invalid
+                  value:
+                    message: Argument name is invalid
+                    error_code: 422
+                email.exists:
+                  summary: email.exists
+                  value:
+                    message: Email already in use
+                    error_code: 902
+                email.blacklisted:
+                  summary: email.blacklisted
+                  value:
+                    message: This email in blacklist
+                    error_code: 904
+    servers:
+    - url: https://api.sendpulse.com
+  /v2/email-service/smtp/sender_domains/{domain}:
+    parameters:
+    - name: domain
+      in: path
+      required: true
+      schema:
+        type: string
+    post:
+      summary: Add a domain
+      operationId: addSmtpDomain
+      tags:
+      - Configuration
+      parameters: []
+      x-ai-role: email_deliverability_expert
+      x-ai-description: 'Adds a root domain for white-labeling and professional sender authentication.  Crucial for achieving 100% DKIM alignment.
+
+        '
+      x-ai-reasoning-instructions:
+      - Check if the domain is already present to avoid duplication.
+      x-ai-responding-instructions:
+      - Confirm the domain has been added and list the required DNS records for authentication.
+      x-ai-suggestions:
+      - Suggest adding SPF, DKIM, and DMARC records immediately.
+      x-ai-capabilities:
+        confirmation:
+          type: Required
+        security_info:
+          data_handling:
+          - ResourceStateUpdate
+      responses:
+        '200':
+          description: Domain added
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      result:
+                        type: boolean
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+    servers:
+    - url: https://api.sendpulse.com
+  /viber/senders:
+    get:
+      summary: Get a list of sender names
+      operationId: getViberSenders
+      tags:
+      - Configuration
+      x-ai-role: customer_engagement_specialist
+      x-ai-description: 'Retrieves all registered and approved Viber sender names (Sender IDs).  Only names with ''verified'' status can be used.
+
+        '
+      x-ai-reasoning-instructions:
+      - Check `status` to ensure the name is ready for use.
+      x-ai-responding-instructions:
+      - List available verified sender identities.
+      x-ai-suggestions:
+      - If status is 'pending', check the `admin_comment` for feedback.
+      x-ai-capabilities:
+        confirmation:
+          type: None
+      responses:
+        '200':
+          description: Sender list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ViberSender'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+    servers:
+    - url: https://api.sendpulse.com
+  /viber/senders/{id}:
+    parameters:
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: integer
+    get:
+      summary: Get a sender name profile
+      operationId: getViberSenderProfile
+      tags:
+      - Configuration
+      parameters: []
+      x-ai-role: customer_engagement_specialist
+      x-ai-description: 'Retrieves the detailed configuration and status for a specific Viber sender ID.
+
+        '
+      x-ai-responding-instructions:
+      - State the current verification status and administrative feedback.
+      x-ai-capabilities:
+        confirmation:
+          type: None
+      responses:
+        '200':
+          description: Sender profile
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ViberSender'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+    servers:
+    - url: https://api.sendpulse.com
+  /push/websites/{id}/code:
+    parameters:
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: integer
+    get:
+      summary: Get JS code for a website
+      operationId: getWebPushCode
+      tags:
+      - Configuration
+      parameters: []
+      x-ai-role: web_engagement_specialist
+      x-ai-description: 'Retrieves the specific JavaScript snippet required to enable web push  functionality on the target website. This script handles the permission  prompt and subscriber token generation.
+
+        '
+      x-ai-responding-instructions:
+      - Provide the `script_code` and instruct the user to place it before the `</head>` tag.
+      x-ai-capabilities:
+        confirmation:
+          type: None
+      responses:
+        '200':
+          description: Integration code
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  script_url:
+                    type: string
+                  script_code:
+                    type: string
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+    servers:
+    - url: https://api.sendpulse.com
+components:
+  schemas:
+    DomainRecord:
+      type: object
+      properties:
+        id:
+          type: integer
+        user_id:
+          type: integer
+        service_type:
+          type: integer
+        service_value:
+          type: string
+        status:
+          type: integer
+          description: 0 - inactive, 1 - active
+        is_default:
+          type: boolean
+        ssl_type:
+          type: integer
+        checks:
+          type: object
+          properties:
+            check_dkim:
+              type: boolean
+            check_spf:
+              type: boolean
+            check_dmarc:
+              type: boolean
+            all_checks:
+              type: boolean
+            spf_txt_needed:
+              type: string
+    Error:
+      type: object
+      properties:
+        message:
+          type: string
+        error_code:
+          type: integer
+    ViberSender:
+      type: object
+      properties:
+        id:
+          type: integer
+        status:
+          type: string
+        name:
+          type: string
+        service_type:
+          type: string
+        web_site:
+          type: string
+        description:
+          type: string
+        country:
+          type: string
+        traffic_type:
+          type: string
+        admin_comment:
+          type:
+          - string
+          - 'null'
+  securitySchemes:
+    apiKey:
+      type: http
+      scheme: bearer
+      bearerFormat: API Key
+      description: 'Static API Key authentication.  A long-lived token generated manually in the SendPulse account settings.
+
+        '
+      x-ai-description: 'Permanent authentication token. Ideal for simple integrations without token refresh logic.
+
+        '
+    oauth2:
+      type: oauth2
+      description: OAuth 2.0 Client Credentials flow for temporary access tokens.
+      flows:
+        clientCredentials:
+          tokenUrl: https://api.sendpulse.com/oauth/access_token
+          scopes: {}
+      x-ai-description: 'Standard OAuth 2.0 flow using Client ID and Client Secret.  Provides temporary tokens (valid for 1 hour) for enhanced security.
+
+        '
+x-refined-from:
+- sendpulse-sms-openapi.yml
+- sendpulse-smtp-openapi.yml
+- sendpulse-viber-openapi.yml
+- sendpulse-web-push-openapi.yml

@@ -1,0 +1,253 @@
+openapi: 3.2.0
+info:
+  description: Using the API for the CRM service, you can integrate your system with CRM from SendPulse and receive detailed information on pipelines, deals, contacts and their attributes and users. You can also create deals and contacts, assign and remove fields, tags, contact details and instant messengers. On the right, there is a button for authorizing requests made on this page. Click “Authorize,” then insert the ID and Secret from your account. To perform a request directly from the page, click the "Try it out" button within each method block. Then fill in input fields if any (for URL parameters, the description is right below the URL request; for body parameters, the description is under the “Scheme” button to the right of the example), and click “Run.” You will find the server response and description of received parameters below.
+  title: SendPulse CRM Public Board attributes API
+  version: 0.1.0
+servers:
+- url: https://api.sendpulse.com/crm/v1
+security:
+- apiKey: []
+- oauth2: []
+tags:
+- name: Board attributes
+paths:
+  /boards/{boardId}/attributes:
+    get:
+      tags:
+      - Board attributes
+      summary: Get attribute for board
+      parameters:
+      - name: boardId
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    $ref: '#/components/schemas/BoardAttribute'
+      operationId: getBoardAttributes
+      x-ai-role: crm_data_architect
+      x-ai-description: Retrieves the custom attribute schema defined for a specific CRM board. Board attributes act as column definitions — they determine what structured data can be stored per card/contact on that board. Understanding the attribute schema is a prerequisite before creating or updating cards, as it defines valid field names, types, and constraints.
+      x-ai-reasoning-instructions:
+      - Always fetch board attributes before attempting to create or update cards on a board — attribute IDs and types are required for correct field mapping.
+      - If the boardId is unknown, first call the board listing endpoint to resolve the correct ID.
+      - Cache the attribute schema locally within a session to avoid redundant calls when processing multiple cards on the same board.
+      x-ai-responding-instructions:
+      - Present the attributes as a structured field reference — name, type, and ID for each attribute.
+      - If the attribute list is empty, inform the user that no custom fields have been configured for this board yet and suggest creating them.
+      - Highlight any required attributes the user must populate when creating cards.
+      x-ai-suggestions:
+      - Use returned attribute IDs when constructing payloads for card create/update endpoints.
+      - Follow up with a card listing call to see how current data maps to these attributes.
+      x-ai-capabilities:
+        confirmation:
+          type: None
+        security_info:
+          data_handling:
+          - ReadOnly
+    post:
+      tags:
+      - Board attributes
+      summary: Create attribute for board
+      parameters:
+      - name: boardId
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              properties:
+                name:
+                  type: string
+                  description: Attribute name
+                type:
+                  type: number
+                  description: 'Attribute type:
+
+                    0 -string
+
+                    1 - number
+
+                    2 - date
+
+                    3 - link
+
+                    4 - list
+
+                    5 - multiList
+
+                    '
+                mandatory:
+                  type: boolean
+                  description: Is attribute required
+                options:
+                  type: array
+                  description: Attribute options (only for "list" and "multiList" types)
+                  default:
+                  - 1
+                  - 2
+      responses:
+        '201':
+          description: Successfully
+      operationId: createBoardAttribute
+      x-ai-role: crm_data_architect
+      x-ai-description: 'Defines a custom attribute schema for a CRM board, extending its data model beyond built-in fields. Attributes act as typed column definitions — they determine what structured data can be captured per contact or deal on this board. Choosing the correct type upfront is critical: it cannot be changed after contacts have values assigned.'
+      x-ai-reasoning-instructions:
+      - Before creating, check existing attributes on the board to avoid name collisions.
+      - 'Validate that `type` matches the expected data semantics: use `date` for timestamps, `link` for URLs, `list`/`multiList` for constrained vocabularies.'
+      - If `type` is 4 (list) or 5 (multiList), `options` is required — warn the user if it is missing or empty.
+      - If `mandatory` is true, ensure the user understands all existing contacts will lack this value until backfilled.
+      - Suggest snake_case or consistent naming conventions for `name` to simplify downstream filtering.
+      x-ai-responding-instructions:
+      - Confirm the attribute was created and echo back its name and type for clarity.
+      - If type is list or multiList, summarize the options that were registered.
+      - Suggest populating the attribute via contact update endpoints as an immediate next step.
+      - If a 4xx error occurs due to a duplicate name, propose a disambiguated alternative.
+      x-ai-suggestions:
+      - industry
+      - deal_stage
+      - onboarding_date
+      - contract_url
+      - preferred_contact_channel
+      x-ai-capabilities:
+        confirmation:
+          type: None
+        security_info:
+          data_handling:
+          - SchemaModification
+          - ResourceStateUpdate
+  /boards/{boardId}/attributes/{attributeId}:
+    put:
+      tags:
+      - Board attributes
+      summary: Update attribute for board
+      parameters:
+      - name: boardId
+        in: path
+        required: true
+        schema:
+          type: integer
+      - name: attributeId
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              properties:
+                name:
+                  type: string
+                  description: Attribute name
+                type:
+                  type: number
+                  description: 'Attribute type:
+
+                    0 -string
+
+                    1 - number
+
+                    2 - date
+
+                    3 - link
+
+                    4 - list
+
+                    5 - multiList
+
+                    '
+                mandatory:
+                  type: boolean
+                  description: Is attribute required
+                options:
+                  type: array
+                  description: Attribute options (only for "list" and "multiList" types
+                order:
+                  type: integer
+                  description: Attribute order
+                status:
+                  type: integer
+      responses:
+        '200':
+          description: Successfully
+      operationId: updateBoardAttribute
+      x-ai-role: crm_data_architect
+      x-ai-description: Modifies the schema definition of a custom attribute on a CRM board. Attributes define the data model for board entities — changing a type (e.g., from string to list) affects how all existing contact/deal data stored under this attribute is interpreted. Order and mandatory flags control UI behavior and data entry validation across the board.
+      x-ai-reasoning-instructions:
+      - Before changing `type`, warn the user that existing data stored under this attribute may become incompatible or unreadable with the new type.
+      - If `type` is set to 4 (list) or 5 (multiList), verify that `options` array is also provided — otherwise the attribute will be unusable.
+      - If `mandatory` is set to true, existing board records without this attribute will fail validation on next update — inform the user about the impact.
+      - Changing `order` repositions the attribute in the UI; use this to group related attributes visually.
+      - Confirm that both `boardId` and `attributeId` exist before attempting the update to avoid misleading 404 errors.
+      x-ai-responding-instructions:
+      - Confirm which fields were updated and briefly describe the effect (e.g., 'Attribute is now required for all records').
+      - If `type` was changed, proactively note potential data compatibility risks.
+      - If `options` were updated for a list/multiList attribute, mention that removed options may affect existing records using those values.
+      - Suggest verifying board records after structural changes to ensure data integrity.
+      x-ai-suggestions:
+      - Use `getBoardAttributes` to fetch current attribute config before patching.
+      - After updating a mandatory attribute, review existing records for compliance.
+      - Reorder attributes (`order` field) to improve data entry UX on the board UI.
+      x-ai-capabilities:
+        confirmation:
+          type: Recommended
+          message: Changing attribute type or mandatory status affects all existing board records. Confirm before proceeding.
+        security_info:
+          data_handling:
+          - ResourceStateUpdate
+          - SchemaModification
+components:
+  schemas:
+    BoardAttribute:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        type:
+          type: integer
+        mandatory:
+          type: boolean
+        options:
+          type: array
+          default:
+          - 1
+          - 2
+        status:
+          type: integer
+        order:
+          type: integer
+  securitySchemes:
+    apiKey:
+      type: http
+      scheme: bearer
+      bearerFormat: API Key
+      description: 'Static API Key authentication.  A long-lived token generated manually in the SendPulse account settings.
+
+        '
+      x-ai-description: 'Permanent authentication token. Ideal for simple integrations without token refresh logic.
+
+        '
+    outh2:
+      type: oauth2
+      description: OAuth 2.0 Client Credentials flow for temporary access tokens.
+      flows:
+        clientCredentials:
+          tokenUrl: https://api.sendpulse.com/oauth/access_token
+          scopes: {}
+      x-ai-description: 'Standard OAuth 2.0 flow using Client ID and Client Secret.  Provides temporary tokens (valid for 1 hour) for enhanced security.
+
+        '

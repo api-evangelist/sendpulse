@@ -1,0 +1,241 @@
+openapi: 3.2.0
+info:
+  description: Using the API for the CRM service, you can integrate your system with CRM from SendPulse and receive detailed information on pipelines, deals, contacts and their attributes and users. You can also create deals and contacts, assign and remove fields, tags, contact details and instant messengers. On the right, there is a button for authorizing requests made on this page. Click “Authorize,” then insert the ID and Secret from your account. To perform a request directly from the page, click the "Try it out" button within each method block. Then fill in input fields if any (for URL parameters, the description is right below the URL request; for body parameters, the description is under the “Scheme” button to the right of the example), and click “Run.” You will find the server response and description of received parameters below.
+  title: SendPulse CRM Public Contacts messengers API
+  version: 0.1.0
+servers:
+- url: https://api.sendpulse.com/crm/v1
+security:
+- apiKey: []
+- oauth2: []
+tags:
+- description: ''
+  name: Contacts messengers
+paths:
+  /contacts/{contactId}/messengers:
+    post:
+      tags:
+      - Contacts messengers
+      summary: Add messenger to contact
+      description: Adds a messenger to the specified contact
+      parameters:
+      - name: contactId
+        in: path
+        required: true
+        description: Contact ID you want to add a mesenger to. It can be obtained with the "Get a list of contacts" method
+        schema:
+          type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                typeId:
+                  $ref: '#/components/schemas/MessengerTypeProperty'
+                login:
+                  type: string
+                  description: Contacts login in the specified messenger
+                isMainChatbot:
+                  type: boolean
+                  description: Determine if chatbot messenger is the main one
+              required:
+              - typeId
+              - login
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    $ref: '#/components/schemas/ContactMessenger'
+      operationId: addContactMessenger
+      x-ai-role: crm_integration_specialist
+      x-ai-description: Links a specific messenger account (e.g., Telegram, WhatsApp, Viber) to an existing CRM contact. This creates a multi-channel communication profile, enabling chatbot automation and targeted messaging through the contact's preferred messenger. Designating a main chatbot messenger is critical for routing automated sequences correctly.
+      x-ai-reasoning-instructions:
+      - Verify the contactId exists before attempting to add a messenger — use 'Get a list of contacts' if the ID is unknown.
+      - Check if the contact already has a messenger of the given typeId to avoid duplicates.
+      - If isMainChatbot is true, be aware this may override the existing main chatbot messenger for the contact.
+      - Validate that the login format matches the conventions of the specified messenger type (e.g., phone number for WhatsApp, username for Telegram).
+      - Confirm the typeId value against the MessengerTypeProperty enum before sending the request.
+      x-ai-responding-instructions:
+      - Confirm success by referencing the contactId and the messenger type that was linked.
+      - If isMainChatbot was set to true, explicitly note that this messenger is now the primary chatbot channel for the contact.
+      - Suggest verifying the result by retrieving the contact's messenger list as a follow-up.
+      - On error, clarify whether the issue is with the contactId (not found), typeId (unsupported), or login (invalid format).
+      x-ai-suggestions:
+      - After adding, use the messenger channel to enroll the contact in a chatbot flow.
+      - If managing bulk contacts, iterate over a contact list and add messengers programmatically.
+      - 'Set isMainChatbot: true only for the primary automation channel to avoid routing conflicts.'
+      x-ai-capabilities:
+        confirmation:
+          type: None
+        security_info:
+          data_handling:
+          - ResourceStateUpdate
+          - PersonalDataWrite
+  /contacts/{contactId}/messengers/{messengerId}:
+    put:
+      tags:
+      - Contacts messengers
+      summary: Update information about messenger of the contact
+      description: Updates information about a given messenger for the specified contact. Provided property values will be overwritten.
+      parameters:
+      - name: contactId
+        in: path
+        required: true
+        description: Contact ID for which you want to update messenger information. It can be obtained with the "Get a list of contacts" method
+        schema:
+          type: integer
+      - name: messengerId
+        in: path
+        required: true
+        description: Messenger ID you want to update. It can be obtained with the "Get a list of contacts" method
+        schema:
+          type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                typeId:
+                  $ref: '#/components/schemas/MessengerTypeProperty'
+                login:
+                  type: string
+                  description: Contacts login in the specified messenger
+                isMainChatbot:
+                  type: boolean
+                  description: Determine if chatbot messenger is the main one
+              required:
+              - typeId
+              - login
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    $ref: '#/components/schemas/ContactMessenger'
+      operationId: updateContactMessenger
+      x-ai-role: crm_integration_specialist
+      x-ai-description: Updates a specific messenger entry linked to a contact. This is a partial-overwrite operation — only the fields you provide will be changed. Use this when a contact's messenger handle changes (e.g., new Telegram username) or when you need to promote a chatbot channel to 'main' for routing automation flows through it.
+      x-ai-reasoning-instructions:
+      - Before updating, confirm the contactId and messengerId are valid by calling 'Get a list of contacts' — both IDs must exist and be related.
+      - The `typeId` and `login` fields are required — always validate both are present before sending.
+      - If the goal is to change only `isMainChatbot`, still include `typeId` and `login` to satisfy the required constraint.
+      - 'Only one messenger per contact can be the main chatbot — setting `isMainChatbot: true` here may implicitly demote another messenger; confirm this behavior with the user if relevant.'
+      - Messenger `login` formats differ by type — ensure the login value matches the expected format for the given `typeId` (e.g., Telegram username vs. phone number for WhatsApp).
+      x-ai-responding-instructions:
+      - Confirm which fields were updated and on which contact/messenger combination.
+      - If `isMainChatbot` was changed to true, notify the user that this messenger is now the primary chatbot channel for this contact.
+      - Return the updated ContactMessenger object and highlight any fields that changed.
+      - On 404 or invalid ID errors, suggest using 'Get a list of contacts' to retrieve valid contactId and messengerId values.
+      x-ai-suggestions:
+      - Use this after a contact reports a changed messenger handle to keep routing rules accurate.
+      - Combine with 'Get a list of contacts' to build a bulk-update flow for stale messenger records.
+      x-ai-capabilities:
+        confirmation:
+          type: Recommended
+          message: 'You are about to overwrite messenger data for contact #{contactId}. This action cannot be undone automatically.'
+        security_info:
+          data_handling:
+          - ResourceStateUpdate
+    delete:
+      tags:
+      - Contacts messengers
+      summary: Remove messenger from contact
+      description: Removes messenger from a specified contact
+      parameters:
+      - name: contactId
+        in: path
+        required: true
+        description: Contact ID from which you want to remove messenger. It can be obtained with the "Get a list of contacts" method
+        schema:
+          type: integer
+      - name: messengerId
+        in: path
+        required: true
+        description: Messenger ID you want to remove. It can be obtained with the "Get a list of contacts" method
+        schema:
+          type: integer
+      responses:
+        '204':
+          description: Successfully deleted
+      operationId: removeContactMessenger
+      x-ai-role: crm_integration_specialist
+      x-ai-description: Permanently detaches a messenger channel from a contact record. Use when a contact opts out of a specific channel, changes their account, or when cleaning up stale/invalid messenger links. This action affects only the channel binding — the contact itself and other messengers remain intact.
+      x-ai-reasoning-instructions:
+      - Confirm the contactId is valid and the contact exists before attempting deletion.
+      - Confirm the messengerId belongs to the specified contact — mixing IDs from different contacts will result in a 404 or unintended deletion.
+      - Warn the user if this messenger is the contact's only communication channel, as removal will leave the contact unreachable.
+      - This action is irreversible — the messenger link must be re-added manually if removed by mistake.
+      x-ai-responding-instructions:
+      - On success (204), confirm that the messenger has been unlinked from the contact.
+      - Remind the user that the contact still exists and other messengers remain unaffected.
+      - If the intent was to remove all messengers, suggest iterating over the full messenger list from 'Get a list of contacts'.
+      - On error, clarify whether the issue is with the contactId or the messengerId.
+      x-ai-suggestions:
+      - Use 'Get a list of contacts' to retrieve both contactId and messengerId before calling this endpoint.
+      - After removal, verify the contact's remaining channels to ensure reachability.
+      x-ai-capabilities:
+        confirmation:
+          type: Recommended
+          message: This will permanently remove the messenger link from the contact. Proceed?
+        security_info:
+          data_handling:
+          - ResourceDeletion
+components:
+  schemas:
+    ContactMessenger:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: ID of the added messenger
+        typeId:
+          type: integer
+          description: Messenger type
+        login:
+          type: string
+          description: Contact login in the specified messenger
+        botId:
+          type: string
+          description: External bot ID
+        contactId:
+          type: string
+          description: External contact ID
+        status:
+          type: integer
+        chatbotUrl:
+          type: string
+          description: URL of the chatbot from which the contact was received
+        isMainChatbot:
+          type: boolean
+          description: Determine if chatbot messenger is the main one
+    MessengerTypeProperty:
+      type: integer
+      description: '| Messenger type. Possible values: * 1 — Telegram * 2 — Facebook * 4 — Instagram * 5 — WhatsApp * 6 — Viber'
+  securitySchemes:
+    apiKey:
+      type: http
+      scheme: bearer
+      bearerFormat: API Key
+      description: 'Static API Key authentication.  A long-lived token generated manually in the SendPulse account settings.
+
+        '
+      x-ai-description: 'Permanent authentication token. Ideal for simple integrations without token refresh logic.
+
+        '
+    outh2:
+      type: oauth2
+      description: OAuth 2.0 Client Credentials flow for temporary access tokens.
+      flows:
+        clientCredentials:
+          tokenUrl: https://api.sendpulse.com/oauth/access_token
+          scopes: {}
+      x-ai-description: 'Standard OAuth 2.0 flow using Client ID and Client Secret.  Provides temporary tokens (valid for 1 hour) for enhanced security.
+
+        '

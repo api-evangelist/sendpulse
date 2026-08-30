@@ -1,0 +1,270 @@
+openapi: 3.2.0
+info:
+  title: SendPulse Bulk Email Senders API
+  version: 1.0.0
+  description: API for managing mailing lists, email campaigns, templates, and senders.
+  x-ai-description: 'The Bulk Email API is the core engine for marketing automation at SendPulse.  It enables programmatic control over the entire email lifecycle.
+
+    '
+  license:
+    name: Apache 2.0
+    identifier: Apache-2.0
+servers:
+- url: https://api.sendpulse.com
+  description: Production server
+security:
+- apiKey: []
+- oauth2: []
+tags:
+- name: Senders
+  description: Endpoints related to Senders.
+paths:
+  /senders:
+    get:
+      tags:
+      - Senders
+      summary: Get a list of all senders
+      operationId: getSenders
+      description: Inspects authorized 'From' addresses.
+      x-ai-role: deliverability_expert
+      x-ai-description: Lists validated sender identities.
+      x-ai-reasoning-instructions:
+      - Check for 'Active' statuses.
+      - Identify senders that lack SMTP permission.
+      - Warn if no active senders are available.
+      x-ai-responding-instructions:
+      - List the approved sender emails and names.
+      - Point out any that require activation.
+      x-ai-suggestions:
+      - Add a new sender.
+      x-ai-capabilities:
+        security_info:
+          data_handling:
+          - InformationRetrieval
+      responses:
+        '200':
+          description: List of senders
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Sender'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+    post:
+      tags:
+      - Senders
+      summary: Add a sender
+      operationId: addSender
+      description: Registers a new sender email address.
+      x-ai-role: deliverability_expert
+      x-ai-description: Initiates the sender verification process.
+      x-ai-reasoning-instructions:
+      - Verify email format.
+      - Ensure the domain is legitimate (avoid free domains if possible).
+      - Explain the activation workflow.
+      x-ai-responding-instructions:
+      - Confirm the sender was added.
+      - Instruct the user to retrieve the activation code.
+      x-ai-suggestions:
+      - Request activation code.
+      x-ai-capabilities:
+        security_info:
+          data_handling:
+          - ResourceStateUpdate
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - email
+              - name
+              properties:
+                email:
+                  type: string
+                name:
+                  type: string
+      responses:
+        '200':
+          description: Sender added
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResultTrue'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+    delete:
+      tags:
+      - Senders
+      summary: Delete a sender
+      operationId: deleteSender
+      description: Removes an authorized sender.
+      x-ai-role: deliverability_expert
+      x-ai-description: Revokes sending privileges for an email.
+      x-ai-reasoning-instructions:
+      - Ensure the email exists in the account.
+      - Confirm the action.
+      - Warn about impact on scheduled campaigns using this sender.
+      x-ai-responding-instructions:
+      - Confirm the sender is permanently deleted.
+      - Suggest setting up an alternative sender if needed.
+      x-ai-suggestions:
+      - List remaining senders.
+      x-ai-capabilities:
+        security_info:
+          data_handling:
+          - ResourceStateUpdate
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - email
+              properties:
+                email:
+                  type: string
+      responses:
+        '200':
+          description: Sender deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResultTrue'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+  /senders/{email}/code:
+    parameters:
+    - name: email
+      in: path
+      required: true
+      schema:
+        type: string
+    get:
+      tags:
+      - Senders
+      summary: Request activation code
+      operationId: requestSenderActivationCode
+      description: Triggers an activation email.
+      x-ai-role: deliverability_expert
+      x-ai-description: Resends the verification email.
+      x-ai-reasoning-instructions:
+      - Ensure the sender email is currently unverified.
+      - Inform the user to check their inbox.
+      - Handle rate limits (15 min wait time).
+      x-ai-responding-instructions:
+      - Confirm the code has been dispatched.
+      - Instruct the user to provide the code to the activation endpoint.
+      x-ai-suggestions:
+      - Activate sender with code.
+      x-ai-capabilities:
+        security_info:
+          data_handling:
+          - ResourceStateUpdate
+      responses:
+        '200':
+          description: Code sent
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SenderActivationResponse'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+    post:
+      tags:
+      - Senders
+      summary: Activate a sender
+      operationId: activateSender
+      description: Verifies the sender using the code.
+      x-ai-role: deliverability_expert
+      x-ai-description: Completes the verification loop.
+      x-ai-reasoning-instructions:
+      - Ensure the code matches exactly.
+      - Verify the email address transitions to 'Active'.
+      - Celebrate the new capability to send.
+      x-ai-responding-instructions:
+      - Confirm successful activation.
+      - State that the email is now ready for campaigns.
+      x-ai-suggestions:
+      - Create a campaign.
+      x-ai-capabilities:
+        security_info:
+          data_handling:
+          - ResourceStateUpdate
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - code
+              properties:
+                code:
+                  type: string
+      responses:
+        '200':
+          description: Sender activated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SenderActivationResponse'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+components:
+  schemas:
+    ResultTrue:
+      type: object
+      x-ai-description: Success indicator.
+      properties:
+        result:
+          type: boolean
+    SenderActivationResponse:
+      type: object
+      x-ai-description: Activation result.
+      properties:
+        result:
+          type: boolean
+    Sender:
+      type: object
+      x-ai-description: Authorized sender.
+      properties:
+        email:
+          type: string
+        name:
+          type: string
+  securitySchemes:
+    apiKey:
+      type: http
+      scheme: bearer
+      bearerFormat: API Key
+      description: 'Static API Key authentication.  A long-lived token generated manually in the SendPulse account settings.
+
+        '
+      x-ai-description: 'Permanent authentication token. Ideal for simple integrations without token refresh logic.
+
+        '
+    oauth2:
+      type: oauth2
+      description: OAuth 2.0 Client Credentials flow for temporary access tokens.
+      flows:
+        clientCredentials:
+          tokenUrl: https://api.sendpulse.com/oauth/access_token
+          scopes: {}
+      x-ai-description: 'Standard OAuth 2.0 flow using Client ID and Client Secret.  Provides temporary tokens (valid for 1 hour) for enhanced security.
+
+        '

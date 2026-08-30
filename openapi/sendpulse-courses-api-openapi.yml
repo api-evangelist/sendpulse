@@ -1,0 +1,202 @@
+openapi: 3.2.0
+info:
+  description: This is the REST API endpoints definition for Education SendPulse project
+  title: Education SendPulse Project API Definition Courses API
+  version: 1.0.0
+servers:
+- url: https://api.sendpulse.com/edu/public/v1
+security:
+- apiKey: []
+- oauth2: []
+tags:
+- description: ''
+  name: Courses
+paths:
+  /courses:
+    get:
+      tags:
+      - Courses
+      summary: Get all courses for user
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Course'
+      operationId: getCourses
+      x-ai-role: elearning_platform_manager
+      x-ai-description: Retrieves the full catalog of courses associated with the authenticated user's account. This is the primary discovery endpoint for the LMS module — use it to map available course IDs before enrolling students, querying progress, or building course-selection flows.
+      x-ai-reasoning-instructions:
+      - Use this endpoint at the start of any LMS workflow to discover available course IDs before referencing them in downstream operations.
+      - If the response list is empty, advise the user to create a course first before attempting enrollment or content operations.
+      - Consider caching the result if building a UI or sequential automation — course lists change infrequently.
+      x-ai-responding-instructions:
+      - Present the returned courses as a structured list with their IDs and titles for easy selection.
+      - If the list is empty, suggest creating a new course as the next step.
+      - If the user is looking for a specific course, suggest filtering by name client-side or checking if a search/filter endpoint exists.
+      x-ai-suggestions:
+      - Use returned course IDs with enrollment or lesson endpoints.
+      - Combine with student progress endpoints to build a course completion dashboard.
+      x-ai-capabilities:
+        confirmation:
+          type: None
+        security_info:
+          data_handling:
+          - ReadOnly
+components:
+  schemas:
+    Course:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Course identifier
+        schoolId:
+          type: integer
+          description: School identifier
+        userId:
+          type: integer
+          description: Owner user identifier
+        status:
+          type: string
+          description: Current course status
+          enum:
+          - inProgress
+          - inactive
+          - planned
+        domainId:
+          type: integer
+          description: Domain identifier
+        landingId:
+          type: integer
+          description: Landing identifier
+        pageId:
+          type: integer
+          description: Page identifier
+        name:
+          type: string
+          description: Course name
+        slug:
+          type: string
+          description: URL-friendly course identifier (slug)
+        landingImage:
+          type:
+          - string
+          - 'null'
+          description: Main course image URL
+        coverImage:
+          type:
+          - string
+          - 'null'
+          description: Cover image URL
+        startDate:
+          type:
+          - string
+          - 'null'
+          description: Course start date in ISO 8601 format
+        endDate:
+          type:
+          - string
+          - 'null'
+          description: Course end date in ISO 8601 format
+        timezone:
+          type:
+          - string
+          - 'null'
+          description: Timezone identifier
+        passingScore:
+          type:
+          - integer
+          - 'null'
+          description: Minimum score to pass
+        isLinear:
+          type: boolean
+          description: Indicates whether course is linear
+        completionCriterion:
+          type: string
+          description: Completion criterion
+        createdAt:
+          type: string
+          description: Creation timestamp in ISO 8601 format
+        wasStarted:
+          type: boolean
+          description: Indicates whether the user started the course
+        needRegeneration:
+          type: boolean
+          description: Flag that course page needs regeneration
+        redirectUrl:
+          type:
+          - string
+          - 'null'
+          description: Redirect URL after success
+        failedRedirectUrl:
+          type:
+          - string
+          - 'null'
+          description: Redirect URL after failure
+        studentCount:
+          type: integer
+          description: Number of students enrolled
+        courseSettings:
+          type: array
+          description: Course settings
+          items:
+            type: object
+        isCourseHasCertifiedStudents:
+          type: boolean
+          description: Indicates whether there are certified students for the course
+        sectionsWithLessons:
+          type: array
+          description: Sections with lessons
+          items:
+            type: object
+        userTariffStatus:
+          type:
+          - string
+          - 'null'
+          description: Current user tariff status
+        categoriesIds:
+          type: array
+          description: IDs of attached categories
+          items:
+            type: integer
+        promoCodeExists:
+          type: boolean
+          description: Whether a promo code is available
+        isCertificate:
+          type: boolean
+          description: Whether the course issues a certificate
+        hasPaidTariffs:
+          type: boolean
+          description: Indicates whether the course has paid tariffs
+        groupId:
+          type:
+          - integer
+          - 'null'
+          description: Group identifier
+  securitySchemes:
+    apiKey:
+      type: http
+      scheme: bearer
+      bearerFormat: API Key
+      description: 'Static API Key authentication.  A long-lived token generated manually in the SendPulse account settings.
+
+        '
+      x-ai-description: 'Permanent authentication token. Ideal for simple integrations without token refresh logic.
+
+        '
+    outh2:
+      type: oauth2
+      description: OAuth 2.0 Client Credentials flow for temporary access tokens.
+      flows:
+        clientCredentials:
+          tokenUrl: https://api.sendpulse.com/oauth/access_token
+          scopes: {}
+      x-ai-description: 'Standard OAuth 2.0 flow using Client ID and Client Secret.  Provides temporary tokens (valid for 1 hour) for enhanced security.
+
+        '

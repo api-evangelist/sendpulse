@@ -1,0 +1,568 @@
+openapi: 3.2.0
+info:
+  title: SendPulse Bulk Email Email address API
+  version: 1.0.0
+  description: API for managing mailing lists, email campaigns, templates, and senders.
+  x-ai-description: 'The Bulk Email API is the core engine for marketing automation at SendPulse.  It enables programmatic control over the entire email lifecycle.
+
+    '
+  license:
+    name: Apache 2.0
+    identifier: Apache-2.0
+servers:
+- url: https://api.sendpulse.com
+  description: Production server
+security:
+- apiKey: []
+- oauth2: []
+tags:
+- name: Email address
+  description: Endpoints related to Email address.
+paths:
+  /addressbooks/{id}/emails/variable:
+    parameters:
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: integer
+    post:
+      tags:
+      - Email address
+      summary: Update variables for a contact in a mailing list
+      operationId: updateContactVariables
+      description: Updates custom variable values for a specific email address within a mailing list.
+      x-ai-role: marketing_automation_specialist
+      x-ai-description: Modifies personalization data for a subscriber in a given list. Use when contact attributes change (e.g. name, city, preferences) and need to stay in sync.
+      x-ai-reasoning-instructions:
+      - Verify the email exists in the specified list before updating.
+      - Ensure variable names match the schema defined for this list.
+      - Send only changed variables to avoid overwriting with empty values.
+      x-ai-responding-instructions:
+      - Confirm the update was successful.
+      - List which variables were changed.
+      x-ai-suggestions:
+      - Fetch updated contact info via GET /addressbooks/{id}/emails/{email}.
+      - Trigger a personalized campaign after updating key variables.
+      x-ai-capabilities:
+        security_info:
+          data_handling:
+          - ResourceStateUpdate
+          - PIIDataHandling
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - email
+              - variables
+              properties:
+                email:
+                  type: string
+                  format: email
+                  example: user@example.com
+                variables:
+                  type: array
+                  items:
+                    type: object
+                    required:
+                    - name
+                    - value
+                    properties:
+                      name:
+                        type: string
+                        example: FirstName
+                      value:
+                        type: string
+                        example: John
+      responses:
+        '200':
+          description: Variables successfully updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResultTrue'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                book.not_found:
+                  summary: book.not_found
+                  value:
+                    message: Book not found
+                    error_code: 213
+        '422':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                email.required:
+                  summary: email.required
+                  value:
+                    message: Argument email missing
+                    error_code: 422
+                email.email:
+                  summary: email.email
+                  value:
+                    message: Argument email is invalid
+                    error_code: 422
+                email.not_found:
+                  summary: email.not_found
+                  value:
+                    message: Email address not found
+                    error_code: 502
+                variables.required:
+                  summary: variables.required
+                  value:
+                    message: Argument variables missing
+                    error_code: 422
+                variables.array:
+                  summary: variables.array
+                  value:
+                    message: Argument variables is invalid
+                    error_code: 422
+  /emails/{email}:
+    parameters:
+    - name: email
+      in: path
+      required: true
+      schema:
+        type: string
+    get:
+      tags:
+      - Email address
+      summary: Get general info for an email
+      operationId: getEmailInfo
+      description: Finds which address books this email belongs to.
+      x-ai-role: data_analyst
+      x-ai-description: Cross-references a single subscriber across the entire account.
+      x-ai-reasoning-instructions:
+      - Identify all lists where the subscriber is active.
+      - Extract specific variables assigned in different books.
+      - Check for global unsubscribes or blocks.
+      x-ai-responding-instructions:
+      - List the address books and statuses for this email.
+      - Summarize custom data tied to this user.
+      x-ai-suggestions:
+      - Get detailed history for this email.
+      x-ai-capabilities:
+        security_info:
+          data_handling:
+          - InformationRetrieval
+          - PIIDisplay
+      responses:
+        '200':
+          description: Email info
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/EmailAcrossBooks'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+    delete:
+      tags:
+      - Email address
+      summary: Delete email globally
+      operationId: deleteEmailGlobally
+      description: Wipes a subscriber from all lists.
+      x-ai-role: compliance_officer
+      x-ai-description: Fulfills right-to-be-forgotten requests (GDPR).
+      x-ai-reasoning-instructions:
+      - Ask for explicit confirmation as this affects all lists.
+      - Ensure the email format is valid.
+      - Verify it was removed from the entire ecosystem.
+      x-ai-responding-instructions:
+      - Confirm the global deletion is complete.
+      - Assure the user that the contact will no longer receive emails.
+      x-ai-suggestions:
+      - Verify with another GET call.
+      x-ai-capabilities:
+        security_info:
+          data_handling:
+          - DataDestruction
+      responses:
+        '200':
+          description: Deletion successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResultTrue'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+  /emails/{email}/details:
+    parameters:
+    - name: email
+      in: path
+      required: true
+      schema:
+        type: string
+    get:
+      tags:
+      - Email address
+      summary: Get detailed info for an email
+      operationId: getEmailDetails
+      description: Retrieves list names, addition dates, and sources.
+      x-ai-role: data_analyst
+      x-ai-description: Audits the acquisition history of a subscriber.
+      x-ai-reasoning-instructions:
+      - Analyze the 'source' field to understand lead generation performance.
+      - Review 'add_date' to see subscriber tenure.
+      - Match list_id against known campaigns.
+      x-ai-responding-instructions:
+      - Provide a timeline of when and how the user was added.
+      - Highlight the primary acquisition source.
+      x-ai-suggestions:
+      - Check campaign stats for this email.
+      x-ai-capabilities:
+        security_info:
+          data_handling:
+          - InformationRetrieval
+      parameters: []
+      responses:
+        '200':
+          description: Email details
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/EmailDetails'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+  /emails:
+    post:
+      tags:
+      - Email address
+      summary: Get info for multiple emails
+      operationId: getMultipleEmailsInfo
+      description: Batch check for subscriber statuses.
+      x-ai-role: data_analyst
+      x-ai-description: Efficiently audits multiple users at once.
+      x-ai-reasoning-instructions:
+      - Construct the array of target emails carefully.
+      - Map the response structure (keyed by email) for easy reading.
+      - Identify overall trends (e.g., are they all in the same book?).
+      x-ai-responding-instructions:
+      - Summarize the statuses of the requested batch.
+      - Highlight any emails that are completely missing.
+      x-ai-suggestions:
+      - Add missing emails to a list.
+      x-ai-capabilities:
+        security_info:
+          data_handling:
+          - InformationRetrieval
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - emails
+              properties:
+                emails:
+                  type: array
+                  items:
+                    type: string
+      responses:
+        '200':
+          description: Batch email info
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/EmailInfoShort'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+  /emails/{email}/campaigns:
+    parameters:
+    - name: email
+      in: path
+      required: true
+      schema:
+        type: string
+    get:
+      tags:
+      - Email address
+      summary: Get email stats
+      operationId: getEmailCampaignStats
+      description: Analytics for a specific subscriber.
+      x-ai-role: data_analyst
+      x-ai-description: Calculates individual engagement scoring.
+      x-ai-reasoning-instructions:
+      - Review the ratio of sent vs open to determine engagement.
+      - Check the blacklist boolean to ensure deliverability.
+      - Identify which address books feed these campaigns.
+      x-ai-responding-instructions:
+      - Provide the subscriber's engagement metrics clearly.
+      - Warn if they are blacklisted.
+      x-ai-suggestions:
+      - Remove if highly unengaged.
+      x-ai-capabilities:
+        security_info:
+          data_handling:
+          - InformationRetrieval
+      parameters: []
+      responses:
+        '200':
+          description: Subscriber stats
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SubscriberStats'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+  /campaigns/{id}/email/{email}:
+    parameters:
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: integer
+    - name: email
+      in: path
+      required: true
+      schema:
+        type: string
+    get:
+      tags:
+      - Email address
+      summary: Get info for an email from a campaign
+      operationId: getEmailCampaignInfo
+      description: Checks exactly what happened to a specific email in a specific campaign.
+      x-ai-role: deliverability_expert
+      x-ai-description: Micro-level deliverability troubleshooting.
+      x-ai-reasoning-instructions:
+      - Investigate the detailed status to see if it bounced or was opened.
+      - Cross-reference with global status.
+      - Diagnose specific delivery failures.
+      x-ai-responding-instructions:
+      - State the exact outcome for this user (e.g., 'Delivered but not opened').
+      - Explain any error codes found.
+      x-ai-suggestions:
+      - Check global stats for this email.
+      x-ai-capabilities:
+        security_info:
+          data_handling:
+          - InformationRetrieval
+      parameters: []
+      responses:
+        '200':
+          description: Detailed delivery info
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  sent_date:
+                    type: string
+                  global_status:
+                    type: integer
+                  global_status_explain:
+                    type: string
+                  detail_status:
+                    type: integer
+                  detail_status_explain:
+                    type: string
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+  /addressbooks/{id}/emails/{email}:
+    parameters:
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: integer
+    - name: email
+      in: path
+      required: true
+      schema:
+        type: string
+    get:
+      tags:
+      - Email address
+      summary: Get info for an email from a mailing list
+      operationId: getEmailFromList
+      description: Retrieves exact variables and status in one list.
+      x-ai-role: data_analyst
+      x-ai-description: Specific lookup for a user's data within a designated segment.
+      x-ai-reasoning-instructions:
+      - Verify the variables hold expected data.
+      - Check if the status is active.
+      - Extract phone number if present.
+      x-ai-responding-instructions:
+      - List the variables and values associated with this contact in this list.
+      - Confirm their subscription status.
+      x-ai-suggestions:
+      - Update the phone number.
+      x-ai-capabilities:
+        security_info:
+          data_handling:
+          - InformationRetrieval
+      parameters: []
+      responses:
+        '200':
+          description: Contact list info
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  email:
+                    type: string
+                  abook_id:
+                    type: string
+                  phone:
+                    type: string
+                  status:
+                    type: integer
+                  status_explain:
+                    type: string
+                  variables:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        name:
+                          type: string
+                        type:
+                          type: string
+                        value:
+                          type: string
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+  /emails/campaigns:
+    post:
+      tags:
+      - Email address
+      summary: Get stats for multiple emails
+      operationId: getMultipleEmailsCampaignStats
+      description: Batch fetch engagement stats.
+      x-ai-role: data_analyst
+      x-ai-description: Bulk analytics query.
+      x-ai-reasoning-instructions:
+      - Assemble the batch request up to limits.
+      - Compare metrics across the batch to find top engagers.
+      - Map the complex response correctly.
+      x-ai-responding-instructions:
+      - Provide an aggregated view or highlight extremes in the batch.
+      - Summarize total sends vs opens.
+      x-ai-suggestions:
+      - Segment based on these metrics.
+      x-ai-capabilities:
+        security_info:
+          data_handling:
+          - InformationRetrieval
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - emails
+              properties:
+                emails:
+                  type: array
+                  items:
+                    type: string
+      responses:
+        '200':
+          description: Batch stats
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties:
+                  $ref: '#/components/schemas/SubscriberStats'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+components:
+  schemas:
+    ResultTrue:
+      type: object
+      x-ai-description: Success indicator.
+      properties:
+        result:
+          type: boolean
+    EmailInfoShort:
+      type: object
+      x-ai-description: Brief subscriber status.
+      properties:
+        book_id:
+          type: integer
+    SubscriberStats:
+      type: object
+      x-ai-description: Engagement statistics.
+      properties:
+        statistic:
+          type: object
+    EmailDetails:
+      type: object
+      x-ai-description: History for an email.
+      properties:
+        list_name:
+          type: string
+        source:
+          type: string
+    EmailAcrossBooks:
+      type: object
+      x-ai-description: Subscriber status in a book.
+      properties:
+        book_id:
+          type: integer
+        email:
+          type: string
+  securitySchemes:
+    apiKey:
+      type: http
+      scheme: bearer
+      bearerFormat: API Key
+      description: 'Static API Key authentication.  A long-lived token generated manually in the SendPulse account settings.
+
+        '
+      x-ai-description: 'Permanent authentication token. Ideal for simple integrations without token refresh logic.
+
+        '
+    oauth2:
+      type: oauth2
+      description: OAuth 2.0 Client Credentials flow for temporary access tokens.
+      flows:
+        clientCredentials:
+          tokenUrl: https://api.sendpulse.com/oauth/access_token
+          scopes: {}
+      x-ai-description: 'Standard OAuth 2.0 flow using Client ID and Client Secret.  Provides temporary tokens (valid for 1 hour) for enhanced security.
+
+        '

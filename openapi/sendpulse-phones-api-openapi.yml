@@ -1,0 +1,323 @@
+openapi: 3.2.0
+info:
+  description: Using the API for the CRM service, you can integrate your system with CRM from SendPulse and receive detailed information on pipelines, deals, contacts and their attributes and users. You can also create deals and contacts, assign and remove fields, tags, contact details and instant messengers. On the right, there is a button for authorizing requests made on this page. Click “Authorize,” then insert the ID and Secret from your account. To perform a request directly from the page, click the "Try it out" button within each method block. Then fill in input fields if any (for URL parameters, the description is right below the URL request; for body parameters, the description is under the “Scheme” button to the right of the example), and click “Run.” You will find the server response and description of received parameters below.
+  title: SendPulse CRM Public Phones API
+  version: 0.1.0
+servers:
+- url: https://api.sendpulse.com/crm/v1
+security:
+- apiKey: []
+- oauth2: []
+tags:
+- name: Phones
+paths:
+  /companies/{companyId}/phones:
+    get:
+      tags:
+      - Phones
+      summary: Get phones
+      parameters:
+      - name: companyId
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Phone'
+                  metadata:
+                    type: object
+                    properties:
+                      total:
+                        type: integer
+      operationId: getCompanyPhones
+      x-ai-role: crm_data_analyst
+      x-ai-description: Retrieves all phone numbers associated with a specific company in the CRM. Phone records serve as primary communication channels for outbound calls, SMS campaigns, and contact routing. This list is essential for multi-channel outreach orchestration.
+      x-ai-reasoning-instructions:
+      - Verify that the companyId exists before requesting phones to avoid misleading empty responses.
+      - Check the total in metadata to determine if pagination is needed for large datasets.
+      - Consider that a company may have multiple phones with different roles (main, support, sales) — account for this when selecting a contact number.
+      x-ai-responding-instructions:
+      - Present the list of phones with their types or labels if available.
+      - Mention the total count from metadata to give context on the full dataset.
+      - If the list is empty, suggest adding phones via the create phone endpoint.
+      x-ai-suggestions:
+      - Use the returned phone numbers to initiate an SMS campaign or outbound call sequence.
+      - Cross-reference with contacts list to map phones to specific individuals within the company.
+      x-ai-capabilities:
+        confirmation:
+          type: None
+        security_info:
+          data_handling:
+          - ReadOnly
+    post:
+      tags:
+      - Phones
+      summary: Create phone
+      parameters:
+      - name: companyId
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              properties:
+                data:
+                  type: object
+                  properties:
+                    typeId:
+                      type: integer
+                    login:
+                      type: string
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Phone'
+      operationId: createCompanyPhone
+      x-ai-role: crm_data_manager
+      x-ai-description: Registers a new phone number for a specific company in the CRM. A phone entry links a communication channel (defined by typeId) to a company profile, enabling multi-channel outreach and contact routing. This is foundational for building complete company contact cards.
+      x-ai-reasoning-instructions:
+      - Verify that the companyId exists before attempting to create the phone record.
+      - Check if a phone with the same login already exists for this company to avoid duplicates.
+      - Clarify the typeId with the user — it defines the phone type (e.g., work, mobile, fax) and must be a valid value from the phone types dictionary.
+      - Ensure the login value is a valid phone number format appropriate for the intended channel.
+      x-ai-responding-instructions:
+      - Confirm successful creation by referencing the new phone record details from the response.
+      - Mention the company context (companyId) so the user understands which record was updated.
+      - If the typeId is unknown, suggest fetching available phone types first.
+      - If creation fails due to a duplicate or invalid companyId, explain clearly and suggest corrective actions.
+      x-ai-suggestions:
+      - Use typeId=1 for primary work phone if unsure about the type.
+      - After creating the phone, verify it appears in the company's contact list.
+      - Consider adding multiple phone types (work, mobile) to ensure complete contact coverage.
+      x-ai-capabilities:
+        confirmation:
+          type: None
+        security_info:
+          data_handling:
+          - ResourceStateUpdate
+  /companies/{companyId}/phones/batch:
+    post:
+      tags:
+      - Phones
+      summary: Batch create phone
+      parameters:
+      - name: companyId
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                phones:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      phone:
+                        type: string
+                        minLength: 1
+                        maxLength: 50
+                      isMain:
+                        type: boolean
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Phone'
+      operationId: batchCreateCompanyPhones
+      x-ai-role: crm_data_manager
+      x-ai-description: Bulk-assigns phone numbers to a CRM company record in a single atomic request. Use this instead of individual phone creation when onboarding a company with multiple contact numbers or migrating data from an external source. The `isMain` flag controls which number appears as the primary contact in the CRM UI and is used by default in outbound communication.
+      x-ai-reasoning-instructions:
+      - 'Ensure exactly one phone in the batch has `isMain: true`; having multiple main phones or none may cause ambiguity in the CRM.'
+      - Validate phone format before sending — the field accepts up to 50 characters but does not enforce E.164 automatically.
+      - Check if the company already has phones; batch creation may result in duplicates if the same numbers exist.
+      - If the batch is large, consider splitting into smaller chunks to stay within payload limits.
+      x-ai-responding-instructions:
+      - Confirm how many phones were created and list their assigned IDs from the response `data` array.
+      - Highlight which phone was set as the main contact.
+      - If the operation partially fails, clarify which phones were not created and why.
+      - Suggest verifying the result with a GET /companies/{companyId}/phones call.
+      x-ai-suggestions:
+      - 'Set `isMain: true` on the primary office number and `isMain: false` on all others.'
+      - Use E.164 format (e.g., +14155552671) for cross-region compatibility.
+      - Batch all numbers in one request during initial company import to reduce API call overhead.
+      x-ai-capabilities:
+        confirmation:
+          type: Recommended
+          message: You are about to add {{phones.length}} phone number(s) to company {{companyId}}. Proceed?
+        security_info:
+          data_handling:
+          - ResourceStateUpdate
+          - BulkWrite
+  /companies/{companyId}/phones/{phoneId}:
+    put:
+      tags:
+      - Phones
+      summary: Update phone
+      parameters:
+      - name: entityType
+        in: path
+        required: true
+        schema:
+          type: string
+          enum:
+          - company
+      - name: entityId
+        in: path
+        required: true
+        schema:
+          type: integer
+      - name: phoneId
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              properties:
+                data:
+                  type: object
+                  properties:
+                    isMain:
+                      type: boolean
+                    phone:
+                      type: string
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Phone'
+      operationId: updateCompanyPhone
+      x-ai-role: crm_data_manager
+      x-ai-description: Updates an existing phone record associated with a company entity in the CRM. The `isMain` flag controls which phone number is treated as the primary contact point — only one phone per entity should be marked as main at a time. Use this endpoint to correct phone numbers or promote a secondary number to primary status.
+      x-ai-reasoning-instructions:
+      - Verify the phoneId belongs to the specified companyId before attempting the update.
+      - 'If setting isMain: true, warn the user that this may implicitly demote another phone to non-primary, depending on CRM behavior.'
+      - Validate phone format (E.164 recommended) before sending to avoid silent rejection or data inconsistency.
+      - If only isMain is being toggled without changing the number, confirm the intent to avoid accidental data loss.
+      x-ai-responding-instructions:
+      - Confirm which field(s) were updated and reflect the new state back to the user.
+      - If isMain was set to true, explicitly note that this phone is now the primary contact for the company.
+      - Suggest verifying the full phone list via GET /companies/{companyId}/phones if the user needs to audit all contact numbers.
+      x-ai-suggestions:
+      - Toggle isMain to promote a backup number to primary contact.
+      - Correct a mistyped phone number without removing and re-adding the record.
+      x-ai-capabilities:
+        confirmation:
+          type: Recommended
+          message: You are about to overwrite the existing phone data for this company. Confirm before proceeding.
+        security_info:
+          data_handling:
+          - ResourceStateUpdate
+    delete:
+      tags:
+      - Phones
+      summary: Delete phone
+      parameters:
+      - name: entityType
+        in: path
+        required: true
+        schema:
+          type: string
+          enum:
+          - company
+      - name: entityId
+        in: path
+        required: true
+        schema:
+          type: integer
+      - name: phoneId
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '204':
+          description: Successfully deleted
+      operationId: deleteCompanyPhone
+      x-ai-role: crm_data_manager
+      x-ai-description: Permanently removes a phone number record linked to a specific company entity. This is a destructive, irreversible action — once deleted, the phone cannot be recovered and any campaigns or automations referencing it may be affected.
+      x-ai-reasoning-instructions:
+      - Confirm the phoneId belongs to the specified companyId before proceeding — cross-entity deletions are not permitted.
+      - Warn the user that deletion is permanent and cannot be undone.
+      - Check if the phone number is referenced in active campaigns or workflows before deleting.
+      - Ensure entityType is always 'company' for this endpoint — other entity types are not supported here.
+      x-ai-responding-instructions:
+      - Confirm successful deletion with a clear message that the phone record no longer exists.
+      - If the response is 204 No Content, explicitly state that the operation succeeded even though no body is returned.
+      - If a 404 is returned, clarify whether the companyId or phoneId was not found.
+      - Suggest verifying remaining phones via a list endpoint after deletion.
+      x-ai-capabilities:
+        confirmation:
+          type: Required
+          message: This will permanently delete the phone record. This action cannot be undone.
+        security_info:
+          data_handling:
+          - IrreversibleDelete
+components:
+  schemas:
+    Phone:
+      type: object
+      properties:
+        id:
+          type: integer
+        isMain:
+          type: boolean
+        phone:
+          type: string
+  securitySchemes:
+    apiKey:
+      type: http
+      scheme: bearer
+      bearerFormat: API Key
+      description: 'Static API Key authentication.  A long-lived token generated manually in the SendPulse account settings.
+
+        '
+      x-ai-description: 'Permanent authentication token. Ideal for simple integrations without token refresh logic.
+
+        '
+    outh2:
+      type: oauth2
+      description: OAuth 2.0 Client Credentials flow for temporary access tokens.
+      flows:
+        clientCredentials:
+          tokenUrl: https://api.sendpulse.com/oauth/access_token
+          scopes: {}
+      x-ai-description: 'Standard OAuth 2.0 flow using Client ID and Client Secret.  Provides temporary tokens (valid for 1 hour) for enhanced security.
+
+        '

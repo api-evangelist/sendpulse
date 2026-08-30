@@ -1,0 +1,255 @@
+openapi: 3.2.0
+info:
+  description: Using the API for the CRM service, you can integrate your system with CRM from SendPulse and receive detailed information on pipelines, deals, contacts and their attributes and users. You can also create deals and contacts, assign and remove fields, tags, contact details and instant messengers. On the right, there is a button for authorizing requests made on this page. Click “Authorize,” then insert the ID and Secret from your account. To perform a request directly from the page, click the "Try it out" button within each method block. Then fill in input fields if any (for URL parameters, the description is right below the URL request; for body parameters, the description is under the “Scheme” button to the right of the example), and click “Run.” You will find the server response and description of received parameters below.
+  title: SendPulse CRM Public Attachments API
+  version: 0.1.0
+servers:
+- url: https://api.sendpulse.com/crm/v1
+security:
+- apiKey: []
+- oauth2: []
+tags:
+- name: Attachments
+paths:
+  /attachments:
+    post:
+      tags:
+      - Attachments
+      summary: Attach file
+      description: First, the file must be uploaded to the file manager, and then the file can be attached.
+      requestBody:
+        $ref: '#/components/requestBodies/AttachmentBody'
+      responses:
+        '201':
+          description: ''
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    $ref: '#/components/schemas/EntityAttachment'
+      operationId: createAttachment
+      x-ai-role: file_management_specialist
+      x-ai-description: 'Attaches a previously uploaded file to an entity (e.g., email campaign or message). This is a two-step process: the file must first exist in the File Manager before it can be referenced here. This endpoint acts as the binding layer between a stored asset and its intended usage context.'
+      x-ai-reasoning-instructions:
+      - Confirm the file has already been uploaded to the File Manager before calling this endpoint — attachment will fail if the file does not exist.
+      - Retrieve the file URL or identifier from the File Manager response prior to invoking this operation.
+      - Validate that the file type is compatible with the target entity (e.g., supported MIME types for email attachments).
+      - Be aware of size limits that may apply to attachments depending on the delivery channel.
+      x-ai-responding-instructions:
+      - Confirm the attachment was created by referencing the returned attachment ID or entity details.
+      - If the file was not found or upload was incomplete, instruct the user to complete the file upload step first.
+      - Suggest the next logical action, such as linking the attachment to a specific campaign or message.
+      x-ai-suggestions:
+      - Use `uploadFile` (File Manager) first to obtain the file reference before calling this endpoint.
+      - After attaching, associate the attachment with the target resource using its returned ID.
+      x-ai-capabilities:
+        confirmation:
+          type: None
+        security_info:
+          data_handling:
+          - ResourceStateUpdate
+  /attachments/batch:
+    post:
+      tags:
+      - Attachments
+      summary: Create attachment
+      description: First, the file must be uploaded to the file manager, and then the file can be attached.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                attachments:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      link:
+                        type: string
+                      entityId:
+                        type: integer
+                      entityType:
+                        type: string
+                        enum:
+                        - deal
+                        - task
+                        - contact
+                        - dealComment
+                        - taskComment
+                        - contactComment
+      responses:
+        '201':
+          description: ''
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/EntityAttachment'
+      operationId: createAttachmentsBatch
+      x-ai-role: crm_data_manager
+      x-ai-description: 'Batch-links previously uploaded files (from the File Manager) to CRM entities such as deals, tasks, or contacts. This is a two-step flow: upload file → attach to entity. The endpoint supports heterogeneous batches — a single request can attach files to different entity types simultaneously, reducing round-trips in automation scenarios.'
+      x-ai-reasoning-instructions:
+      - Remind the user that files must be uploaded to the File Manager first — attachment without a valid file link will fail.
+      - Validate that each item in the batch has a `link`, `entityId`, and `entityType` before submitting.
+      - If attaching to multiple entity types in one batch, confirm the user intends mixed-entity attachment — it is valid but uncommon.
+      - Check that `entityId` values correspond to existing CRM records; attaching to a non-existent entity may silently fail or return a partial success.
+      x-ai-responding-instructions:
+      - Confirm how many attachments were successfully created from the response `data` array.
+      - If the batch is partially successful, clearly indicate which items succeeded and which did not.
+      - Suggest verifying attachments by fetching the entity (deal, contact, etc.) and checking its attachment list.
+      x-ai-suggestions:
+      - Upload files via the File Manager endpoint first, then use the returned links here.
+      - Group attachments by entity type for clarity, even though mixed batches are supported.
+      x-ai-capabilities:
+        confirmation:
+          type: None
+        security_info:
+          data_handling:
+          - ResourceStateUpdate
+  /attachments/{attachmentId}:
+    put:
+      tags:
+      - Attachments
+      summary: Update file attachment
+      description: First, the file must be uploaded to the file manager, and then the file can be attached.
+      parameters:
+      - name: attachmentId
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        $ref: '#/components/requestBodies/AttachmentUpdateBody'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    $ref: '#/components/schemas/EntityAttachment'
+      operationId: updateAttachment
+      x-ai-role: content_asset_manager
+      x-ai-description: 'Updates an existing file attachment by linking it to a new or different file from the file manager. This is a two-phase operation: the file must first exist in the file manager before it can be referenced here. Use this to replace the underlying file of an attachment without changing the attachment reference downstream.'
+      x-ai-reasoning-instructions:
+      - Before calling this endpoint, ensure the target file has already been uploaded via the file manager — this endpoint does not accept raw file data.
+      - Verify the attachmentId exists and belongs to the current account to avoid 404 errors.
+      - If the goal is to swap a file used in active campaigns, warn the user that the change may affect in-flight or scheduled sends depending on timing.
+      x-ai-responding-instructions:
+      - Confirm the update was applied by referencing the attachmentId and the new file details from the response.
+      - If the file manager upload step was skipped, guide the user to upload the file first before retrying.
+      - Suggest verifying the updated attachment is still correctly referenced in any campaigns or templates that use it.
+      x-ai-suggestions:
+      - Use `uploadFile` (file manager) to obtain a file reference before calling this endpoint.
+      - After updating, call the relevant campaign endpoint to confirm the attachment is still correctly linked.
+      x-ai-capabilities:
+        confirmation:
+          type: Recommended
+          message: Updating an attachment will replace the file for all entities referencing this attachmentId.
+        security_info:
+          data_handling:
+          - ResourceStateUpdate
+    delete:
+      tags:
+      - Attachments
+      summary: Delete file attachment
+      parameters:
+      - name: attachmentId
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '204':
+          description: Successfully detached
+      operationId: deleteAttachment
+      x-ai-role: file_management_specialist
+      x-ai-description: Permanently detaches and removes a file attachment by its ID. Use this to clean up uploaded files that are no longer needed, free storage, or revoke file access linked to a specific attachment record.
+      x-ai-reasoning-instructions:
+      - Confirm the attachmentId exists before attempting deletion to avoid misleading 404 errors.
+      - Warn the user that deletion is irreversible — the file cannot be recovered after this call.
+      - Check if the attachment is referenced by active campaigns or messages before deleting to prevent broken links.
+      x-ai-responding-instructions:
+      - Confirm successful deletion with a clear message since the response body is empty (204 No Content).
+      - If a 404 is returned, clarify that the attachment may have already been deleted or the ID is incorrect.
+      - Suggest uploading a replacement file if the deletion was accidental.
+      x-ai-suggestions:
+      - Use `listAttachments` first to retrieve valid attachmentId values.
+      - After deletion, verify removal by attempting to fetch the attachment — expect a 404.
+      x-ai-capabilities:
+        confirmation:
+          type: Required
+          message: This action permanently deletes the attachment and cannot be undone.
+        security_info:
+          data_handling:
+          - IrreversibleDelete
+components:
+  requestBodies:
+    AttachmentBody:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              link:
+                type: string
+                example: /contacts/sendPulse_crm_report.pdf
+                description: First, the file must be uploaded to the file manager, and then the file can be attached.
+              entityId:
+                type: number
+                description: ID of entityType (example - id of task, if entityType=task)
+              entityType:
+                type: string
+                description: 'One of entity types: task, deal, contact'
+    AttachmentUpdateBody:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              link:
+                type: string
+                example: /contacts/sendPulse_crm_report.pdf
+                description: First, the file must be uploaded to the file manager, and then the file can be attached.
+  schemas:
+    EntityAttachment:
+      type: object
+      properties:
+        id:
+          type: integer
+        link:
+          type: string
+        entityId:
+          type: number
+        entityType:
+          type: string
+        createdAt:
+          type: string
+        updatedAt:
+          type: string
+  securitySchemes:
+    apiKey:
+      type: http
+      scheme: bearer
+      bearerFormat: API Key
+      description: 'Static API Key authentication.  A long-lived token generated manually in the SendPulse account settings.
+
+        '
+      x-ai-description: 'Permanent authentication token. Ideal for simple integrations without token refresh logic.
+
+        '
+    outh2:
+      type: oauth2
+      description: OAuth 2.0 Client Credentials flow for temporary access tokens.
+      flows:
+        clientCredentials:
+          tokenUrl: https://api.sendpulse.com/oauth/access_token
+          scopes: {}
+      x-ai-description: 'Standard OAuth 2.0 flow using Client ID and Client Secret.  Provides temporary tokens (valid for 1 hour) for enhanced security.
+
+        '

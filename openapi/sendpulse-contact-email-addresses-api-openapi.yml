@@ -1,0 +1,225 @@
+openapi: 3.2.0
+info:
+  description: Using the API for the CRM service, you can integrate your system with CRM from SendPulse and receive detailed information on pipelines, deals, contacts and their attributes and users. You can also create deals and contacts, assign and remove fields, tags, contact details and instant messengers. On the right, there is a button for authorizing requests made on this page. Click “Authorize,” then insert the ID and Secret from your account. To perform a request directly from the page, click the "Try it out" button within each method block. Then fill in input fields if any (for URL parameters, the description is right below the URL request; for body parameters, the description is under the “Scheme” button to the right of the example), and click “Run.” You will find the server response and description of received parameters below.
+  title: SendPulse CRM Public Contact email addresses API
+  version: 0.1.0
+servers:
+- url: https://api.sendpulse.com/crm/v1
+security:
+- apiKey: []
+- oauth2: []
+tags:
+- description: ''
+  name: Contact email addresses
+paths:
+  /contacts/{contactId}/emails:
+    post:
+      tags:
+      - Contact email addresses
+      summary: Add an email address to the contact
+      description: Adds an email address to the specified contact
+      parameters:
+      - name: contactId
+        in: path
+        required: true
+        description: Contact ID to which you want to add the email address. It can be obtained with the "Get a list of contacts" method
+        schema:
+          type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                emails:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      email:
+                        type: string
+                        minLength: 1
+                        maxLength: 50
+                        description: Email address to be added to the contact
+                      isMain:
+                        type: boolean
+                        description: Determines whether the email address is the main one
+              required:
+              - email
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ContactEmail'
+      operationId: addContactEmails
+      x-ai-role: crm_data_specialist
+      x-ai-description: Extends a contact's communication profile by associating one or more email addresses. In SendPulse CRM, a contact can have multiple emails, with exactly one designated as primary — this drives which address is used in automated campaigns and follow-ups. Adding the wrong email as main can silently redirect all outbound communication.
+      x-ai-reasoning-instructions:
+      - Confirm the contactId exists before attempting the request — use 'Get a list of contacts' if uncertain.
+      - 'Ensure at most one entry in the emails array has isMain: true; setting multiple as main is logically inconsistent.'
+      - If the user provides no isMain flag, default to false unless they explicitly state this should be the primary address.
+      - Validate email format and length (max 50 chars) client-side before sending to avoid avoidable 4xx errors.
+      - Ask the user whether the new email should replace the current main address or coexist as secondary.
+      x-ai-responding-instructions:
+      - Confirm which email(s) were added and whether any was set as the main address.
+      - If isMain was set to true, note that outbound messaging for this contact will now use the new address.
+      - Suggest verifying the contact's full email list using 'Get contact details' as a follow-up.
+      - If the contact is part of active campaigns, warn that changing the main email may affect delivery targeting.
+      x-ai-suggestions:
+      - 'Set isMain: true only when replacing the primary communication address intentionally.'
+      - Batch multiple emails in a single request rather than making separate calls per address.
+      x-ai-capabilities:
+        confirmation:
+          type: Recommended
+          message: Confirm before setting a new main email — this affects all future outbound communication for this contact.
+        security_info:
+          data_handling:
+          - ResourceStateUpdate
+          - PersonalDataWrite
+  /contacts/{contactId}/emails/{emailId}:
+    put:
+      tags:
+      - Contact email addresses
+      summary: Update the email address of the contact
+      description: Updates the email address of the specified contact
+      parameters:
+      - name: contactId
+        in: path
+        required: true
+        description: Contact ID for which you want to update the email address. It can be obtained with the "Get a list of contacts" method
+        schema:
+          type: integer
+      - name: emailId
+        in: path
+        required: true
+        description: Email address ID you want to update. It can be obtained with the "Get a list of contacts" method
+        schema:
+          type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                email:
+                  type: string
+                  minLength: 1
+                  maxLength: 128
+                  description: New email address
+              required:
+              - email
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    $ref: '#/components/schemas/ContactEmail'
+      operationId: updateContactEmail
+      x-ai-role: crm_data_steward
+      x-ai-description: Updates a specific email address record linked to a contact. This is a targeted mutation — it changes one of potentially many email entries for the contact without affecting other attributes or communication history. Critical for maintaining accurate deliverability when a subscriber changes their address.
+      x-ai-reasoning-instructions:
+      - Before updating, retrieve the contact's current emails via 'Get a list of contacts' to confirm the emailId belongs to the correct contactId.
+      - Validate the new email format before sending — the API enforces 1–128 chars, but also check for obvious typos (e.g., missing TLD).
+      - 'Treat this as a destructive operation: once the address is replaced, the old value is gone — confirm intent with the user if acting autonomously.'
+      - If the contact has only one email and it is the primary one, warn that updating it may affect active campaigns or automations targeting that address.
+      x-ai-responding-instructions:
+      - Confirm which email was updated by referencing the emailId and the new address.
+      - If the updated email is used in active campaigns, proactively mention potential impact on deliverability tracking.
+      - On success, suggest verifying the contact record to ensure the change propagated correctly.
+      x-ai-suggestions:
+      - Use 'Get a list of contacts' first to resolve both contactId and emailId before calling this endpoint.
+      - After updating, call the contact detail endpoint to confirm the new address is reflected.
+      x-ai-capabilities:
+        confirmation:
+          type: Recommended
+          message: You are about to replace an existing email address for this contact. This action cannot be undone automatically.
+        security_info:
+          data_handling:
+          - ResourceStateUpdate
+          - PII
+    delete:
+      tags:
+      - Contact email addresses
+      summary: Remove the email address from the contact
+      description: Removes the email address from the specified contact
+      parameters:
+      - name: contactId
+        in: path
+        required: true
+        description: Contact ID from which you want to remove the email address. It can be obtained with the "Get a list of contacts" method
+        schema:
+          type: integer
+      - name: emailId
+        in: path
+        required: true
+        description: Email address ID you want to delete. It can be obtained with the "Get a list of contacts" method
+        schema:
+          type: integer
+      responses:
+        '204':
+          description: Successfully deleted
+      operationId: deleteContactEmail
+      x-ai-role: crm_data_steward
+      x-ai-description: Permanently unlinks a specific email address from a contact record without deleting the contact itself. Use this when a contact changes their email, when an address becomes invalid, or when GDPR/compliance requires removal of a particular communication channel. The contact remains intact — only the email binding is severed.
+      x-ai-reasoning-instructions:
+      - Confirm that both contactId and emailId are valid and belong to the same contact before proceeding.
+      - Warn the user if this is the contact's only email address — removing it may make the contact unreachable via email campaigns.
+      - Consider whether the intent is to replace the email (use update flow instead) or permanently remove it.
+      - Check if the email is currently used in active automations or campaign audience segments before deletion.
+      x-ai-responding-instructions:
+      - Confirm the email address was successfully removed and mention the affected contactId.
+      - If this was the contact's last email, proactively suggest adding a new one via the appropriate endpoint.
+      - For compliance-driven removals, note that the action is irreversible and suggest archiving contact data if needed.
+      x-ai-suggestions:
+      - After removal, use 'Get a list of contacts' to verify the updated email list for this contact.
+      - To add a replacement email address, use the 'Add email to contact' endpoint.
+      x-ai-capabilities:
+        confirmation:
+          type: Required
+          message: This will permanently remove the email address from the contact. This action cannot be undone.
+        security_info:
+          data_handling:
+          - IrreversibleDelete
+          - PIIRemoval
+components:
+  schemas:
+    ContactEmail:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Email address ID
+        email:
+          type: string
+          description: Email address
+        isMain:
+          type: boolean
+          description: Determines whether the email address is the main one
+  securitySchemes:
+    apiKey:
+      type: http
+      scheme: bearer
+      bearerFormat: API Key
+      description: 'Static API Key authentication.  A long-lived token generated manually in the SendPulse account settings.
+
+        '
+      x-ai-description: 'Permanent authentication token. Ideal for simple integrations without token refresh logic.
+
+        '
+    outh2:
+      type: oauth2
+      description: OAuth 2.0 Client Credentials flow for temporary access tokens.
+      flows:
+        clientCredentials:
+          tokenUrl: https://api.sendpulse.com/oauth/access_token
+          scopes: {}
+      x-ai-description: 'Standard OAuth 2.0 flow using Client ID and Client Secret.  Provides temporary tokens (valid for 1 hour) for enhanced security.
+
+        '

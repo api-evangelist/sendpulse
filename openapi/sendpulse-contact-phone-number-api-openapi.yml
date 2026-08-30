@@ -1,0 +1,212 @@
+openapi: 3.2.0
+info:
+  description: Using the API for the CRM service, you can integrate your system with CRM from SendPulse and receive detailed information on pipelines, deals, contacts and their attributes and users. You can also create deals and contacts, assign and remove fields, tags, contact details and instant messengers. On the right, there is a button for authorizing requests made on this page. Click “Authorize,” then insert the ID and Secret from your account. To perform a request directly from the page, click the "Try it out" button within each method block. Then fill in input fields if any (for URL parameters, the description is right below the URL request; for body parameters, the description is under the “Scheme” button to the right of the example), and click “Run.” You will find the server response and description of received parameters below.
+  title: SendPulse CRM Public Contact phone number API
+  version: 0.1.0
+servers:
+- url: https://api.sendpulse.com/crm/v1
+security:
+- apiKey: []
+- oauth2: []
+tags:
+- description: ''
+  name: Contact phone number
+paths:
+  /contacts/{contactId}/phones:
+    post:
+      tags:
+      - Contact phone number
+      summary: Add a phone number to the contact.
+      description: Adds phone numbers to existing contacts
+      parameters:
+      - name: contactId
+        in: path
+        required: true
+        description: Contact ID to add the phone to. Can be obtained in the "Get contact list" method
+        schema:
+          type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                phone:
+                  type: string
+                  minLength: 1
+                  maxLength: 50
+                  description: ''
+              required:
+              - phone
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    $ref: '#/components/schemas/ContactPhone'
+      operationId: addContactPhone
+      x-ai-role: crm_data_manager
+      x-ai-description: Attaches a phone number to an existing CRM contact, extending their reachability profile. Phone numbers enable SMS, voice, and WhatsApp channel outreach — adding one transforms a contact from email-only to omnichannel.
+      x-ai-reasoning-instructions:
+      - Resolve the contactId first — use 'Get contact list' if you only have a name or email.
+      - 'Validate the phone format before submitting: include country code (e.g., +380501234567). The API accepts up to 50 characters but does not normalize formats.'
+      - Check whether the contact already has a phone number to avoid duplicates — retrieve the contact record first if uncertain.
+      - If adding phones in bulk, consider batching contact lookups rather than making one call per contact.
+      x-ai-responding-instructions:
+      - Confirm success by referencing the contactId and the phone number that was added.
+      - If the response includes a ContactPhone object, surface the assigned phone ID for future reference.
+      - On failure, distinguish between 'contact not found' (wrong contactId) and validation errors (malformed phone string).
+      - Suggest enabling an SMS or WhatsApp channel for this contact as a logical next step.
+      x-ai-suggestions:
+      - '+380501234567'
+      - '+14155552671'
+      - '+447911123456'
+      x-ai-capabilities:
+        confirmation:
+          type: None
+        security_info:
+          data_handling:
+          - ResourceStateUpdate
+          - PII
+  /contacts/{contactId}/phones/{phoneId}:
+    put:
+      tags:
+      - Contact phone number
+      summary: Update the phone number of the contact
+      description: Updates the phone number of the specified contact. Provided property values will be overwritten.
+      parameters:
+      - name: contactId
+        in: path
+        required: true
+        description: Contact ID for which you want to update the phone number. It can be obtained with the "Get a list of contacts" method
+        schema:
+          type: integer
+      - name: phoneId
+        in: path
+        required: true
+        description: The phone number ID you want to update. It can be obtained with the "Get a list of contacts" method
+        schema:
+          type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                phone:
+                  type: string
+                  minLength: 1
+                  maxLength: 50
+                  description: New phone number in the international format
+              required:
+              - phone
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    $ref: '#/components/schemas/ContactPhone'
+      operationId: updateContactPhone
+      x-ai-role: crm_data_steward
+      x-ai-description: Updates a specific phone number record tied to a CRM contact. Since SendPulse CRM supports multiple phone numbers per contact, this endpoint targets one precisely by phoneId — ensuring the right record is modified without affecting other contact data.
+      x-ai-reasoning-instructions:
+      - Retrieve the contact first via 'Get a list of contacts' to confirm both contactId and phoneId exist before attempting an update.
+      - 'Validate the phone number format: it must be in international format (e.g., +380501234567). Reject or normalize local formats before calling this endpoint.'
+      - If the user provides only a local number, prompt them for the country code to construct a valid international format.
+      - Be aware that overwrite semantics apply — the existing phone value will be fully replaced, not merged.
+      x-ai-responding-instructions:
+      - Confirm which phone number was updated and on which contact (include contactId and phoneId for traceability).
+      - Show the new phone value from the response to let the user verify the change.
+      - If the update affects a contact used in active campaigns or automations, warn the user that outreach may now target the new number.
+      x-ai-suggestions:
+      - Use 'Get a list of contacts' first to discover the correct phoneId before calling this endpoint.
+      - After updating, verify the change by re-fetching the contact record.
+      x-ai-capabilities:
+        confirmation:
+          type: Recommended
+          message: You are about to overwrite the phone number for contact {contactId}. This action cannot be undone automatically.
+        security_info:
+          data_handling:
+          - ResourceStateUpdate
+          - PersonalDataModification
+    delete:
+      tags:
+      - Contact phone number
+      summary: Delete phone number
+      description: Removes the phone number from the specified contact
+      parameters:
+      - name: contactId
+        in: path
+        required: true
+        description: Contact ID from which you want to remove the phone number. It can be obtained with the "Get a list of contacts" method
+        schema:
+          type: integer
+      - name: phoneId
+        in: path
+        required: true
+        description: Phone number ID you want to remove. It can be obtained with the "Get a list of contacts" method
+        schema:
+          type: integer
+      responses:
+        '204':
+          description: Successfully deleted
+      operationId: deleteContactPhone
+      x-ai-role: crm_data_manager
+      x-ai-description: Permanently removes a specific phone number from a contact's profile. Use this when a contact has changed their number, requested removal, or when deduplicating contact data. This action is irreversible — the phone number association is deleted from the system and cannot be restored without re-adding it manually.
+      x-ai-reasoning-instructions:
+      - Before deleting, confirm you have the correct phoneId — retrieve the contact's phone list first if uncertain.
+      - Check whether this is the contact's only phone number; removing it may affect SMS campaign targeting.
+      - Ensure the deletion is intentional and not a result of confusion between contactId and phoneId.
+      - If the user wants to update (not delete) the number, suggest using the update endpoint instead.
+      x-ai-responding-instructions:
+      - Confirm the deletion was successful (HTTP 204 means no content returned — this is expected).
+      - Remind the user that this action is irreversible.
+      - If the contact had only one phone number, note that they are now unreachable via SMS campaigns.
+      - Suggest verifying the contact's remaining phones via 'Get a list of contacts' if needed.
+      x-ai-suggestions:
+      - Use 'Get a list of contacts' to retrieve both contactId and phoneId before calling this endpoint.
+      - Consider updating the phone number instead of deleting if the goal is a correction.
+      x-ai-capabilities:
+        confirmation:
+          type: Required
+          message: This will permanently remove the phone number from the contact. This action cannot be undone.
+        security_info:
+          data_handling:
+          - IrreversibleDelete
+components:
+  schemas:
+    ContactPhone:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Contact phone ID
+        phone:
+          type: string
+        isMain:
+          type: boolean
+  securitySchemes:
+    apiKey:
+      type: http
+      scheme: bearer
+      bearerFormat: API Key
+      description: 'Static API Key authentication.  A long-lived token generated manually in the SendPulse account settings.
+
+        '
+      x-ai-description: 'Permanent authentication token. Ideal for simple integrations without token refresh logic.
+
+        '
+    outh2:
+      type: oauth2
+      description: OAuth 2.0 Client Credentials flow for temporary access tokens.
+      flows:
+        clientCredentials:
+          tokenUrl: https://api.sendpulse.com/oauth/access_token
+          scopes: {}
+      x-ai-description: 'Standard OAuth 2.0 flow using Client ID and Client Secret.  Provides temporary tokens (valid for 1 hour) for enhanced security.
+
+        '

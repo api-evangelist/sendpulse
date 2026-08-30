@@ -1,0 +1,924 @@
+openapi: 3.2.0
+info:
+  description: Using the API for the CRM service, you can integrate your system with CRM from SendPulse and receive detailed information on pipelines, deals, contacts and their attributes and users. You can also create deals and contacts, assign and remove fields, tags, contact details and instant messengers. On the right, there is a button for authorizing requests made on this page. Click “Authorize,” then insert the ID and Secret from your account. To perform a request directly from the page, click the "Try it out" button within each method block. Then fill in input fields if any (for URL parameters, the description is right below the URL request; for body parameters, the description is under the “Scheme” button to the right of the example), and click “Run.” You will find the server response and description of received parameters below.
+  title: SendPulse CRM Public Tasks API
+  version: 0.1.0
+servers:
+- url: https://api.sendpulse.com/crm/v1
+security:
+- apiKey: []
+- oauth2: []
+tags:
+- name: Tasks
+paths:
+  /tasks/list:
+    post:
+      tags:
+      - Tasks
+      summary: Get tasks
+      description: Retrieves a list of tasks based on selected filters
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              properties:
+                name:
+                  type: string
+                boardId:
+                  type: integer
+                  example: 1
+                stepId:
+                  type: array
+                  description: Array of step IDs
+                priority:
+                  type: integer
+                  example: '[ 1,2,3 ]'
+                type:
+                  type: integer
+                  enum:
+                  - 1
+                  - 2
+                  - 3
+                responsibleId:
+                  type: array
+                  description: Array of responsible users IDs
+                parentId:
+                  type: array
+                  description: Array of parent task IDs
+                dealName:
+                  type: string
+                  example: name
+                observers:
+                  type: array
+                  description: Array of users IDs acting as observers
+                tags:
+                  type: array
+                  description: IDs of tags
+                tagMatch:
+                  type: string
+                  enum:
+                  - any
+                  - all
+                  description: 'Filter by tags (all - all tags, any - any tag). Default: any'
+                attributes:
+                  type: array
+                  items:
+                    properties:
+                      id:
+                        type: integer
+                      type:
+                        type: integer
+                      value:
+                        type: string
+                        example: hello | ['hello', 'hello']
+                contacts:
+                  type: string
+                  example: name
+                startAtFrom:
+                  type: string
+                  example: 2021-11-25 13:38
+                startAtTo:
+                  type: string
+                  example: 2021-11-25 13:38
+                finishAtFrom:
+                  type: string
+                  example: 2021-11-25 13:38
+                finishAtTo:
+                  type: string
+                  example: 2021-11-25 13:38
+                createdAtFrom:
+                  type: string
+                  example: 2021-11-25 13:38
+                createdAtTo:
+                  type: string
+                  example: 2021-11-25 13:38
+                updatedAtFrom:
+                  type: string
+                  example: 2025-05-03 13:00
+                updatedAtTo:
+                  type: string
+                  example: 2025-05-07 13:00
+                sort:
+                  type: object
+                  properties:
+                    field:
+                      type: string
+                      default: name
+                    direction:
+                      type: string
+                      default: asc
+                status:
+                  type: integer
+                  enum:
+                  - 1
+                  - 2
+                endedAtFrom:
+                  type: string
+                  example: 2021-11-25 13:38
+                endedAtTo:
+                  type: string
+                  example: 2021-11-25 13:38
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Tasks'
+                  searchRequest:
+                    type: string
+      operationId: listTasks
+      x-ai-role: project_management_specialist
+      x-ai-description: Retrieves a filtered, sorted list of CRM tasks. Despite using POST, this is a query endpoint — the request body acts as a flexible filter payload supporting multi-dimensional filtering by board, step, priority, assignee, tags, custom attributes, date ranges, and task type. Use this to build task dashboards, run scheduled audits, or find overdue/unassigned tasks.
+      x-ai-reasoning-instructions:
+      - 'Before querying, clarify the user''s intent: are they looking for tasks on a specific board, assigned to someone, within a date range, or by status?'
+      - If boardId is not provided, the query may return tasks across all boards — warn the user if they expect board-scoped results.
+      - When filtering by tags, confirm whether 'any' or 'all' tag matching is desired; default is 'any', which may return broader results than expected.
+      - Date range fields (startAtFrom/To, finishAtFrom/To, createdAtFrom/To, updatedAtFrom/To, endedAtFrom/To) are independent — avoid combining conflicting ranges.
+      - If stepId is provided, verify it belongs to the specified boardId to avoid empty results.
+      - For responsible/observer filtering, ensure the provided user IDs are valid members of the workspace.
+      - Use the sort object to control result ordering; default is by name ascending — suggest sorting by updatedAtFrom desc for recent activity views.
+      x-ai-responding-instructions:
+      - Present results summarized by count and key groupings (e.g., by status or priority) before listing individual tasks.
+      - If the result set is large, suggest narrowing filters (e.g., add boardId, status, or a date range).
+      - If no tasks are returned, explain which filters were applied and suggest relaxing one constraint at a time.
+      - Highlight overdue tasks (finishAt in the past, status not completed) as actionable items.
+      - Reference the searchRequest field from the response when helping the user refine or repeat the query.
+      x-ai-suggestions:
+      - Filter by status=1 (active) and responsibleId to get a personal task queue
+      - Use updatedAtFrom/To with a recent range to detect recently changed tasks
+      - Combine boardId + stepId to get tasks at a specific pipeline stage
+      - Use tagMatch=all with multiple tags for precise segment targeting
+      x-ai-capabilities:
+        confirmation:
+          type: None
+        security_info:
+          data_handling:
+          - ReadOnly
+  /tasks:
+    post:
+      tags:
+      - Tasks
+      summary: Create tasks
+      description: 'repeatSetting - has 4 types: 1-daily, 2-weekly, 3-monthly, 4-yearly.
+
+        ''endSetting'' - has 2 types: byDate(2021-11-25), byCount(1)
+
+
+        1) ''repeatSetting'': {''type'': 1, ''startDate'': ''2021-11-25 13:38'',
+
+        ''endSetting'': {''type'':''byDate'',''value'': ''2021-11-25''},''setting'': {''everyDay'': 2 }};
+
+        <br> ''everyDay'' - 2 (repeat every Tuesday)
+
+
+        2) ''repeatSetting'': {''type'': 2, ''startDate'': ''2021-11-25 13:38'',
+
+        ''endSetting'': {''type'':''byCount'',''value'': 1},''setting'': {''days'': [1,4,5], ''everyWeekOfMonth'': 3 }};
+
+        ''days'': [1,4,5], ''everyWeekOfMonth'': 3
+
+        <br> (repeat every Monday, Thursday, Friday of every 3rd week of the month)
+
+
+        3) ''repeatSetting'': {''type'': 3, ''startDate'': ''2021-11-25 13:38'',
+
+        ''endSetting'': {''type'':''byDate'',''value'': ''2021-11-25''},
+
+        ''setting'': {''numberOfMonth'': {''everyDay'': 31, ''everyMonth'':5} }};
+
+        <br> ''numberOfMonth'': {''everyDay'': 31, ''everyMonth'':5 (repeat every 31st day of every 5th month)
+
+
+        4) ''repeatSetting'': {''type'': 3, ''startDate'': ''2021-11-25 13:38'',''endSetting'': {''type'':''byCount'',''value'': 11},
+
+        ''setting'': {''dayOfMonth'': {''everyWeek'': 3, ''dayOfWeek'':5, ''everyMonth'':12} }};
+
+        <br> ''dayOfMonth'': {''everyWeek'': 3, ''dayOfWeek'':5, ''everyMonth'':12} - (repeat every 3rd week every 5th day of the week every 12th month)
+
+        '
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              properties:
+                name:
+                  type: string
+                  description: Task name
+                boardId:
+                  type: integer
+                stepId:
+                  type: integer
+                observers:
+                  type: array
+                  description: Array of users IDs acting as observers
+                priority:
+                  $ref: '#/components/schemas/TaskPriorityProperty'
+                sourceType:
+                  $ref: '#/components/schemas/IntegerSourceTypeProperty'
+                responsibleId:
+                  type: integer
+                  description: Responsible user ID
+                parentId:
+                  type: integer
+                  description: Parent task ID
+                description:
+                  type: string
+                  description: Task description
+                alert:
+                  type: string
+                  description: Notify before task expires (when notification is enabled). Allowed values - 0(not selected), 15min, 30min, 1h, 2h, 3h, 6h, 12h, 24h, 2d, 3d, 4d, 5d, 6d, 7d
+                repeat:
+                  type: integer
+                  description: Do you need to repeat the task
+                startAt:
+                  type: string
+                  format: Y-m-d H:i
+                finishAt:
+                  type: string
+                  format: Y-m-d H:i
+                repeatSetting:
+                  $ref: '#/components/schemas/TaskRepeats'
+                attributes:
+                  $ref: '#/components/schemas/TasksAttribute'
+                tags:
+                  type: array
+                  example: '[ 1,2,3 ]'
+                  description: IDs of tags
+                checklists:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      name:
+                        type: string
+                        description: Checklist name
+                      items:
+                        type: array
+                        items:
+                          properties:
+                            name:
+                              type: string
+                              description: Checklist item name
+                            isDone:
+                              type: integer
+                              description: Is item is done (checked)
+                connections:
+                  type: object
+                  properties:
+                    dealIds:
+                      type: array
+                      example: '[ 1,2 ]'
+                    contactIds:
+                      type: array
+                      example: '[ 1,2 ]'
+                    taskIds:
+                      type: array
+                      example: '[ 1,2 ]'
+                attachments:
+                  type: array
+                  items:
+                    type: string
+                  description: First, the file must be uploaded to the file manager, and then the file can be attached.
+                  example:
+                  - /personal/task/sendPulse_crm_report.csv
+      responses:
+        '201':
+          description: ''
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Tasks'
+      operationId: createTask
+      x-ai-role: project_management_specialist
+      x-ai-description: Creates a new task within a CRM board pipeline. Tasks are the primary unit of work tracking in SendPulse CRM — they can be linked to deals, contacts, and other tasks, assigned to responsible users, and configured with flexible recurrence schedules (daily, weekly, monthly, yearly). The recurrence engine supports complex patterns such as "every 3rd Friday of every 2nd month", making this endpoint suitable for both one-time and long-term recurring workflows.
+      x-ai-reasoning-instructions:
+      - Verify that `boardId` and `stepId` exist before creating the task to avoid orphan records.
+      - 'If `repeat` is set to a truthy value, `repeatSetting` must be provided and validated against its type: type 1 (daily) requires `everyDay`; type 2 (weekly) requires `days` and `everyWeekOfMonth`; type 3/4 (monthly/yearly) require either `numberOfMonth` or `dayOfMonth` sub-objects.'
+      - Ensure `startAt` and `finishAt` follow the `Y-m-d H:i` format; misformatted dates will silently fail on some backends.
+      - If `attachments` are provided, confirm the files were already uploaded via the File Manager — attachment paths must be pre-existing.
+      - When `parentId` is supplied, this is a sub-task — inform the user it will appear nested under the parent.
+      - Cross-check that `responsibleId` and all `observers` IDs are valid account users to prevent assignment failures.
+      - If `connections` contains `dealIds` or `contactIds`, remind the user this links the task bi-directionally — it will appear in those deals/contacts' activity feeds.
+      x-ai-responding-instructions:
+      - Confirm creation by surfacing the new task ID from the `data` response object.
+      - If a repeat schedule was configured, summarize the recurrence pattern in plain language (e.g., 'Task will repeat every Monday and Thursday for 3 occurrences').
+      - If `parentId` was used, confirm the task was created as a sub-task of the specified parent.
+      - 'Suggest logical next steps: adding checklist items, attaching files, or linking the task to a deal or contact.'
+      - On validation errors (missing required fields, invalid IDs), clearly state which field failed and why.
+      x-ai-suggestions:
+      - Follow up on proposal
+      - Prepare onboarding call
+      - Send contract for review
+      - Schedule demo with client
+      x-ai-capabilities:
+        confirmation:
+          type: None
+        security_info:
+          data_handling:
+          - ResourceStateUpdate
+          - CrossEntityLinking
+  /tasks-repeat/templates:
+    get:
+      tags:
+      - Tasks
+      summary: Get task templates
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Tasks'
+      operationId: getTaskRepeatTemplates
+      x-ai-role: project_management_specialist
+      x-ai-description: Retrieves the list of predefined templates for recurring tasks. Templates define the structure and recurrence rules for tasks that need to repeat on a schedule. Use this endpoint to discover available templates before creating or configuring automated task repetition workflows.
+      x-ai-reasoning-instructions:
+      - Fetch templates first to understand available recurrence configurations before assigning them to tasks.
+      - If the user wants to automate a recurring task, suggest selecting an appropriate template from this list.
+      - If the response is empty, inform the user that no templates exist yet and guide them to create one.
+      x-ai-responding-instructions:
+      - Present the templates in a structured, human-readable way highlighting name and recurrence pattern.
+      - Suggest which template best fits the user's described scheduling need.
+      - If multiple templates are returned, help the user narrow down by use case.
+      x-ai-suggestions:
+      - Use the returned template IDs when creating or updating a recurring task.
+      - Review recurrence intervals to select the most appropriate template for the workflow.
+      x-ai-capabilities:
+        confirmation:
+          type: None
+        security_info:
+          data_handling:
+          - ReadOnly
+  /tasks/{taskId}:
+    get:
+      tags:
+      - Tasks
+      summary: Get tasks by ID
+      parameters:
+      - name: taskId
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Tasks'
+      operationId: getTaskById
+      x-ai-role: project_management_assistant
+      x-ai-description: Retrieves the full state of a specific asynchronous task by its unique ID. In SendPulse, long-running operations (bulk sends, imports, exports) are represented as tasks — this endpoint is the primary polling mechanism to track their progress and outcome.
+      x-ai-reasoning-instructions:
+      - Use this endpoint to poll the status of a previously initiated asynchronous operation.
+      - Before calling, ensure the taskId was obtained from a prior operation response (e.g., bulk send, import).
+      - Implement exponential backoff when polling — avoid hammering this endpoint on every tick.
+      - Check the task status field in the response to determine if the operation is still pending, completed, or failed.
+      x-ai-responding-instructions:
+      - Clearly report the current task status and what it means in plain language.
+      - If the task is still in progress, inform the user and suggest polling again after a delay.
+      - If the task has failed, extract and surface the error details from the response.
+      - If completed successfully, suggest the logical next step based on the task type (e.g., viewing send statistics).
+      x-ai-suggestions:
+      - Poll this endpoint every 5–10 seconds until the task reaches a terminal state (completed or failed).
+      - Store the taskId from the triggering operation's response for later lookup.
+      x-ai-capabilities:
+        confirmation:
+          type: None
+        security_info:
+          data_handling:
+          - ReadOnly
+    put:
+      tags:
+      - Tasks
+      summary: Update a task by ID
+      parameters:
+      - name: taskId
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              properties:
+                name:
+                  type: string
+                  description: Task name
+                boardId:
+                  type: integer
+                stepId:
+                  type: integer
+                priority:
+                  $ref: '#/components/schemas/TaskPriorityProperty'
+                sourceType:
+                  $ref: '#/components/schemas/IntegerSourceTypeProperty'
+                responsibleId:
+                  type: integer
+                  description: Responsible user ID
+                parentId:
+                  type: integer
+                  description: Parent task ID
+                description:
+                  type: string
+                  description: Task description
+                repeat:
+                  type: integer
+                  description: Do you need to repeat the task
+                startAt:
+                  type: string
+                  format: Y-m-d H:i
+                finishAt:
+                  type: string
+                  format: Y-m-d H:i
+                tags:
+                  type: array
+                  example: '[ 1,2,3 ]'
+                  description: IDs of tags
+                observers:
+                  type: array
+                  example: '[ 1,2,3 ]'
+                  description: Array of users IDs acting as observers
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Tasks'
+      operationId: updateTaskById
+      x-ai-role: project_management_specialist
+      x-ai-description: 'Updates mutable fields of an existing task in a CRM board. This endpoint is the primary mechanism for advancing task lifecycle — changing its board step (pipeline stage), reassigning responsibility, adjusting priority, or extending deadlines. Partial updates are supported: only provided fields are modified, existing values are preserved.'
+      x-ai-reasoning-instructions:
+      - Before updating, confirm the taskId is valid and the task exists; a missing task returns an error rather than a no-op.
+      - If moving the task to a different board (boardId) or step (stepId), verify the target board/step exists and the user has permission to place tasks there.
+      - When changing responsibleId, consider whether the new assignee should be notified — this API call does not send notifications automatically.
+      - If both startAt and finishAt are provided, ensure startAt is chronologically before finishAt.
+      - Updating tags or observers replaces the entire array, not appends — warn the user if they intend to add a single tag without losing existing ones.
+      - parentId establishes a subtask relationship; verify the parent task is not itself a subtask to avoid deep nesting issues.
+      x-ai-responding-instructions:
+      - Confirm which fields were changed by echoing the updated task data from the response.
+      - If the step was changed, describe the new pipeline stage in plain language (e.g., 'Task moved to In Review').
+      - If priority was updated, mention the new priority level by name, not just its integer value.
+      - Suggest follow-up actions such as notifying the assignee or setting a reminder if a deadline was changed.
+      x-ai-suggestions:
+      - 'Change task priority to high: set priority to the corresponding TaskPriorityProperty value.'
+      - 'Move task to next pipeline stage: update stepId to the target step.'
+      - 'Reassign task: update responsibleId to the new user''s ID.'
+      - 'Extend deadline: update finishAt with the new date in Y-m-d H:i format.'
+      x-ai-capabilities:
+        confirmation:
+          type: Recommended
+          message: You are about to overwrite task fields. Confirm the changes before proceeding.
+        security_info:
+          data_handling:
+          - ResourceStateUpdate
+    delete:
+      tags:
+      - Tasks
+      summary: Delete task by ID
+      parameters:
+      - name: taskId
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '204':
+          description: Successfully deleted
+      operationId: deleteTask
+      x-ai-role: project_management_specialist
+      x-ai-description: Permanently removes a task from the system by its unique identifier. This is a destructive, irreversible operation — the task and all associated metadata are deleted. Use when a task is cancelled, created by mistake, or no longer relevant to the workflow.
+      x-ai-reasoning-instructions:
+      - Verify the taskId exists before attempting deletion to avoid misleading 404 errors.
+      - Check if the task has dependent subtasks or linked entities that may be orphaned after deletion.
+      - Confirm with the user that deletion is intentional — this action cannot be undone.
+      - Prefer archiving or status-change over deletion if the task history needs to be preserved.
+      x-ai-responding-instructions:
+      - Confirm the deletion was successful (HTTP 204 means no content — explicitly tell the user the task is gone).
+      - If the task was not found (404), clarify that it may have already been deleted.
+      - Suggest listing remaining tasks or verifying the parent entity after deletion.
+      x-ai-capabilities:
+        confirmation:
+          type: Required
+          message: This will permanently delete the task. This action cannot be undone.
+        security_info:
+          data_handling:
+          - IrreversibleDeletion
+  /tasks/{taskId}/parent:
+    post:
+      tags:
+      - Tasks
+      summary: Set/unset the parent task
+      parameters:
+      - name: taskId
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              properties:
+                parentId:
+                  type:
+                  - number
+                  - 'null'
+                  description: Parent task ID or null
+      responses:
+        '200':
+          description: Successfully
+      operationId: setTaskParent
+      x-ai-role: project_management_specialist
+      x-ai-description: Establishes or removes the hierarchical relationship between tasks. Setting a parent converts a standalone task into a subtask within a tree structure, enabling nested task management and dependency tracking. Passing null explicitly detaches the task, making it a top-level item again.
+      x-ai-reasoning-instructions:
+      - Verify the target task (taskId) exists before attempting to set or unset its parent.
+      - Confirm the parentId task exists and is not the same as taskId to avoid self-referencing.
+      - 'Check for circular dependency: the proposed parent must not itself be a descendant of taskId.'
+      - If parentId is null, treat this as an explicit unset — the task will become a root-level task.
+      - Consider whether the parent task is closed or archived before nesting under it.
+      x-ai-responding-instructions:
+      - Confirm whether the parent was set or removed based on the value of parentId.
+      - 'If parentId was set, mention the new hierarchy (e.g., ''Task #X is now a subtask of Task #Y'').'
+      - If parentId was null, confirm the task is now a top-level task.
+      - Suggest reviewing the task tree or listing subtasks of the new parent as a follow-up.
+      x-ai-suggestions:
+      - 'Pass parentId: null to detach the task from its current parent.'
+      - Use this endpoint after creating a subtask to establish hierarchy.
+      - Combine with task listing to verify the updated tree structure.
+      x-ai-capabilities:
+        confirmation:
+          type: Recommended
+          message: 'You are about to change the parent of task #{taskId}. This affects its position in the task hierarchy.'
+        security_info:
+          data_handling:
+          - ResourceStateUpdate
+  /tasks/{taskId}/steps/{stepId}/order:
+    post:
+      tags:
+      - Tasks
+      summary: Change task order
+      description: Changes order of a task in the current step or in another. newStepId field is optional
+      parameters:
+      - name: taskId
+        in: path
+        required: true
+        schema:
+          type: integer
+      - name: stepId
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              properties:
+                order:
+                  type: number
+                  minimum: 1
+                  description: Task order in step
+                newStepId:
+                  type: number
+                  description: New step ID
+              required:
+              - order
+      responses:
+        '200':
+          description: Successfully changed
+      operationId: changeTaskStepOrder
+      x-ai-role: project_management_specialist
+      x-ai-description: Repositions a task within the current step or moves it to a different step by specifying a new order index. This is the primary mechanism for drag-and-drop-style reordering in kanban or pipeline boards — a sequence-sensitive operation that affects the visual priority of all sibling tasks.
+      x-ai-reasoning-instructions:
+      - Verify the target task and step IDs exist before calling — invalid IDs return errors without partial changes.
+      - If `newStepId` is provided, confirm the destination step belongs to the same board/pipeline as the source step.
+      - Order values are 1-based; if the user wants to move a task to the top, use order=1.
+      - When moving between steps, the semantic meaning changes — inform the user that the task's status/stage may change as a result.
+      x-ai-responding-instructions:
+      - Confirm that the task was successfully repositioned, mentioning both taskId and the effective stepId (new or original).
+      - If `newStepId` was used, explicitly note that the task was moved to a different step, not just reordered.
+      - On error, clarify whether the problem was with the task ID, step ID, or the order value being out of range.
+      x-ai-suggestions:
+      - To move a task to the top of a step, set order=1.
+      - To move a task to another step without changing relative position, use `newStepId` with the current order value.
+      - Fetch the current task list first to determine valid order range before repositioning.
+      x-ai-capabilities:
+        confirmation:
+          type: None
+        security_info:
+          data_handling:
+          - ResourceStateUpdate
+components:
+  schemas:
+    Tasks:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        userId:
+          type: integer
+        responsibleId:
+          type: integer
+        parentId:
+          type: integer
+        boardId:
+          type: integer
+        stepId:
+          type: integer
+        priority:
+          type: integer
+        order:
+          type: integer
+        description:
+          type: integer
+        alert:
+          type: string
+          description: Notify before task expires (when notification is enabled). Allowed values - 0(not selected), 15min, 30min, 1h, 2h, 3h, 6h, 12h, 24h, 2d, 3d, 4d, 5d, 6d, 7d
+        repeat:
+          type: integer
+        startAt:
+          type: string
+          description: Format - 2021-11-25 13:38
+        finishAt:
+          type: string
+          description: Format - 2021-11-25 13:38
+        observers:
+          type: array
+          items:
+            type: integer
+        checklists:
+          $ref: '#/components/schemas/TaskChecklist'
+        attachments:
+          $ref: '#/components/schemas/EntityAttachment'
+        attributes:
+          $ref: '#/components/schemas/Attributes'
+        comments:
+          $ref: '#/components/schemas/TaskComment'
+        histories:
+          $ref: '#/components/schemas/TaskHistory'
+        tags:
+          $ref: '#/components/schemas/TaskTag'
+        deals:
+          type: array
+          description: Array of deal IDs
+        tasks:
+          type: array
+          description: Array of task IDs
+        contacts:
+          type: array
+          description: Array of contact IDs
+        subTasks:
+          type: array
+          description: Array of task IDs
+        updatedDaysAt:
+          type: number
+        createdDaysAt:
+          type: number
+        createdAt:
+          type: string
+        updatedAt:
+          type: string
+    TaskChecklist:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        taskId:
+          type: integer
+        isDone:
+          type: boolean
+        items:
+          $ref: '#/components/schemas/ChecklistItems'
+    Attributes:
+      type: object
+      properties:
+        type:
+          type: integer
+          enum:
+          - 1
+          - 2
+          - 3
+          - 4
+          - 5
+          - 6
+        name:
+          type: string
+        status:
+          type: boolean
+        value:
+          type: array
+          items:
+            $ref: '#/components/schemas/AttributeValue'
+    ChecklistItems:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        order:
+          type: number
+        isDone:
+          type: boolean
+    IntegerSourceTypeProperty:
+      type: integer
+      description: '| * 1 - chatbot * 2 - manually * 3 - subscription_form * 4 - landing * 5 - a360 * 6 - payments * 7 - import * 8 - public_api * 9 - education * 10 - integration * 11 - popup * 12 - emailService'
+    TaskHistory:
+      type: object
+      properties:
+        id:
+          type: integer
+        taskId:
+          type: integer
+        eventTime:
+          type: string
+        eventType:
+          type: string
+        eventData:
+          type: object
+        userId:
+          type: number
+    EntityAttachment:
+      type: object
+      properties:
+        id:
+          type: integer
+        link:
+          type: string
+        entityId:
+          type: number
+        entityType:
+          type: string
+        createdAt:
+          type: string
+        updatedAt:
+          type: string
+    TaskPriorityProperty:
+      type: integer
+      description: '| Task priority
+
+        * 1 - low * 2 - middle * 3 - high'
+    AttributeValue:
+      type: object
+      properties:
+        id:
+          type: number
+        value:
+          type: string
+    TaskComment:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        taskId:
+          type: integer
+        userId:
+          type: integer
+        body:
+          type: string
+        createdAt:
+          type: string
+        updatedAt:
+          type: string
+        attachments:
+          items:
+            $ref: '#/components/schemas/EntityAttachment'
+        childCount:
+          type: integer
+        childUsers:
+          type: array
+          items:
+            type: integer
+    TaskRepeats:
+      type: object
+      properties:
+        type:
+          type: integer
+          description: 'Repetition frequency
+
+
+            * 1 - daily
+
+            * 2 - weekly
+
+            * 3 - monthly
+
+            * 4 - yearly
+
+            '
+        startDate:
+          type: string
+          format: date-time
+          description: Format - 2021-11-25 13:38
+        endSetting:
+          type: object
+          properties:
+            type:
+              type: string
+              description: '* byDate - Complete task on the specified date
+
+                * byCount - Complete task after task performs "byCount" times
+
+                '
+            value:
+              description: Has Date type if "byDate" type, Number if "byCount"
+        setting:
+          type: object
+          properties:
+            everyDay:
+              type: number
+            days:
+              type: array
+              description: Array of ordinal days of the week
+              example: '[1, 3, 5] - repeat every Monday, Wednesday and Friday'
+            everyWeekOfMonth:
+              type: integer
+              description: Ordinal number of week of the month (from 1 to 4)
+            numberOfMonth:
+              type: object
+              properties:
+                everyDay:
+                  type: integer
+                  description: Ordinal number of the day of the month
+                everyMonth:
+                  type: integer
+                  description: Ordinal number of the month
+            dayOfMonth:
+              type: object
+              properties:
+                dayOfWeek:
+                  type: integer
+                  description: Ordinal day of the week
+                everyMonth:
+                  type: integer
+                  description: Ordinal month of the year
+                everyWeek:
+                  type: integer
+                  description: Ordinal number of week of the month (from 1 to 4)
+    TaskTag:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        colorText:
+          type: string
+        colorBackground:
+          type: string
+    TasksAttribute:
+      type: array
+      items:
+        properties:
+          attributeId:
+            type: integer
+          value:
+            type: string
+            example: string or number or array
+  securitySchemes:
+    apiKey:
+      type: http
+      scheme: bearer
+      bearerFormat: API Key
+      description: 'Static API Key authentication.  A long-lived token generated manually in the SendPulse account settings.
+
+        '
+      x-ai-description: 'Permanent authentication token. Ideal for simple integrations without token refresh logic.
+
+        '
+    outh2:
+      type: oauth2
+      description: OAuth 2.0 Client Credentials flow for temporary access tokens.
+      flows:
+        clientCredentials:
+          tokenUrl: https://api.sendpulse.com/oauth/access_token
+          scopes: {}
+      x-ai-description: 'Standard OAuth 2.0 flow using Client ID and Client Secret.  Provides temporary tokens (valid for 1 hour) for enhanced security.
+
+        '

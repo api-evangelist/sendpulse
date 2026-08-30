@@ -1,0 +1,114 @@
+openapi: 3.2.0
+info:
+  description: Using the API for the CRM service, you can integrate your system with CRM from SendPulse and receive detailed information on pipelines, deals, contacts and their attributes and users. You can also create deals and contacts, assign and remove fields, tags, contact details and instant messengers. On the right, there is a button for authorizing requests made on this page. Click “Authorize,” then insert the ID and Secret from your account. To perform a request directly from the page, click the "Try it out" button within each method block. Then fill in input fields if any (for URL parameters, the description is right below the URL request; for body parameters, the description is under the “Scheme” button to the right of the example), and click “Run.” You will find the server response and description of received parameters below.
+  title: SendPulse CRM Public Company history API
+  version: 0.1.0
+servers:
+- url: https://api.sendpulse.com/crm/v1
+security:
+- apiKey: []
+- oauth2: []
+tags:
+- name: Company history
+paths:
+  /companies/{companyId}/history:
+    get:
+      tags:
+      - Company history
+      summary: get Company history
+      parameters:
+      - name: dateFrom
+        in: query
+        required: false
+        schema:
+          type: string
+          format: date-time
+          example: 2024-11-01 12:12:12+00:00
+      - name: dateTo
+        in: query
+        required: false
+        schema:
+          type: string
+          format: date-time
+          example: 2024-11-01 12:12:12+00:00
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+      - name: offset
+        in: query
+        required: false
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/History'
+                  metadata:
+                    type: object
+                    properties:
+                      total:
+                        type: integer
+      operationId: getCompanyHistory
+      x-ai-role: crm_analyst
+      x-ai-description: Retrieves a paginated, time-filtered audit trail of events for a specific company. This endpoint surfaces the full interaction and state-change history, enabling agents to reconstruct a company's lifecycle, audit recent activity, or prepare context before taking actions on behalf of this company.
+      x-ai-reasoning-instructions:
+      - If no dateFrom/dateTo is provided, you will receive the most recent records — clarify the intended time range with the user if context is ambiguous.
+      - Use limit + offset for pagination; always check metadata.total to determine if more pages exist.
+      - When investigating a specific event, narrow the window with dateFrom/dateTo before paginating to avoid processing unnecessary records.
+      - companyId must be a valid, existing company — resolve it first if only a company name is known.
+      x-ai-responding-instructions:
+      - Summarize the number of returned records versus metadata.total to indicate whether the result is complete or paginated.
+      - Highlight the most recent events if the user is investigating recent activity.
+      - If the result is empty, suggest widening the date range or verifying the companyId.
+      x-ai-suggestions:
+      - 'Fetch the last 20 events: limit=20, offset=0'
+      - 'Filter by a specific day: dateFrom=''2024-11-01 00:00:00'', dateTo=''2024-11-01 23:59:59'''
+      - Paginate through all history using metadata.total to control loop termination
+      x-ai-capabilities:
+        confirmation:
+          type: None
+        security_info:
+          data_handling:
+          - ReadOnly
+components:
+  schemas:
+    History:
+      type: object
+      properties:
+        eventType:
+          type: string
+        eventData:
+          type: array
+        date:
+          type: string
+  securitySchemes:
+    apiKey:
+      type: http
+      scheme: bearer
+      bearerFormat: API Key
+      description: 'Static API Key authentication.  A long-lived token generated manually in the SendPulse account settings.
+
+        '
+      x-ai-description: 'Permanent authentication token. Ideal for simple integrations without token refresh logic.
+
+        '
+    outh2:
+      type: oauth2
+      description: OAuth 2.0 Client Credentials flow for temporary access tokens.
+      flows:
+        clientCredentials:
+          tokenUrl: https://api.sendpulse.com/oauth/access_token
+          scopes: {}
+      x-ai-description: 'Standard OAuth 2.0 flow using Client ID and Client Secret.  Provides temporary tokens (valid for 1 hour) for enhanced security.
+
+        '

@@ -1,0 +1,132 @@
+openapi: 3.2.0
+info:
+  description: This is the REST API endpoints definition for Education SendPulse project
+  title: Education SendPulse Project API Definition Schools API
+  version: 1.0.0
+servers:
+- url: https://api.sendpulse.com/edu/public/v1
+security:
+- apiKey: []
+- oauth2: []
+tags:
+- name: Schools
+paths:
+  /schools:
+    get:
+      tags:
+      - Schools
+      summary: Get list of schools
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/School'
+      operationId: getSchools
+      x-ai-role: education_platform_administrator
+      x-ai-description: Retrieves the full list of schools registered in the system. Schools are top-level organizational entities in the SendPulse EDU platform — each school is an independent learning environment with its own courses, students, and instructors. Use this endpoint to enumerate available schools before performing school-scoped operations.
+      x-ai-reasoning-instructions:
+      - Use this endpoint to discover available school IDs before making school-specific requests.
+      - If the user asks about a specific school, fetch the list first and match by name or ID.
+      - Consider pagination or filtering if the response contains a large number of schools.
+      x-ai-responding-instructions:
+      - Present the list of schools with their names and IDs in a readable format.
+      - If only one school is returned, highlight that this is likely a single-tenant setup.
+      - Suggest using a specific school ID in follow-up operations such as fetching courses or students.
+      x-ai-suggestions:
+      - Use a returned school ID with endpoints like GET /schools/{id}/courses to explore school content.
+      - If managing multiple schools, note each school's ID for subsequent scoped API calls.
+      x-ai-capabilities:
+        confirmation:
+          type: None
+        security_info:
+          data_handling:
+          - ReadOnly
+components:
+  schemas:
+    School:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: School identifier
+        userId:
+          type: integer
+          description: School owner (user) ID
+        domainId:
+          type: integer
+          description: Domain ID associated with the school
+        landingId:
+          type: integer
+          description: Landing page ID
+        pageId:
+          type: integer
+          description: School page ID
+        name:
+          type: string
+          description: School name
+        studentsName:
+          type: string
+          description: Custom name for students (e.g., pupils/audience)
+        isLms:
+          type: boolean
+          description: Indicates that this is an LMS school
+        status:
+          type: string
+          description: School status
+          enum:
+          - active
+          - inactive
+          - deleted
+        coursesCount:
+          type: integer
+          description: Number of courses in the school
+        order:
+          type:
+          - integer
+          - 'null'
+          description: Display order in lists
+        iconUrl:
+          type: string
+          description: School icon URL
+        groups:
+          type:
+          - array
+          - 'null'
+          description: List of groups in the school
+          items:
+            type: array
+            items:
+              type: object
+              properties:
+                id:
+                  type: integer
+                  description: Group ID
+                name:
+                  type: string
+                  description: Group name
+                schoolId:
+                  type: integer
+                  description: School ID
+  securitySchemes:
+    apiKey:
+      type: http
+      scheme: bearer
+      bearerFormat: API Key
+      description: 'Static API Key authentication.  A long-lived token generated manually in the SendPulse account settings.
+
+        '
+      x-ai-description: 'Permanent authentication token. Ideal for simple integrations without token refresh logic.
+
+        '
+    outh2:
+      type: oauth2
+      description: OAuth 2.0 Client Credentials flow for temporary access tokens.
+      flows:
+        clientCredentials:
+          tokenUrl: https://api.sendpulse.com/oauth/access_token
+          scopes: {}
+      x-ai-description: 'Standard OAuth 2.0 flow using Client ID and Client Secret.  Provides temporary tokens (valid for 1 hour) for enhanced security.
+
+        '

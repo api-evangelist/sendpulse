@@ -1,0 +1,280 @@
+openapi: 3.2.0
+info:
+  description: Using the API for the CRM service, you can integrate your system with CRM from SendPulse and receive detailed information on pipelines, deals, contacts and their attributes and users. You can also create deals and contacts, assign and remove fields, tags, contact details and instant messengers. On the right, there is a button for authorizing requests made on this page. Click “Authorize,” then insert the ID and Secret from your account. To perform a request directly from the page, click the "Try it out" button within each method block. Then fill in input fields if any (for URL parameters, the description is right below the URL request; for body parameters, the description is under the “Scheme” button to the right of the example), and click “Run.” You will find the server response and description of received parameters below.
+  title: SendPulse CRM Public Deal notes API
+  version: 0.1.0
+servers:
+- url: https://api.sendpulse.com/crm/v1
+security:
+- apiKey: []
+- oauth2: []
+tags:
+- description: ''
+  name: Deal notes
+paths:
+  /deals/{dealId}/comments:
+    get:
+      tags:
+      - Deal notes
+      summary: Get a list of deal notes
+      description: 'Returns a list of notes with information about each: ID, author, message and status'
+      parameters:
+      - name: dealId
+        in: path
+        required: true
+        description: Deal ID for which you want to get the list of notes. It can be obtained with the "Get a list of deals" method
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    $ref: '#/components/schemas/DealComment'
+      operationId: getDealComments
+      x-ai-role: crm_sales_analyst
+      x-ai-description: 'Retrieves the full annotation history for a specific deal — notes left by team members during the sales process. In SendPulse CRM, deal comments serve as an internal audit trail and collaboration layer: they capture objections, agreements, follow-up intentions, and status rationale that are not reflected in structured deal fields. Reading this thread before taking action on a deal gives the agent the context needed to act consistently with the team''s prior decisions.'
+      x-ai-reasoning-instructions:
+      - Resolve dealId first — use 'Get a list of deals' if the user refers to a deal by name or company rather than numeric ID.
+      - Before summarizing or acting on a deal, fetch its comments to avoid repeating questions the team has already addressed.
+      - If the response contains many comments, identify the most recent ones as most likely to reflect current deal status.
+      - Check the 'status' field on each comment to distinguish active notes from archived or deleted ones.
+      x-ai-responding-instructions:
+      - Present comments in chronological order, attributing each to its author.
+      - Highlight any comment that signals a blocking issue or an explicit next step.
+      - If no comments exist, inform the user and suggest adding a note to start the collaboration thread.
+      - Avoid exposing raw IDs in the user-facing summary — use author names and timestamps for readability.
+      x-ai-suggestions:
+      - Use the returned comment list to brief a teammate before they take ownership of the deal.
+      - After reviewing comments, consider calling the 'Add a deal note' endpoint to record the latest update.
+      - Combine with deal details to produce a full deal status report.
+      x-ai-capabilities:
+        confirmation:
+          type: None
+        security_info:
+          data_handling:
+          - ReadOnly
+    post:
+      tags:
+      - Deal notes
+      summary: Add a note to a deal
+      description: Adds a note to the specified deal
+      parameters:
+      - name: dealId
+        in: path
+        required: true
+        description: ID of the deal for which you want to add a note. It can be obtained with the "Get a list of deals" method
+        schema:
+          type: integer
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              properties:
+                message:
+                  type: string
+                  description: Note message. The maximum number of characters is 65,535
+              required:
+              - message
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    $ref: '#/components/schemas/DealComment'
+      operationId: addDealComment
+      x-ai-role: crm_sales_specialist
+      x-ai-description: Adds a contextual note to a specific deal in the CRM pipeline. Notes serve as an internal communication layer — they capture negotiation context, decisions, and follow-up intent that is not reflected in deal fields alone. This endpoint is critical for maintaining deal history and team coordination across the sales cycle.
+      x-ai-reasoning-instructions:
+      - Verify that the dealId exists before attempting to add a note; use 'Get a list of deals' to retrieve valid IDs.
+      - Encourage the user to be specific and actionable in the note — e.g., 'Called client, confirmed budget, follow up on Friday' rather than vague entries.
+      - Check that the message does not exceed 65,535 characters; warn the user if the input is unusually long.
+      - Consider whether the note should reference a next action or outcome to maximize its utility in sales tracking.
+      x-ai-responding-instructions:
+      - Confirm that the note was successfully added by referencing the deal ID.
+      - Suggest reviewing the full deal timeline or adding a follow-up task as the next step.
+      - If the deal ID is invalid or not found, clearly communicate that the user should first retrieve valid deal IDs.
+      x-ai-suggestions:
+      - Called client — confirmed interest, sending proposal by EOD.
+      - Meeting scheduled for next Tuesday. Budget approved at management level.
+      - Deal stalled — client requested 2-week delay. Re-engage on 2026-04-07.
+      x-ai-capabilities:
+        confirmation:
+          type: None
+        security_info:
+          data_handling:
+          - ResourceStateUpdate
+  /deals/{dealId}/comments/{commentId}:
+    put:
+      tags:
+      - Deal notes
+      summary: Update a note to a deal
+      description: Updates the selected note in the specified deal. Existing values will be overwritten
+      parameters:
+      - name: dealId
+        in: path
+        required: true
+        description: ID of the deal for which you want to update a note. It can be obtained with the "Get a list of deals" method
+        schema:
+          type: integer
+      - name: commentId
+        in: path
+        required: true
+        description: ID of the note to be updated. It can be obtained with the "Get a list of deal notes" method
+        schema:
+          type: integer
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              properties:
+                message:
+                  type: string
+                  description: New note message. The maximum number of characters is 65,535
+              required:
+              - message
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    $ref: '#/components/schemas/DealComment'
+      operationId: updateDealComment
+      x-ai-role: crm_deal_management_specialist
+      x-ai-description: Updates the text of an existing note attached to a specific deal. Notes serve as an internal audit trail and communication layer for deal progression — correcting a note preserves the accuracy of the deal's history without creating redundant entries.
+      x-ai-reasoning-instructions:
+      - Before updating, confirm the commentId belongs to the specified dealId to avoid cross-deal mutations.
+      - Verify the new message is not empty and does not exceed 65,535 characters.
+      - If the user wants to preserve the old text, suggest fetching the note first via 'Get a list of deal notes' before overwriting.
+      x-ai-responding-instructions:
+      - Confirm the note was successfully updated and reference the commentId that was changed.
+      - Remind the user that the previous message content has been permanently overwritten.
+      - Suggest reviewing all notes for the deal if the user is auditing deal activity.
+      x-ai-suggestions:
+      - Fetch existing note content with 'Get a list of deal notes' before overwriting.
+      - After updating, use 'Get a list of deal notes' to verify the change was applied correctly.
+      x-ai-capabilities:
+        confirmation:
+          type: Recommended
+          message: This will permanently overwrite the existing note. Confirm before proceeding.
+        security_info:
+          data_handling:
+          - ResourceStateUpdate
+          - DataLoss
+    delete:
+      tags:
+      - Deal notes
+      summary: Remove a note from the deal
+      description: Removes a note from the specified deal
+      parameters:
+      - name: dealId
+        in: path
+        required: true
+        description: ID of the deal from which you want to remove a note. It can be obtained with the "Get a list of deals" method
+        schema:
+          type: integer
+      - name: commentId
+        in: path
+        required: true
+        description: ID of the note to be removed. It can be obtained with the "Get a list of deal notes" method
+        schema:
+          type: integer
+      responses:
+        '204':
+          description: ''
+      operationId: deleteDealComment
+      x-ai-role: crm_deal_manager
+      x-ai-description: Permanently removes a note (comment) from a deal record. Notes in CRM deals serve as an audit trail and communication log for the sales team. Deletion is irreversible — once removed, the note cannot be recovered. Use with caution when cleaning up outdated or erroneous annotations on a deal.
+      x-ai-reasoning-instructions:
+      - Before deleting, confirm with the user which specific note is to be removed — retrieve the list via 'Get a list of deal notes' if the commentId is unknown.
+      - Warn the user that this action is irreversible and the note cannot be restored after deletion.
+      - Verify that both dealId and commentId belong to the same deal to avoid accidental deletion of notes from other deals.
+      x-ai-responding-instructions:
+      - Confirm the successful deletion by referencing the removed commentId and the associated dealId.
+      - If a 404 error occurs, clarify whether the dealId or commentId is invalid and suggest using the respective list endpoints to verify IDs.
+      - Suggest reviewing remaining notes on the deal as a follow-up action.
+      x-ai-capabilities:
+        confirmation:
+          type: Required
+          message: 'This will permanently delete note #{commentId} from deal #{dealId}. This action cannot be undone.'
+        security_info:
+          data_handling:
+          - IrreversibleDelete
+components:
+  schemas:
+    EntityAttachment:
+      type: object
+      properties:
+        id:
+          type: integer
+        link:
+          type: string
+        entityId:
+          type: number
+        entityType:
+          type: string
+        createdAt:
+          type: string
+        updatedAt:
+          type: string
+    DealComment:
+      type: object
+      properties:
+        id:
+          type: integer
+        userId:
+          type: integer
+        eventData:
+          type: object
+          properties:
+            text:
+              type: string
+        status:
+          type: integer
+        eventTime:
+          type: string
+        createdAt:
+          type: string
+        updatedAt:
+          type: string
+        attachments:
+          items:
+            $ref: '#/components/schemas/EntityAttachment'
+        childCount:
+          type: integer
+        childUsers:
+          type: array
+          items:
+            type: integer
+  securitySchemes:
+    apiKey:
+      type: http
+      scheme: bearer
+      bearerFormat: API Key
+      description: 'Static API Key authentication.  A long-lived token generated manually in the SendPulse account settings.
+
+        '
+      x-ai-description: 'Permanent authentication token. Ideal for simple integrations without token refresh logic.
+
+        '
+    outh2:
+      type: oauth2
+      description: OAuth 2.0 Client Credentials flow for temporary access tokens.
+      flows:
+        clientCredentials:
+          tokenUrl: https://api.sendpulse.com/oauth/access_token
+          scopes: {}
+      x-ai-description: 'Standard OAuth 2.0 flow using Client ID and Client Secret.  Provides temporary tokens (valid for 1 hour) for enhanced security.
+
+        '

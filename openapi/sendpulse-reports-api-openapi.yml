@@ -1,0 +1,256 @@
+openapi: 3.2.0
+info:
+  title: SendPulse Verifier Reports API
+  version: 1.0.0
+  description: API for email address verification and mailing list cleaning.
+  x-ai-description: 'The Verifier API is a critical tool for maintaining high deliverability and protecting sender reputation.  It performs deep validation of email addresses to identify invalid, disposable, or high-risk contacts before they are used in campaigns.
+
+    '
+  license:
+    name: Apache 2.0
+    identifier: Apache-2.0
+servers:
+- url: https://api.sendpulse.com
+  description: Production server
+security:
+- apiKey: []
+- oauth2: []
+tags:
+- name: Reports
+  description: Endpoints related to Reports.
+paths:
+  /verifier-service/make-report:
+    post:
+      tags:
+      - Reports
+      summary: Create a mailing list verification report
+      operationId: createVerificationReport
+      description: Generate a downloadable file with verification results.
+      x-ai-role: data_analyst
+      x-ai-description: Exports the audit results into a structured file format for offline analysis or external reporting.
+      x-ai-reasoning-instructions:
+      - Select an appropriate format (CSV, XLS, XLSX) based on the user's data processing needs.
+      - Filter the statuses (e.g., only 'Invalid') if the user wants to focus on cleanup.
+      - Specify the language for headers if necessary.
+      x-ai-responding-instructions:
+      - Confirm the report generation has started.
+      - Instruct the user to use `viewVerificationReport` once ready.
+      x-ai-suggestions:
+      - 'format: 4 (XLSX)'
+      - 'status: [1,2,3]'
+      x-ai-capabilities:
+        security_info:
+          data_handling:
+          - ResourceStateUpdate
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - id
+              properties:
+                id:
+                  type: integer
+                format:
+                  type: integer
+                  description: 2 — csv, 3 — xls, 4 — xlsx; default is 2
+                  enum:
+                  - 2
+                  - 3
+                  - 4
+                  default: 2
+                status:
+                  type: array
+                  items:
+                    type: integer
+                  description: 'Statuses to include: 0 — unverified, 1 — valid, 2 — unconfirmed, 3 — invalid'
+                  example:
+                  - 1
+                  - 2
+                  - 3
+                lang:
+                  type: string
+                  example: en
+      responses:
+        '200':
+          description: Report creation started
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResultTrue'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+  /verifier-service/check-report:
+    get:
+      tags:
+      - Reports
+      summary: View a mailing list verification report
+      operationId: viewVerificationReport
+      description: Get metadata and a sample of the generated report.
+      x-ai-role: data_analyst
+      x-ai-description: Provides a preview and verification of the report content before download.
+      x-ai-reasoning-instructions:
+      - Ensure `make-report` was called previously.
+      - Check the 'status' of the mailing list in the report (Red/Yellow/Green).
+      x-ai-responding-instructions:
+      - Show a summary of the report contents (counts of each status).
+      - 'Provide the next step: `downloadVerificationReport`.'
+      x-ai-suggestions:
+      - 'id: 89165888'
+      x-ai-capabilities:
+        security_info:
+          data_handling:
+          - InformationRetrieval
+      parameters:
+      - name: id
+        in: query
+        required: true
+        schema:
+          type: integer
+      - name: format
+        in: query
+        schema:
+          type: integer
+          default: 2
+      responses:
+        '200':
+          description: Report details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MailingListVerificationResult'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+  /verifier-service/get-report:
+    get:
+      tags:
+      - Reports
+      summary: Download mailing list verification report
+      operationId: downloadVerificationReport
+      description: Download the full report file. Note that the report is deleted from the server after download.
+      x-ai-role: data_analyst
+      x-ai-description: The final retrieval of the cleaning results. This is a one-time download for security and storage efficiency.
+      x-ai-reasoning-instructions:
+      - Warn the user that this is a single-use link; they must save the file locally.
+      - Verify the format matches the one used during creation.
+      x-ai-responding-instructions:
+      - Provide the binary stream or download link.
+      - Remind the user that the report is now removed from SendPulse servers.
+      x-ai-suggestions:
+      - 'id: 89165888'
+      x-ai-capabilities:
+        security_info:
+          data_handling:
+          - InformationRetrieval
+          - DataDestruction
+      parameters:
+      - name: id
+        in: query
+        required: true
+        schema:
+          type: integer
+      - name: format
+        in: query
+        schema:
+          type: integer
+          default: 2
+      responses:
+        '200':
+          description: Report file download
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+components:
+  schemas:
+    ResultTrue:
+      type: object
+      properties:
+        result:
+          type: boolean
+          example: true
+    EmailAddressVerification:
+      type: object
+      properties:
+        id:
+          type: integer
+        email_address:
+          type: string
+        check_date:
+          type: string
+        status:
+          type: integer
+        status_text:
+          type: string
+    MailingListVerificationResult:
+      type: object
+      x-ai-description: Detailed breakdown of mailing list health.
+      properties:
+        id:
+          type: integer
+        address_book_name:
+          type: string
+        all_emails_quantity:
+          type: integer
+        status:
+          type: integer
+          description: 1 - Green, 2 - Yellow, 3 - Red
+        check_date:
+          type: string
+        data:
+          type: object
+          properties:
+            '0':
+              type: integer
+              description: Unverified
+            '1':
+              type: integer
+              description: Valid
+            '2':
+              type: integer
+              description: Unconfirmed
+            '3':
+              type: integer
+              description: Invalid
+        is_updated:
+          type: integer
+        status_text:
+          type: string
+        email_addresses:
+          type: array
+          items:
+            $ref: '#/components/schemas/EmailAddressVerification'
+        email_addresses_total:
+          type: integer
+  securitySchemes:
+    apiKey:
+      type: http
+      scheme: bearer
+      bearerFormat: API Key
+      description: 'Static API Key authentication.  A long-lived token generated manually in the SendPulse account settings.
+
+        '
+      x-ai-description: 'Permanent authentication token. Ideal for simple integrations without token refresh logic.
+
+        '
+    oauth2:
+      type: oauth2
+      description: OAuth 2.0 Client Credentials flow for temporary access tokens.
+      flows:
+        clientCredentials:
+          tokenUrl: https://api.sendpulse.com/oauth/access_token
+          scopes: {}
+      x-ai-description: 'Standard OAuth 2.0 flow using Client ID and Client Secret.  Provides temporary tokens (valid for 1 hour) for enhanced security.
+
+        '

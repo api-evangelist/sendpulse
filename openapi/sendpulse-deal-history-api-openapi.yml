@@ -1,0 +1,116 @@
+openapi: 3.2.0
+info:
+  description: Using the API for the CRM service, you can integrate your system with CRM from SendPulse and receive detailed information on pipelines, deals, contacts and their attributes and users. You can also create deals and contacts, assign and remove fields, tags, contact details and instant messengers. On the right, there is a button for authorizing requests made on this page. Click “Authorize,” then insert the ID and Secret from your account. To perform a request directly from the page, click the "Try it out" button within each method block. Then fill in input fields if any (for URL parameters, the description is right below the URL request; for body parameters, the description is under the “Scheme” button to the right of the example), and click “Run.” You will find the server response and description of received parameters below.
+  title: SendPulse CRM Public Deal history API
+  version: 0.1.0
+servers:
+- url: https://api.sendpulse.com/crm/v1
+security:
+- apiKey: []
+- oauth2: []
+tags:
+- description: ''
+  name: Deal history
+paths:
+  /deals/{dealId}/history:
+    get:
+      tags:
+      - Deal history
+      summary: Deal history
+      description: Get deal history by ID within a date range.
+      parameters:
+      - name: dealId
+        in: path
+        required: true
+        schema:
+          type: integer
+      - name: fromDate
+        in: query
+        required: true
+        schema:
+          type: string
+          format: date-time
+          example: 2024-12-12 12:12:12+00:00
+      - name: toDate
+        in: query
+        required: true
+        schema:
+          type: string
+          format: date-time
+          example: 2024-12-12 12:12:12+00:00
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    $ref: '#/components/schemas/DealHistory'
+      operationId: getDealHistory
+      x-ai-role: crm_sales_analyst
+      x-ai-description: Retrieves the full chronological audit trail of all changes made to a specific deal within a defined time window. This endpoint is the primary tool for understanding deal progression, identifying stalled stages, and reconstructing the sales timeline for reporting or debugging purposes.
+      x-ai-reasoning-instructions:
+      - Verify that the dealId exists before querying history to avoid misleading empty results.
+      - Ensure fromDate is earlier than toDate; if the user provides them in the wrong order, swap and notify.
+      - When the user asks for 'recent history', default the range to the last 30 days unless they specify otherwise.
+      - If the returned history is empty, consider suggesting a wider date range rather than assuming no changes occurred.
+      x-ai-responding-instructions:
+      - Summarize the key changes in the history (e.g., status transitions, owner reassignments, value updates) rather than listing raw events.
+      - Highlight any unusual patterns such as rapid stage changes or prolonged inactivity within the range.
+      - If the range returns many events, group them by type or date for better readability.
+      - Suggest follow-up actions such as updating the deal or contacting the assigned manager if the history reveals a stalled state.
+      x-ai-suggestions:
+      - Use a 30-day lookback window as a default starting point for deal audits.
+      - Combine with getDeal to cross-reference current deal state with its historical changes.
+      - Use this endpoint for generating sales pipeline health reports.
+      x-ai-capabilities:
+        confirmation:
+          type: None
+        security_info:
+          data_handling:
+          - ReadOnly
+components:
+  schemas:
+    DealHistory:
+      type: object
+      properties:
+        id:
+          type: integer
+        userId:
+          type: integer
+        eventData:
+          type: array
+        eventType:
+          type: string
+        eventTime:
+          type: string
+          format: date-time
+        currentData:
+          type: object
+          properties:
+            contactFirstName:
+              type: string
+            contactLastName:
+              type: string
+  securitySchemes:
+    apiKey:
+      type: http
+      scheme: bearer
+      bearerFormat: API Key
+      description: 'Static API Key authentication.  A long-lived token generated manually in the SendPulse account settings.
+
+        '
+      x-ai-description: 'Permanent authentication token. Ideal for simple integrations without token refresh logic.
+
+        '
+    outh2:
+      type: oauth2
+      description: OAuth 2.0 Client Credentials flow for temporary access tokens.
+      flows:
+        clientCredentials:
+          tokenUrl: https://api.sendpulse.com/oauth/access_token
+          scopes: {}
+      x-ai-description: 'Standard OAuth 2.0 flow using Client ID and Client Secret.  Provides temporary tokens (valid for 1 hour) for enhanced security.
+
+        '

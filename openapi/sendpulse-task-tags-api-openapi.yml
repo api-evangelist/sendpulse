@@ -1,0 +1,259 @@
+openapi: 3.2.0
+info:
+  description: Using the API for the CRM service, you can integrate your system with CRM from SendPulse and receive detailed information on pipelines, deals, contacts and their attributes and users. You can also create deals and contacts, assign and remove fields, tags, contact details and instant messengers. On the right, there is a button for authorizing requests made on this page. Click “Authorize,” then insert the ID and Secret from your account. To perform a request directly from the page, click the "Try it out" button within each method block. Then fill in input fields if any (for URL parameters, the description is right below the URL request; for body parameters, the description is under the “Scheme” button to the right of the example), and click “Run.” You will find the server response and description of received parameters below.
+  title: SendPulse CRM Public Task Tags API
+  version: 0.1.0
+servers:
+- url: https://api.sendpulse.com/crm/v1
+security:
+- apiKey: []
+- oauth2: []
+tags:
+- name: Task Tags
+paths:
+  /task-tags/{tagId}/task/{taskId}:
+    delete:
+      tags:
+      - Task Tags
+      summary: Detach tag from a task
+      parameters:
+      - name: tagId
+        in: path
+        required: true
+        schema:
+          type: integer
+      - name: taskId
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '204':
+          description: Successfully deleted
+      operationId: detachTagFromTask
+      x-ai-role: project_management_specialist
+      x-ai-description: Removes a label association from a specific task without deleting either the tag or the task. This is a pure relational operation — it only severs the link between the two entities. Useful for re-categorizing tasks, cleaning up stale labels, or reorganizing project taxonomy without data loss.
+      x-ai-reasoning-instructions:
+      - Confirm both tagId and taskId exist before attempting the operation to avoid ambiguous 404 errors.
+      - Warn the user that this action is irreversible — the tag must be re-attached manually if removed by mistake.
+      - If the tag is not currently attached to the task, the API may still return 204 — clarify this behavior to avoid false confidence.
+      - Consider whether the user intends to detach this tag from all tasks or just this one before proceeding.
+      x-ai-responding-instructions:
+      - Confirm the detachment by referencing both the tag ID and the task ID in the response.
+      - Since the response body is empty (204), explicitly state that the operation was successful.
+      - Suggest verifying the task's current tags via a GET endpoint if the user needs confirmation.
+      - Offer to detach additional tags or re-attach a different tag as a logical next step.
+      x-ai-suggestions:
+      - Use GET /tasks/{taskId}/tags to verify remaining tags after detachment.
+      - Use POST /task-tags/{tagId}/task/{taskId} to re-attach the tag if removed by mistake.
+      x-ai-capabilities:
+        confirmation:
+          type: Recommended
+          message: 'This will permanently detach tag #{tagId} from task #{taskId}. Proceed?'
+        security_info:
+          data_handling:
+          - RelationalDelete
+  /task-tags:
+    get:
+      tags:
+      - Task Tags
+      summary: Get task tags list
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    items:
+                      $ref: '#/components/schemas/TaskTag'
+      operationId: getTaskTags
+      x-ai-role: project_management_specialist
+      x-ai-description: Retrieves the full list of tags available for tasks. Tags serve as a lightweight classification layer in task management, enabling filtering, grouping, and workflow automation across projects.
+      x-ai-reasoning-instructions:
+      - Use this endpoint to populate tag selection UI or validate tag existence before assigning to a task.
+      - Cache the result if making multiple tag-related operations in a single session to reduce redundant calls.
+      - If the returned list is empty, inform the user that no tags exist yet and suggest creating one.
+      x-ai-responding-instructions:
+      - Present the tags as a named list, highlighting IDs that will be needed for subsequent task assignment calls.
+      - If the list is long, suggest filtering or searching by name on the client side.
+      - Suggest using the tag IDs from this response when creating or updating tasks.
+      x-ai-suggestions:
+      - Use returned tag IDs with task create/update endpoints to categorize work.
+      - Cross-reference with task list endpoints to filter tasks by specific tags.
+      x-ai-capabilities:
+        confirmation:
+          type: None
+        security_info:
+          data_handling:
+          - ReadOnly
+    post:
+      tags:
+      - Task Tags
+      summary: Create a task tag
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                name:
+                  type: string
+                  minLength: 1
+                  maxLength: 64
+                  description: Tag name
+                color:
+                  type: string
+                  description: Tag color
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    $ref: '#/components/schemas/TaskTag'
+      operationId: createTaskTag
+      x-ai-role: project_management_specialist
+      x-ai-description: Creates a named, color-coded label used to categorize and filter tasks across projects. Tags are a lightweight taxonomy layer — they enable cross-project grouping without changing task hierarchy. Color selection directly affects visual scannability in task boards and lists.
+      x-ai-reasoning-instructions:
+      - Before creating, check if a tag with the same name already exists to avoid duplicates.
+      - Suggest using consistent naming conventions (e.g., snake_case or Title Case) aligned with the team's existing tags.
+      - If no color is provided, inform the user that a default color may be assigned and suggest picking one for better visual distinction.
+      - Validate that the name is between 1 and 64 characters before submitting.
+      x-ai-responding-instructions:
+      - Confirm the new tag was created by referencing its name and color.
+      - Suggest applying the tag to existing tasks as an immediate next step.
+      - If creation fails due to a duplicate name, list similar existing tags and ask the user to confirm intent.
+      x-ai-suggestions:
+      - bug
+      - high-priority
+      - needs-review
+      - blocked
+      - release-1.0
+      x-ai-capabilities:
+        confirmation:
+          type: None
+        security_info:
+          data_handling:
+          - ResourceStateUpdate
+  /task-tags/{tagId}:
+    put:
+      tags:
+      - Task Tags
+      summary: Update a task tag
+      parameters:
+      - name: tagId
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                name:
+                  type: string
+                  description: Tag name
+                color:
+                  type: string
+                  description: Tag color
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    $ref: '#/components/schemas/TaskTag'
+      operationId: updateTaskTag
+      x-ai-role: project_management_specialist
+      x-ai-description: Updates metadata of an existing task tag — its display name and color coding. Tags in task management systems serve as lightweight categorization primitives; renaming or recoloring a tag propagates the change across all tasks it is attached to, making this a high-impact operation for workspace organization.
+      x-ai-reasoning-instructions:
+      - Verify the tagId exists before attempting the update to provide a clear error message.
+      - If only one field is provided (name or color), confirm the other field will remain unchanged.
+      - Check whether the new name conflicts with an existing tag name in the same workspace to avoid ambiguity.
+      - For color values, ensure the format is consistent with what the system expects (e.g., hex code like '#FF5733').
+      x-ai-responding-instructions:
+      - Confirm which fields were updated and display the resulting tag state.
+      - If the tag name was changed, remind the user that all tasks referencing this tag will reflect the new name.
+      - Suggest reviewing tasks associated with this tag if the update was part of a broader reorganization.
+      x-ai-suggestions:
+      - Use descriptive tag names like 'Urgent', 'Blocked', or 'In Review' for workflow clarity.
+      - 'Standardize color coding by priority: red for blockers, yellow for warnings, green for done.'
+      x-ai-capabilities:
+        confirmation:
+          type: None
+        security_info:
+          data_handling:
+          - ResourceStateUpdate
+    delete:
+      tags:
+      - Task Tags
+      summary: Delete a task tag
+      parameters:
+      - name: tagId
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '204':
+          description: Successfully deleted
+      operationId: deleteTaskTag
+      x-ai-role: project_management_specialist
+      x-ai-description: Permanently removes a task tag from the system. Tags are used to categorize and filter tasks across projects — deleting a tag will unlink it from all associated tasks, potentially affecting existing filters, automations, and reporting that rely on this tag.
+      x-ai-reasoning-instructions:
+      - Before deleting, verify the tag exists and the provided tagId is correct.
+      - Warn the user that this action will remove the tag from all tasks it is currently assigned to.
+      - Check if the tag is used in any active filters, views, or automations before proceeding.
+      - This action is irreversible — confirm the user's intent if the tag appears to be widely used.
+      x-ai-responding-instructions:
+      - Confirm successful deletion with a clear message referencing the tagId.
+      - Remind the user that the tag has been unlinked from all associated tasks.
+      - If the tag is not found (404), clarify that it may have already been deleted or the ID is incorrect.
+      - Suggest reviewing remaining tags or recreating the tag if deleted by mistake.
+      x-ai-capabilities:
+        confirmation:
+          type: Recommended
+          message: This will permanently delete the tag and remove it from all associated tasks.
+        security_info:
+          data_handling:
+          - ResourceDestruction
+components:
+  schemas:
+    TaskTag:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        colorText:
+          type: string
+        colorBackground:
+          type: string
+  securitySchemes:
+    apiKey:
+      type: http
+      scheme: bearer
+      bearerFormat: API Key
+      description: 'Static API Key authentication.  A long-lived token generated manually in the SendPulse account settings.
+
+        '
+      x-ai-description: 'Permanent authentication token. Ideal for simple integrations without token refresh logic.
+
+        '
+    outh2:
+      type: oauth2
+      description: OAuth 2.0 Client Credentials flow for temporary access tokens.
+      flows:
+        clientCredentials:
+          tokenUrl: https://api.sendpulse.com/oauth/access_token
+          scopes: {}
+      x-ai-description: 'Standard OAuth 2.0 flow using Client ID and Client Secret.  Provides temporary tokens (valid for 1 hour) for enhanced security.
+
+        '

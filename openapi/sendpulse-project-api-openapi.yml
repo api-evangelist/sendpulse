@@ -1,0 +1,214 @@
+openapi: 3.2.0
+info:
+  title: SendPulse Pop-up Project API
+  description: API for managing pop-ups in SendPulse. This API allows you to create, update, and delete pop-ups, as well as retrieve information about them and their performance.
+  version: '1.0'
+servers:
+- description: Production server
+  url: https://api.sendpulse.com/v2/pop-ups
+security:
+- apiKey: []
+- oauth2: []
+tags:
+- name: Project
+paths:
+  /public/api/widgets/list:
+    get:
+      tags:
+      - Project
+      summary: Get a list of projects
+      description: Returns a list of projects with information about each project
+      parameters:
+      - name: first
+        in: query
+        description: Limit on the number of displayed records. The default number is 10.
+        schema:
+          type: integer
+      - name: offset
+        in: query
+        description: Limit on the number of displayed records
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Operation successful
+          content:
+            application/json:
+              schema:
+                properties:
+                  result:
+                    type: boolean
+                  data:
+                    description: List projects
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/project'
+                  pageInfo:
+                    $ref: '#/components/schemas/pageInfo'
+                type: object
+        '400':
+          description: Validation error
+        '401':
+          $ref: '#/components/schemas/unauthorizedResponse'
+        '404':
+          description: Resource Not Found
+      operationId: listWidgets
+      x-ai-role: project_manager
+      x-ai-description: Returns a paginated catalog of widgets (projects) available in the account. Widgets are the core structural units in SendPulse's project layer — each represents a configurable component tied to a campaign or automation flow. Use this endpoint to discover existing projects before creating or modifying them.
+      x-ai-reasoning-instructions:
+      - If the user hasn't specified pagination params, default to first=10 and offset=0.
+      - If the result set looks incomplete, suggest increasing 'first' or paginating using 'offset' + 'pageInfo'.
+      - Check pageInfo.hasNextPage (or equivalent) to determine if more records exist beyond the current page.
+      x-ai-responding-instructions:
+      - Summarize how many projects were returned and whether more pages are available.
+      - If the list is empty, suggest the user create a new project first.
+      - If the user is looking for a specific project, suggest filtering by name on the client side or refining the query.
+      x-ai-suggestions:
+      - 'Use offset-based pagination to iterate through all projects: increment offset by the value of ''first'' on each call.'
+      - Combine with a project-detail endpoint to fetch full configuration for a specific widget.
+      x-ai-capabilities:
+        confirmation:
+          type: None
+        security_info:
+          data_handling:
+          - ReadOnly
+  /public/api/widgets:
+    post:
+      tags:
+      - Project
+      summary: Create a project
+      description: Creates a new project with the specified properties and returns a copy of the information with the project ID
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                name:
+                  type: string
+                  description: Project name
+                url:
+                  type: string
+                  description: Project website URL
+              type: object
+      responses:
+        '201':
+          description: Operation successful
+          content:
+            application/json:
+              schema:
+                properties:
+                  result:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/project'
+                type: object
+        '400':
+          description: Validation error
+          content:
+            application/json:
+              example:
+                result: false
+                errors:
+                  name.length.max: Too long, max length - {{255}}
+                  url: Invalid URL 'bad_url'
+        '401':
+          $ref: '#/components/schemas/unauthorizedResponse'
+        '404':
+          description: Resource Not Found
+      operationId: createWidget
+      x-ai-role: popup_campaign_manager
+      x-ai-description: Initializes a new popup/widget project — the root container for all popup campaigns within SendPulse. A 'project' here groups widgets by website or product area, binding them to a specific URL for targeting and analytics. Creating a project is the mandatory first step before any popup can be designed, published, or tracked.
+      x-ai-reasoning-instructions:
+      - Check whether a project with the same name or URL already exists before creating a new one to avoid duplication.
+      - Validate that the `url` is a well-formed absolute URL (e.g., https://example.com); relative paths and bare domains will be rejected.
+      - Ask the user to confirm the target website URL — it determines which domain popups will be scoped to.
+      - If `name` is not provided, suggest deriving it from the domain part of the URL for clarity.
+      x-ai-responding-instructions:
+      - Confirm successful creation by surfacing the new project ID from the `data` object.
+      - Remind the user that the next step is creating individual widgets (popups) within this project.
+      - On a 400 error, parse the `errors` object and explain each field-level constraint violation in plain language.
+      - On a 401, inform the user that OAuth2 client credentials are required and guide them through obtaining a token.
+      x-ai-suggestions:
+      - Main Website — https://mycompany.com
+      - Blog — https://blog.mycompany.com
+      - Landing Page Q2 — https://promo.mycompany.com/q2
+      x-ai-capabilities:
+        confirmation:
+          type: None
+        security_info:
+          data_handling:
+          - ResourceStateUpdate
+components:
+  schemas:
+    pageInfo:
+      title: Page Info
+      properties:
+        total:
+          type: integer
+          description: Total number of records
+        offset:
+          type: integer
+          description: Limit on the number of displayed records
+        first:
+          type: integer
+          description: Record count offset
+        arguments:
+          type: object
+      type: object
+    project:
+      title: Project
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Project ID
+        name:
+          type: string
+          description: Project name
+        urls:
+          type: array
+          items:
+            type: string
+            format: uri
+          description: Project website URL
+        domains:
+          type: array
+          items:
+            type: string
+            format: hostname
+          description: Project site domains
+        integrationCode:
+          type: string
+          description: Code that allows you to install a project on your website
+        updatedAt:
+          type: string
+          example: 2023-08-07 20:14:15+00:00
+          description: 'The date and time your project was last updated. Output in the YYYY-MM-DD hh: mm: ss format with a decimal fraction of a second and time zone designator.'
+        createdAt:
+          type: string
+          example: 2023-08-07 20:14:15+00:00
+          description: 'The date and time your project was created. Output in the YYYY-MM-DD hh: mm: ss format with a decimal fraction of a second and time zone designator.'
+      type: object
+    unauthorizedResponse:
+      description: Unauthorized
+  securitySchemes:
+    apiKey:
+      type: http
+      scheme: bearer
+      bearerFormat: API Key
+      description: 'Static API Key authentication.  A long-lived token generated manually in the SendPulse account settings.
+
+        '
+      x-ai-description: 'Permanent authentication token. Ideal for simple integrations without token refresh logic.
+
+        '
+    outh2:
+      type: oauth2
+      description: OAuth 2.0 Client Credentials flow for temporary access tokens.
+      flows:
+        clientCredentials:
+          tokenUrl: https://api.sendpulse.com/oauth/access_token
+          scopes: {}
+      x-ai-description: 'Standard OAuth 2.0 flow using Client ID and Client Secret.  Provides temporary tokens (valid for 1 hour) for enhanced security.
+
+        '

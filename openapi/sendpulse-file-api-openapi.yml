@@ -1,0 +1,289 @@
+openapi: 3.2.0
+info:
+  description: Using the API for the FileManager service, you can integrate your system with FileManager from SendPulse
+  title: SendPulse FileManager Public File API
+  version: 1.0.0
+servers:
+- description: Production server
+  url: https://api.sendpulse.com/fm/public/v1
+security:
+- apiKey: []
+- oauth2: []
+tags:
+- description: file entity
+  name: File
+paths:
+  /file:
+    post:
+      tags:
+      - File
+      summary: Upload file to storage
+      description: Uploads one or multiple files to the specified directory
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+              - content[]
+              - pathToStore
+              properties:
+                content[]:
+                  type: array
+                  items:
+                    type: string
+                    format: binary
+                  description: File(s) to upload
+                pathToStore:
+                  type: string
+                  example: /test
+                  description: Path to the directory where the file will be stored
+                height:
+                  type: integer
+                  description: Optional height parameter for video files
+                  example: 1080
+                width:
+                  type: integer
+                  description: Optional width parameter for video files
+                  example: 1920
+      responses:
+        '200':
+          description: File successfully uploaded
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+      operationId: uploadFile
+      x-ai-role: file_storage_manager
+      x-ai-description: Uploads one or more files to the SendPulse file storage at a specified directory path. This endpoint serves as the entry point for all asset management — images, documents, or video content used across campaigns, landing pages, or chatbot flows. The path structure is persistent and shared across the account, so naming and organization at upload time directly affects long-term asset discoverability.
+      x-ai-reasoning-instructions:
+      - Confirm the target directory path exists or will be auto-created before uploading.
+      - Warn the user if uploading multiple files simultaneously — ensure each file in content[] is within allowed size limits.
+      - For video files, prompt the user to provide width and height to avoid server-side defaults that may degrade quality.
+      - Avoid overwriting existing files with identical names in the same path — ask the user to rename or use versioned subdirectories.
+      - Validate that pathToStore starts with a forward slash (e.g., /images/2024) and does not contain unsafe characters.
+      x-ai-responding-instructions:
+      - Confirm successful upload and echo back the path where the file was stored.
+      - If multiple files were uploaded, summarize the count of successfully stored assets.
+      - Suggest using the stored file URL in relevant campaign or chatbot configuration as the immediate next step.
+      - If the upload fails, distinguish between path errors, file format issues, and size limit violations in your explanation.
+      x-ai-suggestions:
+      - /images/campaigns
+      - /documents/legal
+      - /videos/onboarding
+      - /assets/newsletters/2024
+      x-ai-capabilities:
+        confirmation:
+          type: None
+        security_info:
+          data_handling:
+          - FileUpload
+          - ResourceStateUpdate
+    delete:
+      tags:
+      - File
+      summary: Delete file from storage
+      description: Delete specific file from storage
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                path:
+                  type: string
+                  description: Path to file in storage
+                  example: /directory/file_name.txt
+      responses:
+        '204':
+          description: File delete successfully
+        '404':
+          description: File not found
+      operationId: deleteFile
+      x-ai-role: storage_manager
+      x-ai-description: Permanently removes a file from the storage by its full path. This is a destructive, irreversible operation — the file cannot be recovered after deletion. Use this to clean up obsolete assets, free storage quota, or enforce data retention policies.
+      x-ai-reasoning-instructions:
+      - Before deleting, confirm with the user that the correct file path is specified — especially if the path was provided dynamically.
+      - Warn if the file might be referenced by other resources (e.g., active campaigns, landing pages, or email templates).
+      - Ensure the path includes the full directory structure, not just the filename.
+      - Do not proceed without explicit user confirmation when operating on files in critical or shared directories.
+      x-ai-responding-instructions:
+      - Confirm successful deletion by echoing the deleted file path back to the user.
+      - If a 404 is returned, clarify that the file does not exist at the specified path and suggest verifying the path via a file listing operation.
+      - Remind the user that this action is irreversible and the file cannot be restored.
+      x-ai-suggestions:
+      - /uploads/images/banner_old.png
+      - /exports/report_2024_q1.csv
+      - /tmp/import_draft.xlsx
+      x-ai-capabilities:
+        confirmation:
+          type: Required
+          message: This will permanently delete the file. This action cannot be undone.
+        security_info:
+          data_handling:
+          - IrreversibleDelete
+  /file/exist:
+    post:
+      tags:
+      - File
+      summary: Check if file exists
+      description: Checks whether a file exists at the specified path
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - path
+              properties:
+                path:
+                  type: string
+                  example: /test/file.txt
+                  description: Path to the file to check
+      responses:
+        '200':
+          description: Check completed successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  result:
+                    type: boolean
+                    description: Whether the file exists
+      operationId: checkFileExist
+      x-ai-role: file_system_manager
+      x-ai-description: Validates the physical presence of a file at a given path before performing dependent operations such as download, delete, or update. Use this as a pre-check guard to avoid 404 errors or unnecessary API calls in file management workflows.
+      x-ai-reasoning-instructions:
+      - Use this check before any destructive or read operation to avoid acting on a non-existent file.
+      - Ensure the path is absolute and uses forward slashes — relative paths may produce misleading results.
+      - If the result is false, suggest verifying the path spelling or listing the parent directory contents.
+      x-ai-responding-instructions:
+      - Clearly state whether the file exists or not — do not leave the user guessing from a raw boolean.
+      - 'If the file does not exist, suggest next steps: check the path, list the directory, or upload the file.'
+      - If the file exists, suggest the likely follow-up action (download, delete, get metadata).
+      x-ai-suggestions:
+      - /uploads/images/logo.png
+      - /documents/reports/q1-2024.pdf
+      - /test/file.txt
+      x-ai-capabilities:
+        confirmation:
+          type: None
+        security_info:
+          data_handling:
+          - ReadOnly
+  /file/filter:
+    post:
+      tags:
+      - File
+      summary: Filter files
+      description: Filters files in the specified directory by date range and sorting
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - path
+              properties:
+                path:
+                  type: string
+                  example: /test
+                  description: Directory path to filter files
+                fromDate:
+                  type:
+                  - string
+                  - 'null'
+                  format: date
+                  example: 2025-01-01 00:01
+                  description: 'Filter files from this date (search: ''>=''). Supported formats: Y-m-d H:i. Timezone: UTC'
+                toDate:
+                  type:
+                  - string
+                  - 'null'
+                  format: date
+                  example: 2025-12-31 23:59
+                  description: 'Filter files to this date (search: ''<=''). Supported formats: Y-m-d H:i. Timezone: UTC'
+                sort:
+                  type:
+                  - string
+                  - 'null'
+                  enum:
+                  - asc
+                  - desc
+                  example: desc
+                  description: Sort order for files
+      responses:
+        '200':
+          description: Files filtered successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    path:
+                      type: string
+                      example: /test/test_1.txt
+                      description: Full path to the file
+                    lastModified:
+                      type: string
+                      format: date-time
+                      example: 2025-10-17 14:12:09+00:00
+                      description: Last modification timestamp
+      operationId: filterFiles
+      x-ai-role: file_system_manager
+      x-ai-description: Дозволяє звузити перелік файлів у директорії за часовим діапазоном та порядком сортування. Корисний при аудиті завантажень, пошуку нещодавно змінених файлів або побудові інтерфейсів перегляду медіатеки. Часовий діапазон інтерпретується у UTC — важливо враховувати часовий пояс клієнта перед передачею дат.
+      x-ai-reasoning-instructions:
+      - Перед викликом переконайся, що path — це директорія, а не шлях до конкретного файлу.
+      - 'Якщо вказано лише fromDate або лише toDate — це допустимо: один з параметрів є відкритим кінцем діапазону.'
+      - Всі дати передаються у UTC. Якщо користувач вказав локальний час — конвертуй перед викликом.
+      - Якщо sort не вказано — порядок не гарантований; для стабільних результатів рекомендуй явно передавати 'desc' для отримання найновіших файлів першими.
+      - Якщо результат порожній — не роби повторний виклик; поясни, що файли у вказаному діапазоні відсутні.
+      x-ai-responding-instructions:
+      - Відобрази кількість знайдених файлів і їхні шляхи у зручному вигляді.
+      - Якщо масив порожній — повідом, що файли за вказаними критеріями не знайдено, і запропонуй розширити діапазон дат.
+      - Якщо повернуто багато файлів — запропонуй уточнити фільтр або завантажити конкретний файл через відповідний endpoint.
+      - Зверни увагу на поле lastModified — воно в ISO 8601 UTC і може відрізнятися від локального часу користувача.
+      x-ai-suggestions:
+      - 'Отримати файли за останній тиждень: fromDate=7 днів тому, toDate=сьогодні, sort=desc'
+      - 'Переглянути всі файли у директорії без фільтрації по даті: передати лише path'
+      - 'Знайти найстаріші файли: sort=asc без обмеження дат'
+      x-ai-capabilities:
+        confirmation:
+          type: None
+        security_info:
+          data_handling:
+          - ReadOnly
+components:
+  securitySchemes:
+    apiKey:
+      type: http
+      scheme: bearer
+      bearerFormat: API Key
+      description: 'Static API Key authentication.  A long-lived token generated manually in the SendPulse account settings.
+
+        '
+      x-ai-description: 'Permanent authentication token. Ideal for simple integrations without token refresh logic.
+
+        '
+    outh2:
+      type: oauth2
+      description: OAuth 2.0 Client Credentials flow for temporary access tokens.
+      flows:
+        clientCredentials:
+          tokenUrl: https://api.sendpulse.com/oauth/access_token
+          scopes: {}
+      x-ai-description: 'Standard OAuth 2.0 flow using Client ID and Client Secret.  Provides temporary tokens (valid for 1 hour) for enhanced security.
+
+        '

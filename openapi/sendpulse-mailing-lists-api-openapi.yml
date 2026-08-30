@@ -1,0 +1,1301 @@
+openapi: 3.2.0
+info:
+  title: SendPulse Bulk Email Mailing lists API
+  version: 1.0.0
+  description: API for managing mailing lists, email campaigns, templates, and senders.
+  x-ai-description: 'The Bulk Email API is the core engine for marketing automation at SendPulse.  It enables programmatic control over the entire email lifecycle.
+
+    '
+  license:
+    name: Apache 2.0
+    identifier: Apache-2.0
+servers:
+- url: https://api.sendpulse.com
+  description: Production server
+security:
+- apiKey: []
+- oauth2: []
+tags:
+- name: Mailing lists
+  description: Endpoints related to Mailing lists.
+paths:
+  /addressbooks:
+    post:
+      tags:
+      - Mailing lists
+      summary: Create a mailing list
+      operationId: createMailingList
+      description: Create a new mailing list (address book).
+      x-ai-role: marketing_automation_specialist
+      x-ai-description: 'This endpoint initializes a primary data container for subscribers.
+
+        '
+      x-ai-reasoning-instructions:
+      - Check if a list with a similar name already exists to avoid duplication.
+      - Advise descriptive naming conventions (e.g., 'Q1_LeadGen_Campaign').
+      - Verify account limits before creation.
+      x-ai-responding-instructions:
+      - Confirm the creation and state the new Mailing List ID.
+      - Prompt the user to add variables or import contacts next.
+      x-ai-suggestions:
+      - Newsletter_Subscribers_2024
+      - VIP_Customers_Tier1
+      x-ai-capabilities:
+        security_info:
+          data_handling:
+          - ResourceStateUpdate
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - bookName
+              properties:
+                bookName:
+                  type: string
+                  description: Mailing list name
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '422':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                bookName.required:
+                  summary: bookName.required
+                  value:
+                    message: Argument bookName missing
+                    error_code: 422
+                bookName.string:
+                  summary: bookName.string
+                  value:
+                    message: Argument bookName must be string
+                    error_code: 422
+                bookName.exists:
+                  summary: bookName.exists
+                  value:
+                    message: Name already in use
+                    error_code: 203
+    get:
+      tags:
+      - Mailing lists
+      summary: Get a list of mailing lists
+      operationId: getMailingLists
+      description: Retrieve all mailing lists.
+      x-ai-role: data_analyst
+      x-ai-description: 'Provides an overview of the account''s subscriber infrastructure.
+
+        '
+      x-ai-reasoning-instructions:
+      - Use limit and offset if the user has many lists.
+      - Analyze the active vs. inactive subscriber ratios.
+      - Identify unused lists for potential cleanup.
+      x-ai-responding-instructions:
+      - Summarize the total number of lists.
+      - Highlight lists with the most active subscribers.
+      x-ai-suggestions:
+      - 'limit: 20'
+      - 'offset: 0'
+      x-ai-capabilities:
+        security_info:
+          data_handling:
+          - InformationRetrieval
+      parameters:
+      - name: limit
+        in: query
+        description: Number of records
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+          default: 100
+          example: 10
+      - name: offset
+        in: query
+        description: Offset (first record to be displayed)
+        schema:
+          type: integer
+          minimum: 0
+          default: 0
+          example: 0
+      responses:
+        '200':
+          description: List of mailing lists
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/MailingList'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '422':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                limit.integer:
+                  summary: limit.integer
+                  value:
+                    message: Argument limit must be integer
+                    error_code: 422
+                limit.min:
+                  summary: limit.min
+                  value:
+                    message: Argument limit must be at least 1
+                    error_code: 422
+                limit.max:
+                  summary: limit.max
+                  value:
+                    message: Argument limit may not be greater than 100
+                    error_code: 422
+                offset.integer:
+                  summary: offset.integer
+                  value:
+                    message: Argument offset must be integer
+                    error_code: 422
+                offset.min:
+                  summary: offset.min
+                  value:
+                    message: Argument offset must be at least 0
+                    error_code: 422
+  /addressbooks/{id}:
+    parameters:
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: integer
+    get:
+      tags:
+      - Mailing lists
+      summary: Get mailing list information
+      operationId: getMailingListById
+      description: Detailed information regarding a specific mailing list.
+      x-ai-role: marketing_automation_specialist
+      x-ai-description: Retrieves metadata and current stats for a specific address book.
+      x-ai-reasoning-instructions:
+      - Verify the list exists before reading.
+      - Check the 'status' to ensure it is active (0) before campaign planning.
+      - Evaluate the active_email_qty to gauge list health.
+      x-ai-responding-instructions:
+      - Report the list name, creation date, and subscriber counts.
+      - If the list is inactive, explain why based on the status_explain field.
+      x-ai-suggestions:
+      - Check variables for this list next.
+      - View emails in this list.
+      x-ai-capabilities:
+        security_info:
+          data_handling:
+          - InformationRetrieval
+      responses:
+        '200':
+          description: Mailing list details
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/MailingList'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                book.not_found:
+                  summary: book.not_found
+                  value:
+                    message: Book not found
+                    error_code: 213
+    put:
+      tags:
+      - Mailing lists
+      summary: Edit a mailing list
+      operationId: updateMailingList
+      description: Rename an existing mailing list.
+      x-ai-role: marketing_automation_specialist
+      x-ai-description: Updates the organizational name of an address book.
+      x-ai-reasoning-instructions:
+      - Verify the ID is valid before attempting update.
+      - Ensure the new name follows formatting rules.
+      - Confirm the new name does not conflict with existing lists.
+      x-ai-responding-instructions:
+      - Confirm the list was successfully renamed.
+      - Show the before and after names if available.
+      x-ai-suggestions:
+      - Add new subscribers to this updated list.
+      x-ai-capabilities:
+        security_info:
+          data_handling:
+          - ResourceStateUpdate
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - name
+              properties:
+                name:
+                  type: string
+                  example: My mailing list
+      responses:
+        '200':
+          description: Successful rename
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResultTrue'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                book.not_found:
+                  summary: book.not_found
+                  value:
+                    message: Book not found
+                    error_code: 213
+        '422':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                name.required:
+                  summary: name.required
+                  value:
+                    message: Argument name missing
+                    error_code: 422
+                name.string:
+                  summary: name.string
+                  value:
+                    message: Argument name must be string
+                    error_code: 422
+                bookName.exists:
+                  summary: bookName.exists
+                  value:
+                    message: Name already in use
+                    error_code: 203
+    delete:
+      tags:
+      - Mailing lists
+      summary: Delete a mailing list
+      operationId: deleteMailingList
+      description: Permanently remove a mailing list.
+      x-ai-role: compliance_officer
+      x-ai-description: Destructive action that wipes subscriber data.
+      x-ai-reasoning-instructions:
+      - Always ask for user confirmation before executing.
+      - Check if the list is used in active campaigns.
+      - Verify account permissions for deletion.
+      x-ai-responding-instructions:
+      - State clearly that the list and all contacts have been deleted.
+      - Offer advice on recovering data if possible (though usually not).
+      x-ai-suggestions:
+      - Review remaining active lists.
+      x-ai-capabilities:
+        security_info:
+          data_handling:
+          - DataDestruction
+      responses:
+        '200':
+          description: Successful deletion
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResultTrue'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                book.not_found:
+                  summary: book.not_found
+                  value:
+                    message: Book not found
+                    error_code: 213
+        '422':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                book.has_campaign:
+                  summary: book.has_campaign
+                  value:
+                    message: The address book has active campaign
+                    error_code: 422
+  /addressbooks/{id}/variables:
+    parameters:
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: integer
+    get:
+      tags:
+      - Mailing lists
+      summary: Get a list of variables for a mailing list
+      operationId: getMailingListVariables
+      description: Get variables available on a mailing list.
+      x-ai-role: data_analyst
+      x-ai-description: Retrieves the custom data schema defined for this list.
+      x-ai-reasoning-instructions:
+      - Fetch the list to understand personalization capabilities.
+      - Check if required variables (like 'Name') exist.
+      - Use this schema when mapping import data.
+      x-ai-responding-instructions:
+      - List the available variables and their types.
+      - Suggest how these can be used in email templates.
+      x-ai-suggestions:
+      - Add a new variable like 'Company'.
+      x-ai-capabilities:
+        security_info:
+          data_handling:
+          - InformationRetrieval
+      parameters: []
+      responses:
+        '200':
+          description: List of variables
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/VariableDefinition'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                book.not_found:
+                  summary: book.not_found
+                  value:
+                    message: Book not found
+                    error_code: 213
+  /addressbooks/{id}/emails:
+    parameters:
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: integer
+    get:
+      tags:
+      - Mailing lists
+      summary: Get a list of emails from a mailing list
+      operationId: getEmailsFromMailingList
+      description: Retrieve contacts from a mailing list.
+      x-ai-role: lead_generation_specialist
+      x-ai-description: Exports or inspects the individual subscribers within a list.
+      x-ai-reasoning-instructions:
+      - Apply limit and offset to handle large lists safely.
+      - Filter by 'active' or 'not_active' to focus on deliverable contacts.
+      - Monitor the status codes to gauge list quality.
+      x-ai-responding-instructions:
+      - Present a sample of the contacts retrieved.
+      - Summarize the statuses found in the results.
+      x-ai-suggestions:
+      - Clean up inactive contacts.
+      - Export to CSV.
+      x-ai-capabilities:
+        security_info:
+          data_handling:
+          - InformationRetrieval
+          - PIIDisplay
+      parameters:
+      - name: limit
+        in: query
+        schema:
+          type: integer
+      - name: offset
+        in: query
+        schema:
+          type: integer
+      - name: order
+        in: query
+        schema:
+          type: string
+          enum:
+          - asc
+          - desc
+      - name: active
+        in: query
+        schema:
+          type: boolean
+      - name: not_active
+        in: query
+        schema:
+          type: boolean
+      responses:
+        '200':
+          description: List of email contacts
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/EmailContact'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                book.not_found:
+                  summary: book.not_found
+                  value:
+                    message: Book not found
+                    error_code: 213
+        '422':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                limit.integer:
+                  summary: limit.integer
+                  value:
+                    message: Argument limit must be integer
+                    error_code: 422
+                limit.min:
+                  summary: limit.min
+                  value:
+                    message: Argument limit must be at least 1
+                    error_code: 422
+                limit.max:
+                  summary: limit.max
+                  value:
+                    message: Argument limit may not be greater than 100
+                    error_code: 422
+                offset.integer:
+                  summary: offset.integer
+                  value:
+                    message: Argument offset must be integer
+                    error_code: 422
+                offset.min:
+                  summary: offset.min
+                  value:
+                    message: Argument offset must be at least 0
+                    error_code: 422
+                order.string:
+                  summary: order.string
+                  value:
+                    message: Argument order must be string
+                    error_code: 422
+                order.in:
+                  summary: order.in
+                  value:
+                    message: Argument order is invalid
+                    error_code: 422
+                active.boolean:
+                  summary: active.boolean
+                  value:
+                    message: Argument active is invalid
+                    error_code: 422
+                not_active.boolean:
+                  summary: not_active.boolean
+                  value:
+                    message: Argument not_active is invalid
+                    error_code: 422
+    post:
+      tags:
+      - Mailing lists
+      summary: Add emails to a mailing list
+      operationId: addEmailsToMailingList
+      description: Add contacts using single or double opt-in.
+      x-ai-role: marketing_automation_specialist
+      x-ai-description: Primary method for populating lists. Supports bulk addition.
+      x-ai-reasoning-instructions:
+      - Validate email formats before sending payload.
+      - If using double opt-in, ensure sender_email is authorized.
+      - Map variables correctly according to the list schema.
+      x-ai-responding-instructions:
+      - Confirm how many contacts were added.
+      - Explain that DOI contacts will remain pending until confirmed.
+      x-ai-suggestions:
+      - Check list total to verify addition.
+      x-ai-capabilities:
+        security_info:
+          data_handling:
+          - ResourceStateUpdate
+          - PIIDataHandling
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              oneOf:
+              - $ref: '#/components/schemas/AddEmailsSingleOptIn'
+              - $ref: '#/components/schemas/AddEmailsDoubleOptIn'
+      responses:
+        '200':
+          description: Successful addition
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResultTrue'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                tariff.exception:
+                  summary: tariff.exception
+                  value:
+                    message: Access denied! Please change your tariff plan
+                    error_code: 3030303030
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                book.not_found:
+                  summary: book.not_found
+                  value:
+                    message: Book not found
+                    error_code: 213
+        '422':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                emails.required:
+                  summary: emails.required
+                  value:
+                    message: Argument emails missing
+                    error_code: 422
+                emails.array:
+                  summary: emails.array
+                  value:
+                    message: Argument emails must be array
+                    error_code: 422
+                emails.*.array:
+                  summary: emails.*.array
+                  value:
+                    message: Argument emails is invalid
+                    error_code: 422
+                emails.*.email.string:
+                  summary: emails.*.email.string
+                  value:
+                    message: Argument email is invalid
+                    error_code: 422
+                emails.*.variables.array:
+                  summary: emails.*.variables.array
+                  value:
+                    message: Argument emails.*.variables is invalid
+                    error_code: 422
+                confirmation.string:
+                  summary: confirmation.string
+                  value:
+                    message: Argument confirmation must be string
+                    error_code: 422
+                confirmation.in:
+                  summary: confirmation.in
+                  value:
+                    message: Argument confirmation is invalid
+                    error_code: 422
+                sender_email.required_with:
+                  summary: sender_email.required_with
+                  value:
+                    message: Argument sender_email missing
+                    error_code: 422
+                sender_email.email:
+                  summary: sender_email.email
+                  value:
+                    message: Argument sender_email is invalid
+                    error_code: 422
+                sender_email.not_found:
+                  summary: sender_email.not_found
+                  value:
+                    message: Sender not found
+                    error_code: 1003
+                template_id.string:
+                  summary: template_id.string
+                  value:
+                    message: Argument template_id is invalid
+                    error_code: 422
+                message_lang.string:
+                  summary: message_lang.string
+                  value:
+                    message: Argument message_lang is invalid
+                    error_code: 422
+                disable_webhook.boolean:
+                  summary: disable_webhook.boolean
+                  value:
+                    message: Argument disable_webhook must be boolean
+                    error_code: 422
+                dont_update.boolean:
+                  summary: dont_update.boolean
+                  value:
+                    message: Argument dont_update must be boolean
+                    error_code: 422
+                check_emails.boolean:
+                  summary: check_emails.boolean
+                  value:
+                    message: Argument check_emails must be boolean
+                    error_code: 422
+                tags.array:
+                  summary: tags.array
+                  value:
+                    message: Argument tags must be array
+                    error_code: 422
+                tags.*.integer:
+                  summary: tags.*.integer
+                  value:
+                    message: Argument tags is invalid
+                    error_code: 422
+    delete:
+      tags:
+      - Mailing lists
+      summary: Delete emails from a mailing list
+      operationId: deleteEmailsFromMailingList
+      description: Remove specific email addresses.
+      x-ai-role: compliance_officer
+      x-ai-description: Removes subscribers from a specific list.
+      x-ai-reasoning-instructions:
+      - Ensure the array does not exceed 100 emails per request.
+      - Verify the emails actually exist in the list first.
+      - Confirm with the user before proceeding.
+      x-ai-responding-instructions:
+      - Confirm the exact number of emails removed.
+      - Advise on global deletion if the user wants them entirely gone.
+      x-ai-suggestions:
+      - Use global delete instead if necessary.
+      x-ai-capabilities:
+        security_info:
+          data_handling:
+          - DataDestruction
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - emails
+              properties:
+                emails:
+                  type: array
+                  maxItems: 100
+                  items:
+                    type: string
+                    format: email
+                    example: test@test.com
+      responses:
+        '200':
+          description: Successful deletion
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResultTrue'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                book.not_found:
+                  summary: book.not_found
+                  value:
+                    message: Book not found
+                    error_code: 213
+        '422':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                email.limit:
+                  summary: email.limit
+                  value:
+                    message: 'Limit is exceeded. Max count: 100'
+                    error_code: 422
+                bookName.string:
+                  summary: bookName.string
+                  value:
+                    message: Argument bookName must be string
+                    error_code: 422
+                emails.empty:
+                  summary: emails.empty
+                  value:
+                    message: No emails
+                    error_code: 303
+  /addressbooks/{id}/emails/total:
+    parameters:
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: integer
+    get:
+      tags:
+      - Mailing lists
+      summary: Get the total number of contacts
+      operationId: getEmailsTotalCount
+      description: Returns the total count of emails in a list.
+      x-ai-role: data_analyst
+      x-ai-description: Quickly check the size of an address book.
+      x-ai-reasoning-instructions:
+      - Use this for high-level stats without downloading PI data.
+      - Calculate pagination needs based on this total.
+      - Monitor list growth over time.
+      x-ai-responding-instructions:
+      - State the total subscriber count clearly.
+      - Compare it to account limits if relevant.
+      x-ai-suggestions:
+      - Download the list details.
+      x-ai-capabilities:
+        security_info:
+          data_handling:
+          - InformationRetrieval
+      parameters:
+      - name: active
+        in: query
+        required: false
+        schema:
+          type: boolean
+      responses:
+        '200':
+          description: Total count
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  total:
+                    type: integer
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                book.not_found:
+                  summary: book.not_found
+                  value:
+                    message: Book not found
+                    error_code: 213
+  /addressbooks/{id}/emails/unsubscribe:
+    parameters:
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: integer
+    post:
+      tags:
+      - Mailing lists
+      summary: Unsubscribe contacts from a mailing list
+      operationId: unsubscribeEmailsFromMailingList
+      description: Moves specified email addresses to the unsubscribed state within a given list.
+      x-ai-role: compliance_officer
+      x-ai-description: Marks contacts as unsubscribed in a specific list without deleting them globally. Use when honoring list-level opt-out requests.
+      x-ai-reasoning-instructions:
+      - Confirm the list exists before sending the request.
+      - Validate all email addresses are present in the list.
+      - Limit to 100 emails per request; batch if needed.
+      - Prefer this over global delete to preserve historical data.
+      x-ai-responding-instructions:
+      - Confirm how many contacts were unsubscribed.
+      - Advise the user to verify via GET /addressbooks/{id}/emails if needed.
+      x-ai-suggestions:
+      - Check remaining active contacts via GET /addressbooks/{id}/emails/total.
+      - Use global blacklist for permanent suppression.
+      x-ai-capabilities:
+        security_info:
+          data_handling:
+          - ResourceStateUpdate
+          - PIIDataHandling
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - emails
+              properties:
+                emails:
+                  type: array
+                  maxItems: 100
+                  items:
+                    type: string
+                    format: email
+                    example: user@example.com
+      responses:
+        '200':
+          description: Contacts successfully unsubscribed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResultTrue'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                book.not_found:
+                  summary: book.not_found
+                  value:
+                    message: Book not found
+                    error_code: 213
+        '422':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                emails.required:
+                  summary: emails.required
+                  value:
+                    message: Argument emails missing
+                    error_code: 422
+                emails.array:
+                  summary: emails.array
+                  value:
+                    message: Argument emails is invalid
+                    error_code: 422
+                emails.max:
+                  summary: emails.max
+                  value:
+                    message: Argument emails may not have more than 100 items
+                    error_code: 422
+                emails.*.string:
+                  summary: emails.*.string
+                  value:
+                    message: Argument emails is invalid
+                    error_code: 422
+                emails.active:
+                  summary: emails.active
+                  value:
+                    message: Active emails not found
+                    error_code: 422
+  /addressbooks/{id}/variables/{variableName}/{searchValue}:
+    parameters:
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: integer
+    - name: variableName
+      in: path
+      required: true
+      schema:
+        type: string
+    - name: searchValue
+      in: path
+      required: true
+      schema:
+        type: string
+    get:
+      tags:
+      - Mailing lists
+      summary: Get contacts by variable
+      operationId: getContactsByVariable
+      description: Find all contacts matching a specific variable value.
+      x-ai-role: lead_generation_specialist
+      x-ai-description: Search tool for finding specific segments.
+      x-ai-reasoning-instructions:
+      - Check if the variable name is valid for this list.
+      - Ensure the search value matches the variable type.
+      - Handle empty results gracefully.
+      x-ai-responding-instructions:
+      - Display the matching contacts.
+      - Suggest creating a segment based on this variable if used often.
+      x-ai-suggestions:
+      - Send a targeted campaign to these results.
+      x-ai-capabilities:
+        security_info:
+          data_handling:
+          - InformationRetrieval
+      parameters: []
+      responses:
+        '200':
+          description: List of matching contacts
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/EmailContactBasic'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                book.not_found:
+                  summary: book.not_found
+                  value:
+                    message: Book not found
+                    error_code: 213
+                variable.not_found:
+                  summary: variable.not_found
+                  value:
+                    message: Variable not found
+                    error_code: 299
+        '422':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                variable.error:
+                  summary: variable.error
+                  value:
+                    message: Variable name is invalid
+                    error_code: 422
+                variable.date.value:
+                  summary: variable.date.value
+                  value:
+                    message: Variable value wrong format
+                    error_code: 422
+  /addressbooks/{id}/phone:
+    parameters:
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: integer
+    put:
+      tags:
+      - Mailing lists
+      summary: Change a phone number for a contact
+      operationId: updateContactPhone
+      description: Update the 'Phone' variable for a subscriber.
+      x-ai-role: marketing_automation_specialist
+      x-ai-description: Updates the system 'Phone' variable.
+      x-ai-reasoning-instructions:
+      - Format the phone number to international standards.
+      - Ensure the email address exists in the list.
+      - Verify successful response.
+      x-ai-responding-instructions:
+      - Confirm the phone number was updated.
+      - Suggest sending an SMS campaign if applicable.
+      x-ai-suggestions:
+      - Update other variables.
+      x-ai-capabilities:
+        security_info:
+          data_handling:
+          - ResourceStateUpdate
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - email
+              - phone
+              properties:
+                email:
+                  type: string
+                  format: email
+                phone:
+                  type: string
+      responses:
+        '200':
+          description: Successful update
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResultTrue'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                book.not_found:
+                  summary: book.not_found
+                  value:
+                    message: Book not found
+                    error_code: 213
+        '422':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                phone.error:
+                  summary: phone.error
+                  value:
+                    message: Phone is not valid
+                    error_code: 422
+                email.error:
+                  summary: email.error
+                  value:
+                    message: Email is not valid
+                    error_code: 17
+  /addressbooks/{id}/cost:
+    parameters:
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: integer
+    get:
+      tags:
+      - Mailing lists
+      summary: Get campaign cost
+      operationId: getCampaignCostByList
+      description: Calculate the cost of sending to this list.
+      x-ai-role: billing_specialist
+      x-ai-description: Financial cost calculation based on current tariff.
+      x-ai-reasoning-instructions:
+      - Check if the account has enough balance (result=true).
+      - Analyze the overdraft prices if limits are exceeded.
+      - Warn the user before they schedule large campaigns.
+      x-ai-responding-instructions:
+      - Provide the total estimated cost in the appropriate currency.
+      - Advise on top-ups if the balance is insufficient.
+      x-ai-suggestions:
+      - Proceed with creating the campaign.
+      x-ai-capabilities:
+        security_info:
+          data_handling:
+          - InformationRetrieval
+      parameters: []
+      responses:
+        '200':
+          description: Cost calculation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CampaignCost'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                book.not_found:
+                  summary: book.not_found
+                  value:
+                    message: Book not found
+                    error_code: 213
+        '422':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                book.empty:
+                  summary: book.empty
+                  value:
+                    message: Addressbook is empty
+                    error_code: 211
+                tariff.ended:
+                  summary: tariff.ended
+                  value:
+                    message: Your tariff plan ended
+                    error_code: 422
+components:
+  schemas:
+    CampaignCost:
+      type: object
+      x-ai-description: Cost breakdown.
+      properties:
+        cur:
+          type: string
+        sent_emails_qty:
+          type: integer
+        overdraftAllEmailsPrice:
+          type: number
+        result:
+          type: boolean
+    ResultTrue:
+      type: object
+      x-ai-description: Success indicator.
+      properties:
+        result:
+          type: boolean
+    AddEmailsSingleOptIn:
+      type: object
+      x-ai-description: Add emails without confirmation.
+      properties:
+        emails:
+          type: array
+    VariableDefinition:
+      type: object
+      x-ai-description: Definition of a custom field.
+      properties:
+        name:
+          type: string
+        type:
+          type: string
+          enum:
+          - string
+          - number
+          - date
+    MailingList:
+      type: object
+      x-ai-description: Metadata and health metrics for a subscriber list.
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        all_email_qty:
+          type: integer
+        active_email_qty:
+          type: integer
+        inactive_email_qty:
+          type: integer
+        creationdate:
+          type: string
+        status:
+          type: integer
+        status_explain:
+          type: string
+    AddEmailsDoubleOptIn:
+      type: object
+      x-ai-description: Add emails with confirmation.
+      properties:
+        emails:
+          type: array
+        confirmation:
+          type: string
+    EmailContactBasic:
+      type: object
+      x-ai-description: Minimal subscriber record.
+      properties:
+        email:
+          type: string
+        status:
+          type: integer
+        status_explain:
+          type: string
+    EmailContact:
+      type: object
+      x-ai-description: Subscriber record.
+      properties:
+        email:
+          type: string
+        status:
+          type: integer
+        status_explain:
+          type: string
+        variables:
+          type: object
+  securitySchemes:
+    apiKey:
+      type: http
+      scheme: bearer
+      bearerFormat: API Key
+      description: 'Static API Key authentication.  A long-lived token generated manually in the SendPulse account settings.
+
+        '
+      x-ai-description: 'Permanent authentication token. Ideal for simple integrations without token refresh logic.
+
+        '
+    oauth2:
+      type: oauth2
+      description: OAuth 2.0 Client Credentials flow for temporary access tokens.
+      flows:
+        clientCredentials:
+          tokenUrl: https://api.sendpulse.com/oauth/access_token
+          scopes: {}
+      x-ai-description: 'Standard OAuth 2.0 flow using Client ID and Client Secret.  Provides temporary tokens (valid for 1 hour) for enhanced security.
+
+        '

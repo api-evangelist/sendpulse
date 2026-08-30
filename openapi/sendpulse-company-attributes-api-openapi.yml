@@ -1,0 +1,257 @@
+openapi: 3.2.0
+info:
+  description: Using the API for the CRM service, you can integrate your system with CRM from SendPulse and receive detailed information on pipelines, deals, contacts and their attributes and users. You can also create deals and contacts, assign and remove fields, tags, contact details and instant messengers. On the right, there is a button for authorizing requests made on this page. Click “Authorize,” then insert the ID and Secret from your account. To perform a request directly from the page, click the "Try it out" button within each method block. Then fill in input fields if any (for URL parameters, the description is right below the URL request; for body parameters, the description is under the “Scheme” button to the right of the example), and click “Run.” You will find the server response and description of received parameters below.
+  title: SendPulse CRM Public Company Attributes API
+  version: 0.1.0
+servers:
+- url: https://api.sendpulse.com/crm/v1
+security:
+- apiKey: []
+- oauth2: []
+tags:
+- name: Company Attributes
+paths:
+  /companies/attributes:
+    get:
+      tags:
+      - Company Attributes
+      summary: Get company attributes list
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Attribute'
+      operationId: getCompanyAttributes
+      x-ai-role: crm_data_architect
+      x-ai-description: Retrieves the full list of custom attributes defined for companies in the CRM. These attributes form the schema of company-level metadata — they must be known before creating or updating companies, as they define what fields are available for enrichment and segmentation.
+      x-ai-reasoning-instructions:
+      - Call this endpoint before creating or updating a company to know which attributes are available.
+      - Use the returned attribute list to validate that any attribute you intend to set actually exists.
+      - If the user wants to filter or segment companies by a custom field, first verify the field name matches an attribute returned here.
+      x-ai-responding-instructions:
+      - Present the attributes as a structured list with their names and types.
+      - If the list is empty, inform the user that no custom attributes have been defined yet and suggest creating them.
+      - Suggest using the attribute names as keys when calling company create/update endpoints.
+      x-ai-suggestions:
+      - Use returned attribute names as keys in company creation payloads.
+      - Cross-reference with contact attributes to understand the full CRM schema.
+      x-ai-capabilities:
+        confirmation:
+          type: None
+        security_info:
+          data_handling:
+          - ReadOnly
+    post:
+      tags:
+      - Company Attributes
+      summary: Create a company attribute
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                name:
+                  type: string
+                type:
+                  type: integer
+                  description: 0 = Text, 1 = Number, 2 = Date, 3 = Link, 4 = Select, 5 = MultiSelect
+                mandatory:
+                  type: boolean
+                options:
+                  type: array
+                  items:
+                    oneOf:
+                    - type: string
+                    - type: integer
+              required:
+              - name
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Attribute'
+      operationId: createCompanyAttribute
+      x-ai-role: crm_data_architect
+      x-ai-description: Defines a custom metadata field for the company entity in the CRM. Attributes extend the default company schema and allow teams to capture domain-specific data (e.g., 'Industry', 'Contract Value', 'Renewal Date'). The type determines both the UI widget and data validation rules; Select/MultiSelect types require populating the `options` array to be usable.
+      x-ai-reasoning-instructions:
+      - Check whether an attribute with the same name already exists before creating to avoid schema duplication.
+      - If type is 4 (Select) or 5 (MultiSelect), verify that the `options` array is non-empty — otherwise the field will be rendered but unusable.
+      - Advise using consistent naming conventions (e.g., PascalCase or snake_case) across all custom attributes to simplify downstream filtering.
+      - 'Consider whether `mandatory: true` is appropriate — mandatory attributes block company record creation until filled.'
+      - Date-type attributes (type 2) follow ISO 8601 — flag this if the user intends to store locale-specific formats.
+      x-ai-responding-instructions:
+      - Confirm creation by referencing the returned attribute ID and its resolved type name (e.g., 'Text', 'Select').
+      - If type is Select or MultiSelect, list the registered options back to the user for confirmation.
+      - 'Suggest the next step: assigning a value to this attribute on a specific company via the update company endpoint.'
+      - If a validation error occurs, clarify which field caused it and provide a corrected example.
+      x-ai-suggestions:
+      - 'Industry (type: 0 — Text)'
+      - 'Employee Count (type: 1 — Number)'
+      - 'Contract Renewal Date (type: 2 — Date)'
+      - 'Company Website (type: 3 — Link)'
+      - 'Account Tier (type: 4 — Select, options: [''Free'', ''Pro'', ''Enterprise''])'
+      - 'Interested Products (type: 5 — MultiSelect)'
+      x-ai-capabilities:
+        confirmation:
+          type: None
+        security_info:
+          data_handling:
+          - SchemaModification
+  /companies/attributes/{attribute}:
+    put:
+      tags:
+      - Company Attributes
+      summary: Update a company attribute
+      parameters:
+      - name: attributeId
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                name:
+                  type: string
+                status:
+                  type: integer
+                  description: 0 = Inactive, 1 = Active, 2 = Hidden
+                type:
+                  type: integer
+                  description: 0 = Text, 1 = Number, 2 = Date, 3 = Link, 4 = Select, 5 = MultiSelect
+                mandatory:
+                  type: boolean
+                order:
+                  type: integer
+                options:
+                  type: array
+                  items:
+                    oneOf:
+                    - type: string
+                    - type: integer
+              required:
+              - name
+              - order
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Attribute'
+      operationId: updateCompanyAttribute
+      x-ai-role: crm_data_architect
+      x-ai-description: 'Modifies the schema definition of a custom company attribute — its display name, data type, visibility, and validation rules. This is a structural operation: changing `type` or `status` affects how all existing company records store and expose that field. Use with caution in production environments where CRM data integrity is critical.'
+      x-ai-reasoning-instructions:
+      - Before updating, retrieve the current attribute definition to understand what is changing and what downstream impact it may have.
+      - Changing `type` (e.g., from Text to Select) is a breaking schema change — warn the user that existing values may become invalid.
+      - If `status` is set to 0 (Inactive) or 2 (Hidden), clarify that the attribute will no longer be visible or editable on company profiles.
+      - When `options` is provided, verify it is only relevant for types 4 (Select) or 5 (MultiSelect) — for other types it is ignored.
+      - The `order` field controls rendering position in the UI — coordinate with other attributes to avoid ordering conflicts.
+      - If `mandatory` is being set to true, verify that all existing companies already have a value for this attribute to avoid form validation issues.
+      x-ai-responding-instructions:
+      - Confirm which fields were updated and their new values.
+      - If `type` was changed, explicitly warn about potential data integrity issues with existing company records.
+      - If `status` was changed to Inactive or Hidden, note that the attribute will no longer appear in the CRM interface.
+      - Suggest verifying the change by retrieving the attribute or reviewing a sample company profile.
+      x-ai-suggestions:
+      - Set status to 2 (Hidden) instead of 0 (Inactive) to preserve data while removing the field from UI.
+      - For Select/MultiSelect types, always provide the full updated `options` array — partial updates may drop existing choices.
+      - Use `order` values with gaps (e.g., 10, 20, 30) to allow future reordering without renumbering all attributes.
+      x-ai-capabilities:
+        confirmation:
+          type: Recommended
+          message: Updating attribute schema may affect all existing company records. Confirm before proceeding.
+        security_info:
+          data_handling:
+          - ResourceStateUpdate
+          - SchemaModification
+    delete:
+      tags:
+      - Company Attributes
+      summary: Delete a company attribute
+      parameters:
+      - name: attributeId
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '204':
+          description: Successfully deleted
+      operationId: deleteCompanyAttribute
+      x-ai-role: crm_data_architect
+      x-ai-description: Permanently removes a custom company attribute definition from the CRM schema. This is a destructive schema operation — deleting an attribute eliminates not just the field definition but all associated data stored under that attribute across every company record. Use only when the attribute is no longer relevant to the business model.
+      x-ai-reasoning-instructions:
+      - Before deleting, verify the attribute is not used in active pipeline stages, filters, or automation triggers.
+      - Warn the user that all stored values for this attribute across all company records will be permanently lost.
+      - Check if any reports, segments, or integrations depend on this attribute before proceeding.
+      - Prefer archiving or renaming over deletion if the attribute data may be needed for historical analysis.
+      x-ai-responding-instructions:
+      - Confirm deletion with the attribute ID that was removed.
+      - Remind the user that this action is irreversible and all associated data is gone.
+      - Suggest auditing remaining company attributes to ensure schema consistency.
+      x-ai-capabilities:
+        confirmation:
+          type: Required
+          message: Deleting a company attribute is irreversible and will remove all associated data from every company record.
+        security_info:
+          data_handling:
+          - PermanentDataDeletion
+          - SchemaModification
+components:
+  schemas:
+    Attribute:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        status:
+          type: integer
+        type:
+          type: integer
+        mandatory:
+          type: boolean
+        order:
+          type: integer
+        options:
+          type: array
+          items:
+            oneOf:
+            - type: string
+            - type: integer
+  securitySchemes:
+    apiKey:
+      type: http
+      scheme: bearer
+      bearerFormat: API Key
+      description: 'Static API Key authentication.  A long-lived token generated manually in the SendPulse account settings.
+
+        '
+      x-ai-description: 'Permanent authentication token. Ideal for simple integrations without token refresh logic.
+
+        '
+    outh2:
+      type: oauth2
+      description: OAuth 2.0 Client Credentials flow for temporary access tokens.
+      flows:
+        clientCredentials:
+          tokenUrl: https://api.sendpulse.com/oauth/access_token
+          scopes: {}
+      x-ai-description: 'Standard OAuth 2.0 flow using Client ID and Client Secret.  Provides temporary tokens (valid for 1 hour) for enhanced security.
+
+        '

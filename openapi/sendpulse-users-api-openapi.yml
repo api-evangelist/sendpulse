@@ -1,0 +1,97 @@
+openapi: 3.2.0
+info:
+  description: Using the API for the CRM service, you can integrate your system with CRM from SendPulse and receive detailed information on pipelines, deals, contacts and their attributes and users. You can also create deals and contacts, assign and remove fields, tags, contact details and instant messengers. On the right, there is a button for authorizing requests made on this page. Click “Authorize,” then insert the ID and Secret from your account. To perform a request directly from the page, click the "Try it out" button within each method block. Then fill in input fields if any (for URL parameters, the description is right below the URL request; for body parameters, the description is under the “Scheme” button to the right of the example), and click “Run.” You will find the server response and description of received parameters below.
+  title: SendPulse CRM Public Users API
+  version: 0.1.0
+servers:
+- url: https://api.sendpulse.com/crm/v1
+security:
+- apiKey: []
+- oauth2: []
+tags:
+- description: ''
+  name: Users
+paths:
+  /users:
+    get:
+      tags:
+      - Users
+      summary: Get a list of team members
+      responses:
+        '200':
+          description: '| Returns a list of active invited users with the following information about each user: team member ID, contact details and interface settings * active users - team members who have confirmed their account through an email invitation. You can assign deals and contacts to your team members.'
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    $ref: '#/components/schemas/User'
+      operationId: getUsers
+      x-ai-role: team_management_specialist
+      x-ai-description: Retrieves all active team members in the account — users who have confirmed their invitation via email. This list is essential for CRM workflows where deals and contacts must be assigned to specific team members. Use this endpoint to resolve human-readable names to internal IDs before performing assignments.
+      x-ai-reasoning-instructions:
+      - Use this list to validate that a target assignee exists and is active before assigning deals or contacts.
+      - Cache results if performing bulk assignments to avoid repeated calls.
+      - Note that only confirmed (active) users are returned — pending invitations are excluded.
+      x-ai-responding-instructions:
+      - Present team members by name and role for easier selection by the user.
+      - If the list is empty, inform the user that no confirmed team members exist yet and suggest sending invitations.
+      - When helping assign resources, reference the team member ID, not just the name.
+      x-ai-suggestions:
+      - Use returned IDs with contact or deal assignment endpoints.
+      - Cross-reference with pipeline stages to see workload distribution per team member.
+      x-ai-capabilities:
+        confirmation:
+          type: None
+        security_info:
+          data_handling:
+          - ReadOnly
+components:
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+        firstname:
+          type: string
+          description: User first name
+        lastname:
+          type: string
+          description: User last name
+        email:
+          type: string
+          description: Email
+        avatar:
+          type: string
+          description: Link to profile picture
+        lang:
+          type: string
+          description: 'The interface language set in the interface of the invited user. Can be: en_US, es_MX, fr_FR, pt_BR, ru_RU, tr_TR, uk_UA'
+        timezone:
+          type: integer
+          description: Time zone set in user settings
+        currency:
+          type: string
+          description: Currency set in settings
+  securitySchemes:
+    apiKey:
+      type: http
+      scheme: bearer
+      bearerFormat: API Key
+      description: 'Static API Key authentication.  A long-lived token generated manually in the SendPulse account settings.
+
+        '
+      x-ai-description: 'Permanent authentication token. Ideal for simple integrations without token refresh logic.
+
+        '
+    outh2:
+      type: oauth2
+      description: OAuth 2.0 Client Credentials flow for temporary access tokens.
+      flows:
+        clientCredentials:
+          tokenUrl: https://api.sendpulse.com/oauth/access_token
+          scopes: {}
+      x-ai-description: 'Standard OAuth 2.0 flow using Client ID and Client Secret.  Provides temporary tokens (valid for 1 hour) for enhanced security.
+
+        '

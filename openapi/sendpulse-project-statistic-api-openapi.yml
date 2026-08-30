@@ -1,0 +1,137 @@
+openapi: 3.2.0
+info:
+  title: SendPulse Pop-up Project statistic API
+  description: API for managing pop-ups in SendPulse. This API allows you to create, update, and delete pop-ups, as well as retrieve information about them and their performance.
+  version: '1.0'
+servers:
+- description: Production server
+  url: https://api.sendpulse.com/v2/pop-ups
+security:
+- apiKey: []
+- oauth2: []
+tags:
+- name: Project statistic
+paths:
+  /public/api/statistics/widget/{projectId}:
+    get:
+      tags:
+      - Project statistic
+      summary: Get statistics about your project
+      description: Returns the information about how many site visitors saw your all your pop-ups in a project and interacted with them
+      parameters:
+      - name: projectId
+        in: path
+        description: Project ID
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - name: start
+        in: query
+        description: Start date timestamp
+        schema:
+          type: integer
+        required: false
+      - name: end
+        in: query
+        description: End date timestamp
+        schema:
+          type: integer
+        required: false
+      responses:
+        '200':
+          description: Operation successful
+          content:
+            application/json:
+              schema:
+                properties:
+                  result:
+                    type: boolean
+                  data:
+                    description: Project statistic
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/projectStatistic'
+                type: object
+        '400':
+          description: Validation error
+          content:
+            application/json:
+              example:
+                result: false
+                errors:
+                  id: Invalid id {{'7803a6ea-4b32-44d7-a245-5cda4e4f203'}}
+        '401':
+          $ref: '#/components/schemas/unauthorizedResponse'
+        '404':
+          description: Resource Not Found
+      operationId: getProjectWidgetStatistics
+      x-ai-role: conversion_optimization_analyst
+      x-ai-description: Provides aggregated performance metrics for all pop-up widgets within a project. This is the top-level analytics endpoint — it shows the full funnel from impressions to interactions across every pop-up in the project scope, making it the primary entry point for evaluating overall campaign effectiveness before drilling into individual widget performance.
+      x-ai-reasoning-instructions:
+      - If no date range is specified, clarify with the user whether they want all-time data or a specific period, as unbounded queries may return large datasets.
+      - Validate that `projectId` is a valid UUID before calling — malformed IDs return a 400 with a specific error message.
+      - When interpreting results, calculate the interaction rate (interactions / impressions) to give the user a meaningful conversion metric, not just raw counts.
+      - If the result array is empty, check whether the project has any published pop-ups or whether the date range predates their creation.
+      x-ai-responding-instructions:
+      - Summarize the aggregate impression and interaction counts across all pop-ups, then highlight the overall interaction rate as a percentage.
+      - If the date range was specified, frame the results in that context (e.g., 'Over the past 30 days...').
+      - Suggest drilling into individual widget statistics as a logical next step if the project contains multiple pop-ups.
+      - On a 404, confirm whether the projectId is correct and whether the user has access to that project.
+      x-ai-suggestions:
+      - 'Use Unix timestamps for `start` and `end` — e.g., last 30 days: start=now-30d, end=now.'
+      - Combine with individual widget endpoints to compare top-performing pop-ups against the project average.
+      - Schedule periodic calls to track conversion rate trends over time.
+      x-ai-capabilities:
+        confirmation:
+          type: None
+        security_info:
+          data_handling:
+          - ReadOnly
+components:
+  schemas:
+    projectStatistic:
+      title: Project statistic
+      properties:
+        peopleReached:
+          type: integer
+          description: The number of times your widget was viewed
+        engagements:
+          type: integer
+          description: The number of visitors who interacted with your widget, expanded it, read its message, clicked its button, and followed the link.
+        subscriptions:
+          type: integer
+          description: The number of email addresses or phone numbers customers entered in the "Email Address Request" or "Phone Number Request" form.
+        formEngagements:
+          type: integer
+          description: The number of leads who submitted your form
+        wereClosed:
+          type: integer
+          description: The number of visitors who closed your widget (clicked the "cross" icon).
+        widget:
+          type: integer
+          description: The number of visitors who use widget buttons.
+      type: object
+    unauthorizedResponse:
+      description: Unauthorized
+  securitySchemes:
+    apiKey:
+      type: http
+      scheme: bearer
+      bearerFormat: API Key
+      description: 'Static API Key authentication.  A long-lived token generated manually in the SendPulse account settings.
+
+        '
+      x-ai-description: 'Permanent authentication token. Ideal for simple integrations without token refresh logic.
+
+        '
+    outh2:
+      type: oauth2
+      description: OAuth 2.0 Client Credentials flow for temporary access tokens.
+      flows:
+        clientCredentials:
+          tokenUrl: https://api.sendpulse.com/oauth/access_token
+          scopes: {}
+      x-ai-description: 'Standard OAuth 2.0 flow using Client ID and Client Secret.  Provides temporary tokens (valid for 1 hour) for enhanced security.
+
+        '

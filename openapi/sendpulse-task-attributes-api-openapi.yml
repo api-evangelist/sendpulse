@@ -1,0 +1,191 @@
+openapi: 3.2.0
+info:
+  description: Using the API for the CRM service, you can integrate your system with CRM from SendPulse and receive detailed information on pipelines, deals, contacts and their attributes and users. You can also create deals and contacts, assign and remove fields, tags, contact details and instant messengers. On the right, there is a button for authorizing requests made on this page. Click “Authorize,” then insert the ID and Secret from your account. To perform a request directly from the page, click the "Try it out" button within each method block. Then fill in input fields if any (for URL parameters, the description is right below the URL request; for body parameters, the description is under the “Scheme” button to the right of the example), and click “Run.” You will find the server response and description of received parameters below.
+  title: SendPulse CRM Public Task Attributes API
+  version: 0.1.0
+servers:
+- url: https://api.sendpulse.com/crm/v1
+security:
+- apiKey: []
+- oauth2: []
+tags:
+- name: Task Attributes
+paths:
+  /tasks/{taskId}/attributes:
+    post:
+      tags:
+      - Task Attributes
+      summary: Create attribute value
+      parameters:
+      - name: taskId
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              properties:
+                attributeId:
+                  type: number
+                  description: ID of attribute
+                value:
+                  description: Attribute value (string or array)
+      responses:
+        '201':
+          description: Successfully
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        attributeable_type:
+                          type: string
+                        attributeable_id:
+                          type: integer
+                        value:
+                          type: string
+                        attribute_id:
+                          type: integer
+                        user_id:
+                          type: integer
+                        id:
+                          type: integer
+      operationId: createTaskAttributeValue
+      x-ai-role: project_management_specialist
+      x-ai-description: Assigns a value to a predefined custom attribute for a specific task. Attribute values extend the task data model beyond standard fields — they enable flexible metadata (priority tiers, custom statuses, linked entities) without schema changes. The attributeId must reference an existing attribute definition; the value type (scalar or array) depends on the attribute's configuration.
+      x-ai-reasoning-instructions:
+      - Verify that the taskId exists before attempting to assign an attribute value.
+      - Confirm the attributeId refers to a valid, active attribute definition — do not guess IDs.
+      - Check whether the attribute accepts a scalar string or an array value; passing the wrong type will fail.
+      - If the goal is to update an existing value rather than create a new one, use the appropriate PATCH/PUT endpoint instead to avoid duplicates.
+      - When value is an array, ensure all items are valid according to the attribute's allowed values if the attribute is enum-typed.
+      x-ai-responding-instructions:
+      - Confirm success by referencing the returned id and attribute_id from the response.
+      - If multiple items are returned in data, summarize how many attribute values were created.
+      - On failure, distinguish between 'task not found', 'attribute not found', and 'invalid value type' errors and explain each clearly.
+      - Suggest retrieving the full task or listing its attributes as a natural next step after creation.
+      x-ai-suggestions:
+      - Use getTaskAttributes or listAttributes to obtain a valid attributeId before calling this endpoint.
+      - For array-type attributes, pass value as a JSON array of strings.
+      - After creation, verify the assignment with a GET /tasks/{taskId}/attributes request.
+      x-ai-capabilities:
+        confirmation:
+          type: None
+        security_info:
+          data_handling:
+          - ResourceStateUpdate
+  /{boardId}/attributes/{attributeId}/values/{valueId}:
+    put:
+      tags:
+      - Task Attributes
+      summary: Update task attribute value
+      parameters:
+      - name: attributeId
+        in: path
+        required: true
+        schema:
+          type: integer
+      - name: valueId
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              properties:
+                value:
+                  description: Attribute value (string or array)
+      responses:
+        '200':
+          description: Successfully
+      operationId: updateTaskAttributeValue
+      x-ai-role: project_management_specialist
+      x-ai-description: Updates a specific predefined value within a task attribute's value set on a given board. Use this when the attribute is enumerable (e.g., a dropdown list) and an existing option needs to be renamed or corrected — without removing and recreating it, which would break existing task assignments.
+      x-ai-reasoning-instructions:
+      - Confirm the boardId, attributeId, and valueId all exist before sending the request — a wrong valueId will produce an error or silently target an unintended record.
+      - If the attribute is of array type, the value field should be a JSON array; for string-type attributes, pass a plain string.
+      - Check whether other tasks already use this value before updating — renaming a shared value affects all tasks that reference it.
+      x-ai-responding-instructions:
+      - Confirm that the value was updated and reflect the new value text in the response summary.
+      - Remind the user that any tasks already assigned this attribute value will now display the updated label.
+      - If the update fails, clarify whether the error is due to an invalid ID, a type mismatch, or a permission issue.
+      x-ai-suggestions:
+      - Use GET /{boardId}/attributes/{attributeId}/values to retrieve existing values before updating.
+      - After updating, call GET /{boardId}/tasks to verify tasks reflect the new value correctly.
+      x-ai-capabilities:
+        confirmation:
+          type: Recommended
+          message: Updating this value will affect all tasks on the board that reference it. Proceed?
+        security_info:
+          data_handling:
+          - ResourceStateUpdate
+    delete:
+      tags:
+      - Task Attributes
+      summary: Delete attribute value from task
+      parameters:
+      - name: attributeId
+        in: path
+        required: true
+        schema:
+          type: integer
+      - name: valueId
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '204':
+          description: Successfully
+      operationId: deleteAttributeValue
+      x-ai-role: project_management_specialist
+      x-ai-description: Permanently removes a specific predefined value from a task attribute's value list on a given board. Use this when cleaning up obsolete or incorrect options from dropdown/select-type attributes to keep task data consistent and avoid user confusion.
+      x-ai-reasoning-instructions:
+      - Verify the attributeId belongs to the specified boardId before attempting deletion.
+      - Check if any existing tasks currently use this valueId — deletion may affect task data integrity.
+      - Warn the user if the attribute has only one remaining value, as removing it may leave the attribute unusable.
+      - Confirm that the valueId is indeed a child of the given attributeId to prevent accidental mismatches.
+      x-ai-responding-instructions:
+      - On success (204), confirm the value was deleted and mention the attributeId it belonged to.
+      - Suggest reviewing remaining values of the attribute as a follow-up.
+      - If tasks were referencing this value, advise reassigning them to another value via the update task endpoint.
+      x-ai-capabilities:
+        confirmation:
+          type: Required
+          message: This action permanently deletes the attribute value and cannot be undone.
+        security_info:
+          data_handling:
+          - DestructiveOperation
+          - ResourceStateUpdate
+components:
+  securitySchemes:
+    apiKey:
+      type: http
+      scheme: bearer
+      bearerFormat: API Key
+      description: 'Static API Key authentication.  A long-lived token generated manually in the SendPulse account settings.
+
+        '
+      x-ai-description: 'Permanent authentication token. Ideal for simple integrations without token refresh logic.
+
+        '
+    outh2:
+      type: oauth2
+      description: OAuth 2.0 Client Credentials flow for temporary access tokens.
+      flows:
+        clientCredentials:
+          tokenUrl: https://api.sendpulse.com/oauth/access_token
+          scopes: {}
+      x-ai-description: 'Standard OAuth 2.0 flow using Client ID and Client Secret.  Provides temporary tokens (valid for 1 hour) for enhanced security.
+
+        '

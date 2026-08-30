@@ -1,0 +1,301 @@
+openapi: 3.2.0
+info:
+  description: Using the API for the CRM service, you can integrate your system with CRM from SendPulse and receive detailed information on pipelines, deals, contacts and their attributes and users. You can also create deals and contacts, assign and remove fields, tags, contact details and instant messengers. On the right, there is a button for authorizing requests made on this page. Click “Authorize,” then insert the ID and Secret from your account. To perform a request directly from the page, click the "Try it out" button within each method block. Then fill in input fields if any (for URL parameters, the description is right below the URL request; for body parameters, the description is under the “Scheme” button to the right of the example), and click “Run.” You will find the server response and description of received parameters below.
+  title: SendPulse CRM Public Deal attribute Value API
+  version: 0.1.0
+servers:
+- url: https://api.sendpulse.com/crm/v1
+security:
+- apiKey: []
+- oauth2: []
+tags:
+- name: Deal attribute Value
+paths:
+  /deals/{dealId}/attributes:
+    get:
+      tags:
+      - Deal attribute Value
+      summary: Get deal attribute values by ID
+      description: Returns a list of attributes with ID, types, and values in the specified deal
+      parameters:
+      - name: dealId
+        in: path
+        required: true
+        description: Deal ID for which you want to get the fields. It can be obtained with the "Get a list of deals" method
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    $ref: '#/components/schemas/DealAttributeValue'
+      operationId: getDealAttributeValues
+      x-ai-role: crm_data_analyst
+      x-ai-description: Retrieves the full set of custom and system attribute values attached to a specific deal. In SendPulse CRM, deal attributes are the structured fields that define a deal's stage-specific data — prices, sources, priorities, or any custom fields configured per pipeline. This endpoint is the primary way to inspect a deal's enriched profile before updating, qualifying, or reporting on it.
+      x-ai-reasoning-instructions:
+      - Ensure the dealId is valid by cross-referencing it with the 'Get a list of deals' response before calling this endpoint.
+      - Use the returned attribute types to determine correct value casting — numeric fields must not be treated as strings in downstream logic.
+      - If the goal is to update attributes, first call this endpoint to retrieve current values and avoid accidental overwrites.
+      - Consider that some attributes may be pipeline-specific — their presence depends on how the CRM pipeline is configured.
+      x-ai-responding-instructions:
+      - Present attribute values in a structured, human-readable format grouped by attribute type.
+      - Highlight attributes with null or empty values as potential data gaps the user should address.
+      - If the user is inspecting a deal for qualification, suggest which attributes are typically most critical (e.g., value, stage, source).
+      - On error (e.g., deal not found), clearly indicate that the dealId may be incorrect or the deal may have been deleted.
+      x-ai-suggestions:
+      - Use this before `updateDealAttributeValues` to get current state.
+      - Combine with 'Get a list of deals' to build a full deal audit report.
+      - Useful for validating data completeness before moving a deal to the next pipeline stage.
+      x-ai-capabilities:
+        confirmation:
+          type: None
+        security_info:
+          data_handling:
+          - ReadOnly
+    post:
+      tags:
+      - Deal attribute Value
+      summary: Add a attribute value to deal by deal ID
+      description: Adds a attribute with the specified value and ID to the deal
+      parameters:
+      - name: dealId
+        in: path
+        required: true
+        description: Deal ID to which you want to add the field. It can be obtained with the "Get a list of deals" method
+        schema:
+          type: integer
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              properties:
+                attributeId:
+                  type: integer
+                  description: Attribute ID you want to add to the deal. It can be obtained with the "Get a list of deals" and "Get information about the deal by ID" methods
+                value:
+                  type: string
+                  description: Attribute value to be added to the deal. The maximum number of characters is 5500
+              required:
+              - attributeId
+              - value
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    $ref: '#/components/schemas/DealAttributeValue'
+      operationId: addDealAttribute
+      x-ai-role: crm_data_specialist
+      x-ai-description: Attaches a custom attribute value to a specific deal, extending its data model beyond standard fields. In SendPulse CRM, deal attributes act as flexible metadata — they allow teams to capture domain-specific information (e.g., contract terms, priority scores, product SKUs) directly on the deal record without modifying the core schema.
+      x-ai-reasoning-instructions:
+      - Retrieve the target deal first via 'Get a list of deals' or 'Get information about the deal by ID' to confirm both the dealId and available attributeId values.
+      - Verify the attribute type before setting a value — some attributes may expect formatted strings (dates, URLs, enums).
+      - Respect the 5500-character limit on value; truncate or split content if the source data exceeds it.
+      - Avoid duplicate attribute assignments — check existing attribute values on the deal before adding.
+      x-ai-responding-instructions:
+      - Confirm which attribute was added and to which deal by echoing back the dealId and attribute name (if known).
+      - If the response contains a DealAttributeValue object, surface its ID for future reference or update operations.
+      - If the attributeId is invalid or not found, explain that the ID must be retrieved from the deal or attribute list endpoints.
+      x-ai-suggestions:
+      - Use 'Get information about the deal by ID' first to see which attributes are already attached.
+      - After adding, call the deal details endpoint again to verify the attribute appears correctly.
+      - For bulk updates, repeat this call per attribute rather than batching — each attribute requires its own request.
+      x-ai-capabilities:
+        confirmation:
+          type: None
+        security_info:
+          data_handling:
+          - ResourceStateUpdate
+  /deals/attributes/{pipelineId}:
+    get:
+      tags:
+      - Deal attribute Value
+      summary: List of all deal attribute values by pipeline
+      parameters:
+      - name: pipelineId
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    $ref: '#/components/schemas/DealAttribute'
+      operationId: listDealAttributesByPipeline
+      x-ai-role: crm_pipeline_analyst
+      x-ai-description: Retrieves all custom attribute values defined for deals within a specific pipeline. Deal attributes are pipeline-scoped metadata fields (e.g., dropdowns, checkboxes, text fields) that extend the default deal schema. This endpoint is essential for dynamically rendering deal forms, validating attribute values before deal creation or update, and building conditional automation logic based on pipeline-specific field configurations.
+      x-ai-reasoning-instructions:
+      - Resolve the pipelineId before calling — verify the pipeline exists and the agent has access to it.
+      - Use the returned attribute list to validate deal field values before creating or updating a deal in this pipeline.
+      - If multiple pipelines are involved, call this endpoint per pipeline — attribute sets are not shared across pipelines.
+      - Cache the response short-term if making multiple deal operations within the same pipeline context to avoid redundant calls.
+      x-ai-responding-instructions:
+      - Present the attributes grouped by type (e.g., text, select, boolean) for readability.
+      - If the list is empty, inform the user that no custom attributes are configured for this pipeline and suggest creating them.
+      - When used as a prerequisite step, confirm which attribute IDs or keys will be needed for the follow-up operation.
+      x-ai-suggestions:
+      - Use returned attribute definitions to populate a deal creation form dynamically.
+      - Cross-reference attribute IDs with deal records to enrich exported reports.
+      - Call `listPipelines` first if the pipelineId is unknown.
+      x-ai-capabilities:
+        confirmation:
+          type: None
+        security_info:
+          data_handling:
+          - ReadOnly
+  /deals/{dealId}/attributes/{attributeId}:
+    put:
+      tags:
+      - Deal attribute Value
+      summary: Update the deal attribute value
+      description: Updates the deal attribute with the new value. Existing values will be overwritten.
+      parameters:
+      - name: dealId
+        in: path
+        required: true
+        description: The deal ID for which you want to update the attribute. It can be obtained with the "Get a list of deals" method
+        schema:
+          type: integer
+      - name: attributeId
+        in: path
+        required: true
+        description: The attribute ID you want update. It can be obtained with the "Get a list of deals" and "Get information about the deal by ID" methods
+        schema:
+          type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                value:
+                  type: string
+                  description: New attribute value. The maximum number of characters is 5500
+              required:
+              - value
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    $ref: '#/components/schemas/DealAttributeValue'
+      operationId: updateDealAttributeValue
+      x-ai-role: crm_data_specialist
+      x-ai-description: Updates a single custom attribute value on a specific deal. This is a targeted write operation — it fully overwrites the existing value, making it suitable for corrections, status progressions, or syncing deal metadata from external systems. Attribute values are key data points used for filtering, reporting, and pipeline automation in CRM workflows.
+      x-ai-reasoning-instructions:
+      - Before updating, confirm the dealId and attributeId are valid — both can be retrieved via 'Get a list of deals' or 'Get information about the deal by ID'.
+      - Warn the user that this operation overwrites the existing value with no diff or history preserved — verify the new value is intentional.
+      - If the value represents a date, currency, or enum, validate the format matches what the attribute schema expects to avoid silent data corruption.
+      - If updating multiple attributes on the same deal, perform requests sequentially to avoid race conditions.
+      x-ai-responding-instructions:
+      - Confirm which deal and which attribute were updated by echoing back dealId and attributeId.
+      - If the response includes the updated DealAttributeValue object, highlight the new value that was applied.
+      - If the operation is part of a bulk update flow, suggest proceeding to the next attribute in the sequence.
+      - On error, clarify whether the issue is an invalid dealId, invalid attributeId, or a value constraint violation (e.g., exceeding 5500 characters).
+      x-ai-suggestions:
+      - Fetch current attribute values first using 'Get information about the deal by ID' before overwriting.
+      - Use this endpoint to sync deal stage or score from an external system into SendPulse CRM.
+      - After updating, retrieve the deal again to confirm the attribute reflects the new value.
+      x-ai-capabilities:
+        confirmation:
+          type: Recommended
+          message: This will overwrite the existing attribute value. Confirm the new value before proceeding.
+        security_info:
+          data_handling:
+          - ResourceStateUpdate
+          - DataOverwrite
+components:
+  schemas:
+    DealAttribute:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        status:
+          $ref: '#/components/schemas/DefaultStatusProperty'
+        type:
+          type: integer
+          description: ''
+        mandatory:
+          type: boolean
+          description: ''
+        order:
+          type: integer
+        options:
+          type: array
+          items:
+            oneOf:
+            - type: string
+            - type: integer
+          description: Items of "List" field type
+    DealAttributeValue:
+      type: object
+      properties:
+        id:
+          type: integer
+        pipelineId:
+          type: integer
+        name:
+          type: string
+        status:
+          type: integer
+        type:
+          type: integer
+        mandatory:
+          type: boolean
+        order:
+          type: integer
+        options:
+          type: array
+          description: Items of "List" field type
+          items:
+            oneOf:
+            - type: string
+            - type: integer
+        value:
+          properties:
+            value:
+              type: string
+    DefaultStatusProperty:
+      type: integer
+      description: '| Status
+
+        * 0 — inactive (deleted by user) * 1 — active'
+  securitySchemes:
+    apiKey:
+      type: http
+      scheme: bearer
+      bearerFormat: API Key
+      description: 'Static API Key authentication.  A long-lived token generated manually in the SendPulse account settings.
+
+        '
+      x-ai-description: 'Permanent authentication token. Ideal for simple integrations without token refresh logic.
+
+        '
+    outh2:
+      type: oauth2
+      description: OAuth 2.0 Client Credentials flow for temporary access tokens.
+      flows:
+        clientCredentials:
+          tokenUrl: https://api.sendpulse.com/oauth/access_token
+          scopes: {}
+      x-ai-description: 'Standard OAuth 2.0 flow using Client ID and Client Secret.  Provides temporary tokens (valid for 1 hour) for enhanced security.
+
+        '

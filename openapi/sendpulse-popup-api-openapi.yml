@@ -1,0 +1,622 @@
+openapi: 3.2.0
+info:
+  title: SendPulse Pop-up Popup API
+  description: API for managing pop-ups in SendPulse. This API allows you to create, update, and delete pop-ups, as well as retrieve information about them and their performance.
+  version: '1.0'
+servers:
+- description: Production server
+  url: https://api.sendpulse.com/v2/pop-ups
+security:
+- apiKey: []
+- oauth2: []
+tags:
+- name: Popup
+paths:
+  /public/api/popups/conditions:
+    get:
+      tags:
+      - Popup
+      summary: Get a list of available display conditions for popups
+      description: Returns a list of available display conditions for popups with detailed information
+      responses:
+        '200':
+          description: Operation successful
+          content:
+            application/json:
+              schema:
+                properties:
+                  result:
+                    type: boolean
+                  data:
+                    description: List of available display conditions
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/scenarioSetting'
+                  pageInfo:
+                    $ref: '#/components/schemas/pageInfo'
+                type: object
+      operationId: getPopupConditions
+      x-ai-role: conversion_optimization_specialist
+      x-ai-description: Returns the full catalog of display conditions available for popup targeting rules. Display conditions are the fundamental building blocks of popup triggers — they define WHEN and FOR WHOM a popup appears (e.g., time on page, scroll depth, exit intent, URL match, device type). Knowing available conditions is a prerequisite before constructing or modifying any popup scenario.
+      x-ai-reasoning-instructions:
+      - Always fetch this list before building or explaining popup targeting scenarios — available conditions may vary by account tier or platform version.
+      - Use this endpoint to validate user-specified condition types before applying them to a popup.
+      - If the user asks 'how can I show a popup only to mobile users?' or similar questions, map their intent to specific condition entries from this list.
+      - Correlate condition identifiers from this response with the `scenarioSetting` schema when constructing popup display rules.
+      x-ai-responding-instructions:
+      - Group conditions by logical category (e.g., behavioral, geographic, device, traffic source) if the data supports it — this helps the user pick the right condition faster.
+      - If the user is new to popups, explain that conditions combine into targeting rules that control popup visibility.
+      - Highlight any conditions relevant to the user's stated goal (e.g., exit intent for cart abandonment, scroll depth for content engagement).
+      x-ai-suggestions:
+      - After retrieving conditions, use the relevant condition IDs to configure a popup scenario via the popup update or create endpoint.
+      - Combine multiple conditions with AND/OR logic to build precise audience targeting.
+      - Check `pageInfo` to determine if pagination is needed for accounts with extended condition sets.
+      x-ai-capabilities:
+        confirmation:
+          type: None
+        security_info:
+          data_handling:
+          - ReadOnly
+  /public/api/popups/list/quiz/{projectId}:
+    get:
+      tags:
+      - Popup
+      summary: Get a list of quiz pop-ups by your project ID
+      description: Returns a list of quiz pop-ups using your project ID with information about each pop-up
+      parameters:
+      - name: projectId
+        in: path
+        description: Project ID
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - name: first
+        in: query
+        description: Limit on the number of displayed records. The default number is 10
+        schema:
+          type: integer
+      - name: offset
+        in: query
+        description: Limit on the number of displayed records
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Operation successful
+          content:
+            application/json:
+              schema:
+                properties:
+                  result:
+                    type: boolean
+                  data:
+                    description: List of popups
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/popup'
+                  pageInfo:
+                    $ref: '#/components/schemas/pageInfo'
+                type: object
+        '400':
+          description: Validation error
+          content:
+            application/json:
+              example:
+                result: false
+                errors:
+                  widgetId: Invalid id {{'7803a6ea-4b32-44d7-a245-5cda4e4f20'}}
+        '401':
+          $ref: '#/components/schemas/unauthorizedResponse'
+        '403':
+          $ref: '#/components/schemas/accessDeniedResponse'
+        '404':
+          description: Resource Not Found
+      operationId: listQuizPopupsByProject
+      x-ai-role: conversion_optimization_specialist
+      x-ai-description: Retrieves all quiz-type pop-ups scoped to a specific project. Quiz pop-ups are interactive lead-capture tools that segment visitors based on their answers — useful for personalization pipelines, audience segmentation audits, and campaign performance reviews. Use this to inventory active quizzes before launching new ones or to sync pop-up state with external analytics.
+      x-ai-reasoning-instructions:
+      - Verify the projectId is a valid UUID before calling; malformed IDs return 400 with field-level errors.
+      - Default page size is 10 — if the project is large, paginate using `first` + `offset` to avoid incomplete results.
+      - Cross-reference returned pop-up IDs with campaign records when diagnosing conversion drop-offs.
+      - If the response is empty, confirm the project has quiz-type widgets created — other pop-up types are returned by separate endpoints.
+      x-ai-responding-instructions:
+      - Report the total number of quiz pop-ups found and summarize key fields (name, status, ID) for each.
+      - If `pageInfo` indicates more records exist, suggest repeating the call with an incremented `offset`.
+      - On 403, clarify that the OAuth2 token may lack scope for this project — advise re-authenticating with correct client credentials.
+      - On 404, confirm the projectId exists and belongs to the authenticated account.
+      x-ai-suggestions:
+      - 'Start with `first: 10, offset: 0` and iterate if `pageInfo` shows more pages.'
+      - After listing, use individual pop-up IDs to fetch detailed statistics or update quiz content.
+      - Filter results client-side by status field to distinguish active vs. paused quizzes.
+      x-ai-capabilities:
+        confirmation:
+          type: None
+        security_info:
+          data_handling:
+          - ReadOnly
+  /public/api/popups/list/{projectId}:
+    get:
+      tags:
+      - Popup
+      summary: Get a list of pop-ups by your project ID
+      description: Returns a list of pop-ups using your project ID with information about each pop-up
+      parameters:
+      - name: projectId
+        in: path
+        description: Project ID
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - name: first
+        in: query
+        description: Limit on the number of displayed records. The default number is 10
+        schema:
+          type: integer
+      - name: offset
+        in: query
+        description: Limit on the number of displayed records
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Operation successful
+          content:
+            application/json:
+              schema:
+                properties:
+                  result:
+                    type: boolean
+                  data:
+                    description: List of popups
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/popup'
+                  pageInfo:
+                    $ref: '#/components/schemas/pageInfo'
+                type: object
+        '400':
+          description: Validation error
+          content:
+            application/json:
+              example:
+                result: false
+                errors:
+                  widgetId: Invalid id {{'7803a6ea-4b32-44d7-a245-5cda4e4f20'}}
+        '401':
+          $ref: '#/components/schemas/unauthorizedResponse'
+        '403':
+          $ref: '#/components/schemas/accessDeniedResponse'
+        '404':
+          description: Resource Not Found
+      operationId: listPopupsByProjectId
+      x-ai-role: conversion_optimization_specialist
+      x-ai-description: Retrieves the full inventory of pop-ups associated with a specific project. In SendPulse, a project acts as the organizational unit grouping all pop-up widgets — this endpoint is the entry point for auditing, managing, or selecting pop-ups before triggering display logic or analytics workflows. Pagination via `first`/`offset` is essential for projects with large widget libraries.
+      x-ai-reasoning-instructions:
+      - Confirm the projectId is a valid UUID before calling — malformed IDs return a 400 with field-level error details.
+      - If the user wants all popups, start with the default limit (10) and check `pageInfo` to determine if additional pages exist.
+      - When the user provides a project name instead of ID, first resolve the project UUID via the projects listing endpoint.
+      - If the response returns an empty array, verify the projectId belongs to the authenticated account — a 404 may indicate ownership mismatch rather than an empty project.
+      x-ai-responding-instructions:
+      - Present the popup list with key identifiers (name, ID, status) to help the user orient quickly.
+      - If `pageInfo` indicates more records exist, proactively suggest fetching the next page with adjusted `offset`.
+      - On 401/403, distinguish between invalid credentials and insufficient permissions — the user may need to re-authenticate or request access to the project.
+      - On 404, clarify that the projectId may not belong to the current account, not just that it doesn't exist.
+      x-ai-suggestions:
+      - Use `first=50` to retrieve a larger batch if the project is known to have many popups.
+      - Combine with a popup details endpoint to drill into a specific widget after listing.
+      - Iterate with `offset` increments equal to `first` to paginate through the full list.
+      x-ai-capabilities:
+        confirmation:
+          type: None
+        security_info:
+          data_handling:
+          - ReadOnly
+  /public/api/popups/{popupId}/set-state:
+    post:
+      tags:
+      - Popup
+      summary: Set a pop-up state
+      description: Enables or disables a pop-up on your website
+      parameters:
+      - name: popupId
+        in: path
+        description: Pop-up ID. It can be obtained using the "Get a list of projects" method or in the pop-up builder address bar in your account.
+        schema:
+          type: string
+          format: uuid
+        required: true
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                is_enabled:
+                  type: boolean
+                  description: Sets a pop-up state. If you want to enable your pop-up, pass "true", and if you want to disable it, pass "false".
+              type: object
+      responses:
+        '200':
+          description: Operation successful
+          content:
+            application/json:
+              schema:
+                properties:
+                  result:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/popup'
+                type: object
+        '400':
+          description: Validation error
+          content:
+            application/json:
+              example:
+                result: false
+                errors:
+                  id: Invalid id {{'af1b0e2a-bff9-4d09-a7d9-99d61d2b43b'}}
+                  isEnabled: Invalid boolean value '23'
+        '401':
+          $ref: '#/components/schemas/unauthorizedResponse'
+        '404':
+          description: Resource Not Found
+      operationId: setPopupState
+      x-ai-role: conversion_optimization_specialist
+      x-ai-description: Controls the live visibility of a pop-up on the target website. Toggling a pop-up state is a high-impact, instantly effective action — enabling it starts showing the pop-up to visitors immediately, while disabling it suppresses it without deleting any configuration or accumulated statistics. Use this as the primary on/off switch for campaigns, A/B tests, or seasonal promotions.
+      x-ai-reasoning-instructions:
+      - Confirm the popupId exists and belongs to the user's account before toggling — an invalid UUID will produce a 400 error.
+      - Before enabling, consider whether the pop-up is part of an active A/B test or scheduled campaign to avoid unintended conflicts.
+      - If the user wants to temporarily pause a pop-up (e.g., during site maintenance), prefer disabling over deleting — all settings and stats are preserved.
+      - Verify the boolean value is strictly true or false, not a string like '1' or 'yes', as the API rejects non-boolean values.
+      x-ai-responding-instructions:
+      - 'Confirm the new state explicitly: ''Pop-up has been enabled / disabled successfully.'''
+      - If enabling, mention that the pop-up will now be visible to website visitors immediately.
+      - If disabling, reassure the user that the pop-up configuration and statistics are preserved and it can be re-enabled at any time.
+      - On a 404 error, suggest verifying the popupId via the 'Get a list of projects' endpoint.
+      x-ai-suggestions:
+      - 'To enable: set is_enabled to true'
+      - 'To pause a campaign without losing data: set is_enabled to false'
+      - Follow up with 'Get a list of projects' to verify the updated state
+      x-ai-capabilities:
+        confirmation:
+          type: Recommended
+          message: This will immediately change the pop-up visibility on the live website. Confirm the intended state (enable/disable).
+        security_info:
+          data_handling:
+          - ResourceStateUpdate
+  /public/api/popups/{popupId}:
+    delete:
+      tags:
+      - Popup
+      summary: Delete popup
+      description: Delete popup
+      parameters:
+      - name: popupId
+        in: path
+        description: Pop-up ID. It can be obtained using the "Get a list of projects" method or in the pop-up builder address bar in your account.
+        schema:
+          type: string
+          format: uuid
+        required: true
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                is_enabled:
+                  type: boolean
+                  description: Delete popup".
+              type: object
+      responses:
+        '200':
+          description: Operation successful
+          content:
+            application/json:
+              schema:
+                properties:
+                  result:
+                    type: boolean
+                type: object
+        '400':
+          description: Validation error
+          content:
+            application/json:
+              example:
+                result: false
+                errors:
+                  id: Invalid id {{'af1b0e2a-bff9-4d09-a7d9-99d61d2b43b'}}
+                  isEnabled: Invalid boolean value '23'
+        '401':
+          $ref: '#/components/schemas/unauthorizedResponse'
+        '403':
+          $ref: '#/components/schemas/accessDeniedResponse'
+        '404':
+          description: Resource Not Found
+      operationId: deletePopup
+      x-ai-role: conversion_optimization_specialist
+      x-ai-description: Permanently removes a popup from the account. This is a destructive, irreversible operation — once deleted, the popup and all associated display rules, targeting settings, and collected statistics are gone. Use this only when a popup is fully obsolete; consider disabling it first via the update endpoint if you may need to reactivate it later.
+      x-ai-reasoning-instructions:
+      - Before deleting, confirm the popupId belongs to the correct popup — retrieve its details first if there is any ambiguity.
+      - 'Warn the user that deletion is permanent and cannot be undone; suggest disabling the popup (is_enabled: false) as a safer alternative if unsure.'
+      - Check whether the popup is currently active on a live site — deleting an active popup may break embedded scripts or integrations.
+      - If the user provides a name instead of a UUID, resolve the ID via the list endpoint before proceeding.
+      x-ai-responding-instructions:
+      - Confirm successful deletion by echoing the popupId that was removed.
+      - If result is true, suggest reviewing remaining popups to ensure no related funnels are broken.
+      - On 404, clarify that the popup may have already been deleted or the ID is incorrect.
+      - On 400, surface the specific validation error (invalid UUID format or invalid boolean) so the user can correct the request.
+      x-ai-suggestions:
+      - Retrieve popup list first with `getPopupList` to confirm the correct popupId before deletion.
+      - 'Consider using the update endpoint to set is_enabled: false instead of permanent deletion.'
+      - After deletion, audit remaining popups to verify campaign integrity.
+      x-ai-capabilities:
+        confirmation:
+          type: Required
+          message: This action permanently deletes the popup and cannot be undone. Confirm the popupId before proceeding.
+        security_info:
+          data_handling:
+          - IrreversibleDelete
+components:
+  schemas:
+    unauthorizedResponse:
+      description: Unauthorized
+    pageInfo:
+      title: Page Info
+      properties:
+        total:
+          type: integer
+          description: Total number of records
+        offset:
+          type: integer
+          description: Limit on the number of displayed records
+        first:
+          type: integer
+          description: Record count offset
+        arguments:
+          type: object
+      type: object
+    scenarioSetting:
+      title: Display condition
+      properties:
+        groupId:
+          type: integer
+          description: "Behavior group:\n * `1` - frequency;\n * `2` - time;\n * `3` - user behavior;\n * `4` - clicks;\n * `5` - pages and urls;\n * `6` - utm parameters;\n * `7` - visitor data.\n"
+        dataType:
+          type: string
+          description: Data type
+        name:
+          type: string
+          description: Condition name
+        uniq:
+          type: boolean
+          description: Is unique
+      type: object
+    popup:
+      title: Popup
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Project ID
+        widgetId:
+          type: string
+          format: uuid
+          description: Pop-up ID
+        isEnabled:
+          type: boolean
+          description: Sets a pop-up state. If you want to show your pop-up, pass "true", and if you want to hide it, pass "false".
+        type:
+          type: integer
+          enum:
+          - 1
+          - 2
+          - 3
+          - 4
+          - 5
+          - 6
+          - 7
+          - 8
+          description: "Popup type:\n * `2` - modal window;\n * `3` - overlay;\n * `4` - floating;\n * `5` - cookie request;\n * `6` - horizontal;\n * `7` - video;\n * `8` - launcher.\n"
+        style:
+          type: integer
+          enum:
+          - 1
+          - 2
+          - 3
+          description: "Popup style:\n * `1` - white;\n * `2` - dark;\n * `3` - colored.\n"
+        position:
+          type: integer
+          enum:
+          - 1
+          - 2
+          - 3
+          - 4
+          - 5
+          - 6
+          - 7
+          - 8
+          - 9
+          - 10
+          - 11
+          description: "Popup position:\n * `1` - bottom-left;\n * `2` - bottom-right;\n * `3` - automatic;\n * `4` - bottom;\n * `5` - bottom-center;\n * `6` - left;\n * `7` - right;\n * `8` - center;\n * `9` - top-left;\n * `10` - top-right;\n * `11` - top-center.\n"
+        text:
+          type:
+          - string
+          - 'null'
+          description: Text message
+        name:
+          type: string
+          description: Pop-up name
+        color:
+          type:
+          - string
+          - 'null'
+          description: Button style color
+        image:
+          properties:
+            url:
+              type: string
+              description: URL of your image uploaded to the SendPulse file manager
+            position:
+              type: integer
+              enum:
+              - 1
+              - 2
+              - 3
+              - 4
+              description: "Popup image position:\n * `1` - left;\n * `2` - right;\n * `3` - top;\n * `4` - background.\n"
+          type: object
+        video:
+          properties:
+            url:
+              type: string
+              description: URL of your video uploaded to the SendPulse file manager
+            format:
+              type: integer
+              description: "Video format:\n * `1` - vertical;\n * `2` - horizontal.\n"
+            playbackType:
+              type: integer
+              description: "Video playing image:\n * `1` - automatic;\n * `2` - on click.\n"
+          type: object
+        containsNPS:
+          type: boolean
+          description: Show of popup contains NPS
+        statistic:
+          title: Popup statistic
+          properties:
+            peopleReached:
+              type: integer
+              description: The number of times your widget was viewed
+            engagements:
+              type: integer
+              description: The number of visitors who interacted with your widget, expanded it, read its message, clicked its button, and followed the link.
+            subscriptions:
+              type: integer
+              description: The number of email addresses or phone numbers customers entered in the "Email Address Request" or "Phone Number Request" form.
+            formEngagements:
+              type: integer
+              description: The number of leads who submitted your form
+            wereClosed:
+              type: integer
+              description: The number of visitors who closed your widget (clicked the "cross" icon).
+          type: object
+        preview:
+          type: string
+          description: Preview image url
+        abtest:
+          title: AB test information
+          properties:
+            status:
+              type: integer
+              description: 'AB test status. Possible variants: * `0` - finished; * `1` - active.
+
+                '
+            finishInitiator:
+              type: integer
+              description: 'AB test finish initiator. Possible values: * `1` - manal (by user); * `2` - auto (reached finish condition).
+
+                '
+            finishCondition:
+              type: array
+              description: List of finish conditions for AB test
+              items:
+                properties:
+                  trigger:
+                    type: integer
+                    description: 'Trigger for AB test finish. Possible values: * `1` - by date (timestamp in value); * `2` - by views (peopleReached); * `3` - by subscriptions.
+
+                      '
+                  value:
+                    type: integer
+                    description: Max value for trigger
+                type: object
+            winner:
+              type: string
+              description: Winner variant ID. Empty if test not finished yet.
+            separatedConditions:
+              type: boolean
+              description: True if variants use different show conditions.
+            statistic:
+              properties:
+                peopleReached:
+                  type: integer
+                  description: Total amount of views for both variants
+                subscriptions:
+                  type: integer
+                  description: Total amount of subscriptions for both variants
+              type: object
+            participants:
+              properties:
+                A:
+                  properties:
+                    id:
+                      type: string
+                    preview:
+                      type: string
+                      description: Preview image url
+                    statistic:
+                      properties:
+                        peopleReached:
+                          type: integer
+                          description: Total amount of views
+                        subscriptions:
+                          type: integer
+                          description: Total amount of subscriptions
+                      type: object
+                  type: object
+                B:
+                  properties:
+                    id:
+                      type: string
+                    preview:
+                      type: string
+                      description: Preview image url
+                    statistic:
+                      properties:
+                        peopleReached:
+                          type: integer
+                          description: Total amount of views
+                        subscriptions:
+                          type: integer
+                          description: Total amount of subscriptions
+                      type: object
+                  type: object
+              type: object
+            createdAt:
+              type: string
+              example: 2023-08-07 20:14:15+00:00
+              description: 'The date and time your AB test was created. Output in the YYYY-MM-DD hh: mm: ss format with a decimal fraction of a second and time zone designator.'
+          type: object
+        updatedAt:
+          type: string
+          example: 2023-08-07 20:14:15+00:00
+          description: 'The date and time your project was last updated. Output in the YYYY-MM-DD hh: mm: ss format with a decimal fraction of a second and time zone designator.'
+        createdAt:
+          type: string
+          example: 2023-08-07 20:14:15+00:00
+          description: 'The date and time your project was created. Output in the YYYY-MM-DD hh: mm: ss format with a decimal fraction of a second and time zone designator.'
+      type: object
+    accessDeniedResponse:
+      description: Access denied
+  securitySchemes:
+    apiKey:
+      type: http
+      scheme: bearer
+      bearerFormat: API Key
+      description: 'Static API Key authentication.  A long-lived token generated manually in the SendPulse account settings.
+
+        '
+      x-ai-description: 'Permanent authentication token. Ideal for simple integrations without token refresh logic.
+
+        '
+    outh2:
+      type: oauth2
+      description: OAuth 2.0 Client Credentials flow for temporary access tokens.
+      flows:
+        clientCredentials:
+          tokenUrl: https://api.sendpulse.com/oauth/access_token
+          scopes: {}
+      x-ai-description: 'Standard OAuth 2.0 flow using Client ID and Client Secret.  Provides temporary tokens (valid for 1 hour) for enhanced security.
+
+        '

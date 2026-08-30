@@ -1,0 +1,251 @@
+openapi: 3.2.0
+info:
+  description: Using the API for the CRM service, you can integrate your system with CRM from SendPulse and receive detailed information on pipelines, deals, contacts and their attributes and users. You can also create deals and contacts, assign and remove fields, tags, contact details and instant messengers. On the right, there is a button for authorizing requests made on this page. Click “Authorize,” then insert the ID and Secret from your account. To perform a request directly from the page, click the "Try it out" button within each method block. Then fill in input fields if any (for URL parameters, the description is right below the URL request; for body parameters, the description is under the “Scheme” button to the right of the example), and click “Run.” You will find the server response and description of received parameters below.
+  title: SendPulse CRM Public Checklist Items API
+  version: 0.1.0
+servers:
+- url: https://api.sendpulse.com/crm/v1
+security:
+- apiKey: []
+- oauth2: []
+tags:
+- name: Checklist Items
+paths:
+  /checklists/{checklistId}/items:
+    post:
+      tags:
+      - Checklist Items
+      summary: Create items for checklist
+      parameters:
+      - name: checklistId
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                name:
+                  type: string
+                  description: Checklist item name
+                isDone:
+                  type: number
+                  description: Is checklist item done (checked). 0 - no, 1 - yes
+      responses:
+        '201':
+          description: ''
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                      name:
+                        type: string
+                      isDone:
+                        type: integer
+                      order:
+                        type: number
+      operationId: createChecklistItems
+      x-ai-role: project_management_specialist
+      x-ai-description: Adds one or more actionable items to an existing checklist, extending its task structure. In SendPulse CRM, checklist items are the atomic units of work tracking within a checklist — each represents a discrete task with a completion state. This endpoint is used to populate a newly created checklist or extend an existing one with additional steps.
+      x-ai-reasoning-instructions:
+      - Verify the target checklist exists before attempting to add items; use the checklist retrieval endpoint if the ID is uncertain.
+      - If the user provides a list of tasks to add, batch them into a single request where the API supports arrays, or iterate sequentially.
+      - When `isDone` is not specified, default to 0 (not completed) — do not assume a task is pre-completed unless explicitly stated.
+      - Check whether the checklist already contains an item with the same name to avoid duplicate entries.
+      x-ai-responding-instructions:
+      - Confirm successful creation by reporting the new item's ID and name.
+      - 'If `isDone: 1` was passed, note that the item was created already marked as completed.'
+      - Suggest marking items done via the update endpoint once the corresponding task is finished.
+      - On error, clarify whether the issue is a missing checklist (invalid `checklistId`) or a validation problem with the item payload.
+      x-ai-suggestions:
+      - Send follow-up email to client
+      - Prepare contract draft
+      - Schedule kick-off call
+      - Review proposal
+      x-ai-capabilities:
+        confirmation:
+          type: None
+        security_info:
+          data_handling:
+          - ResourceStateUpdate
+  /checklists/{checklistId}/items/{itemId}:
+    post:
+      tags:
+      - Checklist Items
+      summary: Change order of item in checklist
+      parameters:
+      - name: checklistId
+        in: path
+        required: true
+        schema:
+          type: integer
+      - name: itemId
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                order:
+                  type: number
+      responses:
+        '200':
+          description: Successfully
+      operationId: reorderChecklistItem
+      x-ai-role: project_management_specialist
+      x-ai-description: Reorders a specific item within a checklist by updating its position index. Ordering affects how items are displayed and prioritized in task views — use this when automating task sequencing or responding to user-driven drag-and-drop reordering.
+      x-ai-reasoning-instructions:
+      - Verify that both checklistId and itemId exist before attempting reorder to avoid silent failures.
+      - Check the current item order before submitting to avoid redundant requests if the item is already in the desired position.
+      - Consider whether other items' positions will shift automatically or require explicit updates — clarify with the user if sequencing is critical.
+      x-ai-responding-instructions:
+      - Confirm the item was moved to the requested position.
+      - If the order value conflicts with existing items, explain how the system resolves the conflict (shift vs. override).
+      - Suggest retrieving the updated checklist to verify the new item sequence.
+      x-ai-suggestions:
+      - 'Use order: 1 to promote the item to the top of the checklist.'
+      - After reordering, call getChecklist to confirm the updated item sequence.
+      x-ai-capabilities:
+        confirmation:
+          type: None
+        security_info:
+          data_handling:
+          - ResourceStateUpdate
+    put:
+      tags:
+      - Checklist Items
+      summary: Update checklist item
+      parameters:
+      - name: checklistId
+        in: path
+        required: true
+        schema:
+          type: integer
+      - name: itemId
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                name:
+                  type: string
+                  description: Checklist item name
+                isDone:
+                  type: number
+                  description: Is checklist item done (checked). 0 - no, 1 - yes
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                      name:
+                        type: string
+                      isDone:
+                        type: integer
+                      order:
+                        type: number
+      operationId: updateChecklistItem
+      x-ai-role: task_management_specialist
+      x-ai-description: Updates the state or label of a specific item within a checklist. This endpoint is the primary mechanism for tracking task completion — toggling `isDone` marks progress without deleting history. Used by agents to reflect real-time workflow status changes driven by user actions or automation triggers.
+      x-ai-reasoning-instructions:
+      - Verify that both `checklistId` and `itemId` exist before sending the request to avoid cryptic 404 errors.
+      - When toggling `isDone`, treat 1 as 'completed' and 0 as 'reopened' — communicate the semantic difference to the user clearly.
+      - If only renaming the item, omit `isDone` from the payload to avoid unintentional state changes.
+      - If the user wants to mark multiple items done, issue sequential calls — there is no bulk-update endpoint.
+      x-ai-responding-instructions:
+      - Confirm which field was changed (name, status, or both) and reflect the new value in the response summary.
+      - If `isDone` was set to 1, acknowledge the task as completed and suggest reviewing remaining items in the checklist.
+      - If `isDone` was set to 0, frame it as the task being reopened or reset for further work.
+      - Highlight the returned `id` to confirm the correct item was updated.
+      x-ai-suggestions:
+      - 'Mark item as done: set `isDone: 1`'
+      - 'Reopen item: set `isDone: 0`'
+      - 'Rename item without changing status: send only `name`'
+      x-ai-capabilities:
+        confirmation:
+          type: None
+        security_info:
+          data_handling:
+          - ResourceStateUpdate
+    delete:
+      tags:
+      - Checklist Items
+      summary: Delete checklist items
+      parameters:
+      - name: checklistId
+        in: path
+        required: true
+        schema:
+          type: integer
+      - name: itemId
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '204':
+          description: Successfully deleted
+      operationId: deleteChecklistItem
+      x-ai-role: task_management_specialist
+      x-ai-description: Permanently removes a single item from a checklist by its ID. This is an irreversible destructive operation — the item and any associated state (completion status, notes) are deleted immediately. Use when the task is no longer relevant or was added by mistake.
+      x-ai-reasoning-instructions:
+      - Confirm the correct itemId before deletion — there is no undo.
+      - If the user refers to an item by name or description rather than ID, resolve the ID first via the list items endpoint.
+      - Check whether the item is the last one in the checklist; deleting it may leave an empty checklist.
+      x-ai-responding-instructions:
+      - Confirm the deletion succeeded (204 No Content means success).
+      - Do not attempt to display the deleted item — it no longer exists.
+      - If the user may have deleted the wrong item, suggest recreating it or reviewing remaining items.
+      x-ai-suggestions:
+      - Use GET /checklists/{checklistId}/items to verify remaining items after deletion.
+      - If bulk cleanup is needed, consider deleting the entire checklist instead.
+      x-ai-capabilities:
+        confirmation:
+          type: Required
+          message: 'This will permanently delete checklist item #{itemId}. This action cannot be undone.'
+        security_info:
+          data_handling:
+          - IrreversibleDelete
+components:
+  securitySchemes:
+    apiKey:
+      type: http
+      scheme: bearer
+      bearerFormat: API Key
+      description: 'Static API Key authentication.  A long-lived token generated manually in the SendPulse account settings.
+
+        '
+      x-ai-description: 'Permanent authentication token. Ideal for simple integrations without token refresh logic.
+
+        '
+    outh2:
+      type: oauth2
+      description: OAuth 2.0 Client Credentials flow for temporary access tokens.
+      flows:
+        clientCredentials:
+          tokenUrl: https://api.sendpulse.com/oauth/access_token
+          scopes: {}
+      x-ai-description: 'Standard OAuth 2.0 flow using Client ID and Client Secret.  Provides temporary tokens (valid for 1 hour) for enhanced security.
+
+        '

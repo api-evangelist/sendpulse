@@ -1,0 +1,149 @@
+openapi: 3.2.0
+info:
+  title: SendPulse SMTP Bounces API
+  description: 'The SendPulse SMTP API allows you to send transactional emails, manage unsubscribed users,  monitor bounces, and configure sender identities.  SMTP is ideal for high-volume transactional messages like order confirmations,  password resets, and notifications.
+
+    '
+  version: 1.0.0
+  x-ai-description: 'Expert-level SMTP relay service for transactional and bulk email delivery.  This API provides granular control over the delivery lifecycle, including  sender IP management, bounce tracking, and multi-channel fallback support.
+
+    '
+  license:
+    name: Apache 2.0
+    identifier: Apache-2.0
+servers:
+- url: https://api.sendpulse.com
+security:
+- apiKey: []
+- oauth2: []
+tags:
+- name: Bounces
+paths:
+  /smtp/bounces/day:
+    get:
+      summary: Get information about bounces for a 24-hour period
+      operationId: getSmtpBouncesDay
+      tags:
+      - Bounces
+      x-ai-role: email_deliverability_expert
+      x-ai-description: 'Retrieves a report of all hard and soft bounces encountered in the  last 24 hours. Vital for maintaining a healthy sender reputation.
+
+        '
+      x-ai-reasoning-instructions:
+      - Analyze the `smtp_answer_data` to categorize the reason for the bounce.
+      - Identify patterns that might indicate IP blacklisting or domain issues.
+      x-ai-responding-instructions:
+      - Report the total number of bounces and list the most common reasons.
+      - Advise on removing high-frequency bouncers from active lists.
+      x-ai-suggestions:
+      - Check `total` vs `found` to see if pagination is needed.
+      x-ai-capabilities:
+        confirmation:
+          type: None
+      parameters:
+      - name: date
+        in: query
+        schema:
+          type: string
+          format: date
+          example: '2024-01-01'
+      - name: limit
+        in: query
+        schema:
+          type: integer
+      - name: offset
+        in: query
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Bounce report
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  total:
+                    type: integer
+                  emails:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        email_to:
+                          type: string
+                        sender:
+                          type: string
+                        send_date:
+                          type: string
+                        subject:
+                          type: string
+                        smtp_answer_code:
+                          type: integer
+                        smtp_answer_subcode:
+                          type: string
+                        smtp_answer_data:
+                          type: string
+                  request_limit:
+                    type: integer
+                  found:
+                    type: integer
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+  /smtp/bounces/day/total:
+    get:
+      summary: Get total number of bounces
+      operationId: getSmtpBouncesTotal
+      tags:
+      - Bounces
+      x-ai-role: compliance_officer
+      x-ai-description: 'Quick count of bounces for the last 24-hour window.  Provides a high-level health metric for delivery.
+
+        '
+      x-ai-reasoning-instructions:
+      - Compare this count with the total send volume to calculate bounce rate.
+      x-ai-responding-instructions:
+      - State the total number of bounces detected.
+      x-ai-suggestions:
+      - If bounce rate exceeds 2%, trigger a deeper audit of the source list.
+      x-ai-capabilities:
+        confirmation:
+          type: None
+      responses:
+        '200':
+          description: Total bounce count
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  total:
+                    type: integer
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+components:
+  securitySchemes:
+    apiKey:
+      type: http
+      scheme: bearer
+      bearerFormat: API Key
+      description: 'Static API Key authentication.  A long-lived token generated manually in the SendPulse account settings.
+
+        '
+      x-ai-description: 'Permanent authentication token. Ideal for simple integrations without token refresh logic.
+
+        '
+    oauth2:
+      type: oauth2
+      description: OAuth 2.0 Client Credentials flow for temporary access tokens.
+      flows:
+        clientCredentials:
+          tokenUrl: https://api.sendpulse.com/oauth/access_token
+          scopes: {}
+      x-ai-description: 'Standard OAuth 2.0 flow using Client ID and Client Secret.  Provides temporary tokens (valid for 1 hour) for enhanced security.
+
+        '

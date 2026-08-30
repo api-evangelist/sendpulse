@@ -1,0 +1,105 @@
+openapi: 3.2.0
+info:
+  description: Using the API for the CRM service, you can integrate your system with CRM from SendPulse and receive detailed information on pipelines, deals, contacts and their attributes and users. You can also create deals and contacts, assign and remove fields, tags, contact details and instant messengers. On the right, there is a button for authorizing requests made on this page. Click “Authorize,” then insert the ID and Secret from your account. To perform a request directly from the page, click the "Try it out" button within each method block. Then fill in input fields if any (for URL parameters, the description is right below the URL request; for body parameters, the description is under the “Scheme” button to the right of the example), and click “Run.” You will find the server response and description of received parameters below.
+  title: SendPulse CRM Public Contact Attributes Values API
+  version: 0.1.0
+servers:
+- url: https://api.sendpulse.com/crm/v1
+security:
+- apiKey: []
+- oauth2: []
+tags:
+- name: Contact Attributes Values
+paths:
+  /contacts/{contactId}/attributes/batch:
+    post:
+      tags:
+      - Contact Attributes Values
+      summary: Batch store contact attributes values
+      parameters:
+      - name: contactId
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              properties:
+                attributesValues:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      attributeId:
+                        type: integer
+                        description: Attribute ID
+                      value:
+                        type: string
+                        description: Attribute value
+              required:
+              - attributeId
+              - value
+      responses:
+        '201':
+          description: Successfully stored
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      attributeId:
+                        type: integer
+                        description: Attribute ID
+                      value:
+                        type: string
+                        description: Attribute value
+      operationId: batchStoreContactAttributeValues
+      x-ai-role: crm_data_specialist
+      x-ai-description: Performs a bulk upsert of attribute values for a single contact in one atomic request. In SendPulse CRM, contact attributes drive segmentation, personalization, and automation triggers — this endpoint is the preferred way to hydrate a contact's profile after creation or synchronization from an external system, avoiding N separate API calls.
+      x-ai-reasoning-instructions:
+      - Verify that the contact with the given contactId exists before calling; a 404 here means the contact was deleted or the ID is wrong.
+      - Collect all attribute values that need updating and send them in one batch rather than looping with individual calls — this reduces rate-limit exposure and latency.
+      - Confirm that each attributeId belongs to the account's attribute schema; submitting an unknown ID will silently fail or error depending on API version.
+      - If the same attributeId appears more than once in the array, clarify with the user which value should win — duplicates cause unpredictable behavior.
+      - For sensitive attribute types (e.g., phone, email, financial data), check whether the value format matches the attribute's expected type before submitting.
+      x-ai-responding-instructions:
+      - Confirm which attributes were successfully stored by echoing back the attributeId/value pairs from the 201 response.
+      - If the operation was part of a contact import or sync flow, suggest verifying the full contact profile with a GET /contacts/{contactId} call.
+      - 'If an error occurs, distinguish between a missing contact (fix: check the ID), unknown attribute IDs (fix: list available attributes first), and validation errors (fix: check value format).'
+      x-ai-suggestions:
+      - After storing attributes, trigger segmentation refresh or re-evaluate automation conditions that depend on these attributes.
+      - Use GET /contacts/attributes to retrieve the full list of available attributeIds for this account before constructing the batch payload.
+      x-ai-capabilities:
+        confirmation:
+          type: None
+        security_info:
+          data_handling:
+          - ResourceStateUpdate
+          - PersonalDataWrite
+components:
+  securitySchemes:
+    apiKey:
+      type: http
+      scheme: bearer
+      bearerFormat: API Key
+      description: 'Static API Key authentication.  A long-lived token generated manually in the SendPulse account settings.
+
+        '
+      x-ai-description: 'Permanent authentication token. Ideal for simple integrations without token refresh logic.
+
+        '
+    outh2:
+      type: oauth2
+      description: OAuth 2.0 Client Credentials flow for temporary access tokens.
+      flows:
+        clientCredentials:
+          tokenUrl: https://api.sendpulse.com/oauth/access_token
+          scopes: {}
+      x-ai-description: 'Standard OAuth 2.0 flow using Client ID and Client Secret.  Provides temporary tokens (valid for 1 hour) for enhanced security.
+
+        '

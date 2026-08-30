@@ -1,0 +1,766 @@
+openapi: 3.2.0
+info:
+  description: Using the API for the CRM service, you can integrate your system with CRM from SendPulse and receive detailed information on pipelines, deals, contacts and their attributes and users. You can also create deals and contacts, assign and remove fields, tags, contact details and instant messengers. On the right, there is a button for authorizing requests made on this page. Click “Authorize,” then insert the ID and Secret from your account. To perform a request directly from the page, click the "Try it out" button within each method block. Then fill in input fields if any (for URL parameters, the description is right below the URL request; for body parameters, the description is under the “Scheme” button to the right of the example), and click “Run.” You will find the server response and description of received parameters below.
+  title: SendPulse CRM Public Deals API
+  version: 0.1.0
+servers:
+- url: https://api.sendpulse.com/crm/v1
+security:
+- apiKey: []
+- oauth2: []
+tags:
+- description: ''
+  name: Deals
+paths:
+  /deals/get-list:
+    post:
+      tags:
+      - Deals
+      summary: Get deals list
+      description: '"status" field values:
+
+        0 = inactive
+
+        1 = active
+
+        2 = fail
+
+        3 = success
+
+        '
+      requestBody:
+        $ref: '#/components/requestBodies/DealFilter'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    items:
+                      $ref: '#/components/schemas/Deal'
+                  meta:
+                    type: object
+                    properties:
+                      total:
+                        type: integer
+                      searchRequest:
+                        type: string
+      operationId: getDealsList
+      x-ai-role: crm_pipeline_analyst
+      x-ai-description: 'Retrieves a filtered, paginated list of deals from the CRM pipeline. This is the primary discovery endpoint for deal management — it allows agents to assess pipeline health, segment deals by status, and determine which records need action. Status semantics: 0=inactive, 1=active, 2=failed, 3=successful.'
+      x-ai-reasoning-instructions:
+      - Before filtering, clarify which pipeline stage or status the user is targeting — ambiguous requests like 'show my deals' should default to active (status=1).
+      - Use `meta.total` to detect large result sets and proactively suggest pagination or narrower filters.
+      - 'Status values are numeric: always map human-readable terms (e.g., ''won'', ''lost'', ''open'') to their numeric equivalents before calling.'
+      - If the user wants analytics or aggregates, note that this endpoint returns raw list data — recommend client-side aggregation or follow-up calls.
+      x-ai-responding-instructions:
+      - Summarize the result by count and status distribution rather than dumping the raw list.
+      - Highlight any deals that appear stalled (e.g., active deals with no recent update) if date fields are present.
+      - Mention `meta.total` vs returned count to inform the user if results were truncated.
+      - Suggest follow-up actions such as updating a specific deal or filtering by a narrower criterion.
+      x-ai-suggestions:
+      - Filter by status=1 to list all active deals currently in progress.
+      - Filter by status=3 to review successfully closed deals for reporting.
+      - Combine with responsible manager or pipeline filters to scope results to a specific team member.
+      x-ai-capabilities:
+        confirmation:
+          type: None
+        security_info:
+          data_handling:
+          - ReadOnly
+  /deals:
+    post:
+      tags:
+      - Deals
+      summary: Create a new deal
+      description: Creates a new deal
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              properties:
+                pipelineId:
+                  type: integer
+                  description: Pipeline ID where you need to create a deal. It can be obtained with the "Get a list of pipelines" method
+                stepId:
+                  type: integer
+                  description: Pipeline step ID in which you want to create a deal. It can be obtained with the methods "Get a list of pipelines" and "Get information about a pipeline by ID"
+                responsibleId:
+                  type: integer
+                  description: Team member ID to assign to a deal. It can be obtained with the "Get a list of team members" method
+                name:
+                  type: string
+                  description: Deal name. The maximum number of characters is 255
+                price:
+                  type: number
+                  description: Deal amount
+                currency:
+                  type: string
+                  description: Deal currency. Accepts values in the form of UAH, USD, EUR
+                sourceId:
+                  type: integer
+                  description: Custom source ID of the deal from an external source
+                contact:
+                  description: Deal contact
+                  type: array
+                  items:
+                    type: integer
+                    description: Contact ID of the deal. It can be obtained with the method "Get contact list"
+                attributes:
+                  description: ''
+                  items:
+                    properties:
+                      attributeId:
+                        type: integer
+                        description: Attribute ID
+                      value:
+                        type: string
+                        description: Attribute value
+                attachments:
+                  type: array
+                  items:
+                    type: string
+                  example:
+                  - /personal/deal/sendPulse_crm_deals.csv
+                  description: First, the file must be uploaded to the file manager, and then the file can be attached.
+              required:
+              - pipelineId
+              - stepId
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Deal'
+      operationId: createDeal
+      x-ai-role: crm_sales_pipeline_manager
+      x-ai-description: Creates a new deal within a specific pipeline and step. A deal is the central entity in SendPulse CRM, representing a potential sale or business opportunity. Its placement in a pipeline step defines the current stage of the sales process. Proper initialization — with the right pipeline, step, responsible team member, and contact — is critical for accurate pipeline reporting and follow-up automation.
+      x-ai-reasoning-instructions:
+      - Before creating, verify that the pipelineId and stepId are valid and belong to the same pipeline using 'Get a list of pipelines'.
+      - If the user provides a contact name instead of a contact ID, resolve it first with 'Get contact list'.
+      - If responsibleId is not provided, clarify who should own the deal — unassigned deals are often overlooked in sales workflows.
+      - 'Validate that the currency value is one of the accepted formats: UAH, USD, EUR — reject other values early.'
+      - If attachments are provided, ensure the files have been uploaded to the file manager first and the paths are correct.
+      - If attributes are provided, confirm the attributeId values are valid custom attributes defined for deals.
+      x-ai-responding-instructions:
+      - Confirm successful creation by surfacing the new deal ID from the response data.
+      - Mention the pipeline and step the deal was placed in so the user can verify placement.
+      - If responsible team member was assigned, confirm the assignment.
+      - Suggest next steps such as adding a note, scheduling a follow-up activity, or moving the deal to the next pipeline step.
+      - If an error occurs due to missing pipelineId or stepId, guide the user to fetch pipelines first.
+      x-ai-suggestions:
+      - New Lead from Website
+      - Enterprise Contract Q2
+      - Upsell Opportunity — Existing Client
+      x-ai-capabilities:
+        confirmation:
+          type: None
+        security_info:
+          data_handling:
+          - ResourceStateUpdate
+  /deals/{dealId}:
+    get:
+      tags:
+      - Deals
+      summary: Get information about the deal by ID
+      description: 'Returns information about the specified deal: deal ID, ID of a pipeline where the deal was created, at what stage the deal is now, team member responsible for the deal, deal amount, deal creation source, list of notes and fields'
+      parameters:
+      - name: dealId
+        in: path
+        required: true
+        description: Deal ID for which you need to get information. You can get it in the "Get a list of deals" method
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    $ref: '#/components/schemas/DealDetailed'
+      operationId: getDeal
+      x-ai-role: crm_pipeline_analyst
+      x-ai-description: Retrieves full context of a single deal entity — its current pipeline stage, responsible team member, monetary value, creation source, and all associated notes and custom fields. This is the primary read operation for deal inspection before any update, assignment, or stage transition.
+      x-ai-reasoning-instructions:
+      - Obtain the dealId from a prior `getDeals` call if the user hasn't provided it explicitly.
+      - Use this endpoint before any update operation to confirm the current stage and owner to avoid overwriting stale data.
+      - If the response includes custom fields, map them to their semantic meaning using the pipeline schema context.
+      - Check the responsible team member field when routing follow-up actions or notifications.
+      x-ai-responding-instructions:
+      - Highlight the deal's current pipeline stage and responsible person as the most actionable summary.
+      - Present the deal amount prominently if the user is evaluating revenue impact.
+      - If notes are present, summarize their content rather than listing raw data.
+      - Suggest logical next steps based on the current stage (e.g., advance stage, reassign, add a note).
+      x-ai-suggestions:
+      - Use the returned `pipeline_id` and stage to call the update deal endpoint and advance the deal.
+      - Cross-reference `responsible_id` with the team member list to get contact details.
+      - Review attached notes to understand deal history before taking action.
+      x-ai-capabilities:
+        confirmation:
+          type: None
+        security_info:
+          data_handling:
+          - ReadOnly
+    put:
+      tags:
+      - Deals
+      summary: Update information about a deal by its ID
+      description: Updates information in the specified deal. Provided property values will be overwritten
+      parameters:
+      - name: dealId
+        in: path
+        required: true
+        description: Deal ID to be updated. You can get it in the "Get a list of deals" method
+        schema:
+          type: integer
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              properties:
+                pipelineId:
+                  type: integer
+                  description: Pipeline ID in which the deal is located. It can be obtained with the method "Get a list of pipelines"
+                status:
+                  type: integer
+                  description: ''
+                stepId:
+                  type: integer
+                  description: ID of a pipeline step where you need to place a deal. It can be obtained from the methods "Get a list of pipelines" and "Get information about a pipeline by its ID"
+                responsibleId:
+                  type: integer
+                  description: Team member ID to assign to a deal. It can be obtained with the "Get a list of team members" method
+                name:
+                  type: string
+                  description: Deal name
+                price:
+                  type: number
+                  description: Deal amount
+                currency:
+                  type: string
+                  description: Deal currency. Accepts values in the form of UAH, USD, EUR
+                sourceId:
+                  type: integer
+                  description: Custom source ID of the deal from an external source
+                order:
+                  type: integer
+                  description: Field display order. If empty, the deal will be placed at the top of the list.
+              required:
+              - pipelineId
+              - status
+              - stepId
+              - name
+              - price
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Deal'
+      operationId: updateDealById
+      x-ai-role: crm_pipeline_manager
+      x-ai-description: 'Updates mutable properties of an existing deal in the CRM pipeline. This is the primary mutation endpoint for deal lifecycle management — it controls not only metadata (name, price, currency) but also pipeline placement (stepId) and ownership (responsibleId). Partial updates are NOT supported: omitting required fields will cause validation errors, so always fetch the current deal state before modifying.'
+      x-ai-reasoning-instructions:
+      - Before updating, call the 'Get a list of deals' or 'Get deal by ID' method to retrieve the current state and avoid accidentally overwriting unintended fields.
+      - Validate that pipelineId and stepId are consistent — the step must belong to the specified pipeline. Fetch pipelines first if unsure.
+      - When changing status, be aware that certain status transitions may have business implications (e.g., marking as won/lost may trigger automations).
+      - If reassigning responsibleId, confirm the team member exists via 'Get a list of team members' before submitting.
+      - Currency must be one of the accepted values (UAH, USD, EUR) — do not pass ISO codes outside this set.
+      - The 'order' field controls visual position in the pipeline board; omitting it places the deal at the top.
+      x-ai-responding-instructions:
+      - Confirm which fields were changed and their new values.
+      - If the step or pipeline changed, highlight the new position of the deal in the pipeline.
+      - Suggest next logical actions such as adding a contact to the deal, logging an activity, or updating custom fields.
+      - If a validation error occurs, identify which required field is missing and suggest how to obtain its value.
+      x-ai-suggestions:
+      - Fetch the current deal with 'Get deal by ID' before updating to preserve unchanged fields.
+      - Use 'Get a list of pipelines' to resolve valid pipelineId and stepId combinations.
+      - Use 'Get a list of team members' to resolve a valid responsibleId.
+      x-ai-capabilities:
+        confirmation:
+          type: Recommended
+          message: This operation overwrites existing deal data. Confirm the updated values before submitting.
+        security_info:
+          data_handling:
+          - ResourceStateUpdate
+    delete:
+      tags:
+      - Deals
+      summary: Delete a deal by its ID
+      description: Deletes the selected deal
+      parameters:
+      - name: dealId
+        in: path
+        required: true
+        description: Deal ID to delete
+        schema:
+          type: integer
+      responses:
+        '204':
+          description: ''
+      operationId: deleteDeal
+      x-ai-role: crm_pipeline_manager
+      x-ai-description: Permanently removes a deal from the CRM pipeline. This is a destructive, irreversible action — the deal record, its stage history, and any associated metadata will be lost. Typically used for duplicate cleanup, test data removal, or archiving closed pipelines.
+      x-ai-reasoning-instructions:
+      - Before deleting, confirm that the dealId exists and belongs to the current account to avoid 404 errors.
+      - Warn the user that deletion is permanent — there is no soft-delete or recycle bin for deals.
+      - If the deal is linked to contacts or tasks, advise the user to review those relationships before proceeding.
+      - Ask for explicit confirmation if the agent is acting autonomously, since this action cannot be undone.
+      x-ai-responding-instructions:
+      - Confirm successful deletion by acknowledging the dealId that was removed.
+      - If the response is 204 (No Content), clearly state that the deal was deleted and no further data was returned.
+      - If a 404 error occurs, clarify that the deal may have already been deleted or the ID is incorrect.
+      - Suggest verifying the pipeline state by listing remaining deals after deletion.
+      x-ai-suggestions:
+      - Use `getDeals` first to confirm the dealId before calling this endpoint.
+      - Consider updating the deal status to 'lost' or 'closed' instead of deleting, to preserve historical data.
+      x-ai-capabilities:
+        confirmation:
+          type: Required
+          message: 'This will permanently delete deal #{dealId}. This action cannot be undone.'
+        security_info:
+          data_handling:
+          - IrreversibleDelete
+  /deals/{dealId}/change-pipeline:
+    post:
+      tags:
+      - Deals
+      summary: Change the pipeline of a deal by its ID.
+      parameters:
+      - name: dealId
+        in: path
+        required: true
+        description: Deal ID to be updated. You can get it in the "Get a list of deals" method
+        schema:
+          type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                pipelineId:
+                  type: integer
+                  description: Pipeline ID to which the deal will be moved. It can be obtained with the method "Get a list of pipelines"
+                stepId:
+                  type: integer
+                  description: ID of a pipeline step where you need to place a deal. It can be obtained from the methods "Get a list of pipelines" and "Get information about a pipeline by its ID"
+      responses:
+        '200':
+          description: OK
+      operationId: changeDealPipeline
+      x-ai-role: crm_pipeline_manager
+      x-ai-description: Transfers a deal to a different pipeline and optionally places it at a specific step. This is a structural operation in CRM — pipelines represent sales processes or workflows, and moving a deal between them signals a fundamental shift in its lifecycle (e.g., from 'New Business' to 'Renewal' or from 'Standard' to 'Enterprise'). The step placement determines the deal's starting point within the new pipeline's stages.
+      x-ai-reasoning-instructions:
+      - Before moving, retrieve the target pipeline via 'Get a list of pipelines' to confirm it exists and understand its stages.
+      - If stepId is not provided, clarify whether the deal should land on the first step of the new pipeline or if a specific step is intended.
+      - Verify that the stepId belongs to the specified pipelineId — placing a deal on a step from a different pipeline will cause an error.
+      - 'Consider the business implication: moving a deal between pipelines may reset or affect automation rules, notifications, or stage-based triggers in the new pipeline.'
+      x-ai-responding-instructions:
+      - Confirm the move by stating the deal ID, the destination pipeline name (if known), and the step name (if known).
+      - If only pipelineId was provided without stepId, note that the deal was placed at the default entry point of the pipeline.
+      - Suggest reviewing the deal's new stage and updating relevant fields (e.g., expected close date, assigned user) to match the new pipeline's context.
+      x-ai-suggestions:
+      - Retrieve pipeline list first using 'Get a list of pipelines' to find the correct pipelineId and stepId.
+      - Use 'Get information about a pipeline by its ID' to inspect available steps before moving the deal.
+      x-ai-capabilities:
+        confirmation:
+          type: Recommended
+          message: Moving a deal to a different pipeline may affect automations and stage history. Confirm the target pipeline and step before proceeding.
+        security_info:
+          data_handling:
+          - ResourceStateUpdate
+components:
+  schemas:
+    Deal:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Deal ID
+        pipelineId:
+          type: integer
+          description: Pipeline ID
+        status:
+          $ref: '#/components/schemas/DealStatusProperty'
+        stepId:
+          type: integer
+          description: Pipeline step ID
+        responsibleId:
+          type: integer
+          description: ID of the responsible for the deal user. Can be obtained in the “Get list of invited users” method
+        number:
+          type: integer
+          description: Deal number, the number is generated automatically according to the order in which deal was created. Used in deal name if a custom value has not been specified
+        name:
+          type: string
+          description: Deal name
+        price:
+          type: number
+          description: Deal price
+        currency:
+          type: string
+          description: 'Deal currency. Example: UAH, USD, EUR'
+        profit:
+          type: number
+          description: Deal profit in major currency units
+        hasExpense:
+          type: boolean
+          description: Shows if the deal has at least one expense
+        order:
+          type: integer
+          description: Deal order
+        sourceType:
+          $ref: '#/components/schemas/DealSourceType'
+        sourceId:
+          type: integer
+          description: ID of external source
+        history:
+          items:
+            $ref: '#/components/schemas/DealHistory'
+        comments:
+          items:
+            $ref: '#/components/schemas/DealComment'
+        attributes:
+          items:
+            $ref: '#/components/schemas/DealAttributeValue'
+        expiration:
+          $ref: '#/components/schemas/DealExpiration'
+        attachments:
+          $ref: '#/components/schemas/EntityAttachment'
+        tasks:
+          type: array
+          items:
+            type: integer
+        createdAt:
+          type: string
+          format: date-time
+          description: The date and time the transaction was created. Output in YYYY-MM-DD hh:mm:ss format with fractions of a second and time zone
+        updatedAt:
+          type: string
+          format: date-time
+          description: The date and time the transaction information was last updated. Output in YYYY-MM-DD hh:mm:ss format with fractions of a second and time zone
+    DealExpiration:
+      type: object
+      properties:
+        date:
+          type: string
+          format: date
+          description: Deal expiration date
+        time:
+          type:
+          - string
+          - 'null'
+          format: time
+          description: Deal expiration time
+        dateTime:
+          type: string
+          format: date-time
+          description: Deal expiration DateTime
+        notificationEnabled:
+          type: boolean
+          description: Is notification enabled
+        notifyIn:
+          type:
+          - string
+          - 'null'
+          description: Notify before deal expires (when notification is enabled). Allowed values - 0(not selected), 15min, 30min, 1h, 2h, 3h, 6h, 12h, 24h, 2d, 3d, 4d, 5d, 6d, 7d
+        expired:
+          type: boolean
+          description: The deal has expired
+        expires_within_day:
+          type: boolean
+          description: The deal expires within 24 hours
+    FilterExpressionProperty:
+      type: string
+      description: '| Possible values:
+
+        - eq (=) - neq (!=) - gt (>) - gte (>=) - lt (<) - lte (<=) - like - in (check among list of values).'
+    DealHistory:
+      type: object
+      properties:
+        id:
+          type: integer
+        userId:
+          type: integer
+        eventData:
+          type: array
+        eventType:
+          type: string
+        eventTime:
+          type: string
+          format: date-time
+        currentData:
+          type: object
+          properties:
+            contactFirstName:
+              type: string
+            contactLastName:
+              type: string
+    DealStatusProperty:
+      type: integer
+      description: '| Step status
+
+        * 0 — inactive (deleted by user) * 1 — active * 2 - completed deal as “Unsuccessful” * 3 - completed deal as “Successful”'
+    EntityAttachment:
+      type: object
+      properties:
+        id:
+          type: integer
+        link:
+          type: string
+        entityId:
+          type: number
+        entityType:
+          type: string
+        createdAt:
+          type: string
+        updatedAt:
+          type: string
+    DealSourceType:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: ''
+        name:
+          type: string
+          description: ''
+    DealComment:
+      type: object
+      properties:
+        id:
+          type: integer
+        userId:
+          type: integer
+        eventData:
+          type: object
+          properties:
+            text:
+              type: string
+        status:
+          type: integer
+        eventTime:
+          type: string
+        createdAt:
+          type: string
+        updatedAt:
+          type: string
+        attachments:
+          items:
+            $ref: '#/components/schemas/EntityAttachment'
+        childCount:
+          type: integer
+        childUsers:
+          type: array
+          items:
+            type: integer
+    DealDetailed:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Deal ID
+        pipelineId:
+          type: integer
+          description: Pipeline ID
+        status:
+          $ref: '#/components/schemas/DealStatusProperty'
+        stepId:
+          type: integer
+          description: Pipeline step ID
+        responsibleId:
+          type: integer
+          description: ID of the responsible for the deal user. Can be obtained in the “Get list of invited users” method
+        number:
+          type: integer
+          description: Deal number, the number is generated automatically according to the order in which deal was created. Used in deal name if a custom value has not been specified
+        name:
+          type: string
+          description: Deal name
+        price:
+          type: number
+          description: Deal price
+        currency:
+          type: string
+          description: 'Deal currency. Example: UAH, USD, EUR'
+        profit:
+          type: number
+          description: Deal profit in major currency units
+        hasExpense:
+          type: boolean
+          description: Shows if the deal has at least one expense
+        order:
+          type: integer
+          description: Deal order
+        sourceType:
+          $ref: '#/components/schemas/DealSourceType'
+        sourceId:
+          type: integer
+          description: ID of external source
+        createdAt:
+          type: string
+          format: date-time
+          description: The date and time the transaction was created. Output in YYYY-MM-DD hh:mm:ss format with fractions of a second and time zone
+        updatedAt:
+          type: string
+          format: date-time
+          description: The date and time the transaction information was last updated. Output in YYYY-MM-DD hh:mm:ss format with fractions of a second and time zone
+        history:
+          $ref: '#/components/schemas/DealHistory'
+        comments:
+          $ref: '#/components/schemas/DealComment'
+        attributes:
+          $ref: '#/components/schemas/DealAttributeValue'
+    DealAttributeValue:
+      type: object
+      properties:
+        id:
+          type: integer
+        pipelineId:
+          type: integer
+        name:
+          type: string
+        status:
+          type: integer
+        type:
+          type: integer
+        mandatory:
+          type: boolean
+        order:
+          type: integer
+        options:
+          type: array
+          description: Items of "List" field type
+          items:
+            oneOf:
+            - type: string
+            - type: integer
+        value:
+          properties:
+            value:
+              type: string
+    AttributesProperty:
+      type: array
+      description: Filter by attributes only
+      items:
+        type: object
+        properties:
+          id:
+            type: string
+            description: Attribute ID
+          expression:
+            $ref: '#/components/schemas/FilterExpressionProperty'
+          value:
+            maxLength: 255
+            description: Can have string value or array of strings
+  requestBodies:
+    DealFilter:
+      content:
+        application/json:
+          schema:
+            properties:
+              limit:
+                type: integer
+                default: 10
+                description: Limit on the number of records displayed. Default value — 10
+              offset:
+                type: integer
+                default: 0
+                description: Offset — 0
+              sortBy:
+                type: object
+                properties:
+                  fieldName:
+                    type: string
+                    example: id
+                  direction:
+                    type: string
+                    example: desc
+                description: 'Sorting direction. Possible values: asc — ascending order; desc — descending order.'
+                enum:
+                - asc
+                - desc
+              filter:
+                type: array
+                description: Filter by deal fields (example "id", "stepId" ...)
+                items:
+                  type: object
+                  properties:
+                    name:
+                      type: string
+                      description: '| Deal field name (for example "id"). Can not filter by attributes. For filtering by attributes use "attributes" property. Possible values:
+
+                        - id - pipelineId - status - stepId - name - responsibleId - number - Deal number - price - currency - Deal currency. Accepts values in the form of UAH, USD, EUR - sourceType - Contact source - sourceId - Custom source ID of the deal from an external source - createdAt - updatedAt'
+                    expression:
+                      $ref: '#/components/schemas/FilterExpressionProperty'
+                    value:
+                      maxLength: 255
+                      description: Can have string value or array of strings
+              unlimited:
+                type: boolean
+                description: Return all active deals without limit
+              email:
+                type: string
+                description: Email address of the contact where you need to find deals
+              phone:
+                type: string
+                description: Phone number of the contact you need to use to find deals
+              firstName:
+                type: string
+                description: Name of the contact by whom you want to find deals
+              lastName:
+                type: string
+                description: Filter by contact last name
+              name:
+                type: string
+                description: Filter by deal name
+              completionDateFrom:
+                type: string
+                description: Deal completion date from
+              completionDateTo:
+                type: string
+                description: Deal completion date to
+              pipelineIds:
+                type: array
+                description: Filter by pipeline Ids
+                example: '[1,2,3]'
+                items:
+                  type: integer
+              attributes:
+                $ref: '#/components/schemas/AttributesProperty'
+              expiration:
+                type: integer
+                description: Filter by deal expiration date (1 - without date, 2 - overdue, 3 - within day, 4 - within week, 5 - within month)
+  securitySchemes:
+    apiKey:
+      type: http
+      scheme: bearer
+      bearerFormat: API Key
+      description: 'Static API Key authentication.  A long-lived token generated manually in the SendPulse account settings.
+
+        '
+      x-ai-description: 'Permanent authentication token. Ideal for simple integrations without token refresh logic.
+
+        '
+    outh2:
+      type: oauth2
+      description: OAuth 2.0 Client Credentials flow for temporary access tokens.
+      flows:
+        clientCredentials:
+          tokenUrl: https://api.sendpulse.com/oauth/access_token
+          scopes: {}
+      x-ai-description: 'Standard OAuth 2.0 flow using Client ID and Client Secret.  Provides temporary tokens (valid for 1 hour) for enhanced security.
+
+        '

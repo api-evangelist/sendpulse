@@ -1,0 +1,257 @@
+openapi: 3.2.0
+info:
+  description: Using the API for the CRM service, you can integrate your system with CRM from SendPulse and receive detailed information on pipelines, deals, contacts and their attributes and users. You can also create deals and contacts, assign and remove fields, tags, contact details and instant messengers. On the right, there is a button for authorizing requests made on this page. Click “Authorize,” then insert the ID and Secret from your account. To perform a request directly from the page, click the "Try it out" button within each method block. Then fill in input fields if any (for URL parameters, the description is right below the URL request; for body parameters, the description is under the “Scheme” button to the right of the example), and click “Run.” You will find the server response and description of received parameters below.
+  title: SendPulse CRM Public Contact Attributes API
+  version: 0.1.0
+servers:
+- url: https://api.sendpulse.com/crm/v1
+security:
+- apiKey: []
+- oauth2: []
+tags:
+- name: Contact Attributes
+paths:
+  /contacts/attributes:
+    get:
+      tags:
+      - Contact Attributes
+      summary: Get contact attributes list
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    $ref: '#/components/schemas/ContactAttribute'
+      operationId: getContactAttributes
+      x-ai-role: crm_data_architect
+      x-ai-description: Retrieves the full list of custom attributes defined for contacts in the account. These attributes form the schema of contact data — knowing them is a prerequisite for filtering, segmenting, or enriching contacts. Without this list, an agent cannot reliably map external data fields to CRM contact properties.
+      x-ai-reasoning-instructions:
+      - Call this endpoint before attempting to create or update contacts to know which attributes are available.
+      - Use the returned attribute list to validate that required fields exist before building import payloads.
+      - If the user asks to filter or segment contacts, check available attributes first to suggest valid filter keys.
+      x-ai-responding-instructions:
+      - Present the attributes as a structured list with names and types for clarity.
+      - If the list is empty, suggest creating custom attributes as a next step.
+      - Highlight any system-reserved attributes vs. user-defined ones if distinguishable.
+      x-ai-suggestions:
+      - Use the returned attribute names as keys when importing or updating contact data.
+      - Cross-reference with contact export fields to ensure schema consistency.
+      x-ai-capabilities:
+        confirmation:
+          type: None
+        security_info:
+          data_handling:
+          - ReadOnly
+    post:
+      tags:
+      - Contact Attributes
+      summary: Create a contact attribute
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                name:
+                  type: string
+                type:
+                  type: integer
+                  description: 0 = Text, 1 = Number, 2 = Date, 3 = Link, 4 = Select, 5 = MultiSelect
+                mandatory:
+                  type: boolean
+                options:
+                  type: array
+                  items:
+                    oneOf:
+                    - type: string
+                    - type: integer
+              required:
+              - name
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    $ref: '#/components/schemas/ContactAttribute'
+      operationId: createContactAttribute
+      x-ai-role: crm_data_architect
+      x-ai-description: 'Defines a custom schema field for all contacts in the CRM. Contact attributes act as typed columns — once created, they become available across the entire contact base for filtering, segmentation, and personalization. The `type` field controls validation and UI rendering, so choosing the correct type upfront is critical: it cannot be changed after contacts start storing values.'
+      x-ai-reasoning-instructions:
+      - Check whether an attribute with the same name already exists before creating a new one to avoid schema duplication.
+      - Validate that `options` is provided when `type` is 4 (Select) or 5 (MultiSelect) — these types are meaningless without predefined choices.
+      - For `type` 2 (Date), remind the user that stored values must conform to a consistent date format to enable reliable filtering.
+      - If `mandatory` is true, warn that all existing contacts will have this field as empty until explicitly populated — plan a backfill if needed.
+      - Use lowercase, underscore-separated names (e.g., `subscription_tier`) for programmatic consistency.
+      x-ai-responding-instructions:
+      - Confirm creation by referencing the returned `ContactAttribute` object, highlighting the attribute ID and type label (not just the numeric code).
+      - If `type` is Select or MultiSelect, list the registered options back to the user for verification.
+      - 'Suggest the next logical step: assigning a value to this attribute on specific contacts via the update contact endpoint.'
+      x-ai-suggestions:
+      - subscription_tier
+      - lifecycle_stage
+      - preferred_language
+      - last_purchase_date
+      - lead_score
+      x-ai-capabilities:
+        confirmation:
+          type: None
+        security_info:
+          data_handling:
+          - SchemaModification
+          - ResourceStateUpdate
+  /contacts/attributes/{attributeId}:
+    put:
+      tags:
+      - Contact Attributes
+      summary: Update a contact attribute
+      parameters:
+      - name: attributeId
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                name:
+                  type: string
+                status:
+                  type: integer
+                  description: 0 = Inactive, 1 = Active, 2 = Hidden
+                type:
+                  type: integer
+                  description: 0 = Text, 1 = Number, 2 = Date, 3 = Link, 4 = Select, 5 = MultiSelect
+                mandatory:
+                  type: boolean
+                contactCardShow:
+                  type: boolean
+                order:
+                  type: integer
+                options:
+                  type: array
+                  items:
+                    oneOf:
+                    - type: string
+                    - type: integer
+              required:
+              - name
+              - order
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    $ref: '#/components/schemas/ContactAttribute'
+      operationId: updateContactAttribute
+      x-ai-role: crm_data_architect
+      x-ai-description: Modifies the schema definition of a contact attribute — its display name, type, visibility, ordering, and available options. Changes here propagate to all contacts that have this attribute assigned, making it a structural operation affecting the entire CRM data model, not just a single record.
+      x-ai-reasoning-instructions:
+      - Fetch the current attribute state before updating to avoid accidentally overwriting fields the user did not intend to change.
+      - Warn the user if they are changing the `type` of an existing attribute — this may cause data loss or incompatibility with values already stored for that attribute on contacts.
+      - If `options` is being modified on a Select or MultiSelect attribute, check whether existing contact values reference options that are being removed.
+      - Changing `status` to 0 (Inactive) or 2 (Hidden) will silently remove the attribute from new contact forms — confirm intent with the user.
+      - Ensure `order` is unique among attributes in the same group to avoid ambiguous sorting.
+      x-ai-responding-instructions:
+      - Confirm which fields were changed and summarize the new state of the attribute.
+      - If `type` was changed, proactively warn about potential data compatibility issues with existing contact records.
+      - If `status` was set to Hidden or Inactive, explain the UX impact (attribute no longer appears in contact card or forms).
+      - Suggest verifying the result with a GET on the attribute or reviewing the contact card layout.
+      x-ai-suggestions:
+      - To reorder attributes in the contact card, update the `order` field incrementally across all attributes.
+      - 'Use `status: 2` (Hidden) instead of deleting an attribute to preserve historical data while removing it from the UI.'
+      - For Select/MultiSelect attributes, always pass the full `options` array — partial updates may remove existing options.
+      x-ai-capabilities:
+        confirmation:
+          type: Recommended
+          reason: Structural change to attribute schema affects all contacts with this attribute.
+        security_info:
+          data_handling:
+          - ResourceStateUpdate
+          - PotentialDataLoss
+    delete:
+      tags:
+      - Contact Attributes
+      summary: Delete a contact attribute
+      parameters:
+      - name: attributeId
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '204':
+          description: Successfully deleted
+      operationId: deleteContactAttribute
+      x-ai-role: crm_data_architect
+      x-ai-description: Permanently removes a custom contact attribute definition from the account. This is a schema-level destructive operation — deleting an attribute cascades to all contacts that had a value for it, irreversibly erasing that data dimension across the entire contact base. Use only when the attribute is no longer part of the data model, not when individual contact values need clearing.
+      x-ai-reasoning-instructions:
+      - Before proceeding, warn the user that this operation is irreversible and will remove the attribute value from every contact in the system.
+      - Verify the attributeId exists and belongs to the user's account to avoid a misleading 204 on a phantom ID.
+      - Check whether the attribute is used in active segments, automations, or campaign personalization — deletion may silently break those.
+      - If the user's intent is to clear values rather than remove the attribute definition, suggest updating contacts instead.
+      x-ai-responding-instructions:
+      - Confirm deletion by echoing the attributeId that was removed.
+      - Remind the user that all contact data stored under this attribute has been permanently lost.
+      - If relevant, suggest auditing automations or segments that may have referenced this attribute.
+      x-ai-capabilities:
+        confirmation:
+          type: Required
+          message: This will permanently delete the attribute and all associated values across all contacts. This cannot be undone.
+        security_info:
+          data_handling:
+          - IrreversibleDelete
+          - CascadingDataLoss
+components:
+  schemas:
+    ContactAttribute:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        status:
+          type: integer
+          description: '| Status
+
+            * 0 — inactive (deleted by user) * 1 — active * 2 — hidden'
+        order:
+          type: integer
+        options:
+          type: array
+          items:
+            oneOf:
+            - type: string
+            - type: integer
+          description: Items of "List" field type
+  securitySchemes:
+    apiKey:
+      type: http
+      scheme: bearer
+      bearerFormat: API Key
+      description: 'Static API Key authentication.  A long-lived token generated manually in the SendPulse account settings.
+
+        '
+      x-ai-description: 'Permanent authentication token. Ideal for simple integrations without token refresh logic.
+
+        '
+    outh2:
+      type: oauth2
+      description: OAuth 2.0 Client Credentials flow for temporary access tokens.
+      flows:
+        clientCredentials:
+          tokenUrl: https://api.sendpulse.com/oauth/access_token
+          scopes: {}
+      x-ai-description: 'Standard OAuth 2.0 flow using Client ID and Client Secret.  Provides temporary tokens (valid for 1 hour) for enhanced security.
+
+        '

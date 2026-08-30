@@ -1,0 +1,403 @@
+openapi: 3.2.0
+info:
+  title: Sendpulse Triggers API
+  version: 0.0.1
+  description: 'Operations tagged triggers across 7 of this provider''s published API definitions: sendpulse-facebook-openapi.yml, sendpulse-instagram-openapi.yml, sendpulse-live-chat-openapi.yml, sendpulse-telegram-openapi.yml, sendpulse-tiktok-openapi.yml, sendpulse-viber-chatbot-openapi.yml, sendpulse-whatsapp-openapi.yml. Each path carries the servers of the definition it was published in.'
+servers:
+- description: ''
+  url: https://api.sendpulse.com/messenger
+- description: ''
+  url: https://api.sendpulse.com/instagram
+- description: ''
+  url: https://api.sendpulse.com/live-chat
+- description: ''
+  url: https://api.sendpulse.com/telegram
+- description: ''
+  url: https://api.sendpulse.com/tiktok
+- description: ''
+  url: https://api.sendpulse.com/viber/chatbots
+- description: ''
+  url: https://api.sendpulse.com/whatsapp
+security:
+- apiKey: []
+- oauth2: []
+tags:
+- description: (keywords)
+  name: triggers
+paths:
+  /triggers:
+    get:
+      summary: Get a list of triggers
+      description: 'Returns the list of created triggers for the selected bot with information about each of them: trigger ID, bot id, id of the flow that starts on it, name, type, set launch time and creation date'
+      security:
+      - oAuth2ClientCredentials: []
+      tags:
+      - triggers
+      parameters:
+      - in: query
+        name: bot_id
+        required: true
+        schema:
+          type: string
+        description: Bot ID. Can be obtained with a method of getting a list of bots. You can also find it in your account in the address bar of a chat window with the desired contact.
+      - in: query
+        name: size
+        description: The limit of pagination items, that will be returned
+        schema:
+          type: integer
+      - in: query
+        name: skip
+        description: The offset of pagination items, where starts a current items batch
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Operation successful
+          content:
+            application/json:
+              schema:
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/Trigger'
+                type: object
+      operationId: getTriggers
+      x-ai-role: chatbot_automation_specialist
+      x-ai-description: Retrieves the full list of automation triggers configured for a specific bot. Triggers are the entry points of chatbot flows — each trigger defines a condition (e.g., keyword match, subscription event, scheduled time) that launches a flow. Understanding the trigger landscape is essential before creating new flows or debugging automation gaps.
+      x-ai-reasoning-instructions:
+      - Ensure `bot_id` is valid and belongs to the authenticated account before making the call.
+      - If the user wants to find a specific trigger, use `size` and `skip` for pagination rather than fetching all at once.
+      - Cross-reference `flow_id` values in the response with available flows to verify no trigger points to a deleted or inactive flow.
+      - If the result set is unexpectedly empty, suggest verifying that the bot has been properly configured and that at least one flow exists.
+      x-ai-responding-instructions:
+      - Summarize the number of triggers returned and group them by type (e.g., keyword, subscription, scheduled) for clarity.
+      - Highlight any triggers that reference flows — mention the flow ID so the user can inspect or edit it.
+      - If pagination parameters were used, indicate whether more items may exist beyond the current batch.
+      - If no triggers are found, suggest creating a trigger as the next step.
+      x-ai-suggestions:
+      - Use this endpoint to audit all active automation entry points before modifying or deleting a flow.
+      - Combine with `getFlows` to map trigger-to-flow relationships across the bot.
+      - Use `skip` and `size` for bots with large numbers of triggers to avoid payload bloat.
+      x-ai-capabilities:
+        confirmation:
+          type: None
+        security_info:
+          data_handling:
+          - ReadOnly
+    servers:
+    - description: ''
+      url: https://api.sendpulse.com/messenger
+components:
+  schemas:
+    Trigger:
+      properties:
+        id:
+          type: string
+        bot_id:
+          type: string
+        flow_id:
+          type:
+          - string
+          - 'null'
+        name:
+          type: string
+        type:
+          type: integer
+          enum:
+          - 1
+          - 2
+          - 3
+          - 4
+          - 5
+          description: "\n                    * `1` - starts immediately upon subscription\n\n                    * `2` - starts when unsubscribed\n\n                    * `3` - default reply\n\n                    * `4` - starts when the specified keyword is entered\n\n                    * `5` - starts at the specified time when subscribing"
+        status:
+          type: integer
+          enum:
+          - 1
+          - 2
+          description: "\n                    * `1` - active\n\n                    * `2` - inactive"
+        keywords:
+          type: array
+          items:
+            type: string
+        execution:
+          type: object
+          properties:
+            interval:
+              type: integer
+            units:
+              type: integer
+              enum:
+              - 1
+              - 2
+              - 3
+              description: "\n                        * `1` - minutes\n\n                        * `2` - hours\n\n                        * `3` - days"
+        created_at:
+          type: string
+          example: 2020-12-11 21:00:00+00:00
+    Trigger_2:
+      properties:
+        id:
+          type: string
+        bot_id:
+          type: string
+        flow_id:
+          type:
+          - string
+          - 'null'
+        name:
+          type: string
+        type:
+          type: integer
+          enum:
+          - 1
+          - 2
+          - 3
+          - 4
+          - 5
+          description: "\n                    * `1` - starts immediately upon subscription\n\n                    * `2` - starts when unsubscribed\n\n                    * `3` - default reply\n\n                    * `4` - starts when the specified keyword is entered\n\n                    * `5` - starts at the specified time when subscribing"
+        status:
+          type: integer
+          enum:
+            ACTIVE: 1
+            INACTIVE: 2
+          description: "\n                    * `1` - active\n\n                    * `2` - inactive"
+        keywords:
+          type: array
+          items:
+            type: string
+        execution:
+          type: object
+          properties:
+            interval:
+              type: integer
+            units:
+              type: integer
+              enum:
+                MINUTES: 1
+                HOURS: 2
+                DAYS: 3
+              description: "\n                        * `1` - minutes\n\n                        * `2` - hours\n\n                        * `3` - days"
+        created_at:
+          type: string
+          example: 2020-12-11 21:00:00+00:00
+    Trigger_3:
+      properties:
+        id:
+          type: string
+        bot_id:
+          type: string
+        flow_id:
+          type:
+          - string
+          - 'null'
+        name:
+          type: string
+        type:
+          type: integer
+          enum:
+          - 1
+          - 2
+          - 3
+          - 4
+          - 5
+          description: "\n                    * `1` - starts immediately upon subscription\n\n                    * `2` - starts when unsubscribed\n\n                    * `3` - default reply\n\n                    * `4` - starts when the specified keyword is entered\n\n                    * `5` - starts at the specified time when subscribing"
+        keywords_search_type:
+          type: integer
+          enum:
+          - 1
+          - 2
+          description: "\n                    * `1` - STRICT_MATCH\n\n                    * `2` - CONTAINS"
+        status:
+          type: integer
+          enum:
+            ACTIVE: 1
+            INACTIVE: 2
+          description: "\n                    * `1` - active\n\n                    * `2` - inactive"
+        keywords:
+          type: array
+          items:
+            type: string
+        execution:
+          type: object
+          properties:
+            interval:
+              type: integer
+            units:
+              type: integer
+              enum:
+                MINUTES: 1
+                HOURS: 2
+                DAYS: 3
+              description: "\n                        * `1` - minutes\n\n                        * `2` - hours\n\n                        * `3` - days"
+        created_at:
+          type: string
+          example: 2020-12-11 21:00:00+00:00
+    Trigger_4:
+      properties:
+        id:
+          type: string
+        bot_id:
+          type: string
+        flow_id:
+          type:
+          - string
+          - 'null'
+        name:
+          type: string
+        type:
+          type: integer
+          enum:
+          - 1
+          - 2
+          - 3
+          - 4
+          - 5
+          description: "\n                    * `1` - starts immediately upon subscription\n\n                    * `2` - starts when unsubscribed\n\n                    * `3` - default reply\n\n                    * `4` - starts when the specified keyword is entered\n\n                    * `5` - starts at the specified time when subscribing"
+        status:
+          type: integer
+          enum:
+            ACTIVE: 1
+            INACTIVE: 2
+          description: "\n                    * `1` - active\n\n                    * `2` - inactive"
+        keywords:
+          type: array
+          items:
+            type: string
+        execution:
+          type: object
+          properties:
+            interval:
+              type: integer
+            units:
+              type: integer
+              enum:
+                MINUTES: 1
+                HOURS: 2
+                DAYS: 3
+              description: "\n                        * `1` - minutes\n\n                        * `2` - hours\n\n                        * `3` - days"
+        created_at:
+          type: string
+          example: 2020-12-11 21:00:00+00:00
+    Trigger_5:
+      properties:
+        id:
+          type: string
+        bot_id:
+          type: string
+        flow_id:
+          type:
+          - string
+          - 'null'
+        name:
+          type: string
+        type:
+          type: integer
+          enum:
+          - 1
+          - 2
+          - 3
+          - 4
+          - 5
+          description: "\n                    * `1` - starts immediately upon subscription\n\n                    * `2` - starts when unsubscribed\n\n                    * `3` - default reply\n\n                    * `4` - starts when the specified keyword is entered\n\n                    * `5` - starts at the specified time when subscribing"
+        status:
+          type: integer
+          enum:
+            ACTIVE: 1
+            INACTIVE: 2
+          description: "\n                    * `1` - active\n\n                    * `2` - inactive"
+        keywords:
+          type: array
+          items:
+            type: string
+        execution:
+          type: object
+          properties:
+            interval:
+              type: integer
+            units:
+              type: integer
+              enum:
+                MINUTES: 1
+                HOURS: 2
+                DAYS: 3
+              description: "\n                        * `1` - minutes\n\n                        * `2` - hours\n\n                        * `3` - days"
+        created_at:
+          type: string
+          example: 2020-12-11 21:00:00+00:00
+    Trigger_6:
+      properties:
+        id:
+          type: string
+        bot_id:
+          type: string
+        flow_id:
+          type:
+          - string
+          - 'null'
+        name:
+          type: string
+        type:
+          type: integer
+          enum:
+          - 1
+          - 2
+          - 3
+          - 4
+          - 5
+          description: "\n                    * `1` - starts immediately upon subscription\n\n                    * `2` - starts when unsubscribed\n\n                    * `3` - default reply\n\n                    * `4` - starts when the specified keyword is entered\n\n                    * `5` - starts at the specified time when subscribing"
+        status:
+          type: integer
+          enum:
+            ACTIVE: 1
+            INACTIVE: 2
+          description: "\n                    * `1` - active\n\n                    * `2` - inactive"
+        keywords:
+          type: array
+          items:
+            type: string
+        execution:
+          type: object
+          properties:
+            interval:
+              type: integer
+            units:
+              type: integer
+              enum:
+                MINUTES: 1
+                HOURS: 2
+                DAYS: 3
+              description: "\n                        * `1` - minutes\n\n                        * `2` - hours\n\n                        * `3` - days"
+        created_at:
+          type: string
+          example: 2020-12-11 21:00:00+00:00
+  securitySchemes:
+    apiKey:
+      type: http
+      scheme: bearer
+      bearerFormat: API Key
+      description: 'Static API Key authentication.  A long-lived token generated manually in the SendPulse account settings.
+
+        '
+      x-ai-description: 'Permanent authentication token. Ideal for simple integrations without token refresh logic.
+
+        '
+    outh2:
+      type: oauth2
+      description: OAuth 2.0 Client Credentials flow for temporary access tokens.
+      flows:
+        clientCredentials:
+          tokenUrl: https://api.sendpulse.com/oauth/access_token
+          scopes: {}
+      x-ai-description: 'Standard OAuth 2.0 flow using Client ID and Client Secret.  Provides temporary tokens (valid for 1 hour) for enhanced security.
+
+        '
+x-refined-from:
+- sendpulse-facebook-openapi.yml
+- sendpulse-instagram-openapi.yml
+- sendpulse-live-chat-openapi.yml
+- sendpulse-telegram-openapi.yml
+- sendpulse-tiktok-openapi.yml
+- sendpulse-viber-chatbot-openapi.yml
+- sendpulse-whatsapp-openapi.yml

@@ -1,0 +1,407 @@
+openapi: 3.2.0
+info:
+  description: Using the API for the CRM service, you can integrate your system with CRM from SendPulse and receive detailed information on pipelines, deals, contacts and their attributes and users. You can also create deals and contacts, assign and remove fields, tags, contact details and instant messengers. On the right, there is a button for authorizing requests made on this page. Click “Authorize,” then insert the ID and Secret from your account. To perform a request directly from the page, click the "Try it out" button within each method block. Then fill in input fields if any (for URL parameters, the description is right below the URL request; for body parameters, the description is under the “Scheme” button to the right of the example), and click “Run.” You will find the server response and description of received parameters below.
+  title: SendPulse CRM Public Task Checklist API
+  version: 0.1.0
+servers:
+- url: https://api.sendpulse.com/crm/v1
+security:
+- apiKey: []
+- oauth2: []
+tags:
+- name: Task Checklist
+paths:
+  /tasks/{taskId}/checklists/single:
+    post:
+      tags:
+      - Task Checklist
+      summary: Create checklist without items in task
+      parameters:
+      - name: taskId
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  description: Checklist name
+      responses:
+        '201':
+          description: ''
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                      name:
+                        type: string
+                      taskId:
+                        type: integer
+                      order:
+                        type: number
+      operationId: createTaskChecklist
+      x-ai-role: project_management_specialist
+      x-ai-description: Creates an empty checklist container within a specific task. A checklist in this context is a named grouping structure — a shell without items — intended to be populated separately. This is useful when you need to define the checklist structure upfront before the items are known, or when building task templates programmatically.
+      x-ai-reasoning-instructions:
+      - Verify the taskId exists and is accessible before attempting to create the checklist.
+      - Check if a checklist with the same name already exists in the task to avoid duplication.
+      - Note that this endpoint creates an empty checklist — items must be added via a separate endpoint after creation.
+      - The 'order' field in the response indicates display position; plan accordingly if multiple checklists exist on the task.
+      x-ai-responding-instructions:
+      - Confirm successful creation by referencing the new checklist ID and its name.
+      - Remind the user that the checklist is currently empty and items need to be added separately.
+      - 'Suggest the next logical step: adding checklist items using the appropriate endpoint.'
+      x-ai-suggestions:
+      - Definition of Done
+      - Pre-launch Checklist
+      - QA Steps
+      - Review Criteria
+      x-ai-capabilities:
+        confirmation:
+          type: None
+        security_info:
+          data_handling:
+          - ResourceStateUpdate
+  /tasks/{taskId}/checklists/{checklistId}/single:
+    put:
+      tags:
+      - Task Checklist
+      summary: Update checklist without items in task
+      parameters:
+      - name: taskId
+        in: path
+        required: true
+        schema:
+          type: integer
+      - name: checklistId
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  description: Checklist name
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                      name:
+                        type: string
+                      taskId:
+                        type: integer
+                      order:
+                        type: number
+      operationId: updateTaskChecklistSingle
+      x-ai-role: project_management_specialist
+      x-ai-description: Updates the metadata of a checklist (name only) without affecting its items. Use this endpoint when you need to rename a checklist while preserving all existing items and their completion states. Operates on the checklist container itself — not on its child items.
+      x-ai-reasoning-instructions:
+      - Verify that both taskId and checklistId exist before attempting the update.
+      - Distinguish this endpoint from item-level update endpoints — this only modifies the checklist name, not its items.
+      - If the user wants to rename a checklist, confirm the new name is meaningful and unique within the task context.
+      - If no name is provided in the request body, warn the user that the update may have no effect.
+      x-ai-responding-instructions:
+      - Confirm the update by echoing the new checklist name and its ID from the response.
+      - Mention that items inside the checklist remain unchanged.
+      - If the task or checklist is not found, explain that the IDs may be incorrect or the resources may have been deleted.
+      x-ai-suggestions:
+      - Definition of Done
+      - Pre-launch Checklist
+      - QA Verification Steps
+      - Deployment Checklist
+      x-ai-capabilities:
+        confirmation:
+          type: None
+        security_info:
+          data_handling:
+          - ResourceStateUpdate
+  /tasks/{taskId}/checklists:
+    get:
+      tags:
+      - Task Checklist
+      summary: Get checklist list by task
+      parameters:
+      - name: taskId
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    $ref: '#/components/schemas/TaskChecklist'
+      operationId: getTaskChecklists
+      x-ai-role: project_management_assistant
+      x-ai-description: Retrieves all checklists associated with a specific task. Checklists are sub-structures within a task that break down work into verifiable steps. Use this to audit task completion progress or to present a structured view of task requirements to the user.
+      x-ai-reasoning-instructions:
+      - Verify that the taskId exists before requesting its checklists to provide a meaningful error message if the task is not found.
+      - If the response returns an empty list, clarify whether the task has no checklists yet versus the task itself being invalid.
+      - Consider whether the user needs the checklist items (sub-entries) as well — this endpoint returns checklist containers, not individual checklist items.
+      x-ai-responding-instructions:
+      - Present the checklists with their names and IDs in a readable format.
+      - If no checklists are returned, suggest creating one using the appropriate POST endpoint.
+      - Highlight the total count of checklists to give the user a quick overview of task complexity.
+      x-ai-suggestions:
+      - Use the returned checklist IDs to fetch individual checklist items.
+      - Combine with task details endpoint to provide full task context alongside its checklists.
+      x-ai-capabilities:
+        confirmation:
+          type: None
+        security_info:
+          data_handling:
+          - ReadOnly
+    post:
+      tags:
+      - Task Checklist
+      summary: Create multiple checklists with items in task
+      parameters:
+      - name: taskId
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                checklists:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      name:
+                        type: string
+                        description: Checklist name
+                      items:
+                        type: array
+                        items:
+                          properties:
+                            name:
+                              type: string
+                              description: Checklist item name
+                            isDone:
+                              type: number
+                              description: Is checklist item done (checked). 0 - no, 1 - yes
+      responses:
+        '201':
+          description: ''
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    $ref: '#/components/schemas/TaskChecklist'
+      operationId: createTaskChecklists
+      x-ai-role: project_management_specialist
+      x-ai-description: Initializes one or more structured checklists within a specific task, each containing an ordered list of actionable items. In SendPulse CRM tasks, checklists serve as micro-workflows — they break down a task into verifiable steps and allow tracking granular completion state. This is a bulk creation endpoint, meaning multiple checklists can be bootstrapped in a single call, which is ideal for templated task structures.
+      x-ai-reasoning-instructions:
+      - Verify that the taskId exists and is accessible before attempting creation.
+      - If the user describes a multi-step process, suggest splitting it into separate named checklists rather than one long list.
+      - Warn if any checklist has an empty `name` or no `items` array, as this creates an empty checklist with no tracking value.
+      - 'If `isDone: 1` is passed for items on creation, clarify that this pre-marks items as completed — usually only appropriate when migrating existing data.'
+      x-ai-responding-instructions:
+      - Confirm how many checklists were created and reference the parent task ID.
+      - Highlight the returned checklist IDs so the user can use them for future updates or deletions.
+      - If any checklist items were pre-marked as done, acknowledge this explicitly to avoid confusion.
+      - Suggest using the checklist update endpoint to modify individual item states as work progresses.
+      x-ai-suggestions:
+      - Use separate checklists per responsibility area (e.g., 'Design', 'Development', 'QA') for clearer ownership.
+      - 'Pre-populate `isDone: 1` only when importing existing completed work.'
+      - 'Keep checklist item names action-oriented: ''Write unit tests'' rather than ''Unit tests''.'
+      x-ai-capabilities:
+        confirmation:
+          type: None
+        security_info:
+          data_handling:
+          - ResourceStateUpdate
+    put:
+      tags:
+      - Task Checklist
+      summary: Update multiple checklists with items in task
+      parameters:
+      - name: taskId
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                checklists:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      id:
+                        type: number
+                      name:
+                        type: string
+                        description: Checklist name
+                      items:
+                        type: array
+                        items:
+                          properties:
+                            id:
+                              type: number
+                            name:
+                              type: string
+                              description: Checklist item name
+                            isDone:
+                              type: number
+                              description: Is checklist item done (checked). 0 - no, 1 - yes
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    $ref: '#/components/schemas/TaskChecklist'
+      operationId: updateTaskChecklists
+      x-ai-role: project_management_specialist
+      x-ai-description: Performs a bulk replacement of all checklist structures within a task. This is not a partial update — the entire checklists array is replaced. Use this endpoint to synchronize checklist state (names, items, completion flags) after local edits, or to programmatically advance task progress by marking items as done.
+      x-ai-reasoning-instructions:
+      - 'This is a full-replace operation: omitting a checklist from the array may remove it — confirm the full desired state before sending.'
+      - Retrieve the current checklists first (GET /tasks/{taskId}/checklists) to avoid accidental data loss.
+      - 'When marking items as done, use isDone: 1; to uncheck use isDone: 0 — do not omit the field.'
+      - If only one checklist needs updating, still include all other checklists in the payload to preserve them.
+      - Validate that all checklist and item IDs exist on the task before submitting — unknown IDs may cause silent errors or rejection.
+      x-ai-responding-instructions:
+      - Confirm which checklists were updated and how many items were affected.
+      - If any items were marked as done, summarize progress (e.g., '3 of 5 items completed').
+      - Suggest verifying task completion status if all checklist items are now marked done.
+      - On error, clarify whether the issue is a missing taskId, invalid checklist ID, or payload structure problem.
+      x-ai-suggestions:
+      - Fetch current state with GET /tasks/{taskId}/checklists before updating to build a safe payload.
+      - After updating, check overall task progress with GET /tasks/{taskId}.
+      - 'Use isDone: 1 to bulk-complete items when a sprint or phase is finished.'
+      x-ai-capabilities:
+        confirmation:
+          type: Recommended
+          message: This operation replaces all checklists on the task. Confirm the full payload includes all checklists you want to retain.
+        security_info:
+          data_handling:
+          - ResourceStateUpdate
+          - PotentialDataLoss
+  /tasks/{taskId}/checklists/{checklistId}:
+    delete:
+      tags:
+      - Task Checklist
+      summary: Delete a checklist from a task
+      parameters:
+      - name: taskId
+        in: path
+        required: true
+        schema:
+          type: integer
+      - name: checklistId
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '204':
+          description: Successfully deleted
+      operationId: deleteTaskChecklist
+      x-ai-role: project_management_specialist
+      x-ai-description: Permanently removes a specific checklist from a task. A checklist is a structured sub-list of completion criteria within a task — deleting it removes all its items and their completion state. This is a destructive, irreversible operation that affects task progress tracking.
+      x-ai-reasoning-instructions:
+      - Before deletion, confirm the user understands that all checklist items and their completion states will be permanently lost.
+      - Verify that taskId and checklistId are valid integers and belong to the same task context.
+      - Consider whether the checklist contains incomplete items — if so, warn the user before proceeding.
+      - Check if the checklist is the last one on the task, as removing it may impact task completion percentage.
+      x-ai-responding-instructions:
+      - Confirm the deletion with the specific checklistId that was removed.
+      - Remind the user that this action is irreversible and the data cannot be recovered.
+      - If relevant, suggest recreating the checklist via the create checklist endpoint if deletion was accidental.
+      - On 204 response, explicitly state that no content is returned — this is the expected success behavior.
+      x-ai-suggestions:
+      - To recreate, use the POST /tasks/{taskId}/checklists endpoint.
+      - Use GET /tasks/{taskId}/checklists to verify remaining checklists after deletion.
+      x-ai-capabilities:
+        confirmation:
+          type: Required
+          message: This will permanently delete the checklist and all its items. This action cannot be undone.
+        security_info:
+          data_handling:
+          - IrreversibleDelete
+          - ResourceStateUpdate
+components:
+  schemas:
+    TaskChecklist:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        taskId:
+          type: integer
+        isDone:
+          type: boolean
+        items:
+          $ref: '#/components/schemas/ChecklistItems'
+    ChecklistItems:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        order:
+          type: number
+        isDone:
+          type: boolean
+  securitySchemes:
+    apiKey:
+      type: http
+      scheme: bearer
+      bearerFormat: API Key
+      description: 'Static API Key authentication.  A long-lived token generated manually in the SendPulse account settings.
+
+        '
+      x-ai-description: 'Permanent authentication token. Ideal for simple integrations without token refresh logic.
+
+        '
+    outh2:
+      type: oauth2
+      description: OAuth 2.0 Client Credentials flow for temporary access tokens.
+      flows:
+        clientCredentials:
+          tokenUrl: https://api.sendpulse.com/oauth/access_token
+          scopes: {}
+      x-ai-description: 'Standard OAuth 2.0 flow using Client ID and Client Secret.  Provides temporary tokens (valid for 1 hour) for enhanced security.
+
+        '

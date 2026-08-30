@@ -1,0 +1,132 @@
+openapi: 3.2.0
+info:
+  title: SendPulse Automation 360 Automation Flows API
+  version: 1.0.0
+  description: API for managing and analyzing automation flows (autoflows).
+  x-ai-description: 'Automation 360 (A360) is the brain of omnichannel marketing at SendPulse.  It allows for creating complex, event-driven subscriber journeys across email, SMS, Web Push, and Messengers.  This API provides the tools to monitor these journeys, audit performance at a granular element level, and track conversions.
+
+    '
+  license:
+    name: Apache 2.0
+    identifier: Apache-2.0
+servers:
+- url: https://api.sendpulse.com
+  description: Production server
+security:
+- apiKey: []
+- oauth2: []
+tags:
+- name: Automation Flows
+  description: Endpoints related to Automation Flows.
+paths:
+  /a360/autoresponders/list:
+    get:
+      tags:
+      - Automation Flows
+      summary: Get a list of automation flows
+      operationId: getAutomationFlows
+      description: Retrieve all autoflows in your account.
+      x-ai-role: marketing_automation_specialist
+      x-ai-description: Provides a high-level inventory of active and inactive marketing automations.
+      x-ai-reasoning-instructions:
+      - Use 'limit' and 'offset' for efficient data retrieval.
+      - Identify flows with status 1 (Active) for priority monitoring.
+      x-ai-responding-instructions:
+      - Summarize the total number of flows.
+      - Highlight IDs for active flows.
+      x-ai-suggestions:
+      - 'limit: 50'
+      x-ai-capabilities:
+        security_info:
+          data_handling:
+          - InformationRetrieval
+      parameters:
+      - name: limit
+        in: query
+        schema:
+          type: integer
+          default: 100
+      - name: offset
+        in: query
+        schema:
+          type: integer
+          default: 0
+      responses:
+        '200':
+          description: List of automation flows
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/AutomationFlow'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+  /a360/autoresponders/{ID}:
+    parameters:
+    - name: ID
+      in: path
+      required: true
+      schema:
+        type: integer
+    get:
+      tags:
+      - Automation Flows
+      summary: Get statistics about an automation flow
+      operationId: getAutomationFlowStats
+      x-ai-role: data_analyst
+      x-ai-description: Detailed structure and summary metrics for a specific flow.
+      x-ai-reasoning-instructions:
+      - Map the flow structure to understand the subscriber journey.
+      - Compare 'starts' vs 'end_count' for conversion funnel analysis.
+      x-ai-responding-instructions:
+      - Explain the flow's current state and high-level performance.
+      x-ai-suggestions:
+      - Check element-level stats next.
+      x-ai-capabilities:
+        security_info:
+          data_handling:
+          - InformationRetrieval
+      responses:
+        '200':
+          description: Flow stats
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AutomationFlowStats'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+components:
+  schemas:
+    AutomationFlowStats:
+      type: object
+    AutomationFlow:
+      type: object
+  securitySchemes:
+    apiKey:
+      type: http
+      scheme: bearer
+      bearerFormat: API Key
+      description: 'Static API Key authentication.  A long-lived token generated manually in the SendPulse account settings.
+
+        '
+      x-ai-description: 'Permanent authentication token. Ideal for simple integrations without token refresh logic.
+
+        '
+    oauth2:
+      type: oauth2
+      description: OAuth 2.0 Client Credentials flow for temporary access tokens.
+      flows:
+        clientCredentials:
+          tokenUrl: https://api.sendpulse.com/oauth/access_token
+          scopes: {}
+      x-ai-description: 'Standard OAuth 2.0 flow using Client ID and Client Secret.  Provides temporary tokens (valid for 1 hour) for enhanced security.
+
+        '

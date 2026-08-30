@@ -1,0 +1,366 @@
+openapi: 3.2.0
+info:
+  description: Using the API for the CRM service, you can integrate your system with CRM from SendPulse and receive detailed information on pipelines, deals, contacts and their attributes and users. You can also create deals and contacts, assign and remove fields, tags, contact details and instant messengers. On the right, there is a button for authorizing requests made on this page. Click “Authorize,” then insert the ID and Secret from your account. To perform a request directly from the page, click the "Try it out" button within each method block. Then fill in input fields if any (for URL parameters, the description is right below the URL request; for body parameters, the description is under the “Scheme” button to the right of the example), and click “Run.” You will find the server response and description of received parameters below.
+  title: SendPulse CRM Public Pipeline Steps API
+  version: 0.1.0
+servers:
+- url: https://api.sendpulse.com/crm/v1
+security:
+- apiKey: []
+- oauth2: []
+tags:
+- description: ''
+  name: Pipeline Steps
+paths:
+  /pipelines/{pipelineId}/steps:
+    post:
+      tags:
+      - Pipeline Steps
+      summary: Create a new pipeline step
+      parameters:
+      - name: pipelineId
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              properties:
+                name:
+                  type: string
+                order:
+                  type: integer
+                color:
+                  type: string
+                  enum:
+                  - '#000000'
+                  - black
+                  description: Step color
+                addEndHours:
+                  type: integer
+                  enum:
+                  - null
+                  - 1
+                  - 2
+                  - 3
+                  - 4
+                  - 5
+                  - 6
+                  - 8
+                  - 9
+                  - 10
+                  description: Add number of hours or null
+                notifyIn:
+                  type: string
+                  enum:
+                  - '0'
+                  - 15min
+                  - 30min
+                  - 1h
+                  - 2h
+                  - 3h
+                  - 6h
+                  - 12h
+                  - 24h
+                  - 2d
+                  - 3d
+                  - 4d
+                  - 5d
+                  - 6d
+                  - 7d
+                  description: Time notification
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Step'
+      operationId: createPipelineStep
+      x-ai-role: crm_pipeline_architect
+      x-ai-description: Adds a new stage to an existing sales pipeline, defining the structural progression of deals. Each step represents a distinct phase in the sales funnel — from initial contact to closing. The order, visual color, and time-based notifications shape how the team tracks and responds to deal movement through the pipeline.
+      x-ai-reasoning-instructions:
+      - Verify the pipeline exists before attempting to add a step.
+      - Check the current steps of the pipeline to determine appropriate `order` value and avoid collisions.
+      - If `order` is not specified by the user, suggest appending at the end (highest order + 1).
+      - Advise using descriptive step names aligned with the actual sales process (e.g., 'Qualification', 'Proposal Sent', 'Negotiation').
+      - If `notifyIn` is set, clarify to the user that this controls how far in advance or after a deal enters this step a notification is triggered.
+      x-ai-responding-instructions:
+      - Confirm the new step was created and mention its position (order) within the pipeline.
+      - If color was set, acknowledge it to confirm visual differentiation in the UI.
+      - Suggest reviewing the full pipeline structure using the list steps endpoint to confirm ordering.
+      - If `notifyIn` was configured, remind the user to ensure team notifications are active for this pipeline.
+      x-ai-suggestions:
+      - Qualification
+      - Proposal Sent
+      - Negotiation
+      - Contract Review
+      - Closed Won
+      x-ai-capabilities:
+        confirmation:
+          type: None
+        security_info:
+          data_handling:
+          - ResourceStateUpdate
+    get:
+      tags:
+      - Pipeline Steps
+      summary: Get pipeline steps
+      parameters:
+      - name: pipelineId
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Step'
+      operationId: getPipelineSteps
+      x-ai-role: crm_pipeline_analyst
+      x-ai-description: Retrieves the ordered list of steps configured within a specific pipeline. Steps define the sequential stages a deal or contact must pass through. Understanding the step structure is a prerequisite for creating or moving deals, as each step ID governs valid state transitions within the pipeline's lifecycle.
+      x-ai-reasoning-instructions:
+      - Verify the pipelineId exists before calling — use a pipeline listing endpoint if the ID is unknown.
+      - Use this endpoint to map step names to step IDs before performing any deal stage transitions.
+      - If the response returns an empty steps array, inform the user that the pipeline has no configured stages yet.
+      x-ai-responding-instructions:
+      - Present steps in their logical order, highlighting each step's ID and name.
+      - Suggest using step IDs from this response as input for endpoints that create or move deals.
+      - If the pipeline is not found, clarify that the pipelineId may be invalid or the user may lack access.
+      x-ai-suggestions:
+      - Use returned step IDs with deal creation or deal update endpoints to assign a stage.
+      - Combine with GET /pipelines to first discover available pipelines and their IDs.
+      x-ai-capabilities:
+        confirmation:
+          type: None
+        security_info:
+          data_handling:
+          - ReadOnly
+  /pipelines/{pipelineId}/steps/{stepId}:
+    put:
+      tags:
+      - Pipeline Steps
+      summary: Update a pipeline step
+      parameters:
+      - name: pipelineId
+        in: path
+        required: true
+        schema:
+          type: integer
+      - name: stepId
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              properties:
+                name:
+                  type: string
+                order:
+                  type: integer
+                color:
+                  type: string
+                  enum:
+                  - '#000000'
+                  - black
+                  description: Step color
+                addEndHours:
+                  type: integer
+                  enum:
+                  - null
+                  - 1
+                  - 2
+                  - 3
+                  - 4
+                  - 5
+                  - 6
+                  - 8
+                  - 9
+                  - 10
+                  description: Add number of hours or null
+                notifyIn:
+                  type: string
+                  enum:
+                  - '0'
+                  - 15min
+                  - 30min
+                  - 1h
+                  - 2h
+                  - 3h
+                  - 6h
+                  - 12h
+                  - 24h
+                  - 2d
+                  - 3d
+                  - 4d
+                  - 5d
+                  - 6d
+                  - 7d
+                  description: Time notification
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Step'
+      operationId: updatePipelineStep
+      x-ai-role: crm_pipeline_manager
+      x-ai-description: Modifies the configuration of an existing step within a CRM sales pipeline. Pipeline steps define deal progression stages — changes to order, color, timing, or notifications affect the pipeline board layout and the sales team's awareness of all deals currently residing in this step.
+      x-ai-reasoning-instructions:
+      - Before updating, verify the step exists in the target pipeline to avoid operating on stale IDs.
+      - Changing `order` reshuffles stage sequence — confirm with the user if this is intentional, as it alters the logical deal flow for the entire pipeline.
+      - '`addEndHours` extends the deal''s deadline automatically when a deal enters this step; setting it to null disables auto-extension — make sure the user understands the timing implications.'
+      - '`notifyIn` triggers a reminder relative to deal end time; choose a value proportional to the stage urgency (e.g., shorter intervals for closing stages, longer for early qualification).'
+      - The `color` field impacts visual differentiation on the board — suggest meaningful color conventions (e.g., red for blocked, green for won-pending).
+      x-ai-responding-instructions:
+      - Confirm the update by referencing both pipelineId and stepId so the user can verify the correct step was modified.
+      - If timing fields (addEndHours, notifyIn) were changed, explicitly note the impact on deal deadline tracking and sales team notifications.
+      - If order was changed, advise the user to review adjacent steps to ensure the full pipeline sequence remains logically consistent.
+      x-ai-suggestions:
+      - After updating, fetch the pipeline steps list to verify the new configuration reflects correctly.
+      - If multiple steps need reordering, update them sequentially to avoid order conflicts.
+      x-ai-capabilities:
+        confirmation:
+          type: Soft
+          reason: Modifying step configuration affects all deals currently in this stage, including their deadline calculations and notification schedules.
+        security_info:
+          data_handling:
+          - ResourceStateUpdate
+    delete:
+      tags:
+      - Pipeline Steps
+      summary: Delete a pipeline step
+      parameters:
+      - name: pipelineId
+        in: path
+        required: true
+        schema:
+          type: integer
+      - name: stepId
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '204':
+          description: Successfully deleted
+      operationId: deletePipelineStep
+      x-ai-role: crm_pipeline_manager
+      x-ai-description: Permanently removes a single step from a pipeline, collapsing the workflow at that position. In CRM pipelines, steps define the sequential stages of a deal or contact journey — deleting one restructures the entire flow and may affect active records currently assigned to that step.
+      x-ai-reasoning-instructions:
+      - Before deleting, check if any active deals or contacts are currently assigned to this step — deletion may leave them in an inconsistent state.
+      - Confirm whether the pipeline has dependent automation rules or triggers tied to this step.
+      - Warn the user that this action is irreversible and will permanently remove the step configuration.
+      x-ai-responding-instructions:
+      - Confirm successful deletion by referencing both pipelineId and stepId.
+      - Suggest reviewing the remaining pipeline steps to ensure the workflow sequence is still logical.
+      - If records were assigned to the deleted step, recommend reassigning them to an appropriate existing step.
+      x-ai-capabilities:
+        confirmation:
+          type: Required
+          message: Deleting a pipeline step is irreversible. Confirm that no active records depend on this step before proceeding.
+        security_info:
+          data_handling:
+          - IrreversibleDelete
+          - ResourceStateUpdate
+components:
+  schemas:
+    DefaultStatusProperty:
+      type: integer
+      description: '| Status
+
+        * 0 — inactive (deleted by user) * 1 — active'
+    Step:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Step ID
+        pipelineId:
+          type: integer
+          description: Pipeline ID
+        name:
+          type: string
+          description: Step name
+        order:
+          type: integer
+          description: Step order
+        status:
+          $ref: '#/components/schemas/DefaultStatusProperty'
+        color:
+          type: string
+          enum:
+          - '#000000'
+          - black
+          description: Step color
+        addEndHours:
+          type: integer
+          enum:
+          - null
+          - 1
+          - 2
+          - 3
+          - 4
+          - 5
+          - 6
+          - 8
+          - 9
+          - 10
+          description: Add number of hours or null
+        notifyIn:
+          type: string
+          enum:
+          - '0'
+          - 15min
+          - 30min
+          - 1h
+          - 2h
+          - 3h
+          - 6h
+          - 12h
+          - 24h
+          - 2d
+          - 3d
+          - 4d
+          - 5d
+          - 6d
+          - 7d
+          description: Time notification
+  securitySchemes:
+    apiKey:
+      type: http
+      scheme: bearer
+      bearerFormat: API Key
+      description: 'Static API Key authentication.  A long-lived token generated manually in the SendPulse account settings.
+
+        '
+      x-ai-description: 'Permanent authentication token. Ideal for simple integrations without token refresh logic.
+
+        '
+    outh2:
+      type: oauth2
+      description: OAuth 2.0 Client Credentials flow for temporary access tokens.
+      flows:
+        clientCredentials:
+          tokenUrl: https://api.sendpulse.com/oauth/access_token
+          scopes: {}
+      x-ai-description: 'Standard OAuth 2.0 flow using Client ID and Client Secret.  Provides temporary tokens (valid for 1 hour) for enhanced security.
+
+        '

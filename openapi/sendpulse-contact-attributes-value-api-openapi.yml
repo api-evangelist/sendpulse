@@ -1,0 +1,278 @@
+openapi: 3.2.0
+info:
+  description: Using the API for the CRM service, you can integrate your system with CRM from SendPulse and receive detailed information on pipelines, deals, contacts and their attributes and users. You can also create deals and contacts, assign and remove fields, tags, contact details and instant messengers. On the right, there is a button for authorizing requests made on this page. Click “Authorize,” then insert the ID and Secret from your account. To perform a request directly from the page, click the "Try it out" button within each method block. Then fill in input fields if any (for URL parameters, the description is right below the URL request; for body parameters, the description is under the “Scheme” button to the right of the example), and click “Run.” You will find the server response and description of received parameters below.
+  title: SendPulse CRM Public Contact attributes Value API
+  version: 0.1.0
+servers:
+- url: https://api.sendpulse.com/crm/v1
+security:
+- apiKey: []
+- oauth2: []
+tags:
+- name: Contact attributes Value
+paths:
+  /contacts/{contactId}/attributes:
+    get:
+      tags:
+      - Contact attributes Value
+      summary: Get a list of specified contact attribute values
+      description: Returns a list of attributes for the specified contact with information about the contacts ID, title, status, value, and options for each
+      parameters:
+      - name: contactId
+        in: path
+        required: true
+        description: Contact ID for which you want to get the list of attributes. It can be obtained with the "Get a list of contacts" method
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    $ref: '#/components/schemas/ContactAttributeValue'
+      operationId: getContactAttributes
+      x-ai-role: crm_data_analyst
+      x-ai-description: Retrieves the full set of attribute values bound to a specific contact — the semantic profile of that contact in the CRM. Each attribute carries its current value, status, and available options, making this endpoint essential for understanding contact segmentation state before any personalization or automation logic.
+      x-ai-reasoning-instructions:
+      - Ensure the contactId is valid by cross-referencing with the 'Get a list of contacts' endpoint if the ID was not just retrieved.
+      - Attribute statuses may indicate whether a value is active, pending, or disabled — factor this in before using values for targeting.
+      - If the response includes option-type attributes, the 'options' field defines the allowed values — use it to validate before any update attempts.
+      x-ai-responding-instructions:
+      - Present the attribute list in a readable summary grouped by status if there are many entries.
+      - Highlight any attributes with empty or null values as potential data gaps worth addressing.
+      - Suggest using the returned attribute IDs when calling update or patch endpoints for this contact.
+      x-ai-suggestions:
+      - Use this before updating contact attributes to know current state.
+      - Combine with contact list endpoint to build a full contact profile.
+      x-ai-capabilities:
+        confirmation:
+          type: None
+        security_info:
+          data_handling:
+          - ReadOnly
+    post:
+      tags:
+      - Contact attributes Value
+      summary: Add attribute value to contact
+      description: Adds a attribute to the specified contact
+      parameters:
+      - name: contactId
+        in: path
+        required: true
+        description: Contact ID to which you want to add the attribute. It can be obtained with the "Get a list of contacts" method
+        schema:
+          type: integer
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              properties:
+                attributeId:
+                  type: integer
+                  description: Attribute ID you want to add to the contact. It can be obtained with the "Get a list of contacts" and "Get information about a contact by ID" methods
+                value:
+                  type: string
+                  description: The attribute value to add to the contact. The maximum number of characters is 5500
+              required:
+              - attributeId
+              - value
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    $ref: '#/components/schemas/ContactAttributeValue'
+      operationId: addContactAttributeValue
+      x-ai-role: crm_data_specialist
+      x-ai-description: Assigns a typed attribute value to a specific contact, enriching their profile with structured metadata. In SendPulse CRM, contact attributes act as custom fields that power segmentation, personalization, and automation triggers. This endpoint is the write counterpart to reading attribute data from contact detail endpoints.
+      x-ai-reasoning-instructions:
+      - Verify the contactId exists before attempting to assign a value — use 'Get a list of contacts' or 'Get contact by ID' if unsure.
+      - Confirm the attributeId is valid and belongs to the same CRM account by cross-referencing contact detail data.
+      - Check that the value does not exceed 5500 characters; truncate or prompt the user to shorten if necessary.
+      - Avoid sending duplicate attribute assignments for the same contactId + attributeId pair unless an update is intended.
+      - If the attribute represents sensitive data (e.g., phone, email), remind the user of data handling responsibilities.
+      x-ai-responding-instructions:
+      - Confirm the attribute was successfully added and reference both the contactId and attributeId in the response summary.
+      - If the response includes a ContactAttributeValue object, surface the assigned value for user verification.
+      - Suggest reviewing the full contact profile as a next step to confirm the attribute appears correctly.
+      - If an error occurs due to an invalid attributeId, guide the user to retrieve the correct ID from 'Get contact by ID'.
+      x-ai-suggestions:
+      - Use 'Get information about a contact by ID' first to confirm available attributes before assigning.
+      - Batch multiple attribute assignments by calling this endpoint sequentially for each attributeId.
+      - After assignment, use 'Get a list of contacts' with filters to verify segmentation reflects the new value.
+      x-ai-capabilities:
+        confirmation:
+          type: None
+        security_info:
+          data_handling:
+          - ResourceStateUpdate
+          - PersonalDataWrite
+  /contacts/{contactId}/attributes/{attributeId}:
+    put:
+      tags:
+      - Contact attributes Value
+      summary: Update contact attribute value
+      description: Updates the attribute for the specified contact. Provided property values will be overwritten.
+      parameters:
+      - name: contactId
+        in: path
+        required: true
+        description: Contact ID for which you want to update the field. It can be obtained with the "Get a list of contacts" method
+        schema:
+          type: integer
+      - name: attributeId
+        in: path
+        required: true
+        description: Attribute ID you want to update. It can be obtained with the "Get a list of contacts" and "Get information about a contact by ID" methods
+        schema:
+          type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                value:
+                  type: string
+                  description: New attribute value. The maximum number of characters is 5500
+              required:
+              - value
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    $ref: '#/components/schemas/ContactAttributeValue'
+      operationId: updateContactAttributeValue
+      x-ai-role: crm_data_steward
+      x-ai-description: Overwrites a single attribute value for a specific contact. This is a targeted field-level update — unlike full contact updates, it modifies exactly one attribute without touching the rest of the contact record. Use when syncing external CRM data, applying segmentation tags, or updating lifecycle stage fields after a triggering event.
+      x-ai-reasoning-instructions:
+      - Resolve both contactId and attributeId before calling — neither can be inferred; use 'Get a list of contacts' to obtain both.
+      - Confirm the attribute type accepts string values; some attributes may have constrained value sets.
+      - Truncate or validate the value length before sending — the API enforces a 5500-character maximum.
+      - Prefer this endpoint over full contact updates when only a single field needs to change, to avoid unintended overwrites.
+      x-ai-responding-instructions:
+      - Confirm which attribute was updated by echoing the attributeId and the new value.
+      - If the response includes the updated ContactAttributeValue object, surface the key fields to the user.
+      - Suggest verifying the change via 'Get information about a contact by ID' if the update is part of a critical workflow.
+      x-ai-suggestions:
+      - 'Set lifecycle stage: value=''churned'' after cancellation event'
+      - 'Update lead score: value=''87'' after scoring model run'
+      - Sync external CRM field after webhook trigger
+      x-ai-capabilities:
+        confirmation:
+          type: None
+        security_info:
+          data_handling:
+          - ResourceStateUpdate
+    delete:
+      tags:
+      - Contact attributes Value
+      summary: Delete contact attribute value
+      description: 'Delete attribute for specified contact '
+      parameters:
+      - name: contactId
+        in: path
+        required: true
+        description: Contact ID from which you want to remove the attribute. It can be obtained with the "Get a list of contacts" method
+        schema:
+          type: integer
+      - name: attributeId
+        in: path
+        required: true
+        description: Attribute ID you want to remove. It can be obtained with the "Get a list of contacts" and "Get information about a contact by ID" methods
+        schema:
+          type: integer
+      responses:
+        '204':
+          description: Successfully deleted
+      operationId: deleteContactAttributeValue
+      x-ai-role: crm_data_manager
+      x-ai-description: 'Removes a specific attribute value from a contact record. Use this when a contact''s data point is no longer relevant — for example, after a trial period expires, a temporary tag becomes invalid, or incorrect data was assigned. This is a hard delete: the attribute value is gone and cannot be recovered without re-assignment.'
+      x-ai-reasoning-instructions:
+      - Confirm the contactId exists before attempting deletion — use 'Get a list of contacts' or 'Get information about a contact by ID' to verify.
+      - Confirm the attributeId belongs to the target contact to avoid deleting an attribute from the wrong record.
+      - This operation is irreversible — if the user seems uncertain, suggest verifying the attribute value first before deleting.
+      - Consider whether the attribute should be cleared (updated to null/empty) instead of deleted, depending on the use case.
+      x-ai-responding-instructions:
+      - A 204 response means the deletion was successful — confirm this clearly to the user since no body is returned.
+      - Mention the contactId and attributeId that were affected so the user can verify the correct record was targeted.
+      - If the user deleted the attribute by mistake, inform them they will need to reassign it using the appropriate 'set attribute' endpoint.
+      x-ai-capabilities:
+        confirmation:
+          type: Recommended
+          message: This will permanently remove the attribute value from the contact. Confirm before proceeding.
+        security_info:
+          data_handling:
+          - IrreversibleDelete
+components:
+  schemas:
+    ContactAttributeValue:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        status:
+          type: integer
+          description: '| Status
+
+            * 0 — inactive (deleted by user) * 1 — active * 2 — hidden'
+        type:
+          type: integer
+        mandatory:
+          type: boolean
+        contactCardShow:
+          type: boolean
+        order:
+          type: integer
+        options:
+          type: array
+          items:
+            oneOf:
+            - type: string
+            - type: integer
+          description: Items of "List" field type
+        value:
+          properties:
+            type:
+              type: string
+              description: Field type
+            value:
+              type: string
+              description: Field value
+          description: ''
+        default:
+          type: boolean
+          description: ''
+  securitySchemes:
+    apiKey:
+      type: http
+      scheme: bearer
+      bearerFormat: API Key
+      description: 'Static API Key authentication.  A long-lived token generated manually in the SendPulse account settings.
+
+        '
+      x-ai-description: 'Permanent authentication token. Ideal for simple integrations without token refresh logic.
+
+        '
+    outh2:
+      type: oauth2
+      description: OAuth 2.0 Client Credentials flow for temporary access tokens.
+      flows:
+        clientCredentials:
+          tokenUrl: https://api.sendpulse.com/oauth/access_token
+          scopes: {}
+      x-ai-description: 'Standard OAuth 2.0 flow using Client ID and Client Secret.  Provides temporary tokens (valid for 1 hour) for enhanced security.
+
+        '

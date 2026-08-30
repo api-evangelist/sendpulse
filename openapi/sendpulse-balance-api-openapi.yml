@@ -1,0 +1,212 @@
+openapi: 3.2.0
+info:
+  title: SendPulse Bulk Email Balance API
+  version: 1.0.0
+  description: API for managing mailing lists, email campaigns, templates, and senders.
+  x-ai-description: 'The Bulk Email API is the core engine for marketing automation at SendPulse.  It enables programmatic control over the entire email lifecycle.
+
+    '
+  license:
+    name: Apache 2.0
+    identifier: Apache-2.0
+servers:
+- url: https://api.sendpulse.com
+  description: Production server
+security:
+- apiKey: []
+- oauth2: []
+tags:
+- name: Balance
+  description: Endpoints related to Balance.
+paths:
+  /balance:
+    get:
+      tags:
+      - Balance
+      summary: Get balance
+      operationId: getBalance
+      description: Get overall account balance information.
+      x-ai-role: billing_specialist
+      x-ai-description: Check your current funds and currency settings.
+      x-ai-reasoning-instructions:
+      - Use this to monitor account credits before launching campaigns.
+      - Check if the balance is sufficient for the planned activity.
+      x-ai-responding-instructions:
+      - Report the current balance and its currency.
+      x-ai-suggestions:
+      - Get detailed balance information.
+      x-ai-capabilities:
+        security_info:
+          data_handling:
+          - InformationRetrieval
+      responses:
+        '200':
+          description: Balance info
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BalanceResponse'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+  /balance/{currency}:
+    get:
+      tags:
+      - Balance
+      summary: Get balance by currency
+      operationId: getBalanceByCurrency
+      description: Get account balance for a specific currency.
+      x-ai-role: billing_specialist
+      x-ai-description: Check balance in a specific currency (e.g., USD, EUR).
+      x-ai-reasoning-instructions:
+      - Specify the 3-letter currency code in the URL.
+      - Ensure the requested currency is supported by your account.
+      x-ai-responding-instructions:
+      - Provide the balance amount in the requested currency.
+      x-ai-suggestions:
+      - /balance/USD
+      x-ai-capabilities:
+        security_info:
+          data_handling:
+          - InformationRetrieval
+      parameters:
+      - name: currency
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Balance info
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BalanceResponse'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+  /user/balance/detail:
+    get:
+      tags:
+      - Balance
+      summary: Get detailed balance
+      operationId: getDetailedBalance
+      description: Get deep dive into balance, tariffs, and limits across all services.
+      x-ai-role: billing_specialist
+      x-ai-description: Comprehensive financial and usage status report.
+      x-ai-reasoning-instructions:
+      - Review limits for Email, SMTP, and Push services.
+      - Check tariff expiration dates and bonus balances.
+      x-ai-responding-instructions:
+      - Break down the balance by service (Email, SMTP, Push).
+      - Highlight when tariffs are expiring or subscribers limits are reached.
+      x-ai-suggestions:
+      - Renew your email tariff.
+      x-ai-capabilities:
+        security_info:
+          data_handling:
+          - InformationRetrieval
+      responses:
+        '200':
+          description: Detailed balance
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DetailedBalanceResponse'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+components:
+  schemas:
+    DetailedBalanceResponse:
+      type: object
+      x-ai-description: Detailed account balance and limits.
+      properties:
+        balance:
+          type: object
+          properties:
+            main:
+              type: string
+              example: '9.36'
+            bonus:
+              type: string
+              example: '5.00'
+            currency:
+              type: string
+              example: USD
+        email:
+          type: object
+          properties:
+            tariff_name:
+              type: string
+              example: Pay as you go 10 000
+            finished_time:
+              type: string
+              example: '2019-04-25 08:03:02'
+            emails_left:
+              type: integer
+              example: 9914
+            maximum_subscribers:
+              type: integer
+              example: 10000
+            current_subscribers:
+              type: integer
+              example: 0
+        smtp:
+          type: object
+          properties:
+            tariff_name:
+              type: string
+              example: SMTP Free
+            end_date:
+              type: string
+              example: '2018-11-21 15:05:39'
+            auto_renew:
+              type: integer
+              example: 1
+        push:
+          type: object
+          properties:
+            tariff_name:
+              type: string
+              example: White Label
+            end_date:
+              type: string
+              example: '2018-11-30'
+            auto_renew:
+              type: integer
+              example: 1
+    BalanceResponse:
+      type: object
+      x-ai-description: Account balance info.
+      properties:
+        currency:
+          type: string
+          example: USD
+        balance_currency:
+          type: number
+          example: 0.02
+  securitySchemes:
+    apiKey:
+      type: http
+      scheme: bearer
+      bearerFormat: API Key
+      description: 'Static API Key authentication.  A long-lived token generated manually in the SendPulse account settings.
+
+        '
+      x-ai-description: 'Permanent authentication token. Ideal for simple integrations without token refresh logic.
+
+        '
+    oauth2:
+      type: oauth2
+      description: OAuth 2.0 Client Credentials flow for temporary access tokens.
+      flows:
+        clientCredentials:
+          tokenUrl: https://api.sendpulse.com/oauth/access_token
+          scopes: {}
+      x-ai-description: 'Standard OAuth 2.0 flow using Client ID and Client Secret.  Provides temporary tokens (valid for 1 hour) for enhanced security.
+
+        '

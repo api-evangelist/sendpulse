@@ -1,0 +1,381 @@
+openapi: 3.2.0
+info:
+  description: Using the API for the CRM service, you can integrate your system with CRM from SendPulse and receive detailed information on pipelines, deals, contacts and their attributes and users. You can also create deals and contacts, assign and remove fields, tags, contact details and instant messengers. On the right, there is a button for authorizing requests made on this page. Click “Authorize,” then insert the ID and Secret from your account. To perform a request directly from the page, click the "Try it out" button within each method block. Then fill in input fields if any (for URL parameters, the description is right below the URL request; for body parameters, the description is under the “Scheme” button to the right of the example), and click “Run.” You will find the server response and description of received parameters below.
+  title: SendPulse CRM Public Payments API
+  version: 0.1.0
+servers:
+- url: https://api.sendpulse.com/crm/v1
+security:
+- apiKey: []
+- oauth2: []
+tags:
+- description: ''
+  name: Payments
+paths:
+  /payments/all:
+    get:
+      tags:
+      - Payments
+      summary: Get a list of payments by user
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    items:
+                      $ref: '#/components/schemas/UserPaymentData'
+                  total:
+                    type: integer
+      operationId: getAllPayments
+      x-ai-role: financial_analyst
+      x-ai-description: Retrieves the full payment history for the authenticated user account. Use this endpoint to audit billing activity, reconcile charges, or surface subscription and top-up events. The response includes a pageable dataset and a total count, making it suitable for building financial dashboards or automated billing reports.
+      x-ai-reasoning-instructions:
+      - Consider whether the user needs the full history or a filtered subset — if date or status filters are available as query params, prefer them to reduce payload size.
+      - Use the `total` field to determine if pagination is required before presenting results.
+      - If the result set is large, summarize key metrics (total spend, latest payment date) rather than listing every record.
+      x-ai-responding-instructions:
+      - Present the total number of payments alongside the first few records for context.
+      - Highlight the most recent payment and its status if visible in the data.
+      - If the list is empty, suggest that the account may be new or that no charges have been made yet.
+      x-ai-suggestions:
+      - Use this endpoint before generating an invoice or billing summary.
+      - Combine with a date-range filter if available to scope monthly or quarterly reports.
+      - Cross-reference with subscription endpoints to map payments to specific plan changes.
+      x-ai-capabilities:
+        confirmation:
+          type: None
+        security_info:
+          data_handling:
+          - ReadOnly
+          - SensitiveFinancialData
+  /payments/deals/{dealId}:
+    get:
+      tags:
+      - Payments
+      summary: Get a list of payments by dealId
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    items:
+                      $ref: '#/components/schemas/Payment'
+                  total:
+                    type: integer
+      operationId: getDealPayments
+      x-ai-role: crm_payments_analyst
+      x-ai-description: Retrieves the full payment history associated with a specific CRM deal. Useful for financial reconciliation, deal progress tracking, and validating whether a deal has been fully paid, partially paid, or is outstanding.
+      x-ai-reasoning-instructions:
+      - Verify the dealId exists before querying — an invalid ID will return an empty result or error.
+      - Use the `total` field to determine if pagination is needed when the dataset is large.
+      - Cross-reference payment statuses to assess the financial health of the deal.
+      - If no payments are returned, consider whether the deal is at an early pipeline stage.
+      x-ai-responding-instructions:
+      - Summarize the total number of payments found using the `total` field.
+      - Highlight key payment fields such as amount, status, and date if available.
+      - If the list is empty, suggest verifying the dealId or checking if payments have been recorded for this deal.
+      - Suggest follow-up actions like creating a payment or updating deal status if relevant.
+      x-ai-suggestions:
+      - Use this endpoint to verify payment completion before closing a deal.
+      - Combine with deal details endpoint to get a full financial picture of the deal.
+      x-ai-capabilities:
+        confirmation:
+          type: None
+        security_info:
+          data_handling:
+          - ReadOnly
+  /payments/contacts/{contactId}:
+    get:
+      tags:
+      - Payments
+      summary: Get a list of payments by contactId
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    items:
+                      $ref: '#/components/schemas/Payment'
+                  total:
+                    type: integer
+      operationId: getPaymentsByContactId
+      x-ai-role: payments_analyst
+      x-ai-description: Retrieves the full payment history for a specific contact by their unique ID. Useful for auditing transaction activity, detecting billing anomalies, or building financial summaries per customer in CRM or analytics workflows.
+      x-ai-reasoning-instructions:
+      - Verify that the contactId is valid and the contact exists before making the call.
+      - Use the `total` field in the response to determine if pagination is needed for contacts with large transaction histories.
+      - Consider filtering or sorting results on the client side if the API does not support query-level filters.
+      x-ai-responding-instructions:
+      - Summarize the total number of payments found using the `total` field.
+      - Highlight the most recent or largest payment if relevant to the user's context.
+      - If no payments are returned, clarify whether the contact exists but has no transaction history.
+      x-ai-suggestions:
+      - Use this endpoint to audit payment activity before issuing a refund.
+      - Combine with contact profile data to build a full customer financial overview.
+      - Check `total` to decide whether to paginate or display all results at once.
+      x-ai-capabilities:
+        confirmation:
+          type: None
+        security_info:
+          data_handling:
+          - ReadOnly
+          - SensitiveFinancialData
+  /payments:
+    post:
+      tags:
+      - Payments
+      summary: Create  payment
+      description: Create new manual payment.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                dealId:
+                  type: integer
+                  description: Deal ID for which you need to create payment.
+                contactId:
+                  type: integer
+                  description: Contact ID for which you need to create payment.
+                description:
+                  type: string
+                price:
+                  type: integer
+                  description: Payment amount
+                currency:
+                  type: string
+                  description: Payment currency
+      responses:
+        '201':
+          description: created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Payment'
+      operationId: createPayment
+      x-ai-role: crm_revenue_manager
+      x-ai-description: Records a manual payment event against a CRM deal or contact. This is not an online payment gateway call — it registers an already-received or offline payment into the pipeline, updating deal financials and contact billing history. Critical for keeping revenue data accurate without going through an automated checkout flow.
+      x-ai-reasoning-instructions:
+      - Require either dealId or contactId — ideally both to anchor the payment in context; warn the user if neither is provided.
+      - Validate that price is a positive integer and currency is a recognized ISO 4217 code before submitting.
+      - If dealId is provided, consider fetching the deal first to confirm it is in an active stage before attaching a payment.
+      - 'Avoid creating duplicate payments: check whether a payment with the same amount and description already exists on the deal.'
+      x-ai-responding-instructions:
+      - Confirm success by surfacing the new Payment ID and its associated deal/contact.
+      - Remind the user that this is a manual record — no actual money transfer is initiated.
+      - If the deal stage implies the payment closes the deal, suggest updating the deal status accordingly.
+      x-ai-suggestions:
+      - 'Deposit for contract #2024-117'
+      - Final invoice payment
+      - Prepayment — Phase 1
+      x-ai-capabilities:
+        confirmation:
+          type: Recommended
+          message: You are about to record a manual payment of {price} {currency} against deal/contact. This will affect revenue reporting. Confirm?
+        security_info:
+          data_handling:
+          - ResourceStateUpdate
+          - FinancialDataWrite
+  /payments/{paymentId}/approve:
+    post:
+      tags:
+      - Payments
+      summary: Approve manual payment.
+      description: Set approval status for manually created payment
+      parameters:
+      - name: paymentId
+        in: path
+        required: true
+        schema:
+          type: number
+        description: The unique identifier of the manually created payment to approve
+      responses:
+        '200':
+          description: Payment successfully approved
+      operationId: approvePayment
+      x-ai-role: financial_operations_manager
+      x-ai-description: Finalizes a manually created payment by setting its approval status. This is a critical financial workflow step — manual payments remain in a pending state until explicitly approved by an authorized actor. Approval triggers downstream processing (invoicing, access grants, status notifications).
+      x-ai-reasoning-instructions:
+      - Confirm the payment exists and is in a pending/unapproved state before attempting approval — approving an already-approved or non-existent payment will return an error.
+      - Verify the caller has sufficient privileges to approve payments; this action is typically restricted to billing administrators.
+      - Treat this as an irreversible financial action — once approved, the payment may trigger downstream effects (subscription activation, invoice generation) that cannot be undone via API.
+      x-ai-responding-instructions:
+      - Confirm the approval by stating the paymentId that was approved.
+      - Inform the user of any downstream effects triggered by the approval (e.g., subscription activated, invoice issued).
+      - If the operation fails, clarify whether the payment was already approved, does not exist, or the caller lacks permission.
+      x-ai-capabilities:
+        confirmation:
+          type: Required
+          message: Approving a payment is a financial action with downstream effects. Confirm before proceeding.
+        security_info:
+          data_handling:
+          - ResourceStateUpdate
+          - FinancialTransaction
+  /payments/{paymentId}/cancel:
+    post:
+      tags:
+      - Payments
+      summary: Cancel manual payment
+      description: Set payment status to canceled for manually created payment.
+      parameters:
+      - name: paymentId
+        in: path
+        required: true
+        schema:
+          type: number
+        description: The unique identifier of the payment to cancel
+      responses:
+        '200':
+          description: Payment successfully canceled
+      operationId: cancelPayment
+      x-ai-role: billing_operations_specialist
+      x-ai-description: Terminates a manually created payment by transitioning its status to 'canceled'. This is a financial state mutation — once canceled, the payment cannot be resumed or charged. Use when a customer requests cancellation, a billing error is detected, or a manual invoice needs to be voided before processing.
+      x-ai-reasoning-instructions:
+      - Confirm the payment exists and belongs to the current account before attempting cancellation.
+      - Verify the payment was created manually — this endpoint is not applicable to automated or subscription-based payments.
+      - 'Check the current payment status: only non-terminal statuses (e.g., pending, created) can be canceled; already completed or failed payments may be rejected.'
+      - Treat this as an irreversible action — prompt the user to confirm intent if there is any ambiguity.
+      x-ai-responding-instructions:
+      - Confirm the cancellation by echoing the paymentId that was canceled.
+      - Clarify that the action is irreversible and the payment can no longer be charged.
+      - If cancellation fails due to status conflict, explain the current payment state and what terminal state prevents the action.
+      - Suggest creating a new manual payment if the user needs to restart the billing process.
+      x-ai-capabilities:
+        confirmation:
+          type: Required
+          message: Canceling payment {paymentId} is irreversible. Confirm before proceeding.
+        security_info:
+          data_handling:
+          - ResourceStateUpdate
+          - IrreversibleAction
+components:
+  schemas:
+    Payment:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        price:
+          $ref: '#/components/schemas/PaymentOrderPrice'
+        status:
+          type: integer
+        orderId:
+          type: string
+        paymentDescription:
+          type:
+          - string
+          - 'null'
+        paymentMethod:
+          type: string
+          enum:
+          - Fondy
+          - YooMoney
+          - PayPal
+        createdAt:
+          type: string
+          format: date-time
+        promoCode:
+          type: string
+        promoCodeDiscount:
+          type: number
+    UserPaymentData:
+      type: object
+      properties:
+        id:
+          type: integer
+        userId:
+          type: integer
+        contactId:
+          type: integer
+        dealId:
+          type: integer
+        status:
+          type: integer
+        firstName:
+          type: string
+        lastName:
+          type: string
+        name:
+          type: string
+        responsibleId:
+          type: integer
+        price:
+          type: object
+          properties:
+            amount:
+              type: integer
+            currency:
+              type: string
+        description:
+          type: string
+        merchantName:
+          type: string
+        merchantUuid:
+          type: string
+        paymentMethod:
+          type: string
+        promoCode:
+          type: string
+        promoCodeDiscount:
+          type: string
+        createdAt:
+          type: string
+        externalContactId:
+          type: string
+        paymentItems:
+          type: array
+          items:
+            properties:
+              name:
+                type: string
+              productId:
+                type: string
+              type:
+                type: integer
+                enum:
+                - 1 (product)
+                - 2 (crmProduct)
+                - 3 (delivery)
+              quantity:
+                type: string
+              amount:
+                type: integer
+    PaymentOrderPrice:
+      type: object
+      properties:
+        amount:
+          type: string
+        currency:
+          type: string
+  securitySchemes:
+    apiKey:
+      type: http
+      scheme: bearer
+      bearerFormat: API Key
+      description: 'Static API Key authentication.  A long-lived token generated manually in the SendPulse account settings.
+
+        '
+      x-ai-description: 'Permanent authentication token. Ideal for simple integrations without token refresh logic.
+
+        '
+    outh2:
+      type: oauth2
+      description: OAuth 2.0 Client Credentials flow for temporary access tokens.
+      flows:
+        clientCredentials:
+          tokenUrl: https://api.sendpulse.com/oauth/access_token
+          scopes: {}
+      x-ai-description: 'Standard OAuth 2.0 flow using Client ID and Client Secret.  Provides temporary tokens (valid for 1 hour) for enhanced security.
+
+        '

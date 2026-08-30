@@ -1,0 +1,303 @@
+openapi: 3.2.0
+info:
+  title: Sendpulse Compliance API
+  version: 1.0.0
+  license:
+    name: Apache 2.0
+    identifier: Apache-2.0
+  x-refined-note:
+  - x-ai-description differs across the merged source definitions and was not carried
+  description: 'Operations tagged Compliance across 2 of this provider''s published API definitions: sendpulse-sms-openapi.yml, sendpulse-viber-openapi.yml. Each path carries the servers of the definition it was published in.'
+servers:
+- url: https://api.sendpulse.com
+security:
+- apiKey: []
+- oauth2: []
+tags:
+- name: Compliance
+paths:
+  /sms/black_list:
+    post:
+      summary: Add phone numbers to the blacklist
+      operationId: addSmsBlacklist
+      tags:
+      - Compliance
+      x-ai-role: compliance_officer
+      x-ai-description: 'Global suppression for SMS. Prevents any future messages from being  sent to these numbers across all address books.
+
+        '
+      x-ai-reasoning-instructions:
+      - Require a `description` to track the reason for blacklisting (e.g., 'Spam complaint').
+      x-ai-responding-instructions:
+      - Confirm global suppression is active for these numbers.
+      x-ai-suggestions:
+      - Use this for 'Do Not Call' requests.
+      x-ai-capabilities:
+        confirmation:
+          type: Required
+        security_info:
+          data_handling:
+          - ResourceStateUpdate
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - phones
+              - description
+              properties:
+                phones:
+                  type: array
+                  items:
+                    type: string
+                description:
+                  type: string
+      responses:
+        '200':
+          description: Blacklist result
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+    delete:
+      summary: Remove a phone number from the blacklist
+      operationId: removeSmsBlacklist
+      tags:
+      - Compliance
+      x-ai-role: compliance_officer
+      x-ai-description: 'Lifts the global suppression for specific numbers.  Only perform this if the user has explicitly re-consented.
+
+        '
+      x-ai-reasoning-instructions:
+      - Ensure audit logs reflect why the suppression was lifted.
+      x-ai-responding-instructions:
+      - Confirm the numbers are no longer suppressed.
+      x-ai-capabilities:
+        confirmation:
+          type: Required
+        security_info:
+          data_handling:
+          - ResourceStateUpdate
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - phones
+              properties:
+                phones:
+                  type: array
+                  items:
+                    type: string
+      responses:
+        '200':
+          description: Removal result
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+    get:
+      summary: Get a list of contacts in the blacklist
+      operationId: getSmsBlacklist
+      tags:
+      - Compliance
+      x-ai-role: compliance_officer
+      x-ai-description: 'Retrieves the master suppression list for auditing and external sync.
+
+        '
+      x-ai-responding-instructions:
+      - Present the current list of suppressed numbers.
+      x-ai-suggestions:
+      - Export this list for internal CRM synchronization.
+      x-ai-capabilities:
+        confirmation:
+          type: None
+      responses:
+        '200':
+          description: Blacklist data
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  result:
+                    type: boolean
+                  data:
+                    type: array
+                    items:
+                      type: object
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+    servers:
+    - url: https://api.sendpulse.com
+  /v2/viber-service/phone-exception:
+    get:
+      summary: Get a list of contacts in the blacklist
+      operationId: getViberBlacklist
+      tags:
+      - Compliance
+      x-ai-role: compliance_officer
+      x-ai-description: 'Returns the global Viber suppression list for the account.
+
+        '
+      x-ai-responding-instructions:
+      - Summarize the blacklisted phone numbers.
+      x-ai-capabilities:
+        confirmation:
+          type: None
+      parameters:
+      - name: limit
+        in: query
+        schema:
+          type: integer
+      - name: offset
+        in: query
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Blacklist data
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+    post:
+      summary: Add phone number to the blacklist
+      operationId: addViberBlacklist
+      tags:
+      - Compliance
+      x-ai-role: compliance_officer
+      x-ai-description: 'Suppress specific Viber recipients to prevent future messages.  Essential for GDPR/CCPA compliance and ''STOP'' request handling.
+
+        '
+      x-ai-reasoning-instructions:
+      - Include a clear `description` for the reason of suppression.
+      x-ai-responding-instructions:
+      - Confirm the numbers have been added to the blacklist.
+      x-ai-suggestions:
+      - Block numbers that consistently report your messages as spam.
+      x-ai-capabilities:
+        confirmation:
+          type: Required
+        security_info:
+          data_handling:
+          - ResourceStateUpdate
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - phones
+              properties:
+                phones:
+                  type: array
+                  items:
+                    type: string
+                description:
+                  type: string
+      responses:
+        '200':
+          description: Blacklist result
+          content:
+            application/json:
+              schema:
+                type: object
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+    delete:
+      summary: Remove a phone number from the blacklist
+      operationId: removeViberBlacklist
+      tags:
+      - Compliance
+      x-ai-role: compliance_officer
+      x-ai-description: 'Lifts suppression for Viber contacts. Only perform this with valid user consent.
+
+        '
+      x-ai-responding-instructions:
+      - Confirm the numbers have been removed from suppression.
+      x-ai-capabilities:
+        confirmation:
+          type: Required
+        security_info:
+          data_handling:
+          - ResourceStateUpdate
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - phones
+              properties:
+                phones:
+                  type: array
+                  items:
+                    type: string
+      responses:
+        '200':
+          description: Removal successful
+          content:
+            application/json:
+              schema:
+                type: object
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+    servers:
+    - url: https://api.sendpulse.com
+components:
+  securitySchemes:
+    apiKey:
+      type: http
+      scheme: bearer
+      bearerFormat: API Key
+      description: 'Static API Key authentication.  A long-lived token generated manually in the SendPulse account settings.
+
+        '
+      x-ai-description: 'Permanent authentication token. Ideal for simple integrations without token refresh logic.
+
+        '
+    oauth2:
+      type: oauth2
+      description: OAuth 2.0 Client Credentials flow for temporary access tokens.
+      flows:
+        clientCredentials:
+          tokenUrl: https://api.sendpulse.com/oauth/access_token
+          scopes: {}
+      x-ai-description: 'Standard OAuth 2.0 flow using Client ID and Client Secret.  Provides temporary tokens (valid for 1 hour) for enhanced security.
+
+        '
+x-refined-from:
+- sendpulse-sms-openapi.yml
+- sendpulse-viber-openapi.yml

@@ -1,0 +1,269 @@
+openapi: 3.2.0
+info:
+  description: This is the REST API endpoints definition for Education SendPulse project
+  title: Education SendPulse Project API Definition Course tariffs API
+  version: 1.0.0
+servers:
+- url: https://api.sendpulse.com/edu/public/v1
+security:
+- apiKey: []
+- oauth2: []
+tags:
+- name: Course tariffs
+paths:
+  /courses/{courseId}/tariffs:
+    get:
+      tags:
+      - Course tariffs
+      summary: Get course tariffs
+      parameters:
+      - name: CourseId
+        in: path
+        required: true
+        description: Course identifier.
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    type: array
+                    description: List of tariffs available for the specified course.
+                    items:
+                      $ref: '#/components/schemas/ShortCourseTariffResource'
+      operationId: getCourseTariffs
+      x-ai-role: e_learning_platform_specialist
+      x-ai-description: Retrieves all pricing plans (tariffs) available for a specific course. Tariffs define access tiers, pricing, and content scope — they are the commercial gateway between a learner and course content. Use this before presenting purchase options or building checkout flows.
+      x-ai-reasoning-instructions:
+      - Verify the courseId is valid and the course exists before requesting its tariffs.
+      - If the tariff list is empty, the course may not be published or may not have pricing configured yet.
+      - Use this endpoint to populate payment/enrollment UI — do not hardcode tariff data.
+      - Consider caching results briefly if building a storefront, as tariffs change infrequently.
+      x-ai-responding-instructions:
+      - Present tariffs as a list of available purchase options with names, prices, and access scope if available.
+      - If no tariffs are returned, inform the user that the course may not be available for purchase yet.
+      - Suggest using the enrollment or checkout endpoint as the logical next step after the user selects a tariff.
+      x-ai-suggestions:
+      - Use the returned tariff IDs when calling the course enrollment or order creation endpoint.
+      - Display tariffs grouped by access type (e.g., lifetime, subscription) if such a distinction exists in the schema.
+      x-ai-capabilities:
+        confirmation:
+          type: None
+        security_info:
+          data_handling:
+          - ReadOnly
+components:
+  schemas:
+    ShortCourseTariffResource:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Unique tariff identifier
+        courseId:
+          type: integer
+          description: Course identifier
+        name:
+          type: string
+          description: Tariff name
+        isMain:
+          type: boolean
+          description: Whether this is the main tariff for the course
+        isPaid:
+          type: boolean
+          description: Whether the tariff is paid
+        succeedRedirectUrl:
+          type:
+          - string
+          - 'null'
+          description: Redirect URL after successful payment
+        failedRedirectUrl:
+          type:
+          - string
+          - 'null'
+          description: Redirect URL after failed payment
+        status:
+          type: string
+          description: Tariff status
+          enum:
+          - active
+          - inactive
+        order:
+          type:
+          - integer
+          - 'null'
+          description: Display order of the tariff
+        countOfStudents:
+          type: integer
+          description: Number of students enrolled under this tariff
+        accessRestrictionSettingsVO:
+          $ref: '#/components/schemas/CourseAccessRestrictionSettingsResource'
+        paymentMethodsCollection:
+          type: array
+          description: Available payment methods
+          items:
+            $ref: '#/components/schemas/PaymentMethodResource'
+        studentBaseStateSettingDTO:
+          $ref: '#/components/schemas/StudentBaseStateSettingResource'
+        contentAccesses:
+          type: array
+          description: Content access settings
+          items:
+            $ref: '#/components/schemas/ContentAccessesResource'
+        functionalityAccesses:
+          type: array
+          description: Available functionalities under the tariff
+          items:
+            $ref: '#/components/schemas/FunctionalityResource'
+        courseTariffSettingDTO:
+          $ref: '#/components/schemas/CourseTariffSettingResource'
+        wasStarted:
+          type: boolean
+          description: Whether learning under this tariff has already started
+    ContentAccessesResource:
+      type: object
+      properties:
+        contentType:
+          type: string
+          description: Type of content being granted access to
+          enum:
+          - lesson
+          - test
+          - certificate
+        entityId:
+          type: integer
+          description: Entity ID (lesson/test/certificate)
+    StudentBaseStateSettingResource:
+      type: object
+      properties:
+        group:
+          type: integer
+          description: Default student group ID
+        responsible:
+          type: integer
+          description: Responsible manager ID
+        tags:
+          type: array
+          description: List of tag IDs to assign to the student
+          items:
+            type: integer
+        dealCreation:
+          type: object
+          description: Settings for creating a CRM deal upon payment
+          properties:
+            createDealOnPayment:
+              type: boolean
+              description: Create a deal after successful payment
+            pipelineId:
+              type: integer
+              description: CRM sales pipeline ID
+            stepId:
+              type: integer
+              description: Sales pipeline stage ID
+            dealName:
+              type: string
+              description: Deal name template
+    CourseAccessRestrictionSettingsResource:
+      type: object
+      properties:
+        courseId:
+          type: integer
+          description: Course ID to which the restriction applies
+        restrictedDays:
+          type: integer
+          description: Number of restricted access days
+        restrictedToDate:
+          type: string
+          description: Date until which the restriction applies (ISO 8601)
+        timezone:
+          type: string
+          description: Time zone for calculating restriction dates
+        typeUpdate:
+          type: string
+          description: Type of restriction settings update
+    CourseTariffSettingResource:
+      type: object
+      properties:
+        startDate:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: Tariff start date
+        endDate:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: Tariff end date
+        timezone:
+          type:
+          - string
+          - 'null'
+          description: Time zone used for tariff dates
+    PaymentMethodResource:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Unique payment method identifier
+        name:
+          type: string
+          description: Payment method name
+        price:
+          type: integer
+          description: Price in the smallest currency units (e.g., cents)
+        currency:
+          type: string
+          description: Payment currency (ISO 4217)
+        paymentId:
+          type: string
+          format: uuid
+          description: Payment identifier in the payment system
+        paymentType:
+          type: string
+          description: Payment system type/provider
+          enum:
+          - YooKassa
+          - Fondy
+          - PayPal
+          - YooMoney
+          - ROBOKASSA
+          - Stripe
+          - MERCADOPAGO
+          - LiqPay
+          - Wayforpay
+          - Flutterwave
+    FunctionalityResource:
+      type: object
+      properties:
+        type:
+          type: string
+          description: Type of available functionality
+          enum:
+          - chat
+  securitySchemes:
+    apiKey:
+      type: http
+      scheme: bearer
+      bearerFormat: API Key
+      description: 'Static API Key authentication.  A long-lived token generated manually in the SendPulse account settings.
+
+        '
+      x-ai-description: 'Permanent authentication token. Ideal for simple integrations without token refresh logic.
+
+        '
+    outh2:
+      type: oauth2
+      description: OAuth 2.0 Client Credentials flow for temporary access tokens.
+      flows:
+        clientCredentials:
+          tokenUrl: https://api.sendpulse.com/oauth/access_token
+          scopes: {}
+      x-ai-description: 'Standard OAuth 2.0 flow using Client ID and Client Secret.  Provides temporary tokens (valid for 1 hour) for enhanced security.
+
+        '

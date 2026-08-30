@@ -1,0 +1,1365 @@
+openapi: 3.2.0
+info:
+  description: This is the REST API endpoints definition for Education SendPulse project
+  title: Education SendPulse Project API Definition Students API
+  version: 1.0.0
+servers:
+- url: https://api.sendpulse.com/edu/public/v1
+security:
+- apiKey: []
+- oauth2: []
+tags:
+- name: Students
+paths:
+  /students:
+    post:
+      tags:
+      - Students
+      summary: Create student
+      requestBody:
+        description: Payload to create a new student and enroll to a course/tariff.
+        content:
+          application/json:
+            schema:
+              properties:
+                courseId:
+                  type: integer
+                  description: ID of the course to enroll the student in.
+                email:
+                  type: string
+                  description: Student email address.
+                firstName:
+                  type: string
+                  description: Student first name.
+                lastName:
+                  type: string
+                  description: Student last name.
+                tagIds:
+                  type: array
+                  description: List of tag IDs to assign to the student.
+                  items:
+                    type: integer
+                language:
+                  type: string
+                  example: uk_UA
+                  description: Preferred language/locale code (e.g., uk_UA).
+                courseTariffId:
+                  type: integer
+                  description: ID of the course tariff to enroll the student on.
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Student'
+      operationId: createStudent
+      x-ai-role: online_education_enrollment_specialist
+      x-ai-description: Initializes a student account and simultaneously enrolls them into a specific course or tariff tier. This is the primary onboarding entry point in SendPulse Edu — it creates the learner identity and binds it to a course in a single atomic operation. The tariff determines access scope, content availability, and billing logic for the student.
+      x-ai-reasoning-instructions:
+      - Verify that the courseId exists and is active before attempting enrollment.
+      - If courseTariffId is provided, confirm it belongs to the specified courseId — mismatched tariff/course pairs will fail silently or cause inconsistent enrollment state.
+      - Check whether a student with the same email is already enrolled in the course to avoid duplicate records.
+      - tagIds are optional but recommended for segmentation — suggest relevant tags if the caller has context about the student's origin or segment.
+      - Language/locale (e.g., uk_UA) affects notification templates sent to the student — confirm the locale is supported if the user specifies one.
+      x-ai-responding-instructions:
+      - Confirm successful creation by surfacing the new student ID from the response.
+      - Mention which course and tariff the student was enrolled into.
+      - If enrollment fails due to duplicate email, suggest using an update or re-enrollment endpoint instead.
+      - Suggest next steps such as sending a welcome email or assigning additional courses.
+      x-ai-suggestions:
+      - Use courseId + courseTariffId together for paid or tiered course access.
+      - After creation, trigger a welcome notification via the SendPulse Automation or Email API.
+      - Assign tagIds at creation time to enable targeted communication segments from the start.
+      x-ai-capabilities:
+        confirmation:
+          type: None
+        security_info:
+          data_handling:
+          - PersonalDataWrite
+          - ResourceStateUpdate
+  /students/auditory:
+    post:
+      tags:
+      - Students
+      summary: Get auditory
+      requestBody:
+        description: Filters to search and paginate the auditory list.
+        content:
+          application/json:
+            schema:
+              properties:
+                offset:
+                  type: integer
+                  description: Pagination offset (number of records to skip).
+                limit:
+                  type: integer
+                  description: Pagination limit (maximum number of records to return).
+                tags:
+                  type: array
+                  description: Filter by tag IDs assigned to students.
+                  items:
+                    type: integer
+                firstName:
+                  type: string
+                  description: Filter by student first name (substring match).
+                lastName:
+                  type: string
+                  description: Filter by student last name (substring match).
+                email:
+                  type: string
+                  description: Filter by email address (substring match).
+                courseStatus:
+                  type: array
+                  description: Filter by student status on courses.
+                  items:
+                    type: string
+                    enum:
+                    - registered
+                    - inProgress
+                    - success
+                    - failed
+                    - certificated
+                orderBy:
+                  type: string
+                  description: Field to sort by.
+                  enum:
+                  - firstName
+                  - studentStatusOnCourse
+                  - studentTest
+                  - studentDateRegistrationOnCourse
+                sort:
+                  type: string
+                  description: Sort direction.
+                  enum:
+                  - asc
+                  - desc
+                isPaid:
+                  type: boolean
+                  description: Filter by whether the student has paid for at least one course.
+                dateRegistrationOnCourse:
+                  type:
+                  - object
+                  - 'null'
+                  description: Date range filter for the date of registration on a course.
+                  properties:
+                    dateFrom:
+                      type: string
+                      format: date
+                      description: Start date (inclusive) in YYYY-MM-DD format.
+                    dateTo:
+                      type: string
+                      format: date
+                      description: End date (inclusive) in YYYY-MM-DD format.
+                dateLastEntry:
+                  type:
+                  - object
+                  - 'null'
+                  description: Date range filter for the last entry/login date.
+                  properties:
+                    dateFrom:
+                      type: string
+                      format: date
+                      description: Start date (inclusive) in YYYY-MM-DD format.
+                    dateTo:
+                      type: string
+                      format: date
+                      description: End date (inclusive) in YYYY-MM-DD format.
+                promoCodeIds:
+                  type: array
+                  description: Filter by promo code IDs used by students.
+                  items:
+                    type: integer
+                usedPromoCode:
+                  type:
+                  - boolean
+                  - 'null'
+                  description: Filter by whether any promo code was used.
+                searchString:
+                  type: string
+                  description: Free-text search across student attributes (name, email, etc.).
+                courseId:
+                  type: integer
+                  description: Filter by a specific course ID.
+                courseRestrictions:
+                  type: string
+                  description: Filter by course access restriction type.
+                  enum:
+                  - none
+                  - open
+                  - closed
+                paidCoursesCondition:
+                  type: string
+                  description: Comparison operator to apply to paidCoursesValue.
+                  enum:
+                  - '='
+                  - '>='
+                  - <=
+                paidCoursesValue:
+                  type: integer
+                  description: Numeric value used with paidCoursesCondition to filter by the number of paid courses.
+              required:
+              - offset
+              - limit
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    type: array
+                    description: Auditory search results (list of students matching filters).
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                          description: Student ID.
+                        uuid:
+                          type: string
+                          description: Unique student UUID.
+                        email:
+                          type: string
+                          description: Student email address.
+                        domainId:
+                          type: integer
+                          description: Domain ID the student belongs to.
+                        schoolId:
+                          type: integer
+                          description: School ID the student belongs to.
+                        firstName:
+                          type: string
+                          description: Student first name.
+                        lastName:
+                          type: string
+                          description: Student last name.
+                        contactFirstName:
+                          type:
+                          - string
+                          - 'null'
+                          description: Contact first name (nullable).
+                        contactLastName:
+                          type:
+                          - string
+                          - 'null'
+                          description: Contact last name (nullable).
+                        status:
+                          type: string
+                          description: Overall student status.
+                        responsibleId:
+                          type: integer
+                          description: User ID.
+                        tags:
+                          type: array
+                          description: List of tag IDs assigned to the student.
+                          items:
+                            type: integer
+                        language:
+                          type: string
+                          description: Preferred language/locale code (e.g., uk_UA).
+                        avatar:
+                          type:
+                          - string
+                          - 'null'
+                          description: URL to the student's avatar image.
+                        courses:
+                          type: array
+                          description: List of courses associated with the student in the search results.
+                          items:
+                            type: object
+                            properties:
+                              courseId:
+                                type: integer
+                                description: Course ID.
+                              courseName:
+                                type: string
+                                description: Course name.
+                              coverImage:
+                                type:
+                                - string
+                                - 'null'
+                                description: Course cover image URL.
+                              studentStatus:
+                                type: string
+                                description: Student status on this course.
+                              paymentStatus:
+                                type:
+                                - string
+                                - 'null'
+                                description: Payment status for this course.
+                              promoCode:
+                                type:
+                                - string
+                                - 'null'
+                                description: Applied promo code (if any).
+                              discount:
+                                type:
+                                - integer
+                                - 'null'
+                                description: Discount value applied for this course.
+                              studentDateRegistrationOnCourse:
+                                type: string
+                                format: date-time
+                                description: Registration date and time on this course.
+                              studentLastEntry:
+                                type: string
+                                format: date-time
+                                description: Last entry date and time on this course.
+                              courseAvailableDate:
+                                type:
+                                - string
+                                - 'null'
+                                format: date-time
+                                description: Date when the course becomes available to the student.
+                              hasPaidTariff:
+                                type: boolean
+                                description: Whether the student has a paid tariff for this course.
+                              courseTariffId:
+                                type:
+                                - integer
+                                - 'null'
+                                description: Tariff ID for the course (nullable).
+                              courseTariffName:
+                                type:
+                                - string
+                                - 'null'
+                                description: Tariff name for the course (nullable).
+                              studentTariffStatus:
+                                type:
+                                - string
+                                - 'null'
+                                description: Student's tariff status for the course (nullable).
+                  meta:
+                    type: object
+                    description: Additional metadata for the auditory results.
+                    properties:
+                      searchString:
+                        type: string
+                        description: Echo of the search string used to filter results (if provided).
+                      total:
+                        type: integer
+                        description: Total number of matching records across all pages.
+      operationId: getStudentsAuditory
+      x-ai-role: lms_audience_analyst
+      x-ai-description: Retrieves a filtered, paginated snapshot of the student audience (auditory) for a school. This is the primary segmentation endpoint in the LMS — it combines demographic filters, course progress states, payment conditions, and temporal ranges into a single query. Use it to build targeted cohorts for re-engagement campaigns, certificate tracking, promo effectiveness analysis, or course performance reports.
+      x-ai-reasoning-instructions:
+      - 'Always require `offset` and `limit` in the request — they are mandatory. Start with `offset: 0` and a reasonable `limit` (e.g., 50) unless the user specifies otherwise.'
+      - When filtering by `courseStatus`, note that multiple statuses can be combined — e.g., ['failed', 'inProgress'] to find at-risk students.
+      - Prefer `searchString` for broad free-text queries; use specific fields like `firstName`, `lastName`, `email` only when the user targets a known attribute.
+      - When filtering by payment, combine `isPaid` with `paidCoursesCondition` + `paidCoursesValue` for precise numeric queries (e.g., students with 2+ paid courses).
+      - Date filters (`dateRegistrationOnCourse`, `dateLastEntry`) use inclusive YYYY-MM-DD ranges — verify both `dateFrom` and `dateTo` are provided when using these filters.
+      - If `courseId` is provided, results are scoped to that course's enrollment data; `courseStatus` then applies within that course context.
+      - Use `meta.total` from the response to determine if pagination is needed — if `total > offset + limit`, more pages exist.
+      x-ai-responding-instructions:
+      - Report the total number of matching students from `meta.total`, not just the count of items returned on the current page.
+      - When presenting results, highlight the student's name, email, and course statuses as the primary identifiers.
+      - If the result set is empty, suggest relaxing filters — e.g., removing `courseStatus` restrictions or widening date ranges.
+      - For large result sets (total > 100), remind the user to paginate using `offset` increments of `limit`.
+      - When course data is included per student, summarize the most relevant course (e.g., the one matching the applied `courseId` filter) rather than listing all courses.
+      x-ai-suggestions:
+      - 'Find all students currently in progress: set `courseStatus: [''inProgress'']`'
+      - 'Find paying students who used a promo: combine `isPaid: true` with `usedPromoCode: true`'
+      - 'Find recently registered students: use `dateRegistrationOnCourse` with a recent date range'
+      - 'Find inactive students: use `dateLastEntry` with an old date range to identify those who haven''t logged in recently'
+      x-ai-capabilities:
+        confirmation:
+          type: None
+        security_info:
+          data_handling:
+          - ReadOnly
+          - ContainsPersonalData
+  /students/course-statistics/{studentId}:
+    get:
+      tags:
+      - Students
+      summary: Get students course statistic
+      parameters:
+      - name: studentId
+        in: path
+        required: true
+        description: Student identifier.
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      schools:
+                        type: array
+                        description: List of schools associated with the student's courses
+                        items:
+                          type: object
+                          properties:
+                            schoolId:
+                              type: integer
+                              description: Identifier of the school
+                            schoolName:
+                              type: string
+                              description: Name of the school
+                            isLms:
+                              type: boolean
+                              description: Indicates whether the school is a Learning Management System
+                            courses:
+                              type: array
+                              description: List of courses the student is enrolled in at this school
+                              items:
+                                type: object
+                                properties:
+                                  id:
+                                    type: integer
+                                    description: Identifier of the course
+                                  status:
+                                    type: string
+                                    description: Current status of the course
+                                    enum:
+                                    - blocked
+                                    - inProgress
+                                    - inactive
+                                  name:
+                                    type: string
+                                    description: Name of the course
+                                  statusStudentOnCourse:
+                                    type: string
+                                    description: Student's current status in the course
+                                    enum:
+                                    - unPaid
+                                    - registered
+                                    - inProgress
+                                    - paid
+                                    - success
+                                    - failed
+                                    - certificated
+                                    - deletedFromCourse
+                                    - invited
+                                  studentDateRegistrationOnCourse:
+                                    type: string
+                                    format: date-time
+                                    description: Date and time when the student registered for the course
+                                  studentEmail:
+                                    type: string
+                                    description: Email address of the student
+                                  studentLastEntry:
+                                    type: string
+                                    format: date-time
+                                    description: Date and time of student's last access to the course
+                                  courseAvailableDate:
+                                    type: string
+                                    format: date-time
+                                    description: Date and time when the course becomes available to the student
+                                  studentMetadata:
+                                    type: object
+                                    description: Additional metadata related to the student in the context of this course
+                                  landingUrl:
+                                    type: string
+                                    description: URL of the course landing page
+                                  feedback:
+                                    type:
+                                    - object
+                                    - 'null'
+                                    description: Student's feedback for the course
+                                    properties:
+                                      rate:
+                                        type: integer
+                                        description: Rating given by the student (typically 1-5)
+                                      message:
+                                        type: string
+                                        description: Feedback message from the student
+                                      date:
+                                        type: string
+                                        format: date-time
+                                        description: Date and time when feedback was submitted
+                                  sections:
+                                    type: array
+                                    description: List of course sections
+                                    items:
+                                      type: object
+                                      properties:
+                                        id:
+                                          type: integer
+                                          description: Identifier of the section
+                                        name:
+                                          type: string
+                                          description: Name of the section
+                                        order:
+                                          type: integer
+                                          description: Order of the section within the course
+                                        status:
+                                          type: string
+                                          description: Current status of the section
+                                          enum:
+                                          - closed
+                                          - opened
+                                          - deleted
+                                          - planned
+                                        lessons:
+                                          type: array
+                                          description: List of lessons in the section
+                                          items:
+                                            type: object
+                                            properties:
+                                              id:
+                                                type: integer
+                                                description: Identifier of the lesson
+                                              name:
+                                                type: string
+                                                description: Name of the lesson
+                                              statusStudentOnLesson:
+                                                type: object
+                                                description: Student's progress status for this lesson
+                                                properties:
+                                                  status:
+                                                    type: string
+                                                    description: Current status of the student in the lesson
+                                                    enum:
+                                                    - doNotStarted
+                                                    - started
+                                                    - completed
+                                                  updatedAt:
+                                                    type: string
+                                                    description: Last update time of the student's lesson status
+                                              status:
+                                                type: string
+                                                description: Current status of the lesson
+                                                enum:
+                                                - closed
+                                                - opened
+                                                - deleted
+                                                - planned
+                                              feedback:
+                                                type:
+                                                - object
+                                                - 'null'
+                                                description: Student's feedback for the lesson
+                                                properties:
+                                                  rate:
+                                                    type: integer
+                                                    description: Rating given by the student for the lesson
+                                                  message:
+                                                    type: string
+                                                    description: Feedback message for the lesson
+                                                  date:
+                                                    type: string
+                                                    format: date-time
+                                                    description: Date and time when lesson feedback was submitted
+                                        certificateSections:
+                                          type: array
+                                          description: List of certificate sections in the course
+                                          items:
+                                            properties:
+                                              id:
+                                                type: integer
+                                                description: Identifier of the certificate section
+                                              name:
+                                                type: string
+                                                description: Name of the certificate section
+                                              sectionId:
+                                                type: integer
+                                                description: Identifier of the associated section
+                                              order:
+                                                type: integer
+                                                description: Order of the certificate section within the course
+                                              dateReceived:
+                                                type: string
+                                                format: date-time
+                                                description: Date and time when the certificate section was received
+                                              status:
+                                                type: string
+                                                description: Current status of the certificate section
+                                                enum:
+                                                - active
+                                                - inactive
+                                                - planned
+                                                - hidden
+                                              questionsCount:
+                                                type: integer
+                                                description: Number of questions in the certificate section
+                                              answeredQuestionsCount:
+                                                type: integer
+                                                description: Number of questions answered by the student in the certificate section
+                                              studentStatus:
+                                                type: string
+                                                description: Current status of the student in the certificate section
+                                                enum:
+                                                - null
+                                                - running
+                                                - finished
+                                                - blocked
+                                                - failed
+                                        forms:
+                                          type: array
+                                          description: List of forms associated with the course
+                                          items:
+                                            properties:
+                                              id:
+                                                type: integer
+                                                description: Identifier of the form
+                                              name:
+                                                type: string
+                                                description: Name of the form
+                                              sectionId:
+                                                type: integer
+                                                description: Identifier of the associated section
+                                              order:
+                                                type: integer
+                                                description: Order of the form within the course
+                                              status:
+                                                type: string
+                                                description: Current status of the form
+                                                enum:
+                                                - null
+                                                - completed
+                                                - started
+                                  tests:
+                                    type: array
+                                    description: List of tests associated with the course
+                                    items:
+                                      type: object
+                                      properties:
+                                        id:
+                                          type: integer
+                                          description: Identifier of the test
+                                        name:
+                                          type: string
+                                          description: Name of the test
+                                        studentStatus:
+                                          type:
+                                          - string
+                                          - 'null'
+                                          description: Current status of the student in the test
+                                          enum:
+                                          - null
+                                          - running
+                                          - finished
+                                          - blocked
+                                          - failed
+                                        score:
+                                          type: object
+                                          description: Student's test score information
+                                          properties:
+                                            userScore:
+                                              type: integer
+                                              description: Points earned by the student
+                                            maxScore:
+                                              type: integer
+                                              description: Maximum possible points for the test
+                                            minScore:
+                                              type: integer
+                                              description: Minimum passing score for the test
+                                        relatedEntityType:
+                                          type: string
+                                          description: Type of entity the test is related to
+                                        relatedEntityId:
+                                          type: integer
+                                          description: Identifier of the related entity
+                                        order:
+                                          type: integer
+                                          description: Order of the test within the course
+                                        status:
+                                          type: string
+                                          description: Current status of the test
+                                          enum:
+                                          - active
+                                          - inactive
+                                          - planned
+                                        feedback:
+                                          type:
+                                          - object
+                                          - 'null'
+                                          description: Student's feedback for the test
+                                          properties:
+                                            rate:
+                                              type: integer
+                                              description: Rating given by the student for the test
+                                            message:
+                                              type: string
+                                              description: Feedback message for the test
+                                            date:
+                                              type: string
+                                              format: date-time
+                                              description: Date and time when test feedback was submitted
+                                  homeworks:
+                                    type: array
+                                    description: List of homeworks associated with the course
+                                    items:
+                                      type: object
+                                      properties:
+                                        lessonId:
+                                          type: integer
+                                          description: Identifier of the lesson associated with the homework
+                                        name:
+                                          type: string
+                                          description: Name of the homework
+                                        status:
+                                          type:
+                                          - string
+                                          - 'null'
+                                          description: Current status of the homework
+                                          enum:
+                                          - checking
+                                          - accepted
+                                          - declined
+                                          - autoAccepted
+                                          - rework
+                                          - acceptedWithoutAnswer
+                                  hideOrder:
+                                    type: boolean
+                                    description: Indicates whether the order of course elements is hidden
+                                  promoCode:
+                                    type:
+                                    - string
+                                    - 'null'
+                                    description: Promo code used by the student for this course
+                                  promoCodeDiscount:
+                                    type:
+                                    - integer
+                                    - 'null'
+                                    description: Discount percentage applied through the promo code
+                                  studentTariff:
+                                    type:
+                                    - object
+                                    - 'null'
+                                    description: Information about the tariff the student is enrolled in for this course
+                                    properties:
+                                      id:
+                                        type: integer
+                                        description: Identifier of the tariff
+                                      courseId:
+                                        type: integer
+                                        description: Identifier of the course associated with the tariff
+                                      name:
+                                        type: string
+                                        description: Name of the tariff
+                                      isMain:
+                                        type: boolean
+                                        description: Indicates whether this is the main tariff for the course
+                                      isPaid:
+                                        type: boolean
+                                        description: Indicates whether the tariff is paid
+                                      studentTariffStatus:
+                                        type: string
+                                        description: Current status of the student's tariff
+                                        enum:
+                                        - paid
+                                        - unPaid
+                                      functionalityAccesses:
+                                        type: array
+                                        description: List of functionalities accessible under this tariff
+                                        items:
+                                          $ref: '#/components/schemas/FunctionalityResource'
+                                      courseTariffSetting:
+                                        $ref: '#/components/schemas/CourseTariffSettingResource'
+      operationId: getStudentCourseStatistics
+      x-ai-role: lms_progress_analyst
+      x-ai-description: Provides a comprehensive cross-school academic snapshot for a single student — their enrollment status, lesson-level progress, test scores, homework reviews, certificate attainment, and tariff access. This is the primary diagnostic endpoint for understanding where a student stands across all learning paths they are part of. Use it to detect blockers (failed tests, declined homeworks, blocked courses), verify payment status, or build a full progress report.
+      x-ai-reasoning-instructions:
+      - Confirm the studentId exists before calling; a wrong ID returns an empty or error response with no clear hint.
+      - The response is multi-layered (schools → courses → sections → lessons/tests/homeworks); navigate to the correct nesting level before drawing conclusions.
+      - Course `status` describes the course itself; `statusStudentOnCourse` describes the student's relationship — always distinguish the two when diagnosing issues.
+      - A `studentTariff` of null means the student has no assigned tariff — flag this if the user asks about access or payment issues.
+      - Check `certificateSections[].studentStatus` and `tests[].studentStatus` together to assess certification readiness.
+      - Lesson progress is under `sections[].lessons[].statusStudentOnLesson.status` — aggregate across sections for an overall completion rate.
+      - If `feedback` is null on a course or lesson, the student has not submitted feedback yet — do not interpret as negative.
+      x-ai-responding-instructions:
+      - 'Lead with a high-level summary: how many schools, how many courses, and the overall enrollment status.'
+      - 'Highlight any blockers immediately: courses with status `blocked`, student statuses `failed` or `deletedFromCourse`, tests with `failed` or `blocked` studentStatus.'
+      - When reporting test scores, always show userScore/maxScore together (e.g., '42 / 100') and note whether the student passed the minScore threshold.
+      - Summarize lesson completion as a fraction (e.g., '8 of 12 lessons completed') rather than listing every lesson.
+      - If a promo code was applied, mention the discount so the user understands the financial context.
+      - 'Suggest follow-up actions based on the current state: e.g., if homeworks are in `rework`, suggest resubmission; if a test is `running`, advise monitoring.'
+      x-ai-suggestions:
+      - Use this endpoint to build a student progress dashboard before a coaching session.
+      - Combine with the course detail endpoint to map section order against lesson completion.
+      - Cross-reference `studentLastEntry` with `courseAvailableDate` to detect students who enrolled but never accessed the course.
+      x-ai-capabilities:
+        confirmation:
+          type: None
+        security_info:
+          data_handling:
+          - ReadOnly
+          notes: Response contains PII (studentEmail, studentMetadata) — handle according to data privacy policy and avoid logging raw responses.
+  /students/{studentId}:
+    delete:
+      tags:
+      - Students
+      summary: Delete student from school
+      parameters:
+      - name: studentId
+        in: path
+        required: true
+        description: Student identifier.
+        schema:
+          type: integer
+      responses:
+        '204':
+          description: No Content
+      operationId: deleteStudent
+      x-ai-role: education_platform_administrator
+      x-ai-description: Permanently removes a student record from the school. This is a destructive operation that eliminates the student's enrollment, progress data, and access credentials. Use when a student withdraws, is expelled, or was added by mistake.
+      x-ai-reasoning-instructions:
+      - Verify the studentId exists before attempting deletion to provide a clear error message.
+      - Warn the user that this operation is irreversible and all associated student data (progress, grades, enrollments) may be lost.
+      - Check if the student has active course enrollments — deletion may orphan related records.
+      - Prefer soft-delete or deactivation if the platform supports it, reserving hard delete for data cleanup scenarios.
+      x-ai-responding-instructions:
+      - Confirm deletion by echoing the studentId that was removed.
+      - Note that the response is 204 No Content — absence of error is the success signal.
+      - If the student is not found (404), clarify that no action was taken and the ID may be incorrect.
+      - Suggest auditing enrollment records if the deletion was triggered by a withdrawal.
+      x-ai-capabilities:
+        confirmation:
+          type: Required
+          message: This will permanently delete student {studentId} and all associated data. This action cannot be undone.
+        security_info:
+          data_handling:
+          - IrreversibleDelete
+  /students/{studentId}/{courseId}:
+    delete:
+      tags:
+      - Students
+      summary: Delete student from course
+      parameters:
+      - name: studentId
+        in: path
+        required: true
+        description: Student identifier.
+        schema:
+          type: integer
+      - name: courseId
+        in: path
+        required: true
+        description: Course identifier.
+        schema:
+          type: integer
+      responses:
+        '204':
+          description: No Content
+      operationId: removeStudentFromCourse
+      x-ai-role: learning_management_specialist
+      x-ai-description: Permanently removes a student's enrollment from a specific course. This is a hard delete — the student loses access to course materials, progress data may be purged, and the action cannot be undone through the API. Typically used for unenrollment workflows, access revocation, or data cleanup.
+      x-ai-reasoning-instructions:
+      - Confirm both studentId and courseId exist and are active before proceeding.
+      - Warn the user that this action is irreversible — progress, grades, and completion records tied to this enrollment may be permanently lost.
+      - Check if the student is mid-course or has a pending certificate; suggest pausing instead of deleting if applicable.
+      - Ensure the caller has admin or instructor-level permissions for the given course.
+      x-ai-responding-instructions:
+      - Confirm the unenrollment by referencing both the studentId and courseId.
+      - Note that a 204 response means success with no body — explicitly tell the user the operation completed.
+      - Suggest verifying removal via a GET /students/{studentId} or equivalent list endpoint.
+      - If re-enrollment may be needed in future, remind the user it would require a new enrollment request.
+      x-ai-suggestions:
+      - Verify enrollment status before deletion using a GET on the student's course list.
+      - If bulk unenrollment is needed, loop this call per courseId for the given student.
+      x-ai-capabilities:
+        confirmation:
+          type: Required
+          message: This will permanently remove the student from the course. Proceed?
+        security_info:
+          data_handling:
+          - ResourceDeletion
+          - IrreversibleAction
+  /students/by-course/{courseId}:
+    post:
+      tags:
+      - Students
+      summary: Get students by course
+      parameters:
+      - name: courseId
+        in: path
+        required: true
+        description: Course identifier.
+        schema:
+          type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                offset:
+                  type: integer
+                  description: Pagination offset (number of records to skip).
+                limit:
+                  type: integer
+                  description: Pagination limit (maximum number of records to return).
+                tags:
+                  type: array
+                  description: Filter by tag IDs assigned to students.
+                  items:
+                    type: integer
+                tagsCondition:
+                  type: string
+                  enum:
+                  - all
+                  - any
+                  description: Condition for tag filtering 'all' for students with all tags, 'any' for students with any tag.
+                lessonId:
+                  type: integer
+                  description: Filter by lesson ID.
+                firstName:
+                  type: string
+                  description: Filter by student first name (substring match).
+                lastName:
+                  type: string
+                  description: Filter by student last name (substring match).
+                email:
+                  type: string
+                  description: Filter by email address (substring match).
+                courseStatus:
+                  type: array
+                  description: Filter by student status on courses.
+                  items:
+                    type: string
+                    enum:
+                    - registered
+                    - inProgress
+                    - success
+                    - failed
+                    - certificated
+                orderBy:
+                  type: string
+                  enum:
+                  - firstName
+                  - studentStatusOnCourse
+                  - studentTest
+                  - studentDateRegistrationOnCourse
+                  description: Field to sort by.
+                sort:
+                  type: string
+                  enum:
+                  - asc
+                  - desc
+                  description: Sort direction.
+                isPaid:
+                  type: boolean
+                  description: Filter by whether the student has paid for at least one course.
+                dateRegistrationOnCourse:
+                  type:
+                  - object
+                  - 'null'
+                  description: Date range filter for the date of registration on a course.
+                  properties:
+                    dateFrom:
+                      type: string
+                      format: date
+                      description: Start date (inclusive) in YYYY-MM-DD format.
+                    dateTo:
+                      type: string
+                      format: date
+                      description: End date (inclusive) in YYYY-MM-DD format.
+                dateLastEntry:
+                  type:
+                  - object
+                  - 'null'
+                  description: Date range filter for the last entry/login date.
+                  properties:
+                    dateFrom:
+                      type: string
+                      format: date
+                      description: Start date (inclusive) in YYYY-MM-DD format.
+                    dateTo:
+                      type: string
+                      format: date
+                      description: End date (inclusive) in YYYY-MM-DD format.
+                promoCodeIds:
+                  type: array
+                  description: Filter by promo code IDs used by students.
+                  items:
+                    type: integer
+                usedPromoCode:
+                  type:
+                  - boolean
+                  - 'null'
+                  description: Filter by whether any promo code was used.
+                searchString:
+                  type: string
+                  description: Free-text search across student attributes (name, email, etc.).
+                tariffIds:
+                  type: array
+                  description: Filter by tariff IDs assigned to students.
+                  items:
+                    type: integer
+                progress:
+                  type: object
+                  description: Filter by student progress in lessons, tests, or certificates.
+                  properties:
+                    lessons:
+                      type: array
+                      description: List of lesson IDs for progress filtering.
+                      items:
+                        type: integer
+                    tests:
+                      type: array
+                      description: List of test IDs for progress filtering.
+                      items:
+                        type: integer
+                    certificates:
+                      type: array
+                      description: List of certificate IDs for progress filtering.
+                      items:
+                        type: integer
+                withoutTariff:
+                  type:
+                  - boolean
+                  - 'null'
+                  description: The field must be omitted if you pass tariff IDs in the filter. If set to true, it will return all students without a tariff; if set to false, it will return all students with a tariff.
+              required:
+              - offset
+              - limit
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    type: array
+                    description: List of students enrolled in the specified course.
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                          description: Student identifier.
+                        uuid:
+                          type: string
+                          description: Student UUID.
+                        domainId:
+                          type: integer
+                          description: Domain identifier.
+                        schoolId:
+                          type: integer
+                          description: School identifier.
+                        domainName:
+                          type: string
+                          description: Domain name.
+                        firstName:
+                          type: string
+                          description: Student first name.
+                        lastName:
+                          type: string
+                          description: Student last name.
+                        contactFirstName:
+                          type: string
+                          description: Contact first name.
+                        contactLastName:
+                          type: string
+                          description: Contact last name.
+                        status:
+                          type: string
+                          description: Student status.
+                        responsibleId:
+                          type: integer
+                          description: Responsible user identifier.
+                        tags:
+                          type: array
+                          description: List of tag IDs assigned to the student.
+                          items:
+                            type: integer
+                        language:
+                          type: string
+                          description: Student language/locale code.
+                        avatar:
+                          type: string
+                          description: Student avatar URL.
+                        studentStatusOnCourse:
+                          type: string
+                          description: Student status on the specified course.
+                        studentDateRegistrationOnCourse:
+                          type: string
+                          format: date-time
+                          description: Date and time when the student registered for the specified course.
+                        studentLastEntry:
+                          type: string
+                          format: date-time
+                          description: Date and time of the student's last entry/login.
+                        updatedAt:
+                          type: string
+                          format: date-time
+                          description: Timestamp of the last update to the student's information.
+                        phone:
+                          type: string
+                          description: Student phone number.
+                        promoCode:
+                          type: string
+                          description: Promo code used by the student for the specified course.
+                        promoCodeDiscount:
+                          type: integer
+                          description: Discount percentage applied through the promo code.
+                        groups:
+                          type: array
+                          description: List of group IDs the student belongs to.
+                          items:
+                            type: object
+                            properties:
+                              groupId:
+                                type: integer
+                                description: Group identifier.
+                              courseId:
+                                type: integer
+                                description: Course identifier.
+                              groupName:
+                                type: string
+                                description: Group name.
+                              groupColor:
+                                type: string
+                                description: Group color.
+                              responsibleUserId:
+                                type: integer
+                                description: Responsible user identifier for the group.
+                        responsible:
+                          type: object
+                          description: Information about the responsible user for the student.
+                          properties:
+                            courseId:
+                              type: integer
+                              description: Course identifier.
+                            responsibleUserId:
+                              type: integer
+                              description: Responsible user identifier.
+                        studentTariff:
+                          type: object
+                          description: Information about the tariff the student is enrolled in for the specified course.
+                          properties:
+                            id:
+                              type: integer
+                              description: Tariff identifier.
+                            courseId:
+                              type: integer
+                              description: Course identifier.
+                            name:
+                              type: string
+                              description: Tariff name.
+                            isMain:
+                              type: boolean
+                              description: Indicates whether this is the main tariff for the course.
+                            isPaid:
+                              type: boolean
+                              description: Indicates whether the tariff is paid.
+                            studentTariffStatus:
+                              type: string
+                              description: Current status of the student's tariff.
+                              enum:
+                              - paid
+                              - unPaid
+                            functionalityAccesses:
+                              type: array
+                              description: List of functionalities accessible under this tariff.
+                              items:
+                                $ref: '#/components/schemas/FunctionalityResource'
+                            courseTariffSetting:
+                              $ref: '#/components/schemas/CourseTariffSettingResource'
+                        timezone:
+                          type:
+                          - string
+                          - 'null'
+                          description: Student timezone.
+                        dateFormat:
+                          type:
+                          - string
+                          - 'null'
+                          description: Preferred date format for the student.
+                        timeFormat:
+                          type:
+                          - string
+                          - 'null'
+                          description: Preferred time format for the student.
+      operationId: getStudentsByCourse
+      x-ai-role: elearning_enrollment_analyst
+      x-ai-description: 'Retrieves a paginated, filterable list of students enrolled in a specific course. This is the primary reporting endpoint for course administrators — it exposes not just enrollment status, but rich learner context: progress milestones, tariff assignments, promo usage, group membership, and login activity. Use it to answer operational questions like ''who hasn''t started yet?'', ''which students used a discount?'', or ''who is close to certification?'''
+      x-ai-reasoning-instructions:
+      - 'Always require both `offset` and `limit` — they are mandatory; suggest `offset: 0, limit: 50` as safe defaults.'
+      - 'When filtering by `tags`, clarify with the user whether they want students matching ALL tags (`tagsCondition: all`) or ANY tag (`tagsCondition: any`) — the default behavior difference is significant.'
+      - 'Do not pass `tariffIds` together with `withoutTariff: true` — these are mutually exclusive filters; the spec explicitly forbids combining them.'
+      - 'When the user asks to find inactive students, combine `courseStatus: [''registered'']` with a `dateLastEntry.dateTo` in the past to identify those who registered but never returned.'
+      - 'If the user wants to find unpaid students, use `isPaid: false` or `studentTariffStatus: unPaid` depending on whether they mean ''ever paid for any course'' vs. ''tariff payment status on this course''.'
+      - For large exports, advise iterating with increasing `offset` values until the returned `data` array is empty.
+      - When `progress` filter is used, clarify whether the intent is to find students WHO COMPLETED specific lessons/tests, or to find those WHO HAVEN'T — the filter semantics should be confirmed.
+      x-ai-responding-instructions:
+      - Report the total count of returned records and indicate if pagination is likely needed (e.g., if `limit` was reached).
+      - 'Highlight key fields per student: `firstName`, `lastName`, `studentStatusOnCourse`, `studentLastEntry`, and `studentTariff.name` — these are the most actionable for course managers.'
+      - If the result is empty, suggest relaxing one filter at a time (e.g., removing `courseStatus` or broadening date ranges) rather than clearing all filters at once.
+      - When tariff or promo data is present in results, summarize distribution (e.g., 'X of Y students used a promo code') if multiple records are returned.
+      - 'Suggest follow-up actions based on the result: for `inProgress` students with no recent `studentLastEntry`, recommend a re-engagement campaign via SendPulse email or chatbot.'
+      x-ai-suggestions:
+      - Filter students by status `registered` who haven't logged in for 14+ days to identify at-risk learners
+      - Use `searchString` for quick lookup by name or email before applying complex multi-filter queries
+      - 'Combine `courseStatus: [''inProgress'']` with `progress.lessons` to find students stuck on a specific lesson'
+      x-ai-capabilities:
+        confirmation:
+          type: None
+        security_info:
+          data_handling:
+          - ReadOnly
+          - PersonalDataAccess
+          notes: Response includes PII fields (email, phone, firstName, lastName, avatar). Handle in compliance with applicable data protection regulations.
+  /students/{courseId}/mark-as-paid:
+    post:
+      tags:
+      - Students
+      summary: Mark student as paid
+      parameters:
+      - name: courseId
+        in: path
+        required: true
+        description: Course identifier.
+        schema:
+          type: integer
+      requestBody:
+        description: List of student IDs to mark as paid for the specified course.
+        content:
+          application/json:
+            schema:
+              properties:
+                ids:
+                  type: array
+                  description: Array of student IDs to mark as paid for the specified course.
+                  items:
+                    type: integer
+      responses:
+        '204':
+          description: No Content
+      operationId: markStudentsAsPaid
+      x-ai-role: education_platform_administrator
+      x-ai-description: Marks one or more students as having paid for a specific course. This is a billing status update that unlocks course access or removes payment-gated restrictions. Typically called after a successful payment confirmation from an external payment processor.
+      x-ai-reasoning-instructions:
+      - Verify the courseId exists before submitting the request to avoid silent failures.
+      - Confirm that all student IDs in the `ids` array belong to the specified course to prevent cross-course data corruption.
+      - Since the response is 204 No Content, there is no body to inspect — treat a successful call as definitive confirmation.
+      - If marking a large batch, consider whether partial failures are possible and whether the operation is atomic.
+      x-ai-responding-instructions:
+      - Confirm to the user that the specified students have been successfully marked as paid for the course.
+      - Mention the number of students updated and the course ID for clarity.
+      - If the operation fails, suggest verifying that the student IDs and courseId are valid and belong to the same course.
+      x-ai-suggestions:
+      - After marking as paid, use the student list endpoint to verify updated payment statuses.
+      - Consider triggering a welcome or access-confirmation notification to the affected students.
+      x-ai-capabilities:
+        confirmation:
+          type: Recommended
+          message: You are about to mark {count} student(s) as paid for course {courseId}. Confirm?
+        security_info:
+          data_handling:
+          - ResourceStateUpdate
+          - BillingStatusChange
+components:
+  schemas:
+    Student:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Unique student identifier
+        uuid:
+          type: string
+          description: Universally unique identifier for the student
+        firstName:
+          type: string
+          description: Student's first name
+        lastName:
+          type: string
+          description: Student's last name
+        status:
+          type: string
+          description: Current status of the student
+        responsibleId:
+          type: integer
+          description: User ID of the person responsible for the student
+        email:
+          type: string
+          description: Student's email address
+        domainId:
+          type: integer
+          description: Domain identifier the student belongs to
+        language:
+          type: string
+          description: Preferred language/locale code (e.g., uk_UA)
+        phone:
+          type:
+          - string
+          - 'null'
+          description: Student's phone number (nullable)
+        avatar:
+          type:
+          - string
+          - 'null'
+          description: URL to the student's avatar image (nullable)
+        schoolId:
+          type: integer
+          description: School identifier the student is enrolled in
+        timezone:
+          type:
+          - string
+          - 'null'
+          description: Student's timezone (nullable)
+        dateFormat:
+          type:
+          - string
+          - 'null'
+          description: Preferred date format for the student (nullable)
+        timeFormat:
+          type:
+          - string
+          - 'null'
+          description: Preferred time format for the student (nullable)
+        recommendedLangs:
+          type:
+          - string
+          - 'null'
+          description: Recommended languages for the student (nullable)
+    CourseTariffSettingResource:
+      type: object
+      properties:
+        startDate:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: Tariff start date
+        endDate:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: Tariff end date
+        timezone:
+          type:
+          - string
+          - 'null'
+          description: Time zone used for tariff dates
+    FunctionalityResource:
+      type: object
+      properties:
+        type:
+          type: string
+          description: Type of available functionality
+          enum:
+          - chat
+  securitySchemes:
+    apiKey:
+      type: http
+      scheme: bearer
+      bearerFormat: API Key
+      description: 'Static API Key authentication.  A long-lived token generated manually in the SendPulse account settings.
+
+        '
+      x-ai-description: 'Permanent authentication token. Ideal for simple integrations without token refresh logic.
+
+        '
+    outh2:
+      type: oauth2
+      description: OAuth 2.0 Client Credentials flow for temporary access tokens.
+      flows:
+        clientCredentials:
+          tokenUrl: https://api.sendpulse.com/oauth/access_token
+          scopes: {}
+      x-ai-description: 'Standard OAuth 2.0 flow using Client ID and Client Secret.  Provides temporary tokens (valid for 1 hour) for enhanced security.
+
+        '

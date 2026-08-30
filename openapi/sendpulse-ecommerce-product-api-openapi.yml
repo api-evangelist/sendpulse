@@ -1,0 +1,1967 @@
+openapi: 3.2.0
+info:
+  description: Using the API for the CRM service, you can integrate your system with CRM from SendPulse and receive detailed information on pipelines, deals, contacts and their attributes and users. You can also create deals and contacts, assign and remove fields, tags, contact details and instant messengers. On the right, there is a button for authorizing requests made on this page. Click “Authorize,” then insert the ID and Secret from your account. To perform a request directly from the page, click the "Try it out" button within each method block. Then fill in input fields if any (for URL parameters, the description is right below the URL request; for body parameters, the description is under the “Scheme” button to the right of the example), and click “Run.” You will find the server response and description of received parameters below.
+  title: SendPulse CRM Public ECommerce Product API
+  version: 0.1.0
+servers:
+- url: https://api.sendpulse.com/crm/v1
+security:
+- apiKey: []
+- oauth2: []
+tags:
+- name: ECommerce Product
+paths:
+  /products/all:
+    post:
+      tags:
+      - ECommerce Product
+      summary: Get products by filter
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                categoryId:
+                  type: number
+                  description: Category ID to filter products.
+                dateFrom:
+                  type: string
+                  description: 'Start date for filtering (format: YYYY-MM-DD).'
+                dateTo:
+                  type: string
+                  description: 'End date for filtering (format: YYYY-MM-DD).'
+                search:
+                  type: string
+                  description: Text search by product name or code.
+                balance:
+                  type: object
+                  description: Filter by product stock balance and unit type.
+                  properties:
+                    expression:
+                      type: string
+                      enum:
+                      - '='
+                      - '>='
+                      - <=
+                      description: Comparison operator for balance.
+                    type:
+                      type: number
+                      enum:
+                      - 1
+                      - 2
+                      - 3
+                      - 4
+                      - 5
+                      - 6
+                      - 7
+                      description: Unit type of the product balance.
+                    value:
+                      type: number
+                      description: Stock quantity value to compare.
+                description:
+                  type: string
+                  description: Description for products
+                purchases:
+                  type: object
+                  description: Filter by number of purchases.
+                  properties:
+                    expression:
+                      type: string
+                      enum:
+                      - '='
+                      - '>='
+                      - <=
+                      description: Comparison operator for purchases.
+                    value:
+                      type: number
+                      description: Number of purchases to compare.
+                price:
+                  type: object
+                  description: Filter by product price or old price.
+                  properties:
+                    expression:
+                      type: string
+                      enum:
+                      - '='
+                      - '>='
+                      - <=
+                      description: Comparison operator for price.
+                    currency:
+                      type: string
+                      description: Currency of the price (e.g., USD, EUR).
+                    value:
+                      type: number
+                      description: Current price value.
+                    oldValue:
+                      type: number
+                      description: Previous price value.
+                visible:
+                  type: number
+                  enum:
+                  - 0
+                  - 1
+                  description: Product visibility status (0 = hidden, 1 = visible).
+                typeProduct:
+                  type: number
+                  enum:
+                  - 1
+                  - 2
+                  description: Product type (1 = physical, 2 = digital/service).
+                limit:
+                  type: number
+                  description: Maximum number of results to return.
+                offset:
+                  type: number
+                  description: Offset for pagination.
+                orderBy:
+                  type: object
+                  description: Sorting options.
+                  properties:
+                    fieldName:
+                      type: string
+                      enum:
+                      - id
+                      - balance
+                      - price
+                      description: Field to sort by.
+                    direction:
+                      type: string
+                      enum:
+                      - asc
+                      - desc
+                      description: Sorting direction (asc or desc).
+                sections:
+                  type: array
+                  description: Filter by section-specific key-value attributes.
+                  items:
+                    properties:
+                      key:
+                        type: string
+                        example: new
+                        description: Section attribute key (e.g., color).
+                      value:
+                        type: string
+                        example: york
+                        description: Section attribute value (e.g., red).
+                categoryIds:
+                  type: array
+                  description: List of category IDs to include in filter.
+                  items:
+                    type: number
+      responses:
+        '200':
+          description: Successful response containing product data.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    description: Product data result.
+                    properties:
+                      id:
+                        type: integer
+                        description: Product ID.
+                      name:
+                        type: string
+                        description: Product name.
+                      userId:
+                        type: integer
+                        description: Owner user ID.
+                      images:
+                        type: array
+                        items:
+                          type: string
+                        default:
+                        - url1
+                        - url2
+                        description: List of product image URLs.
+                      vendorCode:
+                        type: string
+                        description: Product vendor or article code.
+                      type:
+                        type: number
+                        description: Product internal type code.
+                      categoryId:
+                        type: number
+                        description: Product category ID.
+                      visible:
+                        type: boolean
+                        description: Visibility flag (true = visible).
+                      balance:
+                        type: object
+                        description: Product stock info.
+                        properties:
+                          type:
+                            type: number
+                            description: Stock unit type (same as input).
+                          value:
+                            type: number
+                            description: Stock quantity.
+                      price:
+                        type: object
+                        description: Product pricing info.
+                        properties:
+                          id:
+                            type: number
+                            description: Price record ID.
+                          currency:
+                            type: string
+                            description: Currency code (e.g., USD).
+                          value:
+                            type: number
+                            description: Current price value.
+                          oldValue:
+                            type: number
+                            description: Previous price value.
+                      countSales:
+                        type: number
+                        description: Total number of product sales.
+                      createdAt:
+                        type: string
+                        description: Product creation datetime.
+                      typeProduct:
+                        type: number
+                        enum:
+                        - 1
+                        - 2
+                        description: Product type (1 = physical, 2 = digital/service).
+      operationId: getProductsByFilter
+      x-ai-role: ecommerce_catalog_manager
+      x-ai-description: Fetches a filtered, paginated list of products from the ECommerce catalog. This is the primary product discovery endpoint — it acts as a flexible query interface supporting multi-dimensional filtering by category, price range, stock balance, visibility, and custom section attributes. Use it to power catalog search, inventory audits, and campaign product selection.
+      x-ai-reasoning-instructions:
+      - Determine which filters are actually needed — avoid sending empty filter objects as they may affect query performance.
+      - If the user wants all products, omit all filter fields and rely only on limit/offset for pagination.
+      - When filtering by price, always specify currency to ensure correct comparison across multi-currency catalogs.
+      - For stock balance filtering, clarify the unit type (enum 1–7) with the user if it's not obvious from context.
+      - Use categoryIds (array) instead of categoryId (single) when the user wants to query multiple categories at once.
+      - Always include limit and offset for large catalogs to avoid unintended full-dataset responses.
+      - If the user wants to find new or featured items, use the sections filter with appropriate key-value pairs.
+      x-ai-responding-instructions:
+      - Report the number of products returned and indicate if pagination is needed (i.e., if count equals limit).
+      - 'Highlight key fields in results: product name, vendorCode, price, balance, and visibility status.'
+      - If results are empty, suggest relaxing filters (e.g., broader date range, removing balance constraints).
+      - When returning products for campaign use, suggest following up with an endpoint to attach products to a mailing or automation flow.
+      x-ai-suggestions:
+      - 'Filter by visible: 1 to fetch only publicly listed products.'
+      - Use dateFrom/dateTo to find recently added or updated products.
+      - 'Combine typeProduct: 2 with price filter to audit digital product pricing.'
+      - 'Use orderBy: { fieldName: ''price'', direction: ''asc'' } to surface cheapest products first.'
+      x-ai-capabilities:
+        confirmation:
+          type: None
+        security_info:
+          data_handling:
+          - ReadOnly
+  /products/categories/{categoryId}/{productId}:
+    get:
+      tags:
+      - ECommerce Product
+      summary: Get products by id
+      parameters:
+      - name: productId
+        in: path
+        required: true
+        schema:
+          type: number
+      - name: categoryId
+        in: path
+        required: true
+        schema:
+          type: number
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                      name:
+                        type: string
+                      description:
+                        type: string
+                      shortDescription:
+                        type: string
+                      images:
+                        type: array
+                        default:
+                        - url1
+                        - url2
+                      vendorCode:
+                        type: string
+                      categoryId:
+                        type: number
+                      balance:
+                        type: object
+                        properties:
+                          type:
+                            type: number
+                          value:
+                            type: number
+                      availability:
+                        type: number
+                      visible:
+                        type: number
+                      userId:
+                        type: number
+                      seo:
+                        type: object
+                        properties:
+                          name:
+                            type: string
+                          description:
+                            type: string
+                          keys:
+                            type: string
+                      prices:
+                        type: array
+                        items:
+                          properties:
+                            id:
+                              type: number
+                            currency:
+                              type: string
+                            value:
+                              type: number
+                            oldValue:
+                              type: number
+                            isDefault:
+                              type: boolean
+                            productId:
+                              type: number
+                      sections:
+                        type: array
+                        items:
+                          properties:
+                            id:
+                              type: number
+                            name:
+                              type: string
+                            productId:
+                              type: number
+                            values:
+                              type: array
+                              items:
+                                properties:
+                                  id:
+                                    type: number
+                                  sectionId:
+                                    type: number
+                                  key:
+                                    type: string
+                                  value:
+                                    type: string
+                      categorySections:
+                        type: array
+                        items:
+                          properties:
+                            id:
+                              type: number
+                            name:
+                              type: string
+                            categoryId:
+                              type: number
+                            values:
+                              type: array
+                              items:
+                                properties:
+                                  id:
+                                    type: number
+                                  sectionId:
+                                    type: number
+                                  key:
+                                    type: string
+                                  value:
+                                    type: string
+      operationId: getCategoryProduct
+      x-ai-role: ecommerce_catalog_manager
+      x-ai-description: Retrieves full product details within a specific category context, including pricing tiers, inventory balance, SEO metadata, and custom sections. This endpoint is the authoritative source for rendering a product page — it returns not just core product data but also category-scoped attribute sections (categorySections) alongside product-specific sections, enabling dynamic storefront rendering without additional calls.
+      x-ai-reasoning-instructions:
+      - Both categoryId and productId are required — verify both are available before calling; a mismatch (product not belonging to the category) may return empty or 404.
+      - Check the `availability` field (0 = unavailable, 1 = available) to determine whether to surface add-to-cart actions.
+      - Check the `visible` field before displaying the product — hidden products should not be rendered in public storefronts.
+      - 'When multiple prices are returned, use the one with `isDefault: true` as the primary display price; others may represent currency variants or tiered pricing.'
+      - The `balance` object contains inventory state — use `type` to interpret the balance model (e.g., numeric stock vs. unlimited).
+      - Use `sections` for product-specific attributes and `categorySections` for category-level attributes — both may need to be merged for complete spec display.
+      x-ai-responding-instructions:
+      - Present the product name, short description, and default price as the primary summary.
+      - If the product is not visible or not available, proactively flag this to the user rather than silently returning raw data.
+      - When showing prices, highlight the default currency/price and mention if multi-currency options exist.
+      - List sections and categorySections as structured attributes (key-value pairs) for clarity.
+      - If images are present, list URLs to assist with rendering or downloading assets.
+      - Mention the vendorCode if present — it's useful for inventory reconciliation or external system lookups.
+      x-ai-suggestions:
+      - Use this endpoint to populate a product detail page before rendering.
+      - Combine with category listing endpoints to build breadcrumb navigation using the returned categoryId.
+      - Cross-reference `vendorCode` with external ERP or warehouse systems for stock sync.
+      x-ai-capabilities:
+        confirmation:
+          type: None
+        security_info:
+          data_handling:
+          - ReadOnly
+  /products/deals:
+    post:
+      tags:
+      - ECommerce Product
+      summary: Add product to deal
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                productId:
+                  type: number
+                dealId:
+                  type: number
+                productPriceISO:
+                  type: string
+                  default: UAH
+                productPriceValue:
+                  type: number
+                quantity:
+                  type: number
+                allow_out_of_stock:
+                  type: boolean
+                  description: When true the product is attached even if stock is zero and inventory is not decremented
+      responses:
+        '200':
+          description: OK
+      operationId: addProductToDeal
+      x-ai-role: ecommerce_sales_manager
+      x-ai-description: Links a product to a CRM deal, capturing the exact commercial terms (price, currency, quantity) at the time of attachment. This is the core mechanism for building deal line-items — each attachment represents a unit of revenue within the deal pipeline and directly affects deal value calculations.
+      x-ai-reasoning-instructions:
+      - Verify that both productId and dealId exist before attempting to link them.
+      - Confirm the currency ISO code is valid (e.g., UAH, USD, EUR) before submission.
+      - If productPriceValue is not provided, check whether the product has a default price to suggest.
+      - If stock availability is uncertain, ask the user whether to set allow_out_of_stock=true rather than defaulting silently.
+      - Consider whether the same product is already attached to the deal to avoid duplicate line-items.
+      x-ai-responding-instructions:
+      - Confirm the product was successfully linked and mention both the product and deal IDs.
+      - If allow_out_of_stock was set to true, note that inventory was not decremented.
+      - Suggest reviewing total deal value after adding line-items.
+      - On failure, clarify whether the issue is with the product, the deal, or the stock constraint.
+      x-ai-suggestions:
+      - After attaching all products, retrieve the deal summary to verify total value.
+      - Use the deal update endpoint to adjust status if all required products are now linked.
+      x-ai-capabilities:
+        confirmation:
+          type: Recommended
+          message: Confirm attaching product {productId} to deal {dealId} at {productPriceValue} {productPriceISO} × {quantity}?
+        security_info:
+          data_handling:
+          - ResourceStateUpdate
+          - InventoryModification
+  /products/deals/{dealId}:
+    get:
+      tags:
+      - ECommerce Product
+      summary: Get products by deal id
+      parameters:
+      - name: dealId
+        in: path
+        required: true
+        schema:
+          type: number
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      totalAmount:
+                        type: integer
+                      currency:
+                        type: string
+                      items:
+                        type: array
+                        items:
+                          properties:
+                            id:
+                              type: integer
+                            name:
+                              type: string
+                            description:
+                              type: string
+                            images:
+                              type: array
+                              default:
+                              - url1
+                              - url2
+                            vendorCode:
+                              type: string
+                            extra:
+                              type: object
+                              properties:
+                                quantity:
+                                  type: number
+                                amount:
+                                  type: number
+                                currency:
+                                  type: string
+                                totalAmount:
+                                  type: number
+                                outOfStock:
+                                  type: boolean
+      operationId: getProductsByDealId
+      x-ai-role: ecommerce_sales_analyst
+      x-ai-description: Retrieves the full product lineup attached to a specific CRM deal, including pricing summary and per-item detail. This endpoint is the primary way to inspect what a deal is worth and what SKUs it contains — critical for order confirmation, invoice generation, and upsell analysis.
+      x-ai-reasoning-instructions:
+      - Verify the dealId exists before interpreting an empty response as 'no products' — the deal itself may not exist.
+      - Check `totalAmount` against the sum of `extra.totalAmount` across items to detect data inconsistencies.
+      - If `extra.outOfStock` is true for any item, flag it to the user before proceeding with order or quote workflows.
+      - Note that `currency` at the top level may differ from `extra.currency` per item — surface any mismatch.
+      x-ai-responding-instructions:
+      - 'Present a concise summary: total amount, currency, and item count before listing individual products.'
+      - Highlight any out-of-stock items prominently.
+      - If the items array is empty, suggest verifying the dealId or checking whether products have been added to the deal.
+      - When relevant, suggest following up with a deal-update endpoint to add or modify products.
+      x-ai-suggestions:
+      - Use this endpoint to build a pre-invoice product summary for a deal.
+      - Combine with deal metadata endpoints to produce a full sales order view.
+      - Cross-reference `vendorCode` with your inventory system to verify stock levels.
+      x-ai-capabilities:
+        confirmation:
+          type: None
+        security_info:
+          data_handling:
+          - ReadOnly
+  /products/deals/{headId}:
+    put:
+      tags:
+      - ECommerce Product
+      summary: Update quantity or amount products in deal
+      parameters:
+      - name: headId
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                quantity:
+                  type: integer
+                  description: Product quantity in the deal
+                amount:
+                  type: integer
+                  description: Product amount in the deal
+      responses:
+        '200':
+          description: OK
+      operationId: updateProductsInDeal
+      x-ai-role: ecommerce_sales_manager
+      x-ai-description: Updates the quantity or monetary amount of products attached to a specific deal head. This is a core operation for maintaining accurate deal valuations in CRM pipelines — incorrect product quantities directly affect deal totals, forecasts, and revenue reporting.
+      x-ai-reasoning-instructions:
+      - Verify that the deal with the given headId exists before attempting an update.
+      - At least one of `quantity` or `amount` must be provided — warn the user if both are omitted.
+      - Clarify with the user whether `amount` represents unit price or total line value, as this affects downstream deal totals.
+      - If updating quantity, consider whether the amount should be recalculated proportionally.
+      x-ai-responding-instructions:
+      - Confirm which fields were updated (quantity, amount, or both).
+      - Suggest verifying the updated deal total using a deal retrieval endpoint.
+      - If the deal is in a closed/won stage, warn that modifying product values may affect historical reporting.
+      x-ai-suggestions:
+      - Fetch the current deal state before updating to avoid overwriting stale data.
+      - Use `getDealProducts` after updating to confirm the new values are reflected correctly.
+      x-ai-capabilities:
+        confirmation:
+          type: Recommended
+          message: Updating product values in a deal affects deal totals and may impact revenue forecasts.
+        security_info:
+          data_handling:
+          - ResourceStateUpdate
+  /products/contacts/{contactId}/deals:
+    get:
+      tags:
+      - ECommerce Product
+      summary: Get products by contact id
+      parameters:
+      - name: contactId
+        in: path
+        required: true
+        schema:
+          type: number
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                      name:
+                        type: string
+                      totalAmount:
+                        type: integer
+                      currency:
+                        type: string
+                      items:
+                        type: array
+                        items:
+                          properties:
+                            id:
+                              type: integer
+                            name:
+                              type: string
+                            description:
+                              type: string
+                            images:
+                              type: array
+                              default:
+                              - url1
+                              - url2
+                            vendorCode:
+                              type: string
+                            extra:
+                              type: object
+                              properties:
+                                quantity:
+                                  type: number
+                                amount:
+                                  type: number
+                                currency:
+                                  type: string
+                                totalAmount:
+                                  type: number
+                                outOfStock:
+                                  type: boolean
+      operationId: getProductsByContactDeals
+      x-ai-role: ecommerce_crm_analyst
+      x-ai-description: Retrieves the list of products associated with deals linked to a specific CRM contact. This endpoint bridges CRM and eCommerce data — it allows agents to understand what products a contact has purchased or is interested in based on their deal history, enabling personalized follow-ups, upsell recommendations, and revenue attribution per contact.
+      x-ai-reasoning-instructions:
+      - Verify that the contactId corresponds to an existing CRM contact before calling this endpoint.
+      - Treat the response as deal-scoped product data — the same product may appear across multiple deals; aggregate carefully if computing totals.
+      - Check the `outOfStock` flag on individual items before recommending re-purchase or upsell actions.
+      - Use `currency` fields at both the deal and item level — they may differ if the account supports multi-currency.
+      x-ai-responding-instructions:
+      - Summarize the deal's total amount and currency alongside the product list for immediate business context.
+      - Highlight any items where `outOfStock` is true and suggest alternatives or follow-up actions.
+      - If multiple products are returned, group them logically (e.g., by category or vendor code) to aid readability.
+      - If the response is empty, clarify that this contact has no deals with associated products yet.
+      x-ai-suggestions:
+      - Use this endpoint before launching a re-engagement campaign to personalize product recommendations.
+      - Combine with contact profile data to build a complete purchase history view.
+      - Cross-reference `vendorCode` with your product catalog to enrich the response with additional metadata.
+      x-ai-capabilities:
+        confirmation:
+          type: None
+        security_info:
+          data_handling:
+          - ReadOnly
+  /products/categories/{categoryId}/{productId}/deals/{headId}:
+    delete:
+      tags:
+      - ECommerce Product
+      summary: Detach products from deal
+      parameters:
+      - name: categoryId
+        in: path
+        required: true
+        schema:
+          type: number
+      - name: productId
+        in: path
+        required: true
+        schema:
+          type: number
+      - name: headId
+        in: path
+        required: true
+        schema:
+          type: number
+      responses:
+        '200':
+          description: OK
+      operationId: detachProductFromDeal
+      x-ai-role: ecommerce_catalog_manager
+      x-ai-description: Removes a product from a specific deal within a category, breaking the association between the product and the deal head. Use this when a product should no longer participate in a promotional deal or bundle without deleting the product or deal itself.
+      x-ai-reasoning-instructions:
+      - Confirm that the deal (headId) currently includes the specified product before attempting detachment to avoid misleading 404 errors.
+      - Verify that detaching this product will not violate any deal minimum-product requirements (e.g., a deal requiring at least one product).
+      - If bulk detachment is needed, check whether the API supports batch operations before calling this endpoint repeatedly.
+      x-ai-responding-instructions:
+      - Confirm that the product has been successfully detached from the deal.
+      - Clarify that neither the product nor the deal was deleted — only their association was removed.
+      - Suggest reviewing remaining deal products via the appropriate GET endpoint to verify deal integrity after detachment.
+      x-ai-suggestions:
+      - After detachment, use the deal GET endpoint to confirm remaining associated products.
+      - If you need to remove the deal entirely, use the delete deal endpoint instead.
+      x-ai-capabilities:
+        confirmation:
+          type: Recommended
+          message: 'This will detach product #{productId} from deal #{headId}. The product and deal will remain intact, but their link will be removed.'
+        security_info:
+          data_handling:
+          - RelationshipDelete
+  /products/{productId}:
+    get:
+      tags:
+      - ECommerce Product
+      summary: Get products by id
+      parameters:
+      - name: productId
+        in: path
+        required: true
+        schema:
+          type: number
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                      name:
+                        type: string
+                      description:
+                        type: string
+                      shortDescription:
+                        type: string
+                      images:
+                        type: array
+                        default:
+                        - url1
+                        - url2
+                      vendorCode:
+                        type: string
+                      type:
+                        type: number
+                      categoryId:
+                        type: number
+                      balance:
+                        type: object
+                        properties:
+                          type:
+                            type: number
+                          value:
+                            type: number
+                      availability:
+                        type: number
+                      visible:
+                        type: number
+                      userId:
+                        type: number
+                      seo:
+                        type: object
+                        properties:
+                          name:
+                            type: string
+                          description:
+                            type: string
+                          keys:
+                            type: string
+                      prices:
+                        type: array
+                        items:
+                          properties:
+                            id:
+                              type: number
+                            currency:
+                              type: string
+                            value:
+                              type: number
+                            oldValue:
+                              type: number
+                            isDefault:
+                              type: boolean
+                            productId:
+                              type: number
+                      sections:
+                        type: array
+                        items:
+                          properties:
+                            id:
+                              type: number
+                            name:
+                              type: string
+                            productId:
+                              type: number
+                            values:
+                              type: array
+                              items:
+                                properties:
+                                  id:
+                                    type: number
+                                  sectionId:
+                                    type: number
+                                  key:
+                                    type: string
+                                  value:
+                                    type: string
+                      categorySections:
+                        type: array
+                        items:
+                          properties:
+                            id:
+                              type: number
+                            name:
+                              type: string
+                            categoryId:
+                              type: number
+                            values:
+                              type: array
+                              items:
+                                properties:
+                                  id:
+                                    type: number
+                                  sectionId:
+                                    type: number
+                                  key:
+                                    type: string
+                                  value:
+                                    type: string
+      operationId: getProductById
+      x-ai-role: ecommerce_catalog_specialist
+      x-ai-description: Retrieves the full product record by its unique identifier, including pricing tiers, inventory balance, SEO metadata, custom sections, and category-level attribute sections. This is the canonical source of truth for a single product entity and serves as the primary read operation before any update, display, or recommendation workflow.
+      x-ai-reasoning-instructions:
+      - Confirm that productId is a valid numeric identifier before calling — string slugs or SKUs will not work here.
+      - Check the `availability` field to determine whether the product can be sold or shown to end users.
+      - Use `balance.type` and `balance.value` together to interpret stock semantics — type may indicate unit (pieces, weight, etc.).
+      - 'If the goal is to display pricing, iterate `prices` and filter by `isDefault: true` for the primary price; use `oldValue` to detect discounted items.'
+      - For personalization or filtering use cases, `sections` holds product-specific attributes while `categorySections` holds category-level attributes — treat them separately.
+      - If `visible` is 0, the product is hidden from the storefront; flag this to the user before proceeding with campaigns or recommendations.
+      x-ai-responding-instructions:
+      - Lead with the product name and its current availability status.
+      - Surface the default price prominently; mention if a discounted price (oldValue) exists.
+      - If sections or categorySections are present, summarize the key attributes (e.g., color, size) rather than dumping raw arrays.
+      - Highlight SEO fields if the user's context involves content or marketing tasks.
+      - If the product is not visible or out of stock, clearly flag this as a potential issue for the intended workflow.
+      x-ai-suggestions:
+      - Use `vendorCode` to cross-reference with external inventory or ERP systems.
+      - After retrieval, consider calling the product update endpoint if any fields need correction.
+      - Use `categoryId` to fetch sibling products or category-level settings.
+      x-ai-capabilities:
+        confirmation:
+          type: None
+        security_info:
+          data_handling:
+          - ReadOnly
+    put:
+      tags:
+      - ECommerce Product
+      summary: Update product by id
+      parameters:
+      - name: productId
+        in: path
+        required: true
+        schema:
+          type: number
+        description: ID of the product to update
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                name:
+                  type: string
+                  description: Product name
+                description:
+                  type: string
+                  description: Full product description
+                shortDescription:
+                  type: string
+                  description: Short product summary
+                images:
+                  type: array
+                  default:
+                  - url1
+                  - url2
+                  description: Array of product image URLs
+                vendorCode:
+                  type: string
+                  description: Vendor or manufacturer code
+                categoryId:
+                  type: number
+                  description: Category ID the product belongs to
+                balance:
+                  type: object
+                  description: Stock balance information
+                  properties:
+                    type:
+                      type: number
+                      description: Balance type (e.g. available, reserved)
+                    value:
+                      type: number
+                      description: Balance quantity
+                availability:
+                  type: number
+                  description: Product availability status
+                visible:
+                  type: number
+                  description: Visibility flag (0 - hidden, 1 - visible)
+                seo:
+                  type: object
+                  description: SEO-related metadata
+                  properties:
+                    name:
+                      type: string
+                      description: SEO title
+                    description:
+                      type: string
+                      description: SEO description
+                    keys:
+                      type: string
+                      description: SEO keywords
+                digitalInfo:
+                  type: object
+                  description: Digital product details
+                  properties:
+                    productLink:
+                      type: string
+                      description: Direct link to digital product
+                    productLinkPreview:
+                      type: string
+                      description: Link to preview of digital product
+                    isProductLinkExternal:
+                      type: boolean
+                      description: Is product link external
+                    isProductLinkPreviewExternal:
+                      type: boolean
+                      description: Is preview link external
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                        description: Product ID
+                      name:
+                        type: string
+                        description: Product name
+                      description:
+                        type: string
+                        description: Full product description
+                      shortDescription:
+                        type: string
+                        description: Short product summary
+                      images:
+                        type: array
+                        default:
+                        - url1
+                        - url2
+                        description: Array of product image URLs
+                      vendorCode:
+                        type: string
+                        description: Vendor or manufacturer code
+                      type:
+                        type: number
+                        description: Product type
+                      categoryId:
+                        type: number
+                        description: Category ID
+                      balance:
+                        type: object
+                        description: Stock balance info
+                        properties:
+                          type:
+                            type: number
+                            description: Balance type
+                          value:
+                            type: number
+                            description: Balance value
+                      availability:
+                        type: number
+                        description: Availability status
+                      visible:
+                        type: number
+                        description: Visibility flag
+                      userId:
+                        type: number
+                        description: ID of the user who owns or created the product
+                      seo:
+                        type: object
+                        description: SEO metadata
+                        properties:
+                          name:
+                            type: string
+                            description: SEO title
+                          description:
+                            type: string
+                            description: SEO description
+                          keys:
+                            type: string
+                            description: SEO keywords
+                      prices:
+                        type: array
+                        items:
+                          properties:
+                            id:
+                              type: number
+                              description: Price ID
+                            currency:
+                              type: string
+                              description: Currency code
+                            value:
+                              type: number
+                              description: Current price
+                            oldValue:
+                              type: number
+                              description: Old price (before discount)
+                            isDefault:
+                              type: boolean
+                              description: Flag indicating default price
+                            productId:
+                              type: number
+                              description: Associated product ID
+                      sections:
+                        type: array
+                        items:
+                          properties:
+                            id:
+                              type: number
+                              description: Section ID
+                            name:
+                              type: string
+                              description: Section name
+                            productId:
+                              type: number
+                              description: Related product ID
+                            status:
+                              type: number
+                              description: Section status
+                            values:
+                              type: array
+                              items:
+                                properties:
+                                  id:
+                                    type: number
+                                    description: Value ID
+                                  sectionId:
+                                    type: number
+                                    description: Section ID this value belongs to
+                                  key:
+                                    type: string
+                                    description: Parameter key
+                                  value:
+                                    type: string
+                                    description: Parameter value
+                                  status:
+                                    type: number
+                                    description: Status of the parameter
+                      digitalInfo:
+                        type: object
+                        description: Digital product info
+                        properties:
+                          productLink:
+                            type: string
+                            description: Digital product link
+                          productLinkPreview:
+                            type: string
+                            description: Preview link for digital product
+                          isProductLinkExternal:
+                            type: boolean
+                            description: Is digital product link external
+                          isProductLinkPreviewExternal:
+                            type: boolean
+                            description: Is preview link external
+      operationId: updateProduct
+      x-ai-role: ecommerce_catalog_manager
+      x-ai-description: Performs a partial or full update of an existing product in the e-commerce catalog. This endpoint is the primary mechanism for keeping product data current — including stock balance, pricing visibility, SEO metadata, and digital delivery links. Changes take effect immediately and can affect storefront display, search indexing, and purchase availability.
+      x-ai-reasoning-instructions:
+      - Only include fields that need to be changed — omitted fields retain their current values.
+      - Before updating `categoryId`, confirm the target category exists to avoid orphaned product assignments.
+      - When toggling `visible` to 0, consider whether active campaigns or automations reference this product.
+      - If updating `balance.value` to 0, verify whether this should also set `availability` to unavailable (e.g., 0).
+      - For digital products, ensure `digitalInfo.productLink` is accessible and not behind auth if `isProductLinkExternal` is true.
+      - SEO fields (`seo.name`, `seo.description`, `seo.keys`) directly affect search engine indexing — changes may take time to propagate.
+      - If updating images, provide the full desired array — it replaces the existing image list, not appends to it.
+      x-ai-responding-instructions:
+      - Confirm the update by referencing the product ID and name from the response.
+      - If `visible` was changed, explicitly state the new storefront visibility status.
+      - If stock balance was updated, mention the new balance value and type for clarity.
+      - Suggest reviewing prices or sections if a category change was made, as those may need alignment.
+      - For digital products, confirm the delivery link is set correctly and note whether it's external or internal.
+      x-ai-suggestions:
+      - To restock a product, update `balance.value` with the new quantity.
+      - To hide a product temporarily without deleting it, set `visible` to 0.
+      - After updating SEO fields, allow up to 24–48 hours for search engines to re-index.
+      x-ai-capabilities:
+        confirmation:
+          type: Recommended
+          message: You are about to update product {productId}. Confirm the changes before proceeding.
+        security_info:
+          data_handling:
+          - ResourceStateUpdate
+          - StorefrontVisibilityChange
+    delete:
+      tags:
+      - ECommerce Product
+      summary: Delete product by id
+      parameters:
+      - name: productId
+        in: path
+        required: true
+        schema:
+          type: number
+        description: ID of the product to delete
+      responses:
+        '204':
+          description: OK
+      operationId: deleteProduct
+      x-ai-role: ecommerce_catalog_manager
+      x-ai-description: Permanently removes a product from the catalog by its unique identifier. This is a destructive, irreversible operation that should be used when a product is discontinued or was created in error. Deletion may affect active campaigns, automations, or recommendations referencing this product.
+      x-ai-reasoning-instructions:
+      - Before deleting, verify the productId exists to avoid misleading 404 errors.
+      - Warn the user if the product may be referenced in active email campaigns or automation flows.
+      - Confirm the intent — deletion is permanent and cannot be undone via the API.
+      - If the goal is to hide a product rather than remove it, suggest disabling it instead if such an option exists.
+      x-ai-responding-instructions:
+      - Confirm the product was successfully deleted (HTTP 204 means no content — operation succeeded).
+      - Remind the user that any campaigns or automations using this product ID may now reference a non-existent resource.
+      - Suggest auditing related automations or product blocks in emails after deletion.
+      x-ai-capabilities:
+        confirmation:
+          type: Required
+          message: This action permanently deletes the product and cannot be undone. Confirm the productId before proceeding.
+        security_info:
+          data_handling:
+          - IrreversibleDelete
+  /products/categories/{categoryId}:
+    put:
+      tags:
+      - ECommerce Product
+      summary: Update users category by id
+      parameters:
+      - name: categoryId
+        in: path
+        required: true
+        schema:
+          type: number
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                parentId:
+                  type: number
+                name:
+                  type: string
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                      name:
+                        type: string
+                      userId:
+                        type: integer
+                      parentId:
+                        type: integer
+      operationId: updateProductCategory
+      x-ai-role: ecommerce_catalog_manager
+      x-ai-description: Updates an existing product category in the e-commerce catalog. Categories form a hierarchical tree via parentId — changing parentId relocates the category within the taxonomy, which may affect storefront navigation, filtering logic, and any products already associated with this category.
+      x-ai-reasoning-instructions:
+      - Before updating, confirm the categoryId exists to avoid a silent no-op or 404.
+      - If parentId is being changed, verify the new parent exists and is not the category itself or one of its descendants — circular hierarchies are invalid.
+      - If only name is provided, treat it as a rename-only operation and preserve the existing parentId.
+      - Check whether any active products or subcategories depend on this category before renaming, as it may affect external integrations or URLs.
+      x-ai-responding-instructions:
+      - Confirm the update by echoing back the updated category name and its id.
+      - If parentId was changed, note the new position in the hierarchy explicitly.
+      - Suggest verifying affected products or subcategories as a follow-up if a structural (parentId) change was made.
+      x-ai-suggestions:
+      - Rename a category without changing its position by omitting parentId.
+      - Move a subcategory to the root level by setting parentId to 0 or null.
+      - Use GET /products/categories to retrieve the full hierarchy before restructuring.
+      x-ai-capabilities:
+        confirmation:
+          type: Recommended
+          message: Confirm before changing parentId as it restructures the category hierarchy and may affect storefront navigation.
+        security_info:
+          data_handling:
+          - ResourceStateUpdate
+    delete:
+      tags:
+      - ECommerce Product
+      summary: Delete users category by id
+      parameters:
+      - name: categoryId
+        in: path
+        required: true
+        schema:
+          type: number
+      responses:
+        '204':
+          description: OK
+      operationId: deleteProductCategory
+      x-ai-role: ecommerce_catalog_manager
+      x-ai-description: Permanently removes a product category from the store catalog. Deleting a category may affect product visibility and navigation structure — products assigned exclusively to this category may become uncategorized or hidden, impacting storefront display and SEO.
+      x-ai-reasoning-instructions:
+      - Before deleting, check whether any products are assigned to this category to avoid orphaning items.
+      - Warn the user that this action is irreversible — the category and its hierarchy position cannot be restored.
+      - If the category is a parent of subcategories, clarify whether child categories will also be removed or reassigned.
+      - Confirm the correct categoryId is targeted, especially in bulk operations.
+      x-ai-responding-instructions:
+      - Confirm successful deletion with the categoryId that was removed.
+      - If products were associated with this category, suggest reassigning them to another category immediately.
+      - If deletion fails (e.g., category not found or has dependencies), explain the reason and suggest resolution steps.
+      x-ai-capabilities:
+        confirmation:
+          type: Required
+          message: Deleting a category is permanent and may affect product visibility. Confirm before proceeding.
+        security_info:
+          data_handling:
+          - DestructiveOperation
+          - ResourceStateUpdate
+  /products/categories:
+    get:
+      tags:
+      - ECommerce Product
+      summary: Get users categories
+      responses:
+        '200':
+          description: List of user categories in a nested tree structure
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    type: array
+                    items:
+                      properties:
+                        tree:
+                          type: array
+                          description: Hierarchical structure of categories
+                          items:
+                            properties:
+                              id:
+                                type: integer
+                                description: Category ID
+                              name:
+                                type: string
+                                description: Category name
+                              parent_id:
+                                type: integer
+                                description: ID of the parent category
+                              depth:
+                                type: integer
+                                description: Level of category in the tree
+                              path:
+                                type: integer
+                                description: Encoded tree path or identifier
+                              children:
+                                type: array
+                                description: List of subcategories
+                                items:
+                                  properties:
+                                    id:
+                                      type: integer
+                                      description: Category ID
+                                    name:
+                                      type: string
+                                      description: Category name
+                                    parent_id:
+                                      type: integer
+                                      description: ID of the parent category
+                                    depth:
+                                      type: integer
+                                      description: Level of category in the tree
+                                    path:
+                                      type: integer
+                                      description: Encoded tree path or identifier
+                                    children:
+                                      type: array
+                                      description: Nested children categories
+                        count:
+                          type: integer
+                          description: Total number of categories
+      operationId: getProductCategories
+      x-ai-role: ecommerce_catalog_manager
+      x-ai-description: Retrieves the full category tree for the user's e-commerce store. Categories are returned as a nested hierarchical structure with depth and path metadata, which is essential for building navigation menus, filtering product listings, and assigning products to the correct taxonomy nodes. The tree shape means that root categories contain children arrays — traverse recursively to get the full picture.
+      x-ai-reasoning-instructions:
+      - Use this endpoint before creating or updating products to determine valid category IDs for assignment.
+      - The response is a full tree — if you need a flat list of all categories, flatten the nested `children` arrays recursively.
+      - Pay attention to `depth` and `parent_id` to understand hierarchy level; root categories have `parent_id` of null or 0.
+      - If the category count is large, consider caching the result client-side rather than calling repeatedly within the same workflow.
+      x-ai-responding-instructions:
+      - Present the category structure in a human-readable tree format, not as raw JSON.
+      - Highlight the total count of categories returned.
+      - If the user is looking for a specific category, suggest filtering by name from the returned list.
+      - Suggest using the retrieved category IDs as input for product creation or filtering endpoints.
+      x-ai-suggestions:
+      - Use returned category IDs with `createProduct` or `updateProduct` to assign products to correct categories.
+      - If no categories exist, suggest creating root categories first before adding products.
+      - Use `depth` field to distinguish root (0) from subcategories when rendering navigation.
+      x-ai-capabilities:
+        confirmation:
+          type: None
+        security_info:
+          data_handling:
+          - ReadOnly
+    post:
+      tags:
+      - ECommerce Product
+      summary: Store users categories
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                parentId:
+                  type: number
+                  description: ID of parent category. Null for root.
+                name:
+                  type: string
+                  description: Name of the category
+                sections:
+                  type: array
+                  description: Sections belonging to the category
+                  items:
+                    properties:
+                      name:
+                        type: string
+                        description: Section name
+                      status:
+                        type: integer
+                        description: Section status (e.g., 1 - active)
+                      values:
+                        type: array
+                        description: List of values for the section
+                        items:
+                          properties:
+                            key:
+                              type: string
+                              description: Attribute key
+                            value:
+                              type: string
+                              description: Attribute value
+                            status:
+                              type: integer
+                              description: Status of the attribute value
+      responses:
+        '201':
+          description: Category successfully created
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                        description: Newly created category ID
+                      name:
+                        type: string
+                        description: Name of the created category
+                      userId:
+                        type: integer
+                        description: ID of the user who created the category
+                      parentId:
+                        type: integer
+                        description: ID of the parent category
+      operationId: createProductCategory
+      x-ai-role: ecommerce_catalog_manager
+      x-ai-description: Creates a new product category in the SendPulse e-commerce catalog. Categories define the hierarchical taxonomy of the product tree — root categories group high-level domains, while nested categories and sections carry structured attribute schemas (e.g., size, color, material) that will be inherited by products assigned to this category.
+      x-ai-reasoning-instructions:
+      - Check if a category with the same name already exists at the same hierarchy level to avoid duplicate taxonomy entries.
+      - If parentId is null, this will become a root category — confirm with the user that the top-level placement is intentional.
+      - Validate that section values have consistent key naming conventions (e.g., snake_case) to ensure compatibility with product attribute assignment later.
+      - If sections are provided, verify that each section has at least one value with a valid status to be immediately usable.
+      x-ai-responding-instructions:
+      - Confirm successful creation by stating the new category ID and its position in the hierarchy (root vs. child).
+      - If sections with values were included, briefly summarize how many attribute groups were attached.
+      - 'Suggest the next step: assigning products to this category or creating sub-categories using the same endpoint with the returned ID as parentId.'
+      x-ai-suggestions:
+      - Electronics > Smartphones
+      - Clothing > Men > Outerwear
+      - Home & Garden > Furniture
+      x-ai-capabilities:
+        confirmation:
+          type: None
+        security_info:
+          data_handling:
+          - ResourceStateUpdate
+  /products/{productId}/prices:
+    put:
+      tags:
+      - ECommerce Product
+      summary: Update price in product
+      parameters:
+      - name: productId
+        in: path
+        required: true
+        schema:
+          type: number
+        description: ID of the product to update prices for
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                prices:
+                  type: array
+                  description: List of prices for the product
+                  items:
+                    properties:
+                      id:
+                        type: number
+                        description: ID of the price record
+                      currency:
+                        type: string
+                        description: Currency code (e.g., USD, EUR)
+                      value:
+                        type: number
+                        description: Current price value
+                      oldValue:
+                        type: number
+                        description: Previous price value
+                      isDefault:
+                        type: boolean
+                        description: Whether this price is the default one
+      responses:
+        '200':
+          description: Prices successfully updated
+      operationId: updateProductPrices
+      x-ai-role: ecommerce_catalog_manager
+      x-ai-description: Updates the pricing configuration for a specific product, supporting multi-currency price records with optional 'old price' for visual discounts. This is a full replacement of the price list for the given product — missing price IDs may be removed depending on backend behavior. Setting a default price affects which value is shown first in storefronts and used in automated flows.
+      x-ai-reasoning-instructions:
+      - Confirm the productId exists before attempting the update to avoid silent failures.
+      - 'Ensure exactly one price has `isDefault: true`; having none or multiple defaults may cause inconsistent storefront behavior.'
+      - Validate that all currency codes follow ISO 4217 (e.g., USD, EUR, UAH) before submitting.
+      - If `oldValue` is provided, verify it is greater than `value` — otherwise it has no visual discount effect and may mislead customers.
+      - 'Treat this as a replacement operation: if existing price records are omitted, confirm with the user whether deletion is intended.'
+      x-ai-responding-instructions:
+      - Confirm which currencies were updated and which price is now marked as default.
+      - If `oldValue` was set, mention that the discount indicator will be visible on the storefront.
+      - Suggest verifying the result by fetching the product's current prices after the update.
+      x-ai-suggestions:
+      - 'Set `isDefault: true` on the primary currency price (e.g., USD) to ensure consistent checkout behavior.'
+      - Use `oldValue` to display a strikethrough 'was' price for promotional campaigns.
+      - After updating prices, consider triggering a product sync if integrated with an external storefront.
+      x-ai-capabilities:
+        confirmation:
+          type: Recommended
+          message: You are about to overwrite all price records for this product. Please confirm the new price list is complete.
+        security_info:
+          data_handling:
+          - ResourceStateUpdate
+          - PotentialDataLoss
+  /products/{productId}/sections:
+    post:
+      tags:
+      - ECommerce Product
+      summary: Update section in product
+      parameters:
+      - name: productId
+        in: path
+        required: true
+        schema:
+          type: number
+        description: ID of the product to update sections for
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                sections:
+                  type: array
+                  description: List of sections to update
+                  items:
+                    properties:
+                      id:
+                        type: number
+                        description: ID of the section
+                      name:
+                        type: string
+                        description: Section name
+                      status:
+                        type: number
+                        description: Section status (e.g., 1 - active)
+                      values:
+                        type: array
+                        description: Attributes or values inside the section
+                        items:
+                          properties:
+                            id:
+                              type: number
+                              description: ID of the value
+                            key:
+                              type: string
+                              description: Name of the attribute
+                            value:
+                              type: string
+                              description: Value of the attribute
+                            status:
+                              type: number
+                              description: Status of the attribute value
+      responses:
+        '201':
+          description: Sections successfully created
+      operationId: updateProductSections
+      x-ai-role: ecommerce_catalog_manager
+      x-ai-description: Replaces or creates sections within a specific product — sections are structured attribute groups (e.g., 'Specifications', 'Dimensions') that organize key-value metadata shown to customers. This endpoint is the primary mechanism for defining or updating a product's structured content beyond basic fields.
+      x-ai-reasoning-instructions:
+      - Verify the productId exists before sending the request to avoid a 404.
+      - Each section can contain multiple attribute values via the `values` array — confirm all required attributes are included to avoid incomplete product data.
+      - If updating existing sections, include their `id` fields; omitting `id` may result in duplicate sections depending on API behavior.
+      - 'Check `status` semantics: value `1` is active — set inactive sections to `0` rather than deleting them to preserve historical data.'
+      - Validate that `key` names within `values` are consistent across products to maintain catalog uniformity.
+      x-ai-responding-instructions:
+      - Confirm which sections were updated and how many attribute values were affected.
+      - If the response is 201, clarify to the user that sections were successfully applied, even though this is a POST (not PATCH).
+      - Suggest verifying the result by fetching the product to confirm section structure.
+      - If sections contain pricing or availability attributes, warn the user that changes may be immediately visible to customers.
+      x-ai-suggestions:
+      - Use distinct `name` values per section such as 'Technical Specifications', 'Physical Dimensions', 'Compatibility'.
+      - 'Set `status: 1` for all active sections; use `status: 0` to soft-hide a section without removing it.'
+      - After updating sections, call the product retrieval endpoint to verify the final structure.
+      x-ai-capabilities:
+        confirmation:
+          type: Recommended
+          message: Updating product sections may overwrite existing structured attributes visible to customers. Confirm before proceeding.
+        security_info:
+          data_handling:
+          - ResourceStateUpdate
+          - CustomerFacingDataChange
+    put:
+      tags:
+      - ECommerce Product
+      summary: Update section in product
+      parameters:
+      - name: productId
+        in: path
+        required: true
+        schema:
+          type: number
+        description: ID of the product to update sections for
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                sections:
+                  type: array
+                  description: List of sections to update
+                  items:
+                    properties:
+                      id:
+                        type: number
+                        description: ID of the section
+                      name:
+                        type: string
+                        description: Section name
+                      status:
+                        type: number
+                        description: Section status (e.g., 1 - active)
+                      values:
+                        type: array
+                        description: Attributes or values inside the section
+                        items:
+                          properties:
+                            id:
+                              type: number
+                              description: ID of the value
+                            key:
+                              type: string
+                              description: Name of the attribute
+                            value:
+                              type: string
+                              description: Value of the attribute
+                            status:
+                              type: number
+                              description: Status of the attribute value
+      responses:
+        '200':
+          description: Sections successfully updated
+      operationId: updateProductSections
+      x-ai-role: ecommerce_catalog_manager
+      x-ai-description: Updates structured content sections within a product, including their names, statuses, and typed attribute values. Sections define the product's informational schema — each section groups related attributes (key-value pairs) that describe characteristics like materials, dimensions, or specifications. Modifying sections affects how the product is displayed and indexed across the catalog.
+      x-ai-reasoning-instructions:
+      - Fetch the current product sections before updating to identify existing IDs and avoid accidental data loss.
+      - Ensure each section `id` in the payload corresponds to an existing section — omitting or mismatching IDs may silently drop sections.
+      - When updating `values`, include all existing value entries alongside new ones; partial arrays may overwrite and discard unlisted values.
+      - Validate that `status` fields use recognized values (e.g., 1 = active, 0 = inactive) per the platform's enumeration.
+      - If updating attribute keys (`key` field), verify uniqueness within the section to prevent schema conflicts.
+      x-ai-responding-instructions:
+      - Confirm which sections and attributes were updated, referencing section names where possible.
+      - If the response indicates partial failure, clearly identify which sections or values were not applied.
+      - Suggest reviewing the product detail endpoint to verify the changes are reflected correctly.
+      - Warn the user if they appear to be replacing all sections with a reduced set, as this may remove existing data.
+      x-ai-suggestions:
+      - Retrieve current sections first via GET /products/{productId} to build a complete update payload.
+      - After updating, validate the result with a GET request to confirm section structure integrity.
+      - Use status=0 to deactivate a section without deleting it, preserving historical data.
+      x-ai-capabilities:
+        confirmation:
+          type: Recommended
+          message: This operation overwrites section data. Confirm the payload includes all sections and values intended to remain active.
+        security_info:
+          data_handling:
+          - ResourceStateUpdate
+          - PotentialDataLoss
+  /products/{productId}/sections/{sectionId}:
+    delete:
+      tags:
+      - ECommerce Product
+      summary: Delete products section
+      parameters:
+      - name: productId
+        in: path
+        required: true
+        description: ID of the product to delete sections from
+        schema:
+          type: number
+      - name: sectionId
+        in: path
+        required: true
+        schema:
+          type: number
+        description: ID of the section to delete
+      responses:
+        '204':
+          description: OK
+      operationId: deleteProductSection
+      x-ai-role: ecommerce_catalog_manager
+      x-ai-description: Permanently removes a specific section from a product, including all content nested within it. Sections structure the product page layout — deleting one collapses that part of the product presentation. This is a destructive, irreversible operation that directly affects what customers see on the storefront.
+      x-ai-reasoning-instructions:
+      - Confirm that both productId and sectionId are valid and belong to the same product before proceeding.
+      - Warn the user that this action is irreversible — all content within the section will be lost.
+      - Check if this is the last section on the product; removing it may result in an incomplete or broken product page.
+      - If operating in an automated flow, require explicit confirmation before executing deletion.
+      x-ai-responding-instructions:
+      - Confirm the section was successfully deleted (204 No Content means success).
+      - Remind the user that the change is permanent and the section cannot be restored.
+      - Suggest reviewing the product page after deletion to ensure the layout remains valid.
+      - If an error occurs, clarify whether it was due to an invalid productId, sectionId, or insufficient permissions.
+      x-ai-capabilities:
+        confirmation:
+          type: Required
+          message: This will permanently delete section {sectionId} from product {productId}. This action cannot be undone.
+        security_info:
+          data_handling:
+          - IrreversibleDelete
+          - ResourceStateUpdate
+  /products:
+    post:
+      tags:
+      - ECommerce Product
+      summary: Create a new product
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                name:
+                  type: string
+                  description: Product name. Max length 255
+                description:
+                  type: string
+                  description: Product description. Max length 10000
+                shortDescription:
+                  type: string
+                  description: Product short description. Max length 10000
+                images:
+                  type: array
+                  default:
+                  - url1
+                  - url2
+                  description: Product images. Path from File manager service
+                vendorCode:
+                  type: string
+                  description: Product vendor code. Max length 255
+                type:
+                  type: number
+                  default: 1
+                  description: Product type . 1 - product, 2 - service, 3 - subscription (expected soon)
+                productType:
+                  type: number
+                  default: 1
+                  enum:
+                  - 1
+                  - 2
+                  - 3
+                  description: Product type. 1 - physical, 2 - digital
+                categoryId:
+                  type: number
+                  description: Category ID. It can be obtained with the "Get users categories" method
+                balance:
+                  type: object
+                  properties:
+                    type:
+                      type: number
+                      description: Product balance type. 1 - piece, 2 - service, 3 - meter, 4 - set, 5 - liter, 6 - kilogram, 7 - package
+                    value:
+                      type: number
+                      description: Product balance value. Max 11 digits
+                    oldValue:
+                      type: number
+                      description: Product balance value. Max 11 digits
+                  description: Product balance.
+                availability:
+                  type: number
+                  enum:
+                  - 1
+                  - 2
+                  - 3
+                  description: Product availability. 1 - available, 2 - unavailable, 3 - expecting
+                visible:
+                  type: number
+                  enum:
+                  - 0
+                  - 1
+                  description: Product visibility. 0 - not visible, 1 - visible
+                digitalInfo:
+                  type: object
+                  properties:
+                    productLink:
+                      type: string
+                      description: Product link. Max length 255. Path from File manager service
+                    productLinkPreview:
+                      type: string
+                      description: Product link preview. Max length 255. Path from File manager service
+                    isProductLinkExternal:
+                      type: boolean
+                      description: Flag which indicates whether the product link is external.
+                    isProductLinkPreviewExternal:
+                      type: boolean
+                      description: Flag which indicates whether the product link preview is external.
+                  description: Product digital info.
+                seo:
+                  type: object
+                  properties:
+                    name:
+                      type: string
+                      description: Product name. Max length 255
+                    description:
+                      type: string
+                      description: Product description. Max length 255
+                    keys:
+                      type: string
+                      description: Product keys. Max length 255
+                  description: Product SEO info.
+                prices:
+                  type: array
+                  items:
+                    properties:
+                      currency:
+                        type: string
+                        description: Product currency. Max length 3. ISO CODE
+                      value:
+                        type: number
+                        description: Product price. Between 0.01,999999999.99
+                      oldValue:
+                        type: number
+                        description: Product old price. Between 0.01,999999999.99
+                      isDefault:
+                        type: boolean
+                        description: Flag which indicates whether the product price is default.
+                sections:
+                  type: array
+                  items:
+                    properties:
+                      name:
+                        type: string
+                        description: Product section name. Max length 255
+                      status:
+                        type: number
+                        description: Product section status. 1 - active, 0 - inactive
+                      values:
+                        type: array
+                        items:
+                          properties:
+                            key:
+                              type: string
+                              description: Product section key. Max length 255
+                            value:
+                              type: string
+                              description: Product section value. Max length 2000
+                            status:
+                              type: number
+                              description: Product section value status. 1 - active, 0 - inactive
+                        description: Product section values.
+                  description: Product sections.
+      responses:
+        '201':
+          description: ''
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                      name:
+                        type: string
+                      description:
+                        type: string
+                      shortDescription:
+                        type: string
+                      images:
+                        type: array
+                        default:
+                        - url1
+                        - url2
+                      vendorCode:
+                        type: string
+                      type:
+                        type: number
+                      categoryId:
+                        type: number
+                      balance:
+                        type: object
+                        properties:
+                          type:
+                            type: number
+                          value:
+                            type: number
+                      availability:
+                        type: number
+                      visible:
+                        type: number
+                      userId:
+                        type: number
+                      productType:
+                        type: number
+                        default: 1
+                        enum:
+                        - 1
+                        - 2
+                      seo:
+                        type: object
+                        properties:
+                          name:
+                            type: string
+                          description:
+                            type: string
+                          keys:
+                            type: string
+                      prices:
+                        type: array
+                        items:
+                          properties:
+                            id:
+                              type: number
+                            currency:
+                              type: string
+                            value:
+                              type: number
+                            oldValue:
+                              type: number
+                            isDefault:
+                              type: boolean
+                            productId:
+                              type: number
+                      sections:
+                        type: array
+                        items:
+                          properties:
+                            id:
+                              type: number
+                            name:
+                              type: string
+                            productId:
+                              type: number
+                            status:
+                              type: number
+                            values:
+                              type: array
+                              items:
+                                properties:
+                                  id:
+                                    type: number
+                                  sectionId:
+                                    type: number
+                                  key:
+                                    type: string
+                                  value:
+                                    type: string
+                                  status:
+                                    type: number
+                      digitalInfo:
+                        type: object
+                        properties:
+                          productLink:
+                            type: string
+                          productLinkPreview:
+                            type: string
+                          isProductLinkExternal:
+                            type: boolean
+                          isProductLinkPreviewExternal:
+                            type: boolean
+      operationId: createProduct
+      x-ai-role: ecommerce_catalog_manager
+      x-ai-description: Створює новий товар у каталозі SendPulse eCommerce. Товар є центральним об'єктом магазину — до нього прив'язуються ціни в різних валютах, залишки, SEO-метадані, цифрові файли та кастомні секції з характеристиками. Від правильного заповнення залежить видимість у вітрині, коректна обробка замовлень і якість пошукової індексації.
+      x-ai-reasoning-instructions:
+      - Перевір, чи вже існує товар із таким самим `vendorCode` або `name` в категорії, щоб уникнути дублювання.
+      - Визнач `type` (1=product/2=service) та `productType` (1=physical/2=digital) до передачі запиту — від цього залежить необхідність заповнення `digitalInfo` та `balance`.
+      - Якщо `productType=2` (digital), переконайся, що передано `digitalInfo.productLink`; поле `balance` для цифрових товарів зазвичай не актуальне.
+      - 'Для `prices` завжди встановлюй одну ціну з `isDefault: true`; валюта має відповідати ISO 4217 (3 літери).'
+      - Якщо передаються `images` або `digitalInfo.productLink` — це шляхи до файлів із File Manager, а не зовнішні URL; для зовнішніх URL використовуй відповідні прапорці `isProductLinkExternal`.
+      - Перед визначенням `categoryId` отримай список категорій через `getUsersCategories`, щоб передати валідний ідентифікатор.
+      - 'Якщо товар ще не готовий до продажу, встанови `visible: 0` або `availability: 2` (unavailable), щоб не показувати його у вітрині передчасно.'
+      x-ai-responding-instructions:
+      - Підтверди успішне створення, назвавши новий `data.id` товару.
+      - Якщо передано ціни — перелічи їх у відповіді з валютою та значенням.
+      - 'Нагадай про наступні логічні кроки: додати варіанти товару, пов''язати зі знижками або опублікувати (встановити `visible: 1`).'
+      - У разі помилки валідації (наприклад, відсутній `isDefault` у `prices`) — поясни конкретне поле та очікуване значення.
+      x-ai-suggestions:
+      - Premium Wireless Headphones
+      - Digital Marketing Course — PDF + Video
+      - Monthly SaaS Subscription Plan
+      x-ai-capabilities:
+        confirmation:
+          type: None
+        security_info:
+          data_handling:
+          - ResourceStateUpdate
+          - FileReference
+components:
+  securitySchemes:
+    apiKey:
+      type: http
+      scheme: bearer
+      bearerFormat: API Key
+      description: 'Static API Key authentication.  A long-lived token generated manually in the SendPulse account settings.
+
+        '
+      x-ai-description: 'Permanent authentication token. Ideal for simple integrations without token refresh logic.
+
+        '
+    outh2:
+      type: oauth2
+      description: OAuth 2.0 Client Credentials flow for temporary access tokens.
+      flows:
+        clientCredentials:
+          tokenUrl: https://api.sendpulse.com/oauth/access_token
+          scopes: {}
+      x-ai-description: 'Standard OAuth 2.0 flow using Client ID and Client Secret.  Provides temporary tokens (valid for 1 hour) for enhanced security.
+
+        '

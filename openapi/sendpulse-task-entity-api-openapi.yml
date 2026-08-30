@@ -1,0 +1,276 @@
+openapi: 3.2.0
+info:
+  description: Using the API for the CRM service, you can integrate your system with CRM from SendPulse and receive detailed information on pipelines, deals, contacts and their attributes and users. You can also create deals and contacts, assign and remove fields, tags, contact details and instant messengers. On the right, there is a button for authorizing requests made on this page. Click “Authorize,” then insert the ID and Secret from your account. To perform a request directly from the page, click the "Try it out" button within each method block. Then fill in input fields if any (for URL parameters, the description is right below the URL request; for body parameters, the description is under the “Scheme” button to the right of the example), and click “Run.” You will find the server response and description of received parameters below.
+  title: SendPulse CRM Public Task Entity API
+  version: 0.1.0
+servers:
+- url: https://api.sendpulse.com/crm/v1
+security:
+- apiKey: []
+- oauth2: []
+tags:
+- name: Task Entity
+paths:
+  /task-contacts/{taskId}/contact/{contactId}:
+    delete:
+      tags:
+      - Task Entity
+      summary: Detach a contact from a task
+      parameters:
+      - name: taskId
+        in: path
+        required: true
+        schema:
+          type: integer
+      - name: contactId
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '204':
+          description: Successfully deleted
+      operationId: detachContactFromTask
+      x-ai-role: crm_task_manager
+      x-ai-description: Removes the association between a specific contact and a task without deleting either entity. Use this when a contact is no longer relevant to a task — for example, a deal fell through or the contact was assigned to the wrong task. The operation is non-destructive to the contact or task record itself.
+      x-ai-reasoning-instructions:
+      - Confirm that both taskId and contactId exist before attempting detachment to provide a clear error if either is missing.
+      - Warn the user if this is the last contact on the task — the task may become orphaned without any associated contacts.
+      - 'Distinguish clearly from contact deletion: this only removes the task-contact relationship.'
+      x-ai-responding-instructions:
+      - Confirm the contact was successfully detached from the task (204 means no body — explicitly acknowledge success).
+      - Suggest verifying remaining contacts on the task via the appropriate list endpoint.
+      - If the user seems to be doing bulk cleanup, suggest iterating over all task contacts rather than calling one by one.
+      x-ai-suggestions:
+      - Use GET /task-contacts/{taskId} to retrieve all contacts still linked to the task after detachment.
+      - If the intent is to reassign rather than remove, first attach the new contact before detaching the old one.
+      x-ai-capabilities:
+        confirmation:
+          type: Recommended
+          message: This will remove contact {contactId} from task {taskId}. The contact record itself will not be deleted.
+        security_info:
+          data_handling:
+          - RelationshipDelete
+  /task-deals/{taskId}/deal/{dealId}:
+    delete:
+      tags:
+      - Task Entity
+      summary: Detach a deal from a task
+      parameters:
+      - name: taskId
+        in: path
+        required: true
+        schema:
+          type: integer
+      - name: dealId
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '204':
+          description: Successfully deleted
+      operationId: detachDealFromTask
+      x-ai-role: crm_pipeline_specialist
+      x-ai-description: Removes the association between a specific deal and a task without deleting either entity. This is a relationship management operation — the deal and task continue to exist independently after detachment. Use when a deal is no longer relevant to the task's scope or was linked by mistake.
+      x-ai-reasoning-instructions:
+      - Verify that the deal is currently linked to the task before attempting detachment to avoid misleading 404 errors.
+      - Warn the user that this action is non-reversible via API — the link must be manually re-created if needed.
+      - If the task has only one deal attached, consider whether detaching leaves the task without necessary context.
+      x-ai-responding-instructions:
+      - Confirm successful detachment by referencing both the taskId and dealId.
+      - Clarify that neither the task nor the deal was deleted — only their association was removed.
+      - Suggest verifying the task's remaining deals or updating the task status if the detached deal was the primary one.
+      x-ai-suggestions:
+      - Use `getTaskDeals` to list remaining deals after detachment.
+      - If the deal was linked incorrectly, use `attachDealToTask` to re-establish the correct association.
+      x-ai-capabilities:
+        confirmation:
+          type: Recommended
+          message: This will permanently remove the link between task {{taskId}} and deal {{dealId}}. Proceed?
+        security_info:
+          data_handling:
+          - RelationshipDelete
+  /task-to-task/{taskHeadId}/task/{taskId}:
+    delete:
+      tags:
+      - Task Entity
+      summary: Detach task from another task
+      parameters:
+      - name: taskHeadId
+        in: path
+        required: true
+        description: Parent task ID
+        schema:
+          type: integer
+      - name: taskId
+        in: path
+        required: true
+        description: Child task ID
+        schema:
+          type: integer
+      responses:
+        '204':
+          description: Successfully deleted
+      operationId: detachTaskFromTask
+      x-ai-role: project_management_specialist
+      x-ai-description: Removes a dependency or hierarchical link between two tasks without deleting the tasks themselves. This is a structural operation that reshapes the task graph — useful when a subtask needs to be promoted to standalone or reassigned under a different parent.
+      x-ai-reasoning-instructions:
+      - Confirm that both taskHeadId (parent) and taskId (child) exist before attempting the detachment.
+      - Warn the user that detaching may affect dependent workflows or task ordering if the child task had sequencing constraints inherited from the parent.
+      - Check whether the child task has other parent links — if not, it will become a root-level task after detachment.
+      x-ai-responding-instructions:
+      - Confirm the detachment by restating which child task was unlinked from which parent.
+      - Suggest verifying the task structure afterward using a task retrieval endpoint to confirm the new hierarchy.
+      - If the intent was to delete the child task entirely, clarify that this operation only unlinks — not deletes.
+      x-ai-suggestions:
+      - Use after reassigning a subtask to a different parent task.
+      - Use when flattening a task hierarchy during project restructuring.
+      x-ai-capabilities:
+        confirmation:
+          type: Recommended
+          message: Confirm detachment of task {taskId} from parent task {taskHeadId}. This will not delete either task.
+        security_info:
+          data_handling:
+          - RelationshipRemoval
+  /tasks/{taskId}/entity-attach:
+    post:
+      tags:
+      - Task Entity
+      summary: Attach entity to task
+      parameters:
+      - name: taskId
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              properties:
+                connections:
+                  type: object
+                  properties:
+                    dealIds:
+                      type: array
+                      example: '[ 1,2 ]'
+                    contactIds:
+                      type: array
+                      example: '[ 1,2 ]'
+                    taskIds:
+                      type: array
+                      example: '[ 1,2 ]'
+                    subTasksIds:
+                      type: array
+                      example: '[ 1,2 ]'
+      responses:
+        '201':
+          description: ''
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    $ref: '#/components/schemas/TasksConnection'
+      operationId: attachEntitiesToTask
+      x-ai-role: crm_workflow_coordinator
+      x-ai-description: 'Links related CRM entities — deals, contacts, other tasks, or subtasks — to a specific task, forming explicit relationships within the CRM graph. This is a structural operation: it does not create entities, but wires existing ones together to give the task its relationship context, enabling cross-entity visibility and workflow traceability.'
+      x-ai-reasoning-instructions:
+      - Verify that the target task (taskId) exists before attempting to attach entities.
+      - Validate that all IDs in each array (dealIds, contactIds, taskIds, subTasksIds) refer to existing entities — attaching non-existent IDs may silently fail or return partial results.
+      - Avoid attaching a task to itself via taskIds to prevent circular references.
+      - 'Consider the business intent: is the user linking a deal because this task is part of a sales pipeline? If so, confirm the correct dealId.'
+      - Multiple entity types can be attached in a single call — batch them to minimize API calls.
+      x-ai-responding-instructions:
+      - Confirm which entity types were successfully attached and reference the taskId.
+      - If the response includes a TasksConnection object, summarize which entities are now linked.
+      - Suggest a follow-up action such as viewing the task detail or triggering a status update on the linked deal.
+      x-ai-suggestions:
+      - Attach a contact and deal simultaneously if the task is part of a sales workflow.
+      - Use subTasksIds to build hierarchical task breakdowns under a parent task.
+      - After attaching, retrieve the task to confirm the full connection graph.
+      x-ai-capabilities:
+        confirmation:
+          type: Recommended
+          message: 'Confirm attaching the specified entities to task #{taskId}. This will create persistent relationships in the CRM.'
+        security_info:
+          data_handling:
+          - RelationshipStateUpdate
+components:
+  schemas:
+    DealsAutocomplete:
+      type: array
+      items:
+        properties:
+          id:
+            type: integer
+          name:
+            type: string
+          responsibleId:
+            type: number
+          stepId:
+            type: number
+    ContactsAutocomplete:
+      type: array
+      items:
+        properties:
+          id:
+            type: integer
+          firstName:
+            type: string
+          lastName:
+            type: string
+          email:
+            type: string
+          phone:
+            type: string
+    TasksConnection:
+      type: object
+      properties:
+        tasks:
+          $ref: '#/components/schemas/TaskAutocomplete'
+        deals:
+          $ref: '#/components/schemas/DealsAutocomplete'
+        contacts:
+          $ref: '#/components/schemas/ContactsAutocomplete'
+        subTasks:
+          $ref: '#/components/schemas/TaskAutocomplete'
+    TaskAutocomplete:
+      type: array
+      items:
+        properties:
+          id:
+            type: integer
+          name:
+            type: string
+          responsibleId:
+            type: integer
+          boardId:
+            type: integer
+          stepId:
+            type: integer
+          observers:
+            type: array
+  securitySchemes:
+    apiKey:
+      type: http
+      scheme: bearer
+      bearerFormat: API Key
+      description: 'Static API Key authentication.  A long-lived token generated manually in the SendPulse account settings.
+
+        '
+      x-ai-description: 'Permanent authentication token. Ideal for simple integrations without token refresh logic.
+
+        '
+    outh2:
+      type: oauth2
+      description: OAuth 2.0 Client Credentials flow for temporary access tokens.
+      flows:
+        clientCredentials:
+          tokenUrl: https://api.sendpulse.com/oauth/access_token
+          scopes: {}
+      x-ai-description: 'Standard OAuth 2.0 flow using Client ID and Client Secret.  Provides temporary tokens (valid for 1 hour) for enhanced security.
+
+        '

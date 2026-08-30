@@ -1,0 +1,331 @@
+openapi: 3.2.0
+info:
+  description: Using the API for the CRM service, you can integrate your system with CRM from SendPulse and receive detailed information on pipelines, deals, contacts and their attributes and users. You can also create deals and contacts, assign and remove fields, tags, contact details and instant messengers. On the right, there is a button for authorizing requests made on this page. Click “Authorize,” then insert the ID and Secret from your account. To perform a request directly from the page, click the "Try it out" button within each method block. Then fill in input fields if any (for URL parameters, the description is right below the URL request; for body parameters, the description is under the “Scheme” button to the right of the example), and click “Run.” You will find the server response and description of received parameters below.
+  title: SendPulse CRM Public Messengers API
+  version: 0.1.0
+servers:
+- url: https://api.sendpulse.com/crm/v1
+security:
+- apiKey: []
+- oauth2: []
+tags:
+- name: messengers
+paths:
+  /companies/{companyId}/messengers:
+    get:
+      tags:
+      - messengers
+      summary: Get messengers
+      parameters:
+      - name: companyId
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Messenger'
+                  metadata:
+                    type: object
+                    properties:
+                      total:
+                        type: integer
+      operationId: getCompanyMessengers
+      x-ai-role: crm_integration_specialist
+      x-ai-description: Retrieves all messenger channels connected to a specific CRM company. This endpoint is the entry point for understanding which communication channels (WhatsApp, Telegram, Viber, etc.) are available for a given company, enabling multichannel outreach orchestration.
+      x-ai-reasoning-instructions:
+      - Verify the companyId exists and is accessible before interpreting an empty result as 'no messengers'.
+      - Use the metadata.total field to detect pagination — if total exceeds the returned array length, additional pages may exist.
+      - If the goal is to send a message, cross-reference available messengers with the contact's subscribed channels before selecting one.
+      x-ai-responding-instructions:
+      - List the available messenger types clearly (e.g., 'This company has WhatsApp and Telegram connected').
+      - If the array is empty, suggest connecting a messenger channel in the SendPulse dashboard.
+      - Highlight the total count from metadata when presenting results to give the user a complete picture.
+      x-ai-suggestions:
+      - Use the returned messenger IDs to send messages via the corresponding send-message endpoint.
+      - Check this endpoint before initiating a campaign to ensure at least one active channel is available.
+      x-ai-capabilities:
+        confirmation:
+          type: None
+        security_info:
+          data_handling:
+          - ReadOnly
+    post:
+      tags:
+      - messengers
+      summary: Create messenger
+      parameters:
+      - name: entityType
+        in: path
+        required: true
+        schema:
+          type: string
+          enum:
+          - company
+      - name: entityId
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              properties:
+                data:
+                  type: object
+                  properties:
+                    typeId:
+                      type: integer
+                    login:
+                      type: string
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Messenger'
+      operationId: createCompanyMessenger
+      x-ai-role: crm_integration_specialist
+      x-ai-description: Connects a messenger channel (e.g., Telegram, Viber, WhatsApp) to a specific company entity in the CRM. This is a configuration step that enables omnichannel communication — once a messenger is linked, the company can send and receive messages through that channel. The typeId determines which messenger platform is being registered.
+      x-ai-reasoning-instructions:
+      - Resolve the correct entityType and entityId before calling — this endpoint uses path params that mirror the generic entity structure; for companies, entityType must be 'company'.
+      - Check whether a messenger of the same typeId is already linked to this company to avoid duplicate channel registrations.
+      - Verify that login format matches the requirements of the target messenger platform (e.g., phone number for WhatsApp, username for Telegram).
+      x-ai-responding-instructions:
+      - Confirm the created messenger by referencing its ID and type from the response.
+      - Suggest activating or testing the messenger channel as an immediate next step.
+      - If creation fails due to a conflict, explain that the channel may already be registered and suggest listing existing messengers first.
+      x-ai-suggestions:
+      - Use typeId=1 for Telegram, typeId=2 for Viber — verify the platform's type registry before calling.
+      - After creation, associate the messenger with contacts to enable targeted messaging.
+      x-ai-capabilities:
+        confirmation:
+          type: None
+        security_info:
+          data_handling:
+          - ResourceStateUpdate
+  /companies/{companyId}/messengers/batch:
+    post:
+      tags:
+      - messengers
+      summary: Batch create messenger
+      parameters:
+      - name: companyId
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                messengers:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      typeId:
+                        type: integer
+                      login:
+                        type: string
+                      botId:
+                        type: string
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Messenger'
+      operationId: batchCreateCompanyMessengers
+      x-ai-role: crm_integration_specialist
+      x-ai-description: Bulk-registers multiple messenger channels (WhatsApp, Telegram, Viber, etc.) for a CRM company in a single atomic call. Use this instead of sequential single-messenger creation when onboarding a company that already operates across several platforms — it reduces round-trips and ensures all channels are provisioned together.
+      x-ai-reasoning-instructions:
+      - Verify that companyId exists before submitting — a 404 here silently discards the entire batch.
+      - Check that each messenger's typeId corresponds to a supported platform type; unknown typeIds may cause partial failures.
+      - Ensure no duplicate (typeId + login) pairs exist within the batch or in already-registered messengers for this company.
+      - If botId is required for bot-based channels (e.g., Telegram), validate its presence before the call to avoid partial success.
+      - Prefer this endpoint over repeated POST /messengers calls whenever two or more messengers must be created together.
+      x-ai-responding-instructions:
+      - Confirm how many messengers were successfully created out of how many were submitted.
+      - List the returned messenger IDs and their associated typeId/login for traceability.
+      - If the response includes partial failures, clearly identify which items failed and why.
+      - Suggest verifying connectivity or triggering a test message as the immediate next step.
+      x-ai-suggestions:
+      - Combine all messenger channels known at company onboarding into one batch call.
+      - After batch creation, use GET /companies/{companyId}/messengers to confirm all channels are active.
+      - If a specific messenger type requires webhook configuration, do that immediately after this call.
+      x-ai-capabilities:
+        confirmation:
+          type: Recommended
+          message: You are about to register {{count}} messenger channel(s) for company {{companyId}}. Proceed?
+        security_info:
+          data_handling:
+          - ResourceStateUpdate
+          - BulkWrite
+  /companies/{companyId}/messengers/{messengerId}:
+    put:
+      tags:
+      - messengers
+      summary: Update messenger
+      parameters:
+      - name: entityType
+        in: path
+        required: true
+        schema:
+          type: string
+          enum:
+          - company
+      - name: entityId
+        in: path
+        required: true
+        schema:
+          type: integer
+      - name: messengerId
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              properties:
+                data:
+                  type: object
+                  properties:
+                    typeId:
+                      type: integer
+                    login:
+                      type: string
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Messenger'
+      operationId: updateCompanyMessenger
+      x-ai-role: crm_integration_specialist
+      x-ai-description: Updates the messenger configuration linked to a specific company entity. A messenger in this context is a communication channel integration (e.g., Telegram, WhatsApp) tied to a company account. Modifying the typeId changes the channel type, while updating the login reassigns the account identifier — both can affect active chatbot routing and message delivery.
+      x-ai-reasoning-instructions:
+      - Fetch the current messenger record before updating to understand which fields are already set and avoid accidental overwrites.
+      - Verify that the new typeId corresponds to a valid and supported messenger type in the system.
+      - If changing the login, confirm the new account identifier belongs to the same company to prevent cross-account conflicts.
+      - Check if the messenger is currently active and linked to any chatbot flows — modifying it may interrupt ongoing conversations.
+      x-ai-responding-instructions:
+      - Confirm which fields were updated and reflect the new values in the response summary.
+      - If the messenger type changed, note the implications for any chatbots or automation flows using this channel.
+      - Suggest verifying the integration is still functional after the update, especially if the login was changed.
+      x-ai-suggestions:
+      - Use `getCompanyMessengers` first to retrieve the current state before patching.
+      - After updating, verify connectivity with a test message if the messenger type supports it.
+      x-ai-capabilities:
+        confirmation:
+          type: Recommended
+          message: Updating a messenger may disrupt active chatbot flows using this channel. Confirm before proceeding.
+        security_info:
+          data_handling:
+          - ResourceStateUpdate
+    delete:
+      tags:
+      - messengers
+      summary: Delete messenger
+      parameters:
+      - name: entityType
+        in: path
+        required: true
+        schema:
+          type: string
+          enum:
+          - company
+      - name: entityId
+        in: path
+        required: true
+        schema:
+          type: integer
+      - name: messengerId
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '204':
+          description: Successfully deleted
+      operationId: deleteCompanyMessenger
+      x-ai-role: crm_integration_specialist
+      x-ai-description: Permanently removes a messenger channel linked to a company entity. In SendPulse CRM, messengers are communication touchpoints — deleting one severs the channel and may affect active automation flows, ongoing conversations, and contact reachability. This action is irreversible.
+      x-ai-reasoning-instructions:
+      - Confirm that the messengerId belongs to the specified companyId before proceeding — a mismatch will result in a 404 or unintended deletion.
+      - Check whether this messenger is referenced in active pipelines, automation sequences, or contact records before deletion.
+      - Treat this as a destructive operation — ask for explicit user confirmation if context suggests the messenger may still be in active use.
+      - entityType must be 'company' — validate this before constructing the request.
+      x-ai-responding-instructions:
+      - A 204 response means the messenger was successfully deleted — inform the user that the channel no longer exists.
+      - Warn the user that any automation or contact flows relying on this messenger will be broken.
+      - Suggest reviewing related pipelines or contacts to reassign a communication channel if needed.
+      x-ai-suggestions:
+      - After deletion, verify related contacts still have at least one active communication channel.
+      - Use GET /companies/{companyId}/messengers to confirm the messenger list post-deletion.
+      x-ai-capabilities:
+        confirmation:
+          type: Required
+          message: This will permanently delete the messenger and cannot be undone.
+        security_info:
+          data_handling:
+          - ResourceDestruction
+          - IrreversibleAction
+components:
+  schemas:
+    Messenger:
+      type: object
+      properties:
+        id:
+          type: integer
+        typeId:
+          type: integer
+        login:
+          type: string
+  securitySchemes:
+    apiKey:
+      type: http
+      scheme: bearer
+      bearerFormat: API Key
+      description: 'Static API Key authentication.  A long-lived token generated manually in the SendPulse account settings.
+
+        '
+      x-ai-description: 'Permanent authentication token. Ideal for simple integrations without token refresh logic.
+
+        '
+    outh2:
+      type: oauth2
+      description: OAuth 2.0 Client Credentials flow for temporary access tokens.
+      flows:
+        clientCredentials:
+          tokenUrl: https://api.sendpulse.com/oauth/access_token
+          scopes: {}
+      x-ai-description: 'Standard OAuth 2.0 flow using Client ID and Client Secret.  Provides temporary tokens (valid for 1 hour) for enhanced security.
+
+        '

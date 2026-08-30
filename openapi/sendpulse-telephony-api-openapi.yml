@@ -1,0 +1,329 @@
+openapi: 3.2.0
+info:
+  description: Using the API for the CRM service, you can integrate your system with CRM from SendPulse and receive detailed information on pipelines, deals, contacts and their attributes and users. You can also create deals and contacts, assign and remove fields, tags, contact details and instant messengers. On the right, there is a button for authorizing requests made on this page. Click “Authorize,” then insert the ID and Secret from your account. To perform a request directly from the page, click the "Try it out" button within each method block. Then fill in input fields if any (for URL parameters, the description is right below the URL request; for body parameters, the description is under the “Scheme” button to the right of the example), and click “Run.” You will find the server response and description of received parameters below.
+  title: SendPulse CRM Public Telephony API
+  version: 0.1.0
+servers:
+- url: https://api.sendpulse.com/crm/v1
+security:
+- apiKey: []
+- oauth2: []
+tags:
+- description: ''
+  name: Telephony
+paths:
+  /telephony/calls/get-list:
+    post:
+      tags:
+      - Telephony
+      summary: Get calls
+      requestBody:
+        $ref: '#/components/requestBodies/FilterTelephonyCalls'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      total:
+                        type: integer
+                        description: Total number of calls
+                      list:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/TelephonyCall'
+      operationId: getTelephonyCalls
+      x-ai-role: telephony_operations_analyst
+      x-ai-description: Retrieves a paginated and filtered list of telephony call records from the account. Use this endpoint to audit call activity, analyze communication patterns, track campaign performance, or feed call data into reporting pipelines. The endpoint uses POST with a filter body rather than GET query params — pass all filtering criteria in the request body.
+      x-ai-reasoning-instructions:
+      - Check available filter fields in FilterTelephonyCalls before constructing the request — date range, status, direction, and phone number are typical filter axes.
+      - If the user asks for 'all calls', apply a broad date range rather than omitting filters, to avoid unexpected default limits.
+      - Use the `total` field in the response to determine if pagination is needed and advise accordingly.
+      - If the result set is large, suggest narrowing the date range or filtering by status/direction to reduce payload size.
+      x-ai-responding-instructions:
+      - Report the total number of matching calls alongside the list.
+      - If the list is empty, suggest reviewing the applied filters rather than assuming no calls exist.
+      - Summarize key patterns if multiple records are returned (e.g., dominant call status, busiest period).
+      - Suggest follow-up actions such as exporting data or drilling into a specific call record.
+      x-ai-suggestions:
+      - Filter by date range to scope results to a specific campaign period.
+      - Use status filter to isolate failed or missed calls for support review.
+      - Combine with reporting tools to track call conversion rates.
+      x-ai-capabilities:
+        confirmation:
+          type: None
+        security_info:
+          data_handling:
+          - ReadOnly
+  /contacts/{contactId}/get-calls:
+    post:
+      tags:
+      - Telephony
+      summary: Get calls by contact"
+      requestBody:
+        $ref: '#/components/requestBodies/FilterTelephonyCalls'
+      parameters:
+      - name: contactId
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        date:
+                          type: string
+                          format: date
+                          example: 2022-06-28 00:00:00+00:00
+                        calls:
+                          type: array
+                          items:
+                            $ref: '#/components/schemas/TelephonyCall'
+      operationId: getContactCalls
+      x-ai-role: telephony_analytics_specialist
+      x-ai-description: Retrieves the full call history for a specific CRM contact, grouped by date. Use this to analyze communication patterns, measure engagement frequency, or audit interaction timelines before escalating a contact or preparing a follow-up strategy.
+      x-ai-reasoning-instructions:
+      - Verify that the contactId exists before calling — an invalid ID will return an empty or error response.
+      - Apply date range filters to narrow results; fetching unbounded call history for active contacts may return a large payload.
+      - Consider call direction and status fields in TelephonyCall schema to distinguish inbound vs. outbound or missed calls when summarizing activity.
+      x-ai-responding-instructions:
+      - Summarize the total number of calls and the date range covered by the response.
+      - Highlight the most recent call date and any notable patterns (e.g., high call frequency on a specific date).
+      - If the result is empty, inform the user that no calls are recorded for this contact and suggest verifying the contactId or broadening the filter range.
+      x-ai-suggestions:
+      - Filter by a specific date range to review activity before a scheduled follow-up.
+      - Use alongside contact details endpoint to build a full communication profile.
+      - Cross-reference with CRM deal or task endpoints to correlate calls with pipeline stages.
+      x-ai-capabilities:
+        confirmation:
+          type: None
+        security_info:
+          data_handling:
+          - ReadOnly
+  /deals/{dealId}/get-calls:
+    post:
+      tags:
+      - Telephony
+      summary: Get calls by deal
+      requestBody:
+        $ref: '#/components/requestBodies/FilterTelephonyCalls'
+      parameters:
+      - name: dealId
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        date:
+                          type: string
+                          format: date
+                          example: 2022-06-28 00:00:00+00:00
+                        calls:
+                          type: array
+                          items:
+                            $ref: '#/components/schemas/TelephonyCall'
+      operationId: getDealCalls
+      x-ai-role: crm_telephony_analyst
+      x-ai-description: Retrieves the full call history associated with a specific CRM deal. This endpoint bridges telephony activity and sales pipeline context — enabling agents to correlate communication patterns with deal progression, identify follow-up gaps, or audit contact frequency without leaving the deal context.
+      x-ai-reasoning-instructions:
+      - Verify the dealId exists before querying — a missing deal will return no data or an error.
+      - Check if filter parameters (date range, direction, status) are provided; if not, the response may include a large unfiltered call set.
+      - If the user asks about recent activity, default the filter to the last 30 days to keep results actionable.
+      - Consider whether the user needs raw call data or a summary — this endpoint returns raw records; aggregation must be done client-side.
+      x-ai-responding-instructions:
+      - Summarize the number of calls returned and the date range covered.
+      - Highlight any missed or unanswered calls that may require follow-up.
+      - If the result is empty, suggest verifying the dealId or broadening the date filter.
+      - If multiple call dates exist, group results by date for clarity when presenting to the user.
+      x-ai-suggestions:
+      - Filter by date range to narrow results for active deals.
+      - Use alongside `getDealContacts` to cross-reference who was called.
+      - If no calls found, suggest logging a new call or checking deal assignment.
+      x-ai-capabilities:
+        confirmation:
+          type: None
+        security_info:
+          data_handling:
+          - ReadOnly
+  /deals/{dealId}/attach-call:
+    post:
+      tags:
+      - Telephony
+      summary: Attach call to deal
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                callId:
+                  type: integer
+      parameters:
+      - name: dealId
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    $ref: '#/components/schemas/TelephonyCall'
+      operationId: attachCallToDeal
+      x-ai-role: crm_telephony_integration_specialist
+      x-ai-description: Links a recorded or logged telephony call to a specific CRM deal, creating a traceable communication history. This association is critical for sales pipeline visibility — it allows managers and agents to audit deal progression through actual conversations, not just manual notes.
+      x-ai-reasoning-instructions:
+      - Verify that the dealId exists before attempting to attach a call.
+      - Confirm that the callId belongs to the same account context as the deal.
+      - If attaching multiple calls to the same deal, consider whether the previous call attachment will be overwritten or appended.
+      - Ensure the call has already been recorded/logged before attempting to attach it — attaching a non-existent call will fail.
+      x-ai-responding-instructions:
+      - Confirm which call was attached to which deal by echoing back dealId and callId.
+      - Suggest reviewing the deal's full call history as a follow-up action.
+      - If the operation fails, distinguish between a missing deal error and a missing call error to guide the user precisely.
+      x-ai-suggestions:
+      - Use `getDeals` to retrieve a valid dealId before calling this endpoint.
+      - Use the telephony call log endpoint to obtain a valid callId.
+      x-ai-capabilities:
+        confirmation:
+          type: None
+        security_info:
+          data_handling:
+          - ResourceStateUpdate
+components:
+  requestBodies:
+    FilterTelephonyCalls:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              from:
+                type: string
+                format: date-time
+                description: Date from
+              to:
+                type: string
+                format: date-time
+                description: Date to
+              responsibleIds:
+                type: array
+                description: List of responsible user IDs
+                items:
+                  type: integer
+              callType:
+                type: integer
+                description: Type of the call (0 - incoming, 1 - outgoing)
+              state:
+                type: integer
+                description: State of the call (pending - 1, successful - 2, failed - 3)
+              integrationGroupId:
+                type: integer
+              contactFirstName:
+                type: string
+              contactLastName:
+                type: string
+              contactEmail:
+                type: string
+              contactPhone:
+                type: string
+  schemas:
+    TelephonyCall:
+      type: object
+      properties:
+        id:
+          type: integer
+        integrationId:
+          type: integer
+        integrationGroupId:
+          type: integer
+        responsibleId:
+          type: integer
+        phone:
+          type: string
+          description: Contact phone, used in this call
+        callDuration:
+          type: integer
+          description: Duration of the call
+        callType:
+          type: integer
+          description: Type of the call (0 - incoming, 1 - outgoing)
+        state:
+          type: integer
+          description: State of the call (1 - pending, 2 - successful, 3 - failed)
+        callRecordLink:
+          type: string
+          description: Link to call record
+        createdAt:
+          type: string
+          format: date-time
+          example: 2022-06-28 18:17
+        contact:
+          type:
+          - object
+          - 'null'
+          properties:
+            id:
+              type: integer
+            firstName:
+              type: string
+            lastName:
+              type: string
+        deal:
+          type:
+          - object
+          - 'null'
+          properties:
+            id:
+              type: integer
+            name:
+              type: string
+  securitySchemes:
+    apiKey:
+      type: http
+      scheme: bearer
+      bearerFormat: API Key
+      description: 'Static API Key authentication.  A long-lived token generated manually in the SendPulse account settings.
+
+        '
+      x-ai-description: 'Permanent authentication token. Ideal for simple integrations without token refresh logic.
+
+        '
+    outh2:
+      type: oauth2
+      description: OAuth 2.0 Client Credentials flow for temporary access tokens.
+      flows:
+        clientCredentials:
+          tokenUrl: https://api.sendpulse.com/oauth/access_token
+          scopes: {}
+      x-ai-description: 'Standard OAuth 2.0 flow using Client ID and Client Secret.  Provides temporary tokens (valid for 1 hour) for enhanced security.
+
+        '

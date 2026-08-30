@@ -1,0 +1,517 @@
+openapi: 3.2.0
+info:
+  title: Sendpulse Flows API
+  version: 0.0.1
+  description: 'Operations tagged flows across 7 of this provider''s published API definitions: sendpulse-facebook-openapi.yml, sendpulse-instagram-openapi.yml, sendpulse-live-chat-openapi.yml, sendpulse-telegram-openapi.yml, sendpulse-tiktok-openapi.yml, sendpulse-viber-chatbot-openapi.yml, sendpulse-whatsapp-openapi.yml. Each path carries the servers of the definition it was published in.'
+servers:
+- description: ''
+  url: https://api.sendpulse.com/messenger
+- description: ''
+  url: https://api.sendpulse.com/instagram
+- description: ''
+  url: https://api.sendpulse.com/live-chat
+- description: ''
+  url: https://api.sendpulse.com/telegram
+- description: ''
+  url: https://api.sendpulse.com/tiktok
+- description: ''
+  url: https://api.sendpulse.com/viber/chatbots
+- description: ''
+  url: https://api.sendpulse.com/whatsapp
+security:
+- apiKey: []
+- oauth2: []
+tags:
+- description: ''
+  name: flows
+paths:
+  /flows:
+    get:
+      summary: Get a list of flows
+      description: 'Returns a list of created flows for the selected bot and information for each: flow id, bot id, status, name, id and name of the trigger that launches it, and creation date'
+      security:
+      - oAuth2ClientCredentials: []
+      tags:
+      - flows
+      parameters:
+      - in: query
+        name: bot_id
+        required: true
+        schema:
+          type: string
+        description: Bot ID. Can be obtained with a method of getting a list of bots. You can also find it in your account in the address bar of a chat window with the desired contact.
+      - in: query
+        name: size
+        description: The limit of pagination items, that will be returned
+        schema:
+          type: integer
+      - in: query
+        name: skip
+        description: The offset of pagination items, where starts a current items batch
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Operation successful
+          content:
+            application/json:
+              schema:
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/Flow'
+                type: object
+      operationId: getFlows
+      x-ai-role: chatbot_automation_specialist
+      x-ai-description: Retrieves a paginated catalogue of automation flows for a specific bot. Flows are the core behavioral scripts of a chatbot — each flow defines a sequence of actions triggered by user events or conditions. This endpoint is the primary discovery tool before executing, editing, or analyzing flow performance.
+      x-ai-reasoning-instructions:
+      - Always require bot_id — without it the request is invalid. Obtain it via the list-bots endpoint if not available.
+      - Use 'size' and 'skip' for pagination when the bot may have many flows; default page size is typically small.
+      - If the goal is to find a specific flow by name or trigger, retrieve the full list first and filter client-side, as the endpoint does not support filtering by name.
+      - Check flow 'status' in the response to distinguish active flows from drafts before referencing them in other operations.
+      x-ai-responding-instructions:
+      - Present each flow with its name, status, and trigger name so the user can identify it at a glance.
+      - If the list is empty, suggest that no flows have been created yet and recommend using the flow builder in the SendPulse dashboard.
+      - Highlight any flows in inactive/draft status if the user is troubleshooting why a flow is not triggering.
+      - Suggest follow-up actions such as running a flow or fetching its details using the returned flow id.
+      x-ai-suggestions:
+      - Fetch all flows for a bot before triggering or modifying one.
+      - Use 'skip' + 'size' to page through large flow catalogues.
+      - Cross-reference 'trigger.id' with trigger-management endpoints to understand activation conditions.
+      x-ai-capabilities:
+        confirmation:
+          type: None
+        security_info:
+          data_handling:
+          - ReadOnly
+    servers:
+    - description: ''
+      url: https://api.sendpulse.com/messenger
+  /flows/run:
+    post:
+      summary: Run the flow by its identifier
+      description: Launches the selected flow for the selected contact. Additional data can be passed to the "external_data" field and used once in the selected chain, where variables will be inserted in the "Message" element as a JSON path, for example {{$['tracking_number']}}.
+      security:
+      - oAuth2ClientCredentials: []
+      tags:
+      - flows
+      requestBody:
+        description: ''
+        required: true
+        content:
+          application/json:
+            schema:
+              properties:
+                contact_id:
+                  type: string
+                  description: Contact ID. Can be obtained with a contact search by tag or variable. You can also find it in your account in the address bar of a chat window with the desired contact.
+                flow_id:
+                  type: string
+                  description: Flow ID to be launched. Can be obtained with the method of obtaining the list of flows
+                external_data:
+                  type: object
+                  description: Custom variables. You can pass variable values in the request and use them once in the flow you selected. To add variables to the flow, in the Message element, insert the variable names as a JSON path expression {{$['somekey']['nestedkey']}}.
+                  example:
+                    tracking_number: 1234-0987-5678-9012
+              required:
+              - contact_id
+              - flow_id
+      responses:
+        '200':
+          description: Operation successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+      operationId: runFlow
+      x-ai-role: marketing_automation_specialist
+      x-ai-description: Triggers an automation flow for a specific contact, optionally injecting one-time runtime variables via `external_data`. This is the execution entry point for CRM-driven or event-driven scenarios — e.g., post-purchase order tracking, onboarding sequences, or support follow-ups where dynamic data (like a tracking number or ticket ID) must be embedded into the flow's messages without permanently storing it as a contact variable.
+      x-ai-reasoning-instructions:
+      - Before calling, confirm that both `contact_id` and `flow_id` exist and are active — a deleted or paused flow will silently fail or return an error.
+      - Check whether the target flow contains `external_data` variable references (JSON path syntax `{{$['key']}}`); if not, passing `external_data` has no effect.
+      - Remind the user that `external_data` values are single-use and scoped to this invocation only — they are not persisted to the contact's profile.
+      - If the user wants to trigger the same flow for multiple contacts, this endpoint must be called once per contact; there is no batch mode.
+      - Validate that the contact belongs to the chatbot/channel the flow is configured for — cross-channel invocations will fail.
+      x-ai-responding-instructions:
+      - Confirm that the flow was successfully triggered and mention the contact and flow IDs used.
+      - If `external_data` was passed, acknowledge which variables were injected and note their single-use nature.
+      - Suggest verifying delivery by checking conversation history or flow analytics in the SendPulse dashboard.
+      - On error, help the user distinguish between an invalid `contact_id`, invalid `flow_id`, or a misconfigured flow.
+      x-ai-suggestions:
+      - Use `getFlows` to retrieve valid `flow_id` values before calling this endpoint.
+      - Use contact search by tag or variable to obtain the `contact_id`.
+      - Structure `external_data` keys to match the JSON path expressions in the flow's Message elements exactly.
+      x-ai-capabilities:
+        confirmation:
+          type: Recommended
+          message: This will immediately trigger the flow and send messages to the contact. Confirm before proceeding.
+        security_info:
+          data_handling:
+          - TriggersSideEffect
+          - ExternalDataIsEphemeral
+    servers:
+    - description: ''
+      url: https://api.sendpulse.com/messenger
+  /flows/runByTrigger:
+    post:
+      summary: Run a flow by trigger keywords
+      description: Launches a flow with the trigger keyword for the selected contact
+      security:
+      - oAuth2ClientCredentials: []
+      tags:
+      - flows
+      requestBody:
+        description: ''
+        required: true
+        content:
+          application/json:
+            schema:
+              properties:
+                contact_id:
+                  type: string
+                  description: Contact ID. Can be obtained with a contact search by tag or variable. You can also find it in your account in the address bar of a chat window with the desired contact.
+                trigger_keyword:
+                  type: string
+                  description: trigger keyword
+                external_data:
+                  type: object
+                  description: Custom variables. You can pass variable values in the request and use them once in the flow you selected. To add variables to the flow, in the Message element, insert the variable names as a JSON path expression {{$['somekey']['nestedkey']}}.
+                  example:
+                    tracking_number: 1234-0987-5678-9012
+              required:
+              - contact_id
+              - trigger_keyword
+      responses:
+        '200':
+          description: Operation successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+      operationId: runFlowByTrigger
+      x-ai-role: chatbot_automation_engineer
+      x-ai-description: Programmatically initiates a pre-built automation flow for a specific contact using a trigger keyword. This is the primary mechanism for injecting a contact into a flow mid-pipeline — useful for event-driven scenarios such as order confirmations, support escalations, or re-engagement sequences. Unlike time-based or manual triggers, this call enables external systems (e-commerce platforms, CRMs, webhooks) to drive chatbot logic in real time.
+      x-ai-reasoning-instructions:
+      - Verify that the contact_id exists before calling — use a contact search by tag or variable if the ID is not already known.
+      - Confirm the trigger_keyword matches an active trigger configured in the target flow; an incorrect keyword will silently fail or route to the wrong branch.
+      - If passing external_data, validate that the keys match the JSON path expressions defined in the flow's Message elements (e.g., {{$['tracking_number']}}) — mismatched keys result in empty variable substitution.
+      - Do not pass sensitive PII in external_data unless the flow is designed to handle it securely and ephemerally.
+      - This endpoint is fire-and-forget for the flow execution — the 200 response confirms the trigger was accepted, not that the flow completed.
+      x-ai-responding-instructions:
+      - Confirm that the flow was successfully triggered and mention the contact_id and trigger_keyword used.
+      - If external_data was passed, note which variables were injected and remind the user they are single-use within this flow execution.
+      - If the response indicates failure, check whether the trigger_keyword is active and whether the contact belongs to the correct bot/channel.
+      - Suggest verifying the flow execution result in the SendPulse dashboard if outcome confirmation is needed.
+      x-ai-suggestions:
+      - Use this endpoint from a webhook handler when an order is shipped to trigger a delivery-tracking flow.
+      - Pair with a contact search endpoint to resolve contact_id dynamically before calling.
+      - Use external_data to pass one-time values like order numbers, OTP codes, or appointment times directly into the message flow.
+      x-ai-capabilities:
+        confirmation:
+          type: None
+        security_info:
+          data_handling:
+          - TriggersSideEffect
+          - ExternalDataEphemeral
+    servers:
+    - description: ''
+      url: https://api.sendpulse.com/messenger
+components:
+  schemas:
+    SuccessResponse:
+      properties:
+        success:
+          type: boolean
+        data:
+          anyOf:
+          - type: array
+            items:
+              type: object
+          - type: object
+          - type: boolean
+      type: object
+    Flow:
+      properties:
+        id:
+          type: string
+        bot_id:
+          type: string
+        name:
+          type: string
+        status:
+          type: integer
+          enum:
+          - 1
+          - 2
+          description: "\n                    * `1` - active\n\n                    * `2` - inactive"
+        triggers:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+              name:
+                type: string
+        created_at:
+          type: string
+          example: 2020-12-11 21:00:00+00:00
+    Flow_2:
+      properties:
+        id:
+          type: string
+        bot_id:
+          type: string
+        name:
+          type: string
+        status:
+          type: integer
+          enum:
+          - ACTIVE: 1
+            INACTIVE: 2
+            DRAFT: 4
+          description: "\n                    * `1` - active\n\n                    * `2` - inactive"
+        triggers:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+              name:
+                type: string
+              type:
+                type: integer
+                enum:
+                - 1
+                - 2
+                - 3
+                - 4
+                - 5
+                description: "\n                    * `1` - starts immediately upon subscription\n\n                    * `2` - starts when unsubscribed\n\n                    * `3` - default reply\n\n                    * `4` - starts when the specified keyword is entered\n\n                    * `5` - starts at the specified time when subscribing"
+        created_at:
+          type: string
+          example: 2020-12-11 21:00:00+00:00
+    SuccessResponse_2:
+      properties:
+        success:
+          type: boolean
+        data:
+          anyOf:
+          - type: array
+            items:
+              type: object
+          - type: object
+          - type: boolean
+          - type: string
+          - type: integer
+      type: object
+    Flow_3:
+      properties:
+        id:
+          type: string
+        bot_id:
+          type: string
+        name:
+          type: string
+        status:
+          type: integer
+          enum:
+          - ACTIVE: 1
+            INACTIVE: 2
+            DRAFT: 4
+          description: "\n                    * `1` - active\n\n                    * `2` - inactive"
+        triggers:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+              name:
+                type: string
+              type:
+                type: integer
+                enum:
+                - 1
+                - 2
+                - 3
+                - 4
+                - 5
+                description: "\n                    * `1` - starts immediately upon subscription\n\n                    * `2` - starts when unsubscribed\n\n                    * `3` - default reply\n\n                    * `4` - starts when the specified keyword is entered\n\n                    * `5` - starts at the specified time when subscribing"
+        created_at:
+          type: string
+          example: 2020-12-11 21:00:00+00:00
+    Flow_4:
+      properties:
+        id:
+          type: string
+        bot_id:
+          type: string
+        name:
+          type: string
+        status:
+          type: integer
+          enum:
+          - 1
+          - 2
+          description: "\n                    * `1` - active\n\n                    * `2` - inactive"
+        triggers:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+              name:
+                type: string
+              type:
+                type: integer
+                enum:
+                - 1
+                - 2
+                - 3
+                - 4
+                - 5
+                description: "\n                    * `1` - starts immediately upon subscription\n\n                    * `2` - starts when unsubscribed\n\n                    * `3` - default reply\n\n                    * `4` - starts when the specified keyword is entered\n\n                    * `5` - starts at the specified time when subscribing"
+        created_at:
+          type: string
+          example: 2020-12-11 21:00:00+00:00
+    Flow_5:
+      properties:
+        id:
+          type: string
+        bot_id:
+          type: string
+        name:
+          type: string
+        status:
+          type: integer
+          enum:
+          - ACTIVE: 1
+            INACTIVE: 2
+            DRAFT: 4
+          description: "\n                    * `1` - active\n\n                    * `2` - inactive"
+        triggers:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+              name:
+                type: string
+              type:
+                type: integer
+                enum:
+                - 1
+                - 2
+                - 3
+                - 4
+                - 5
+                description: "\n                    * `1` - starts immediately upon subscription\n\n                    * `2` - starts when unsubscribed\n\n                    * `3` - default reply\n\n                    * `4` - starts when the specified keyword is entered\n\n                    * `5` - starts at the specified time when subscribing"
+        created_at:
+          type: string
+          example: 2020-12-11 21:00:00+00:00
+    Flow_6:
+      properties:
+        id:
+          type: string
+        bot_id:
+          type: string
+        name:
+          type: string
+        status:
+          type: integer
+          enum:
+          - ACTIVE: 1
+            INACTIVE: 2
+            DRAFT: 4
+          description: "\n                    * `1` - active\n\n                    * `2` - inactive"
+        triggers:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+              name:
+                type: string
+              type:
+                type: integer
+                enum:
+                - 1
+                - 2
+                - 3
+                - 4
+                - 5
+                description: "\n                    * `1` - starts immediately upon subscription\n\n                    * `2` - starts when unsubscribed\n\n                    * `3` - default reply\n\n                    * `4` - starts when the specified keyword is entered\n\n                    * `5` - starts at the specified time when subscribing"
+        created_at:
+          type: string
+          example: 2020-12-11 21:00:00+00:00
+    Flow_7:
+      properties:
+        id:
+          type: string
+        bot_id:
+          type: string
+        name:
+          type: string
+        status:
+          type: integer
+          enum:
+          - ACTIVE: 1
+            INACTIVE: 2
+            DRAFT: 4
+          description: "\n                    * `1` - active\n\n                    * `2` - inactive"
+        triggers:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+              name:
+                type: string
+              type:
+                type: integer
+                enum:
+                - 1
+                - 2
+                - 3
+                - 4
+                - 5
+                description: "\n                    * `1` - starts immediately upon subscription\n\n                    * `2` - starts when unsubscribed\n\n                    * `3` - default reply\n\n                    * `4` - starts when the specified keyword is entered\n\n                    * `5` - starts at the specified time when subscribing"
+        created_at:
+          type: string
+          example: 2020-12-11 21:00:00+00:00
+  securitySchemes:
+    apiKey:
+      type: http
+      scheme: bearer
+      bearerFormat: API Key
+      description: 'Static API Key authentication.  A long-lived token generated manually in the SendPulse account settings.
+
+        '
+      x-ai-description: 'Permanent authentication token. Ideal for simple integrations without token refresh logic.
+
+        '
+    outh2:
+      type: oauth2
+      description: OAuth 2.0 Client Credentials flow for temporary access tokens.
+      flows:
+        clientCredentials:
+          tokenUrl: https://api.sendpulse.com/oauth/access_token
+          scopes: {}
+      x-ai-description: 'Standard OAuth 2.0 flow using Client ID and Client Secret.  Provides temporary tokens (valid for 1 hour) for enhanced security.
+
+        '
+x-refined-from:
+- sendpulse-facebook-openapi.yml
+- sendpulse-instagram-openapi.yml
+- sendpulse-live-chat-openapi.yml
+- sendpulse-telegram-openapi.yml
+- sendpulse-tiktok-openapi.yml
+- sendpulse-viber-chatbot-openapi.yml
+- sendpulse-whatsapp-openapi.yml

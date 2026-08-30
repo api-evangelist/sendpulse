@@ -1,0 +1,595 @@
+openapi: 3.2.0
+info:
+  title: Sendpulse Tags API
+  x-refined-note:
+  - x-ai-description differs across the merged source definitions and was not carried
+  version: '1.0'
+  description: 'Operations tagged Tags across 9 of this provider''s published API definitions: sendpulse-bulk-email-openapi.yml, sendpulse-edu-openapi.yml, sendpulse-facebook-openapi.yml, sendpulse-instagram-openapi.yml, sendpulse-live-chat-openapi.yml, sendpulse-telegram-openapi.yml, sendpulse-tiktok-openapi.yml, sendpulse-viber-chatbot-openapi.yml, sendpulse-whatsapp-openapi.yml. Each path carries the servers of the definition it was published in.'
+servers:
+- url: https://api.sendpulse.com
+  description: Production server
+- url: https://api.sendpulse.com/edu/public/v1
+- description: ''
+  url: https://api.sendpulse.com/messenger
+- description: ''
+  url: https://api.sendpulse.com/instagram
+- description: ''
+  url: https://api.sendpulse.com/live-chat
+- description: ''
+  url: https://api.sendpulse.com/telegram
+- description: ''
+  url: https://api.sendpulse.com/tiktok
+- description: ''
+  url: https://api.sendpulse.com/viber/chatbots
+- description: ''
+  url: https://api.sendpulse.com/whatsapp
+security:
+- apiKey: []
+- oauth2: []
+tags:
+- name: Tags
+  description: Endpoints related to Tags.
+paths:
+  /tags:
+    get:
+      tags:
+      - Tags
+      summary: Get a list of tags
+      operationId: getTags
+      description: Retrieve all created tags for the account.
+      x-ai-role: segment_analyst
+      x-ai-description: This endpoint provides access to the tagging system used for subscriber segmentation.
+      x-ai-reasoning-instructions:
+      - Fetch all tags to understand the available labels for contacts.
+      - Use tag IDs for pinning/unpinning operations.
+      x-ai-responding-instructions:
+      - List the names and IDs of the tags.
+      - Mention that tags are only available on Pro plans and above.
+      x-ai-suggestions:
+      - Create a new tag for high-value leads.
+      x-ai-capabilities:
+        security_info:
+          data_handling:
+          - InformationRetrieval
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TagListResponse'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+    post:
+      tags:
+      - Tags
+      summary: Create a tag
+      operationId: createTag
+      description: Create a new tag with the specified name and color.
+      x-ai-role: segment_analyst
+      x-ai-description: Create a new organizational tag for better subscriber management.
+      x-ai-reasoning-instructions:
+      - Ensure the tag name is descriptive.
+      - Use a hex color code for the tag's visual representation.
+      x-ai-responding-instructions:
+      - Confirm that the request was sent to the queue and provide the queue_id.
+      x-ai-suggestions:
+      - '{"name": "VIP", "color": "#FF0000"}'
+      x-ai-capabilities:
+        security_info:
+          data_handling:
+          - ResourceStateUpdate
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TagCreateRequest'
+      responses:
+        '200':
+          description: Request sent to queue
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TagQueueResponse'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+    servers:
+    - url: https://api.sendpulse.com
+      description: Production server
+  /tags/{id}:
+    parameters:
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: integer
+    put:
+      tags:
+      - Tags
+      summary: Update a tag
+      operationId: updateTag
+      description: Update an existing tag by its ID.
+      x-ai-role: segment_analyst
+      x-ai-description: Modify the name or color of an existing tag.
+      x-ai-reasoning-instructions:
+      - Verify the tag ID exists before updating.
+      - Provide both the updated name and color.
+      x-ai-responding-instructions:
+      - Confirm that the update request was sent to the queue.
+      x-ai-suggestions:
+      - '{"name": "UpdatedVIP", "color": "#00FF00"}'
+      x-ai-capabilities:
+        security_info:
+          data_handling:
+          - ResourceStateUpdate
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TagUpdateRequest'
+      responses:
+        '200':
+          description: Request sent to queue
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TagQueueResponse'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+    delete:
+      tags:
+      - Tags
+      summary: Delete a tag
+      operationId: deleteTag
+      description: Remove a specific tag by its ID.
+      x-ai-role: segment_analyst
+      x-ai-description: Permanently delete a tag from the account.
+      x-ai-reasoning-instructions:
+      - Ensure you have the correct tag ID before deletion.
+      - Be aware that deleting a tag will remove it from all assigned contacts.
+      x-ai-responding-instructions:
+      - Confirm that the deletion request was sent to the queue.
+      x-ai-suggestions:
+      - List all tags to verify deletion.
+      x-ai-capabilities:
+        security_info:
+          data_handling:
+          - DataDestruction
+      responses:
+        '200':
+          description: Request sent to queue
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TagQueueResponse'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+    servers:
+    - url: https://api.sendpulse.com
+      description: Production server
+  /tags/pin/email:
+    post:
+      tags:
+      - Tags
+      summary: Assign tag to email
+      operationId: pinTagToEmail
+      description: Assign one or more tags to a specific email address.
+      x-ai-role: lead_generation_specialist
+      x-ai-description: Apply organizational labels to a subscriber's email.
+      x-ai-reasoning-instructions:
+      - Ensure the email address is valid and exists in your lists.
+      - Provide an array of tag IDs to assign.
+      x-ai-responding-instructions:
+      - Confirm that the assignment request was sent to the queue.
+      x-ai-suggestions:
+      - '{"email": "test@example.com", "tags": [123, 456]}'
+      x-ai-capabilities:
+        security_info:
+          data_handling:
+          - ResourceStateUpdate
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TagPinUnpinEmailRequest'
+      responses:
+        '200':
+          description: Request sent to queue
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TagQueueResponse'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+    servers:
+    - url: https://api.sendpulse.com
+      description: Production server
+  /tags/pin/phone:
+    post:
+      tags:
+      - Tags
+      summary: Assign tag to phone
+      operationId: pinTagToPhone
+      description: Assign one or more tags to a specific phone number.
+      x-ai-role: lead_generation_specialist
+      x-ai-description: Apply organizational labels to a subscriber's phone number.
+      x-ai-reasoning-instructions:
+      - Ensure the phone number is correctly formatted.
+      - Provide an array of tag IDs to assign.
+      x-ai-responding-instructions:
+      - Confirm that the assignment request was sent to the queue.
+      x-ai-suggestions:
+      - '{"phone": "1234567890", "tags": [123, 456]}'
+      x-ai-capabilities:
+        security_info:
+          data_handling:
+          - ResourceStateUpdate
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TagPinUnpinPhoneRequest'
+      responses:
+        '200':
+          description: Request sent to queue
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TagQueueResponse'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+    servers:
+    - url: https://api.sendpulse.com
+      description: Production server
+  /tags/unpin/email:
+    post:
+      tags:
+      - Tags
+      summary: Unassign tag from email
+      operationId: unpinTagFromEmail
+      description: Remove one or more tags from a specific email address.
+      x-ai-role: lead_generation_specialist
+      x-ai-description: Remove organizational labels from a subscriber's email.
+      x-ai-reasoning-instructions:
+      - Verify the tags were previously assigned to this email.
+      - Provide the tag IDs to remove.
+      x-ai-responding-instructions:
+      - Confirm that the removal request was sent to the queue.
+      x-ai-suggestions:
+      - '{"email": "test@example.com", "tags": [123]}'
+      x-ai-capabilities:
+        security_info:
+          data_handling:
+          - ResourceStateUpdate
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TagPinUnpinEmailRequest'
+      responses:
+        '200':
+          description: Request sent to queue
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TagQueueResponse'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+    servers:
+    - url: https://api.sendpulse.com
+      description: Production server
+  /tags/unpin/phone:
+    post:
+      tags:
+      - Tags
+      summary: Unassign tag from phone
+      operationId: unpinTagFromPhone
+      description: Remove one or more tags from a specific phone number.
+      x-ai-role: lead_generation_specialist
+      x-ai-description: Remove organizational labels from a subscriber's phone number.
+      x-ai-reasoning-instructions:
+      - Ensure the phone number matches the contact's record.
+      - Provide the tag IDs to remove.
+      x-ai-responding-instructions:
+      - Confirm that the removal request was sent to the queue.
+      x-ai-suggestions:
+      - '{"phone": "1234567890", "tags": [123]}'
+      x-ai-capabilities:
+        security_info:
+          data_handling:
+          - ResourceStateUpdate
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TagPinUnpinPhoneRequest'
+      responses:
+        '200':
+          description: Request sent to queue
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TagQueueResponse'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+    servers:
+    - url: https://api.sendpulse.com
+      description: Production server
+components:
+  schemas:
+    TagPinUnpinPhoneRequest:
+      type: object
+      x-ai-description: Payload to assign/unassign tags for a phone number.
+      required:
+      - phone
+      - tags
+      properties:
+        phone:
+          type: string
+          example: '123456789'
+        tags:
+          type: array
+          items:
+            type: integer
+          example:
+          - 11111
+          - 22222
+    Tag:
+      type: object
+      x-ai-description: Subscriber tag metadata.
+      properties:
+        id:
+          type: integer
+          example: 2506
+        name:
+          type: string
+          example: test1
+        color:
+          type: string
+          example: '#f0f4f6'
+    TagQueueResponse:
+      type: object
+      x-ai-description: Asynchronous request confirmation.
+      properties:
+        code:
+          type: string
+          example: request_sended_to_queue
+        description:
+          type: string
+          example: Request sended to queue
+        failure:
+          type: boolean
+          example: false
+        http_code:
+          type: integer
+          example: 200
+        queue_id:
+          type: string
+          example: 9621c9bf-f2b2-440a-a2a7-764cfd62f929
+        success:
+          type: boolean
+          example: true
+        user_id:
+          type: integer
+          example: 7043663
+        version:
+          type: string
+          example: 2.7.3
+    TagUpdateRequest:
+      type: object
+      x-ai-description: Payload to update an existing tag.
+      required:
+      - name
+      - color
+      properties:
+        name:
+          type: string
+          example: newName
+        color:
+          type: string
+          example: '#f0f4f6'
+    TagListResponse:
+      type: object
+      x-ai-description: List of created tags.
+      properties:
+        tags:
+          type: array
+          items:
+            $ref: '#/components/schemas/Tag'
+        user_id:
+          type: integer
+          example: 7043663
+        version:
+          type: string
+          example: 2.7.3
+    TagCreateRequest:
+      type: object
+      x-ai-description: Payload to create a new tag.
+      required:
+      - name
+      - color
+      properties:
+        name:
+          type: string
+          example: test3
+        color:
+          type: string
+          example: '#f0f4f6'
+    TagPinUnpinEmailRequest:
+      type: object
+      x-ai-description: Payload to assign/unassign tags for an email.
+      required:
+      - email
+      - tags
+      properties:
+        email:
+          type: string
+          example: test@test.com
+        tags:
+          type: array
+          items:
+            type: integer
+          example:
+          - 11111
+          - 22222
+    Tag_2:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Unique tag identifier
+        name:
+          type: string
+          description: Tag name
+        colorBackground:
+          type: string
+          description: Tag color (hex or other format)
+        colorText:
+          type: string
+          description: Tag color (hex or other format)
+        contactCount:
+          type: integer
+          description: Number of contacts/students with this tag
+        taskCount:
+          type: integer
+          description: Number of tasks associated with this tag
+    Tag_3:
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        contact_count:
+          type: integer
+        created_at:
+          type: string
+          example: 2020-12-11 21:00:00+00:00
+    Tag_4:
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        contact_count:
+          type: integer
+        created_at:
+          type: string
+          example: 2020-12-11 21:00:00+00:00
+    Tag_5:
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        contact_count:
+          type: integer
+        created_at:
+          type: string
+          example: 2020-12-11 21:00:00+00:00
+    Tag_6:
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        contact_count:
+          type: integer
+        created_at:
+          type: string
+          example: 2020-12-11 21:00:00+00:00
+    Tag_7:
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        contact_count:
+          type: integer
+        created_at:
+          type: string
+          example: 2020-12-11 21:00:00+00:00
+    Tag_8:
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        contact_count:
+          type: integer
+        created_at:
+          type: string
+          example: 2020-12-11 21:00:00+00:00
+    Tag_9:
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        contact_count:
+          type: integer
+        created_at:
+          type: string
+          example: 2020-12-11 21:00:00+00:00
+  securitySchemes:
+    apiKey:
+      type: http
+      scheme: bearer
+      bearerFormat: API Key
+      description: 'Static API Key authentication.  A long-lived token generated manually in the SendPulse account settings.
+
+        '
+      x-ai-description: 'Permanent authentication token. Ideal for simple integrations without token refresh logic.
+
+        '
+    oauth2:
+      type: oauth2
+      description: OAuth 2.0 Client Credentials flow for temporary access tokens.
+      flows:
+        clientCredentials:
+          tokenUrl: https://api.sendpulse.com/oauth/access_token
+          scopes: {}
+      x-ai-description: 'Standard OAuth 2.0 flow using Client ID and Client Secret.  Provides temporary tokens (valid for 1 hour) for enhanced security.
+
+        '
+    outh2:
+      type: oauth2
+      description: OAuth 2.0 Client Credentials flow for temporary access tokens.
+      flows:
+        clientCredentials:
+          tokenUrl: https://api.sendpulse.com/oauth/access_token
+          scopes: {}
+      x-ai-description: 'Standard OAuth 2.0 flow using Client ID and Client Secret.  Provides temporary tokens (valid for 1 hour) for enhanced security.
+
+        '
+x-refined-from:
+- sendpulse-bulk-email-openapi.yml
+- sendpulse-edu-openapi.yml
+- sendpulse-facebook-openapi.yml
+- sendpulse-instagram-openapi.yml
+- sendpulse-live-chat-openapi.yml
+- sendpulse-telegram-openapi.yml
+- sendpulse-tiktok-openapi.yml
+- sendpulse-viber-chatbot-openapi.yml
+- sendpulse-whatsapp-openapi.yml

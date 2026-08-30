@@ -1,0 +1,290 @@
+openapi: 3.2.0
+info:
+  description: Using the API for the CRM service, you can integrate your system with CRM from SendPulse and receive detailed information on pipelines, deals, contacts and their attributes and users. You can also create deals and contacts, assign and remove fields, tags, contact details and instant messengers. On the right, there is a button for authorizing requests made on this page. Click “Authorize,” then insert the ID and Secret from your account. To perform a request directly from the page, click the "Try it out" button within each method block. Then fill in input fields if any (for URL parameters, the description is right below the URL request; for body parameters, the description is under the “Scheme” button to the right of the example), and click “Run.” You will find the server response and description of received parameters below.
+  title: SendPulse CRM Public Tasks boards API
+  version: 0.1.0
+servers:
+- url: https://api.sendpulse.com/crm/v1
+security:
+- apiKey: []
+- oauth2: []
+tags:
+- name: Tasks boards
+paths:
+  /boards:
+    get:
+      tags:
+      - Tasks boards
+      summary: Get all boards
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Boards'
+      operationId: getBoards
+      x-ai-role: project_management_specialist
+      x-ai-description: Retrieves all task boards available in the account. Boards are the top-level organizational unit in the task management system — each board groups related tasks and columns. Use this to discover available workspaces before querying tasks or columns.
+      x-ai-reasoning-instructions:
+      - Call this endpoint first when the user wants to work with tasks but hasn't specified a board — list boards to let them choose.
+      - If the user refers to a board by name, use this response to resolve the correct board ID before proceeding.
+      - Check whether the returned list is empty; if so, inform the user no boards exist yet and suggest creating one.
+      x-ai-responding-instructions:
+      - Present boards as a named list with their IDs for easy reference.
+      - If multiple boards are returned, ask the user which one they want to work with.
+      - Suggest fetching tasks or columns for a specific board as the logical next step.
+      x-ai-suggestions:
+      - Use the returned board IDs with endpoints that require a `boardId` parameter.
+      - If you need tasks, follow up with a get-tasks endpoint for the selected board.
+      x-ai-capabilities:
+        confirmation:
+          type: None
+        security_info:
+          data_handling:
+          - ReadOnly
+    post:
+      tags:
+      - Tasks boards
+      summary: Create new board
+      description: Creates a new board with the specified properties
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              properties:
+                name:
+                  type: string
+                  description: Board name
+                settings:
+                  type: array
+                  items:
+                    properties:
+                      name:
+                        type: string
+                        description: Setting name
+                        enum:
+                        - responsibleUser
+                        - color
+                      value:
+                        type: string
+                        description: Setting value
+      responses:
+        '201':
+          description: ''
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Boards'
+      operationId: createBoard
+      x-ai-role: project_management_specialist
+      x-ai-description: Initializes a new task board — the primary organizational unit for managing tasks, pipelines, and team workflows in SendPulse CRM. A board defines the structural context (color, responsible user) within which task columns and cards will be created. Creating a well-configured board upfront reduces friction in later task assignment and team coordination.
+      x-ai-reasoning-instructions:
+      - Check if a board with a similar name already exists to avoid duplicates.
+      - If a responsibleUser is provided, verify the user exists and has appropriate CRM access.
+      - Recommend descriptive board names that reflect team, project, or pipeline purpose (e.g., 'Sales_Pipeline_Q2', 'Onboarding_Tasks').
+      - Color setting is optional but improves visual distinction in multi-board workspaces — suggest using it when multiple boards exist.
+      x-ai-responding-instructions:
+      - Confirm successful creation by referencing the new board's ID and name.
+      - Suggest creating task columns (stages) inside the board as the immediate next step.
+      - If responsible user was set, confirm the assignment explicitly.
+      - If creation fails due to permission or limit constraints, explain what plan or role is required.
+      x-ai-suggestions:
+      - Sales_Pipeline_Q2
+      - Customer_Onboarding_Flow
+      - Support_Escalations_Team
+      x-ai-capabilities:
+        confirmation:
+          type: None
+        security_info:
+          data_handling:
+          - ResourceStateUpdate
+  /boards/{boardId}:
+    get:
+      tags:
+      - Tasks boards
+      summary: Get board by ID
+      description: Gets a board with all associated settings
+      parameters:
+      - name: boardId
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Boards'
+      operationId: getBoardById
+      x-ai-role: project_management_specialist
+      x-ai-description: Retrieves a complete snapshot of a task board including its configuration, columns, assignees, and all associated settings. A board is the top-level organizational unit in the task management system — understanding its structure is a prerequisite before querying tasks, members, or workflows within it.
+      x-ai-reasoning-instructions:
+      - Confirm the boardId is a valid integer before making the request.
+      - If the user references a board by name, first resolve the ID via a listing endpoint before calling this one.
+      - Use the returned board settings to inform downstream operations — e.g., available columns or member permissions.
+      x-ai-responding-instructions:
+      - Summarize the board's name, status, and key settings rather than dumping raw JSON.
+      - Highlight any configuration details that are relevant to the user's current task (e.g., column structure if they want to create a task).
+      - If the board is not found (404), suggest verifying the boardId or listing available boards.
+      x-ai-suggestions:
+      - Use the returned board data to populate a subsequent `createTask` or `getBoardTasks` call.
+      - Check board membership settings before attempting to assign tasks to users.
+      x-ai-capabilities:
+        confirmation:
+          type: None
+        security_info:
+          data_handling:
+          - ReadOnly
+    put:
+      tags:
+      - Tasks boards
+      summary: Update board by ID
+      description: Updates the board with settings by ID
+      parameters:
+      - name: boardId
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              properties:
+                name:
+                  type: string
+                settings:
+                  type: array
+                  items:
+                    properties:
+                      name:
+                        type: string
+                      value:
+                        type: string
+                        example: 1 or hello
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Boards'
+      operationId: updateBoard
+      x-ai-role: project_management_specialist
+      x-ai-description: Updates the configuration and metadata of a task board. In SendPulse CRM, a board defines the visual and structural layout of a pipeline — its name and settings control how tasks are displayed, filtered, and managed across team workflows. Modifying a board affects all users who interact with it.
+      x-ai-reasoning-instructions:
+      - Before updating, verify that the boardId exists to avoid a silent 404.
+      - If only renaming, omit `settings` to avoid accidentally overwriting existing configuration.
+      - Warn the user if they are changing board settings that may affect active tasks or shared team workflows.
+      - Validate that `settings` items have both `name` and `value` fields populated before sending.
+      x-ai-responding-instructions:
+      - Confirm which fields were updated (name and/or settings) in the response summary.
+      - If the board is shared across a team, note that changes are immediately visible to all members.
+      - Suggest reviewing related boards or tasks if structural settings were changed.
+      x-ai-suggestions:
+      - Use `getBoardById` first to retrieve current settings before performing a partial update.
+      - After updating, use `getBoards` to confirm the change is reflected in the board list.
+      x-ai-capabilities:
+        confirmation:
+          type: Recommended
+          message: Updating board settings affects all users with access to this board. Confirm before proceeding.
+        security_info:
+          data_handling:
+          - ResourceStateUpdate
+components:
+  schemas:
+    Boards:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        userId:
+          type: integer
+        order:
+          type: integer
+        steps:
+          $ref: '#/components/schemas/BoardSteps'
+        settings:
+          $ref: '#/components/schemas/BoardSettings'
+        attributes:
+          $ref: '#/components/schemas/BoardAttribute'
+    BoardSettings:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        value:
+          type: string
+        boardId:
+          type: number
+    BoardSteps:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        color:
+          type: string
+        order:
+          type: integer
+        boardId:
+          type: integer
+    BoardAttribute:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        type:
+          type: integer
+        mandatory:
+          type: boolean
+        options:
+          type: array
+          default:
+          - 1
+          - 2
+        status:
+          type: integer
+        order:
+          type: integer
+  securitySchemes:
+    apiKey:
+      type: http
+      scheme: bearer
+      bearerFormat: API Key
+      description: 'Static API Key authentication.  A long-lived token generated manually in the SendPulse account settings.
+
+        '
+      x-ai-description: 'Permanent authentication token. Ideal for simple integrations without token refresh logic.
+
+        '
+    outh2:
+      type: oauth2
+      description: OAuth 2.0 Client Credentials flow for temporary access tokens.
+      flows:
+        clientCredentials:
+          tokenUrl: https://api.sendpulse.com/oauth/access_token
+          scopes: {}
+      x-ai-description: 'Standard OAuth 2.0 flow using Client ID and Client Secret.  Provides temporary tokens (valid for 1 hour) for enhanced security.
+
+        '

@@ -1,0 +1,397 @@
+openapi: 3.2.0
+info:
+  description: Using the API for the CRM service, you can integrate your system with CRM from SendPulse and receive detailed information on pipelines, deals, contacts and their attributes and users. You can also create deals and contacts, assign and remove fields, tags, contact details and instant messengers. On the right, there is a button for authorizing requests made on this page. Click “Authorize,” then insert the ID and Secret from your account. To perform a request directly from the page, click the "Try it out" button within each method block. Then fill in input fields if any (for URL parameters, the description is right below the URL request; for body parameters, the description is under the “Scheme” button to the right of the example), and click “Run.” You will find the server response and description of received parameters below.
+  title: SendPulse CRM Public Deal contacts API
+  version: 0.1.0
+servers:
+- url: https://api.sendpulse.com/crm/v1
+security:
+- apiKey: []
+- oauth2: []
+tags:
+- description: ''
+  name: Deal contacts
+paths:
+  /deals/{dealId}/contacts:
+    get:
+      tags:
+      - Deal contacts
+      summary: Get a list of contacts in a deal
+      description: Returns a list of contacts in the specified deal
+      parameters:
+      - name: dealId
+        in: path
+        required: true
+        description: Deal ID for which you want to get the list of contacts. It can be obtained with the "Get a list of deals" method
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Contact'
+      operationId: getDealContacts
+      x-ai-role: crm_sales_specialist
+      x-ai-description: Retrieves all contacts associated with a specific deal in the CRM pipeline. A deal in SendPulse CRM can have multiple contacts linked to it — this endpoint exposes that relationship, enabling agents to understand who the stakeholders are in a given sales opportunity before taking further action (e.g., sending follow-ups or updating contact data).
+      x-ai-reasoning-instructions:
+      - Ensure the dealId is valid before calling — use 'Get a list of deals' to obtain it if not already known.
+      - If the response returns an empty array, inform the user that no contacts are linked to this deal yet and suggest adding contacts.
+      - Consider whether the user needs full contact details — this endpoint returns contact objects, but related endpoints may provide richer profile data.
+      x-ai-responding-instructions:
+      - List the contacts by name (or identifier) returned in the response for clarity.
+      - If multiple contacts are returned, summarize the count and highlight key identifiers.
+      - Suggest logical next steps such as updating contact info, sending a campaign, or viewing the deal details.
+      x-ai-suggestions:
+      - Use the returned contact IDs to fetch full contact profiles via the Contacts endpoints.
+      - Cross-reference these contacts with mailing lists to check if they are already subscribed.
+      - If no contacts are found, use the 'Add contact to deal' endpoint to link relevant contacts.
+      x-ai-capabilities:
+        confirmation:
+          type: None
+        security_info:
+          data_handling:
+          - ReadOnly
+  /deals/{dealId}/contacts/{contactId}:
+    post:
+      tags:
+      - Deal contacts
+      summary: Add a contact to a deal
+      description: Adds a previously created contact to the specified deal
+      parameters:
+      - name: dealId
+        in: path
+        required: true
+        description: Deal ID in which you want to add the contact. It can be obtained with the "Get a list of deals" method
+        schema:
+          type: integer
+      - name: contactId
+        in: path
+        required: true
+        description: Contact ID you want to add to the deal. It can be obtained with the "Get a list of contacts" method
+        schema:
+          type: integer
+      responses:
+        '201':
+          description: ''
+      operationId: addContactToDeal
+      x-ai-role: crm_pipeline_specialist
+      x-ai-description: Links an existing contact to a specific deal, establishing a relationship between a person and a sales opportunity. This is a structural association endpoint — both the contact and the deal must already exist. It is typically used after deal creation to assign responsible parties, prospects, or stakeholders to the pipeline item.
+      x-ai-reasoning-instructions:
+      - Verify that the deal exists before attempting to link — use 'Get a list of deals' to confirm dealId is valid.
+      - Verify that the contact exists before linking — use 'Get a list of contacts' to confirm contactId.
+      - Check whether the contact is already associated with this deal to avoid duplicate associations.
+      - Consider whether the contact's role in the deal (prospect, decision-maker, stakeholder) should be tracked separately via a dedicated field or note.
+      x-ai-responding-instructions:
+      - On success (201), confirm which contact was linked to which deal by referencing both IDs.
+      - Suggest reviewing the deal's full contact list as a follow-up using the appropriate GET endpoint.
+      - If a 404 or validation error occurs, clarify which resource (deal or contact) was not found and guide the user to retrieve the correct ID.
+      x-ai-suggestions:
+      - First retrieve available deals via 'Get a list of deals', then contacts via 'Get a list of contacts' before calling this endpoint.
+      - After linking, consider adding a note or task to the deal to document the contact's role.
+      x-ai-capabilities:
+        confirmation:
+          type: None
+        security_info:
+          data_handling:
+          - RelationshipCreate
+    delete:
+      tags:
+      - Deal contacts
+      summary: Delete a contact from a deal
+      description: Removes the contact from the specified deal
+      parameters:
+      - name: dealId
+        in: path
+        required: true
+        description: Deal ID from which you want to remove the contact. It can be obtained with the "Get a list of deals" method
+        schema:
+          type: integer
+      - name: contactId
+        in: path
+        required: true
+        description: Contact ID you want to remove from the deal. It can be obtained with the "Get a list of contacts" method
+        schema:
+          type: integer
+      responses:
+        '204':
+          description: ''
+      operationId: removeDealContact
+      x-ai-role: crm_deal_manager
+      x-ai-description: Disassociates a contact from a deal without deleting either entity. Use this when a person is no longer relevant to a specific sales opportunity — for example, when a stakeholder changes or a contact was added by mistake. The deal and contact continue to exist independently.
+      x-ai-reasoning-instructions:
+      - Confirm the dealId is valid by cross-referencing with 'Get a list of deals' before attempting removal.
+      - Confirm the contactId is currently associated with the specified deal to avoid misleading 404 errors.
+      - Warn the user that this action only unlinks the contact from the deal — it does not delete the contact from the CRM.
+      - If the user intends to remove the last contact from a deal, note that the deal may become ownerless or harder to track.
+      x-ai-responding-instructions:
+      - On success (204), confirm that the contact has been unlinked from the deal, not deleted.
+      - If the deal or contact is not found, clarify which ID caused the issue and suggest how to retrieve valid IDs.
+      - Suggest using 'Get a list of deal contacts' to verify the updated contact list after removal.
+      x-ai-suggestions:
+      - Use 'Get a list of deals' to retrieve a valid dealId before calling this endpoint.
+      - Use 'Get a list of contacts' to retrieve a valid contactId.
+      - After removal, call the deal contacts list endpoint to confirm the association no longer exists.
+      x-ai-capabilities:
+        confirmation:
+          type: Recommended
+          message: This will remove the contact from the deal. The contact record itself will not be deleted.
+        security_info:
+          data_handling:
+          - RelationshipDelete
+components:
+  schemas:
+    ContactEmail:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Email address ID
+        email:
+          type: string
+          description: Email address
+        isMain:
+          type: boolean
+          description: Determines whether the email address is the main one
+    ContactHistory:
+      type: object
+      properties:
+        id:
+          type: integer
+        userId:
+          type: integer
+        contactId:
+          type: integer
+        eventType:
+          type: string
+        eventTime:
+          type: string
+          format: date-time
+        eventData:
+          type: object
+          properties:
+            dealName:
+              type: string
+    ContactAttributeValue:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        status:
+          type: integer
+          description: '| Status
+
+            * 0 — inactive (deleted by user) * 1 — active * 2 — hidden'
+        type:
+          type: integer
+        mandatory:
+          type: boolean
+        contactCardShow:
+          type: boolean
+        order:
+          type: integer
+        options:
+          type: array
+          items:
+            oneOf:
+            - type: string
+            - type: integer
+          description: Items of "List" field type
+        value:
+          properties:
+            type:
+              type: string
+              description: Field type
+            value:
+              type: string
+              description: Field value
+          description: ''
+        default:
+          type: boolean
+          description: ''
+    ContactPhone:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Contact phone ID
+        phone:
+          type: string
+        isMain:
+          type: boolean
+    ContactMessenger:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: ID of the added messenger
+        typeId:
+          type: integer
+          description: Messenger type
+        login:
+          type: string
+          description: Contact login in the specified messenger
+        botId:
+          type: string
+          description: External bot ID
+        contactId:
+          type: string
+          description: External contact ID
+        status:
+          type: integer
+        chatbotUrl:
+          type: string
+          description: URL of the chatbot from which the contact was received
+        isMainChatbot:
+          type: boolean
+          description: Determine if chatbot messenger is the main one
+    EntityAttachment:
+      type: object
+      properties:
+        id:
+          type: integer
+        link:
+          type: string
+        entityId:
+          type: number
+        entityType:
+          type: string
+        createdAt:
+          type: string
+        updatedAt:
+          type: string
+    Contact:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Contact ID
+        userId:
+          type: integer
+          description: ID of user who created the contact
+        sourceType:
+          type: string
+          enum:
+          - manually
+          - chatbot
+          - subscription_form
+          - landing
+          - a360
+          - payments
+        responsibleId:
+          type: integer
+          description: ID of user responsible for the contact. Can be obtained in the “Get list of invited users” method
+        firstName:
+          type: string
+          description: Contact first name
+        lastName:
+          type: string
+          description: Contact last name
+        dealsQty:
+          type: integer
+        externalContactId:
+          type: string
+        comments:
+          items:
+            $ref: '#/components/schemas/ContactComment'
+        tags:
+          items:
+            $ref: '#/components/schemas/ContactTag'
+        phones:
+          items:
+            $ref: '#/components/schemas/ContactPhone'
+        emails:
+          items:
+            $ref: '#/components/schemas/ContactEmail'
+        messengers:
+          items:
+            $ref: '#/components/schemas/ContactMessenger'
+        attributes:
+          items:
+            $ref: '#/components/schemas/ContactAttributeValue'
+        history:
+          items:
+            $ref: '#/components/schemas/ContactHistory'
+        tasks:
+          type: array
+          items:
+            type: integer
+        createdAt:
+          type: string
+          format: date-time
+          description: The date and time the contact was created. Output in YYYY-MM-DD hh:mm:ss format with fractions of a second and time zone
+        updatedAt:
+          type: string
+          format: date-time
+        attachments:
+          $ref: '#/components/schemas/EntityAttachment'
+    ContactComment:
+      type: object
+      properties:
+        id:
+          type: integer
+        userId:
+          type: integer
+        text:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        attachments:
+          $ref: '#/components/schemas/EntityAttachment'
+        childCount:
+          type: integer
+        childUsers:
+          type: array
+          items:
+            type: integer
+    ContactTag:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Tag ID
+        name:
+          type: string
+          description: Tag name
+        colorText:
+          type: string
+        colorBackground:
+          type: string
+        contactCount:
+          type: integer
+          description: Number of contacts associated with the tag
+        taskCount:
+          type: integer
+          description: Number of tasks associated with a tag
+  securitySchemes:
+    apiKey:
+      type: http
+      scheme: bearer
+      bearerFormat: API Key
+      description: 'Static API Key authentication.  A long-lived token generated manually in the SendPulse account settings.
+
+        '
+      x-ai-description: 'Permanent authentication token. Ideal for simple integrations without token refresh logic.
+
+        '
+    outh2:
+      type: oauth2
+      description: OAuth 2.0 Client Credentials flow for temporary access tokens.
+      flows:
+        clientCredentials:
+          tokenUrl: https://api.sendpulse.com/oauth/access_token
+          scopes: {}
+      x-ai-description: 'Standard OAuth 2.0 flow using Client ID and Client Secret.  Provides temporary tokens (valid for 1 hour) for enhanced security.
+
+        '

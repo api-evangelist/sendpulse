@@ -1,0 +1,161 @@
+openapi: 3.2.0
+info:
+  title: SendPulse Verifier Single Email Verification API
+  version: 1.0.0
+  description: API for email address verification and mailing list cleaning.
+  x-ai-description: 'The Verifier API is a critical tool for maintaining high deliverability and protecting sender reputation.  It performs deep validation of email addresses to identify invalid, disposable, or high-risk contacts before they are used in campaigns.
+
+    '
+  license:
+    name: Apache 2.0
+    identifier: Apache-2.0
+servers:
+- url: https://api.sendpulse.com
+  description: Production server
+security:
+- apiKey: []
+- oauth2: []
+tags:
+- name: Single Email Verification
+  description: Endpoints related to Single Email Verification.
+paths:
+  /verifier-service/send-single-to-verify:
+    post:
+      tags:
+      - Single Email Verification
+      summary: Verify a single email address
+      operationId: verifySingleEmail
+      description: Send one email address for real-time verification.
+      x-ai-role: email_deliverability_expert
+      x-ai-description: 'Enables on-the-fly validation for individual contacts.  Ideal for real-time signup forms or manual entry to ensure only valid data enters the system.
+
+        '
+      x-ai-reasoning-instructions:
+      - Verify email syntax before sending.
+      - Advise the user that this only initiates the check; results must be fetched separately.
+      x-ai-responding-instructions:
+      - Confirm the verification task is created.
+      - Suggest fetching the result via `getSingleVerificationResult` next.
+      x-ai-suggestions:
+      - 'email: ''test@example.com'''
+      x-ai-capabilities:
+        security_info:
+          data_handling:
+          - ResourceStateUpdate
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - email
+              properties:
+                email:
+                  type: string
+                  format: email
+      responses:
+        '200':
+          description: Verification started
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResultTrue'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+  /verifier-service/get-single-result:
+    get:
+      tags:
+      - Single Email Verification
+      summary: Get email address verification results
+      operationId: getSingleVerificationResult
+      description: Retrieve the verification result for a single email address.
+      x-ai-role: email_deliverability_expert
+      x-ai-description: Provides a detailed breakdown of an individual email's health and technical validity.
+      x-ai-reasoning-instructions:
+      - Check 'disposable' and 'gibberish' flags to detect bot or temporary accounts.
+      - Analyze 'webmail' flag to distinguish personal from corporate addresses.
+      - If status is not 1 (Valid), advise the user not to send to this address.
+      x-ai-responding-instructions:
+      - Clearly state if the email is 'Valid' or 'Invalid'.
+      - Highlight specific risks like 'Disposable service detected' if applicable.
+      x-ai-suggestions:
+      - 'email: ''test@example.com'''
+      x-ai-capabilities:
+        security_info:
+          data_handling:
+          - InformationRetrieval
+      parameters:
+      - name: email
+        in: query
+        required: true
+        schema:
+          type: string
+          format: email
+      responses:
+        '200':
+          description: Verification results
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  result:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/SingleEmailResult'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+components:
+  schemas:
+    ResultTrue:
+      type: object
+      properties:
+        result:
+          type: boolean
+          example: true
+    SingleEmailResult:
+      type: object
+      properties:
+        email:
+          type: string
+        checks:
+          type: object
+          properties:
+            status:
+              type: integer
+            valid_format:
+              type: integer
+            disposable:
+              type: integer
+            webmail:
+              type: integer
+            gibberish:
+              type: integer
+            status_text:
+              type: string
+  securitySchemes:
+    apiKey:
+      type: http
+      scheme: bearer
+      bearerFormat: API Key
+      description: 'Static API Key authentication.  A long-lived token generated manually in the SendPulse account settings.
+
+        '
+      x-ai-description: 'Permanent authentication token. Ideal for simple integrations without token refresh logic.
+
+        '
+    oauth2:
+      type: oauth2
+      description: OAuth 2.0 Client Credentials flow for temporary access tokens.
+      flows:
+        clientCredentials:
+          tokenUrl: https://api.sendpulse.com/oauth/access_token
+          scopes: {}
+      x-ai-description: 'Standard OAuth 2.0 flow using Client ID and Client Secret.  Provides temporary tokens (valid for 1 hour) for enhanced security.
+
+        '

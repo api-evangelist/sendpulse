@@ -1,0 +1,463 @@
+openapi: 3.2.0
+info:
+  description: Using the API for the CRM service, you can integrate your system with CRM from SendPulse and receive detailed information on pipelines, deals, contacts and their attributes and users. You can also create deals and contacts, assign and remove fields, tags, contact details and instant messengers. On the right, there is a button for authorizing requests made on this page. Click “Authorize,” then insert the ID and Secret from your account. To perform a request directly from the page, click the "Try it out" button within each method block. Then fill in input fields if any (for URL parameters, the description is right below the URL request; for body parameters, the description is under the “Scheme” button to the right of the example), and click “Run.” You will find the server response and description of received parameters below.
+  title: SendPulse CRM Public Custom Tab API
+  version: 0.1.0
+servers:
+- url: https://api.sendpulse.com/crm/v1
+security:
+- apiKey: []
+- oauth2: []
+tags:
+- description: ''
+  name: Custom Tab
+paths:
+  /custom-tab:
+    get:
+      tags:
+      - Custom Tab
+      summary: Get all users custom tabs
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  contact:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/CustomTabWithAttribute'
+                  pipeline:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/CustomTabWithAttribute'
+                  board:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/CustomTabWithAttribute'
+                  company:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/CustomTabWithAttribute'
+      operationId: getCustomTabs
+      x-ai-role: crm_configuration_specialist
+      x-ai-description: Retrieves all custom tab definitions configured for the current user account, organized by entity type. Custom tabs extend the default CRM interface by adding domain-specific views to contacts, pipelines, boards, and companies. This endpoint is the entry point for understanding what custom UI structure is active before rendering or modifying CRM entities.
+      x-ai-reasoning-instructions:
+      - Use this endpoint to discover available custom tabs before attempting to create or update tab configurations.
+      - Check all four entity categories (contact, pipeline, board, company) even if only one is needed — the full structure prevents stale UI assumptions.
+      - If the response arrays are empty, it means no custom tabs have been defined yet — suggest creating them rather than assuming a default layout.
+      x-ai-responding-instructions:
+      - Present the tabs grouped by entity type (contact, pipeline, board, company) for clarity.
+      - Highlight the total count per entity to help the user understand the current configuration scope.
+      - If any entity has no tabs, explicitly note it as unconfigured rather than omitting it from the response summary.
+      x-ai-suggestions:
+      - Use the returned tab IDs as references when creating or updating specific custom tab entries.
+      - If tabs are missing for an entity, suggest using the corresponding POST endpoint to create them.
+      x-ai-capabilities:
+        confirmation:
+          type: None
+        security_info:
+          data_handling:
+          - ReadOnly
+    post:
+      tags:
+      - Custom Tab
+      summary: Create custom tab
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  description: Name of custom tab
+                entityType:
+                  type: integer
+                  enum:
+                  - 0
+                  - 1
+                  - 2
+                  - 3
+                  description: 0 - contact, 1 - pipeline, 2 - board, 3 - company
+                entityId:
+                  type: integer
+                  description: Related entity ID. Only for pipelines and boards
+      responses:
+        '201':
+          description: created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomTab'
+      operationId: createCustomTab
+      x-ai-role: crm_configuration_specialist
+      x-ai-description: Creates a custom tab that extends the UI and data model of a specific CRM entity (contact, pipeline, board, or company). Custom tabs allow teams to attach domain-specific views and structured data sections directly to core CRM objects, enabling tailored workflows without modifying the base schema.
+      x-ai-reasoning-instructions:
+      - 'Clarify the target entity type before proceeding: 0=contact, 1=pipeline, 2=board, 3=company.'
+      - If entityType is 1 (pipeline) or 2 (board), require entityId — it is mandatory for those types.
+      - For entityType 0 (contact) or 3 (company), entityId is typically not needed; warn the user if they provide it unexpectedly.
+      - Check whether a tab with the same name already exists on the target entity to prevent duplicates.
+      - Use a descriptive, purpose-reflecting name (e.g., 'Billing Info', 'Deal Checklist') rather than generic labels.
+      x-ai-responding-instructions:
+      - Confirm creation by referencing the returned CustomTab ID and the entity it was attached to.
+      - If entityType requires entityId and it was omitted, explain the constraint clearly.
+      - Suggest adding fields or sections to the newly created tab as an immediate next step.
+      x-ai-suggestions:
+      - Billing Details
+      - Onboarding Checklist
+      - Technical Requirements
+      - SLA Tracking
+      x-ai-capabilities:
+        confirmation:
+          type: None
+        security_info:
+          data_handling:
+          - ResourceStateUpdate
+  /custom-tab/{customTabId}:
+    put:
+      tags:
+      - Custom Tab
+      summary: Update custom tabs
+      parameters:
+      - name: customTabId
+        in: path
+        required: true
+        schema:
+          type: number
+        description: Custom tab ID
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                order:
+                  type: integer
+                  description: Custom tab order
+                name:
+                  type: string
+                  description: Custom tab name
+                isVisible:
+                  type: boolean
+                  description: Indicates whether the entity is visible to users
+                entityType:
+                  type: integer
+                  enum:
+                  - 0
+                  - 1
+                  - 2
+                  - 3
+                  description: 0 - contact, 1 - pipeline, 2 - board, 3 - company
+                entityId:
+                  type: integer
+                  description: Related entity ID. Only for pipelines and boards
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomTab'
+      operationId: updateCustomTab
+      x-ai-role: crm_interface_designer
+      x-ai-description: Modifies the configuration of a custom tab in the CRM interface. Custom tabs extend the default UI by surfacing context-specific data (contacts, pipelines, boards, companies) directly within a record view. Updating a tab's visibility, order, or entity binding allows teams to tailor the workspace layout to their workflow without creating new tabs.
+      x-ai-reasoning-instructions:
+      - Retrieve the current tab configuration first to avoid overwriting fields that are not being changed.
+      - If `entityType` is 0 (contact) or 3 (company), `entityId` is not applicable — do not include it in the payload.
+      - If `entityType` is 1 (pipeline) or 2 (board), `entityId` is required — validate its presence before making the call.
+      - Changing `isVisible` to false hides the tab from all users; confirm the intent if the action was not explicitly requested.
+      - Check that `order` value does not conflict with other tabs' ordering to avoid unexpected reordering side effects.
+      x-ai-responding-instructions:
+      - Confirm which fields were updated and reflect the new values back to the user.
+      - If `isVisible` was set to false, warn the user that the tab will no longer appear in the UI for any user.
+      - Suggest verifying the updated tab by fetching the current tab list or reloading the relevant entity view.
+      x-ai-suggestions:
+      - 'Set `isVisible: false` to temporarily hide a tab without deleting it.'
+      - Use `order` to reposition the tab relative to other custom tabs on the same entity.
+      - To reassign a tab from one pipeline to another, update both `entityType` (1) and `entityId` together.
+      x-ai-capabilities:
+        confirmation:
+          type: Recommended
+          reason: Setting isVisible to false affects all users; entity reassignment may cause data display inconsistencies.
+        security_info:
+          data_handling:
+          - ResourceStateUpdate
+    delete:
+      tags:
+      - Custom Tab
+      summary: Delete custom tabs
+      parameters:
+      - name: customTabId
+        in: path
+        required: true
+        schema:
+          type: number
+        description: Custom tab ID
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                entityType:
+                  type: integer
+                  enum:
+                  - 0
+                  - 1
+                  - 2
+                  - 3
+                  description: 0 - contact, 1 - pipeline, 2 - board, 3 - company
+                entityId:
+                  type: integer
+                  description: Related entity ID. Only for pipelines and boards
+      responses:
+        '204':
+          description: deleted
+      operationId: deleteCustomTab
+      x-ai-role: crm_configuration_specialist
+      x-ai-description: Permanently removes a custom tab from a CRM entity view. Custom tabs are UI extensions that group custom fields — deleting one affects the display layer for all users with access to the related entity type (contact, pipeline, board, or company). This is a destructive, non-reversible action with potential UX impact across the team.
+      x-ai-reasoning-instructions:
+      - Confirm the customTabId is valid and belongs to the expected entity type before proceeding.
+      - Warn the user that deletion is permanent and will affect the interface for all team members who use this entity type.
+      - For pipelines (entityType=1) and boards (entityType=2), verify that entityId is provided — it is required for those contexts.
+      - For contacts (entityType=0) and companies (entityType=3), entityId is not needed; clarify this if the user provides one unnecessarily.
+      - If the tab contains active custom fields, inform the user that those fields may become inaccessible or lose their display context.
+      x-ai-responding-instructions:
+      - Confirm the deletion with reference to the customTabId that was removed.
+      - Mention the affected entity type in the confirmation to avoid ambiguity.
+      - If the response is 204 No Content, explicitly state that the operation was successful despite no body being returned.
+      - Suggest reviewing remaining custom tabs via a list endpoint if the user needs to verify the current configuration.
+      x-ai-suggestions:
+      - Use this after confirming the tab is no longer needed across all team workflows.
+      - Consider exporting or documenting existing custom field configurations before deletion.
+      - Follow up with a list of remaining custom tabs to confirm the desired state.
+      x-ai-capabilities:
+        confirmation:
+          type: Required
+          message: This action permanently deletes the custom tab and cannot be undone. Confirm before proceeding.
+        security_info:
+          data_handling:
+          - ResourceDestruction
+          - IrreversibleAction
+  /custom-tab/{customTabId}/relation:
+    post:
+      tags:
+      - Custom Tab
+      summary: Add new relation with attribute
+      parameters:
+      - name: customTabId
+        in: path
+        required: true
+        schema:
+          type: number
+        description: Custom tab ID
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                entityType:
+                  type: integer
+                  enum:
+                  - 0
+                  - 1
+                  - 2
+                  - 3
+                  description: 0 - contact, 1 - pipeline, 2 - board, 3 - company
+                entityId:
+                  type: integer
+                  description: Related entity ID. Only for pipelines and boards
+                entityIds:
+                  type: array
+                  items:
+                    type: integer
+                  description: Related attributes IDs.
+      responses:
+        '200':
+          description: OK
+      operationId: addCustomTabRelation
+      x-ai-role: crm_data_architect
+      x-ai-description: Links a CRM entity (contact, pipeline, board, or company) to a specific custom tab, enabling contextual data grouping and cross-entity relationships. This is the binding operation that makes custom tab attributes visible and filterable in the context of a chosen entity type.
+      x-ai-reasoning-instructions:
+      - 'Determine the entityType before calling: 0=contact, 1=pipeline, 2=board, 3=company.'
+      - For pipelines (1) and boards (2), provide a single entityId; for contacts and companies, use entityIds array.
+      - Verify the customTabId exists before attempting to add a relation to avoid 404 errors.
+      - Avoid duplicate relations — check existing relations for this tab and entity combination if idempotency is required.
+      x-ai-responding-instructions:
+      - Confirm which entity type and ID(s) were linked to the custom tab.
+      - If the operation succeeds, suggest verifying the relation by retrieving the custom tab's relations.
+      - If an error occurs, clarify whether the issue is with the customTabId, entityType mismatch, or invalid entityId(s).
+      x-ai-suggestions:
+      - Use entityType=0 with entityIds to bulk-link multiple contacts to the tab.
+      - Use entityType=1 or entityType=2 with a single entityId for pipeline/board-scoped tabs.
+      - After adding relations, retrieve the tab data to confirm the binding is reflected.
+      x-ai-capabilities:
+        confirmation:
+          type: None
+        security_info:
+          data_handling:
+          - ResourceStateUpdate
+    delete:
+      tags:
+      - Custom Tab
+      summary: Delete relation with attribute
+      parameters:
+      - name: customTabId
+        in: path
+        required: true
+        schema:
+          type: number
+        description: Custom tab ID
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                entityType:
+                  type: integer
+                  enum:
+                  - 0
+                  - 1
+                  - 2
+                  - 3
+                  description: 0 - contact, 1 - pipeline, 2 - board, 3 - company
+                entityId:
+                  type: integer
+                  description: Related entity ID. Only for pipelines and boards
+                entityIds:
+                  type: array
+                  items:
+                    type: integer
+                  description: Related attributes IDs.
+      responses:
+        '200':
+          description: OK
+      operationId: deleteCustomTabRelation
+      x-ai-role: crm_data_architect
+      x-ai-description: Removes the association between a custom tab and one or more related entities (contacts, pipelines, boards, or companies). This operation detaches the tab's visibility or binding from the specified entity scope — it does not delete the tab itself or the entities, only the relational link between them.
+      x-ai-reasoning-instructions:
+      - 'Clarify entityType before proceeding: 0=contact, 1=pipeline, 2=board, 3=company — wrong type silently targets the wrong scope.'
+      - entityId is applicable only for pipelines (1) and boards (2); for contacts (0) and companies (3) use entityIds only.
+      - entityIds holds attribute IDs to unlink, not entity IDs — confirm the user understands the difference before executing.
+      - Deletion of relations is irreversible; if the user is unsure, suggest listing current relations first.
+      - If entityIds is empty or omitted, ask for clarification — the behavior with an empty array may be a no-op or remove all relations.
+      x-ai-responding-instructions:
+      - Confirm which relations were removed by echoing back the entityType label (e.g., 'pipeline') and the affected IDs.
+      - Clarify that the custom tab and the entities themselves remain intact — only the link was deleted.
+      - If the operation succeeds, suggest verifying the tab configuration or re-linking with a different set of attributes if needed.
+      x-ai-suggestions:
+      - Use entityType=1 with entityId to unlink a specific pipeline from this tab.
+      - Use entityType=0 with entityIds to batch-remove contact attribute relations.
+      - To inspect current relations before deleting, retrieve the custom tab details first.
+      x-ai-capabilities:
+        confirmation:
+          type: Recommended
+          message: This will permanently remove the specified relations from the custom tab. Proceed?
+        security_info:
+          data_handling:
+          - RelationDelete
+components:
+  schemas:
+    CustomTabWithAttribute:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+          description: Custom tab name
+        userId:
+          type: integer
+          description: Custom tab owner
+        isVisible:
+          type: boolean
+          description: Indicates whether the entity is visible to users
+        isDefault:
+          type: boolean
+          description: Indicates whether the entity is default and cannot be changed
+        type:
+          type: integer
+          enum:
+          - 0
+          - 1
+          description: 0 - attributes, 1 - integration
+        entityType:
+          type: integer
+          enum:
+          - 0
+          - 1
+          - 2
+          - 3
+          description: 0 - contact, 1 - pipeline, 2 - board, 3 - companies
+        entityId:
+          type: integer
+          description: Related entity ID. Only for boards and pipelines
+        attributes:
+          type: array
+          items:
+            type: object
+            properties:
+              attributeId:
+                type: integer
+              attributeType:
+                type: integer
+    CustomTab:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+          description: Custom tab name
+        userId:
+          type: integer
+          description: Custom tab owner
+        isVisible:
+          type: boolean
+          description: Indicates whether the entity is visible to users
+        isDefault:
+          type: boolean
+          description: Indicates whether the entity is default and cannot be changed
+        type:
+          type: integer
+          enum:
+          - 0
+          - 1
+          description: 0 - attributes, 1 - integration
+        entityType:
+          type: integer
+          enum:
+          - 0
+          - 1
+          - 2
+          - 3
+          description: 0 - contact, 1 - pipeline, 2 - board, 3 - company
+        entityId:
+          type: integer
+          description: Related entity ID. Only for boards and pipelines
+  securitySchemes:
+    apiKey:
+      type: http
+      scheme: bearer
+      bearerFormat: API Key
+      description: 'Static API Key authentication.  A long-lived token generated manually in the SendPulse account settings.
+
+        '
+      x-ai-description: 'Permanent authentication token. Ideal for simple integrations without token refresh logic.
+
+        '
+    outh2:
+      type: oauth2
+      description: OAuth 2.0 Client Credentials flow for temporary access tokens.
+      flows:
+        clientCredentials:
+          tokenUrl: https://api.sendpulse.com/oauth/access_token
+          scopes: {}
+      x-ai-description: 'Standard OAuth 2.0 flow using Client ID and Client Secret.  Provides temporary tokens (valid for 1 hour) for enhanced security.
+
+        '

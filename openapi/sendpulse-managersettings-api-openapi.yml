@@ -1,0 +1,304 @@
+openapi: 3.2.0
+info:
+  description: Using the API for the CRM service, you can integrate your system with CRM from SendPulse and receive detailed information on pipelines, deals, contacts and their attributes and users. You can also create deals and contacts, assign and remove fields, tags, contact details and instant messengers. On the right, there is a button for authorizing requests made on this page. Click “Authorize,” then insert the ID and Secret from your account. To perform a request directly from the page, click the "Try it out" button within each method block. Then fill in input fields if any (for URL parameters, the description is right below the URL request; for body parameters, the description is under the “Scheme” button to the right of the example), and click “Run.” You will find the server response and description of received parameters below.
+  title: SendPulse CRM Public Manager Settings API
+  version: 0.1.0
+servers:
+- url: https://api.sendpulse.com/crm/v1
+security:
+- apiKey: []
+- oauth2: []
+tags:
+- description: ''
+  name: ManagerSettings
+paths:
+  /manager-settings/sections:
+    get:
+      tags:
+      - ManagerSettings
+      summary: Get all sections
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    items:
+                      $ref: '#/components/schemas/ManagerSettings'
+      operationId: listManagerSettingsSections
+      x-ai-role: crm_configuration_specialist
+      x-ai-description: Retrieves the full list of manager settings sections available in the account. Sections represent logical groupings of configurable parameters for CRM managers — such as access control, interface preferences, or notification rules. Use this endpoint to discover what configuration domains exist before reading or modifying specific settings.
+      x-ai-reasoning-instructions:
+      - Call this endpoint first when the user wants to configure or inspect manager settings — it provides the valid section identifiers.
+      - If the user asks about a specific setting, match it against the returned sections before proceeding.
+      - 'Treat the response as a discovery step: the section list may vary by account tier or role.'
+      x-ai-responding-instructions:
+      - List the returned sections by name so the user can identify which one is relevant to their goal.
+      - If the list is empty, inform the user that no sections are configured and suggest checking account permissions.
+      - Suggest a follow-up action such as fetching details for a specific section.
+      x-ai-suggestions:
+      - Use the returned section identifiers to fetch or update specific manager settings.
+      - Combine with role/permission data to determine which sections the current manager can modify.
+      x-ai-capabilities:
+        confirmation:
+          type: None
+        security_info:
+          data_handling:
+          - ReadOnly
+  /manager-settings/managers:
+    get:
+      tags:
+      - ManagerSettings
+      summary: Get all managers
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    items:
+                      $ref: '#/components/schemas/ManagerSettings'
+      operationId: getManagerSettingsManagers
+      x-ai-role: crm_operations_manager
+      x-ai-description: Retrieves the full list of managers configured in the account along with their settings. This endpoint is the entry point for any manager-related orchestration — use it to discover available managers, verify assignment coverage, or audit access distribution before creating or updating CRM workflows.
+      x-ai-reasoning-instructions:
+      - Use this endpoint before assigning a manager to a deal or contact to ensure the target manager exists and is active.
+      - If the response list is empty, inform the user that no managers have been configured yet and suggest navigating to account settings.
+      - When the user asks 'who is responsible for X', fetch this list first to map manager IDs to names.
+      x-ai-responding-instructions:
+      - Present managers as a structured list with their key identifiers (id, name, email) for easy selection.
+      - If the list is large, offer to filter by a specific attribute the user is looking for.
+      - Suggest follow-up actions such as assigning a manager to a pipeline stage or updating manager settings.
+      x-ai-suggestions:
+      - Use the returned manager IDs with endpoints that accept a `manager_id` parameter.
+      - Cross-reference with deal or contact assignment endpoints to audit coverage gaps.
+      x-ai-capabilities:
+        confirmation:
+          type: None
+        security_info:
+          data_handling:
+          - ReadOnly
+  /manager-settings:
+    post:
+      tags:
+      - ManagerSettings
+      summary: Create managers from category
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                sectionId:
+                  type: integer
+                responsibleIds:
+                  type: array
+                  items:
+                    type: integer
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    $ref: '#/components/schemas/ManagerSettings'
+      operationId: createManagerSettings
+      x-ai-role: crm_access_control_specialist
+      x-ai-description: Assigns responsible managers to a specific CRM section (category), establishing ownership and routing rules. This is a foundational access-control operation — without it, incoming deals or contacts in a given section may go unassigned, causing missed follow-ups.
+      x-ai-reasoning-instructions:
+      - Verify that the sectionId exists before calling this endpoint — assigning to a non-existent section will silently fail or produce an error.
+      - Confirm that all IDs in responsibleIds correspond to active manager accounts; deactivated users may cause inconsistent behavior.
+      - Check whether the section already has assigned managers — this call may overwrite existing assignments depending on API semantics.
+      - If the user provides only a section name, resolve it to a sectionId first using the appropriate list endpoint.
+      x-ai-responding-instructions:
+      - Confirm which section received the manager assignments and list the assigned manager IDs.
+      - If the response returns the full ManagerSettings object, highlight the effective assignment (section → managers mapping).
+      - Suggest verifying the assignment by fetching the section's current settings afterward.
+      x-ai-suggestions:
+      - Assign a single manager as the primary owner and add others as backups.
+      - Use this after creating a new CRM section to ensure it is never left unmanaged.
+      - Bulk-assign the same manager to multiple sections by calling this endpoint once per section.
+      x-ai-capabilities:
+        confirmation:
+          type: Recommended
+          message: This will assign managers to the specified section, potentially replacing existing assignments.
+        security_info:
+          data_handling:
+          - ResourceStateUpdate
+          - AccessControlChange
+  /manager-settings/{settingId}:
+    put:
+      tags:
+      - ManagerSettings
+      summary: Update managers from category
+      parameters:
+      - name: settingId
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                sectionId:
+                  type: integer
+                responsibleIds:
+                  type: array
+                  items:
+                    type: integer
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    $ref: '#/components/schemas/ManagerSettings'
+      operationId: updateManagerSetting
+      x-ai-role: crm_operations_manager
+      x-ai-description: Updates the assignment of responsible managers for a specific manager-settings configuration. This endpoint controls which team members are accountable for a given section within a category, directly affecting routing, visibility, and ownership of CRM entities. Changing responsible IDs can redistribute workloads and alter access patterns across the CRM.
+      x-ai-reasoning-instructions:
+      - Before updating, verify that the settingId exists to avoid a silent no-op or 404.
+      - Confirm that all IDs in responsibleIds correspond to active managers in the account.
+      - Check whether the sectionId belongs to the category referenced by settingId to prevent cross-category misassignment.
+      - If responsibleIds is empty, clarify with the user whether they intend to remove all responsible managers — this may leave the section unowned.
+      x-ai-responding-instructions:
+      - Confirm the update by referencing the settingId and the new list of responsible managers.
+      - If the response includes the updated ManagerSettings object, highlight the changed fields.
+      - Suggest verifying the assignment by fetching the setting or reviewing the section in the CRM UI.
+      - If the update affects a live category with active deals or contacts, warn the user about potential ownership reassignment.
+      x-ai-suggestions:
+      - Use GET /manager-settings to retrieve all settings and find the correct settingId before updating.
+      - Pair with a manager list endpoint to resolve manager names from responsibleIds before presenting to the user.
+      x-ai-capabilities:
+        confirmation:
+          type: Recommended
+          reason: Changing responsible managers affects routing and ownership of CRM records.
+        security_info:
+          data_handling:
+          - ResourceStateUpdate
+    delete:
+      tags:
+      - ManagerSettings
+      summary: Delete managers from category
+      parameters:
+      - name: settingId
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                responsibleIds:
+                  type: array
+                  items:
+                    type: integer
+      responses:
+        '204':
+          description: Successfully deleted
+      operationId: deleteManagersFromManagerSetting
+      x-ai-role: crm_access_control_manager
+      x-ai-description: Removes one or more responsible managers from a specific manager settings category. This operation adjusts accountability scope — unassigned managers will no longer receive tasks, notifications, or routing events tied to this category. Use with caution in active pipelines where unassignment may create orphaned leads.
+      x-ai-reasoning-instructions:
+      - Confirm that settingId refers to an existing category before proceeding.
+      - Verify that responsibleIds are currently assigned to this setting — removing non-assigned managers may silently succeed but is a no-op.
+      - If responsibleIds is omitted or empty, clarify with the user which managers should be removed to avoid unintended full unassignment.
+      - Check if the setting requires at least one responsible manager — removing all may break routing or automation rules dependent on this category.
+      x-ai-responding-instructions:
+      - Confirm that the specified managers have been removed from the category (204 = success, no body).
+      - Mention which manager IDs were unassigned and from which settingId.
+      - Suggest reviewing remaining assigned managers to ensure the category is still properly staffed.
+      - If the user likely wants to reassign rather than simply remove, suggest the update/assign operation as a follow-up.
+      x-ai-capabilities:
+        confirmation:
+          type: Recommended
+          message: This will unassign the selected managers from the category. Leads or tasks routed through this category may be affected.
+        security_info:
+          data_handling:
+          - ResourceStateUpdate
+          - IrreversibleWithoutReassignment
+  /manager-settings/{sectionId}:
+    get:
+      tags:
+      - ManagerSettings
+      summary: Get managers by section
+      parameters:
+      - name: sectionId
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    items:
+                      $ref: '#/components/schemas/ManagerSettings'
+      operationId: getManagersBySection
+      x-ai-role: crm_configuration_specialist
+      x-ai-description: Retrieves the list of managers assigned to a specific CRM section. Sections act as organizational units (e.g., sales, support) that group managers for routing, permissions, and reporting purposes. Use this to inspect who is responsible for a given section before assigning leads or configuring automation rules.
+      x-ai-reasoning-instructions:
+      - Verify that the sectionId exists before making the call; an invalid ID will return an empty or error response.
+      - Use this endpoint to audit manager assignments when debugging lead routing or access control issues.
+      - If the result is empty, consider that the section may exist but have no managers assigned yet.
+      x-ai-responding-instructions:
+      - List the returned managers clearly, highlighting their names and roles if available in the schema.
+      - If the list is empty, inform the user that no managers are currently assigned to this section and suggest using the appropriate assignment endpoint.
+      - Mention the sectionId used in the request to provide clear context in the response.
+      x-ai-suggestions:
+      - Use the returned manager IDs to assign leads or configure notification rules for this section.
+      - Cross-reference with section listing endpoints to enumerate all valid sectionId values.
+      x-ai-capabilities:
+        confirmation:
+          type: None
+        security_info:
+          data_handling:
+          - ReadOnly
+components:
+  schemas:
+    ManagerSettings:
+      type: object
+      properties:
+        sectionId:
+          type: integer
+        responsibleId:
+          type: integer
+  securitySchemes:
+    apiKey:
+      type: http
+      scheme: bearer
+      bearerFormat: API Key
+      description: 'Static API Key authentication.  A long-lived token generated manually in the SendPulse account settings.
+
+        '
+      x-ai-description: 'Permanent authentication token. Ideal for simple integrations without token refresh logic.
+
+        '
+    outh2:
+      type: oauth2
+      description: OAuth 2.0 Client Credentials flow for temporary access tokens.
+      flows:
+        clientCredentials:
+          tokenUrl: https://api.sendpulse.com/oauth/access_token
+          scopes: {}
+      x-ai-description: 'Standard OAuth 2.0 flow using Client ID and Client Secret.  Provides temporary tokens (valid for 1 hour) for enhanced security.
+
+        '

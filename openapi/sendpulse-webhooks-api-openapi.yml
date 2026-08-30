@@ -1,0 +1,289 @@
+openapi: 3.2.0
+info:
+  title: SendPulse Bulk Email Webhooks API
+  version: 1.0.0
+  description: API for managing mailing lists, email campaigns, templates, and senders.
+  x-ai-description: 'The Bulk Email API is the core engine for marketing automation at SendPulse.  It enables programmatic control over the entire email lifecycle.
+
+    '
+  license:
+    name: Apache 2.0
+    identifier: Apache-2.0
+servers:
+- url: https://api.sendpulse.com
+  description: Production server
+security:
+- apiKey: []
+- oauth2: []
+tags:
+- name: Webhooks
+  description: Endpoints related to Webhooks.
+paths:
+  /v2/email-service/webhook:
+    get:
+      tags:
+      - Webhooks
+      summary: Get webhooks
+      operationId: getWebhooks
+      description: Retrieve the list of configured email service webhooks.
+      x-ai-role: integration_specialist
+      x-ai-description: Audit your real-time notification endpoints.
+      x-ai-reasoning-instructions:
+      - Check which URLs are receiving event notifications.
+      - Identify active actions (e.g., unsubscribe, open).
+      x-ai-responding-instructions:
+      - List all webhook IDs, URLs, and their tracked actions.
+      x-ai-suggestions:
+      - Create a new webhook for 'delivered' events.
+      x-ai-capabilities:
+        security_info:
+          data_handling:
+          - InformationRetrieval
+      responses:
+        '200':
+          description: List of webhooks
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WebhookListResponse'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+    post:
+      tags:
+      - Webhooks
+      summary: Create a webhook
+      operationId: createWebhook
+      description: Configure a new webhook to track email events.
+      x-ai-role: integration_specialist
+      x-ai-description: Set up automated notifications for your external systems.
+      x-ai-reasoning-instructions:
+      - Provide a valid HTTPS handler URL.
+      - Choose specific actions to track (e.g., unsubscribe, open, delivered).
+      x-ai-responding-instructions:
+      - Confirm the new webhook configuration and provide its ID.
+      x-ai-suggestions:
+      - '{"url": "https://example.com/webhook", "actions": ["open", "unsubscribe"]}'
+      x-ai-capabilities:
+        security_info:
+          data_handling:
+          - ResourceStateUpdate
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WebhookCreateRequest'
+      responses:
+        '200':
+          description: Webhook created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WebhookListResponse'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+  /v2/email-service/webhook/{id}:
+    parameters:
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: integer
+    get:
+      tags:
+      - Webhooks
+      summary: Get webhook by ID
+      operationId: getWebhookById
+      description: Retrieve details for a specific webhook.
+      x-ai-role: integration_specialist
+      x-ai-description: Inspect a single webhook configuration.
+      x-ai-reasoning-instructions:
+      - Verify the webhook ID is correct.
+      - Review the URL and actions.
+      x-ai-responding-instructions:
+      - Show the webhook's current settings.
+      x-ai-suggestions:
+      - Update the webhook URL.
+      x-ai-capabilities:
+        security_info:
+          data_handling:
+          - InformationRetrieval
+      responses:
+        '200':
+          description: Webhook details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WebhookResponse'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+    put:
+      tags:
+      - Webhooks
+      summary: Update a webhook
+      operationId: updateWebhook
+      description: Update the URL for an existing webhook.
+      x-ai-role: integration_specialist
+      x-ai-description: Point an existing webhook to a new handler URL.
+      x-ai-reasoning-instructions:
+      - Ensure the new URL is reachable and secure.
+      - Note that this only updates the URL, not the actions.
+      x-ai-responding-instructions:
+      - Confirm that the webhook has been updated.
+      x-ai-suggestions:
+      - '{"url": "https://new-site.com/callback"}'
+      x-ai-capabilities:
+        security_info:
+          data_handling:
+          - ResourceStateUpdate
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WebhookUpdateRequest'
+      responses:
+        '200':
+          description: Webhook updated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: array
+                    items:
+                      type: boolean
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+    delete:
+      tags:
+      - Webhooks
+      summary: Delete a webhook
+      operationId: deleteWebhook
+      description: Remove a webhook configuration.
+      x-ai-role: integration_specialist
+      x-ai-description: Stop receiving event notifications at this endpoint.
+      x-ai-reasoning-instructions:
+      - Verify this webhook is no longer needed.
+      - Once deleted, you will stop receiving events at the configured URL.
+      x-ai-responding-instructions:
+      - Confirm that the webhook has been successfully removed.
+      x-ai-suggestions:
+      - List all remaining webhooks.
+      x-ai-capabilities:
+        security_info:
+          data_handling:
+          - DataDestruction
+      responses:
+        '200':
+          description: Webhook deleted
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: array
+                    items:
+                      type: boolean
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+components:
+  schemas:
+    Webhook:
+      type: object
+      x-ai-description: Webhook configuration.
+      properties:
+        id:
+          type: integer
+          example: 162242
+        user_id:
+          type: integer
+          example: 7043663
+        url:
+          type: string
+          example: https://site.com/callback
+        action:
+          type: string
+          example: unsubscribe
+    WebhookResponse:
+      type: object
+      x-ai-description: Single webhook response.
+      properties:
+        success:
+          type: boolean
+          example: true
+        data:
+          $ref: '#/components/schemas/Webhook'
+    WebhookListResponse:
+      type: object
+      x-ai-description: List of webhooks.
+      properties:
+        success:
+          type: boolean
+          example: true
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Webhook'
+    WebhookCreateRequest:
+      type: object
+      x-ai-description: Payload to create webhooks.
+      required:
+      - url
+      - actions
+      properties:
+        url:
+          type: string
+          example: https://site.com/callback
+        actions:
+          type: array
+          items:
+            type: string
+          example:
+          - delivered
+    WebhookUpdateRequest:
+      type: object
+      x-ai-description: Payload to update a webhook.
+      required:
+      - url
+      properties:
+        url:
+          type: string
+          example: https://site.com/callback
+  securitySchemes:
+    apiKey:
+      type: http
+      scheme: bearer
+      bearerFormat: API Key
+      description: 'Static API Key authentication.  A long-lived token generated manually in the SendPulse account settings.
+
+        '
+      x-ai-description: 'Permanent authentication token. Ideal for simple integrations without token refresh logic.
+
+        '
+    oauth2:
+      type: oauth2
+      description: OAuth 2.0 Client Credentials flow for temporary access tokens.
+      flows:
+        clientCredentials:
+          tokenUrl: https://api.sendpulse.com/oauth/access_token
+          scopes: {}
+      x-ai-description: 'Standard OAuth 2.0 flow using Client ID and Client Secret.  Provides temporary tokens (valid for 1 hour) for enhanced security.
+
+        '

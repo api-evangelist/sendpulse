@@ -1,0 +1,168 @@
+openapi: 3.2.0
+info:
+  description: Using the API for the CRM service, you can integrate your system with CRM from SendPulse and receive detailed information on pipelines, deals, contacts and their attributes and users. You can also create deals and contacts, assign and remove fields, tags, contact details and instant messengers. On the right, there is a button for authorizing requests made on this page. Click “Authorize,” then insert the ID and Secret from your account. To perform a request directly from the page, click the "Try it out" button within each method block. Then fill in input fields if any (for URL parameters, the description is right below the URL request; for body parameters, the description is under the “Scheme” button to the right of the example), and click “Run.” You will find the server response and description of received parameters below.
+  title: SendPulse CRM Public Tasks steps API
+  version: 0.1.0
+servers:
+- url: https://api.sendpulse.com/crm/v1
+security:
+- apiKey: []
+- oauth2: []
+tags:
+- name: Tasks steps
+paths:
+  /boards/{boardId}/steps:
+    post:
+      tags:
+      - Tasks steps
+      summary: Create steps for board
+      parameters:
+      - name: boardId
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              properties:
+                name:
+                  type: string
+                  description: Step name
+                color:
+                  type: string
+                  description: Step color
+      responses:
+        '201':
+          description: ''
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    $ref: '#/components/schemas/BoardSteps'
+      operationId: createBoardSteps
+      x-ai-role: project_management_specialist
+      x-ai-description: Initializes a workflow stage within a CRM board. Steps define the pipeline structure — each step represents a distinct phase in a deal or task lifecycle. The order and naming of steps directly shapes how agents and users move tasks through the board.
+      x-ai-reasoning-instructions:
+      - Before creating a step, verify the boardId exists and is accessible.
+      - Check whether a step with the same name already exists on this board to avoid duplication.
+      - If color is omitted, note that a default will be assigned — suggest using distinct colors for visual clarity in pipelines with many stages.
+      - Consider the logical position of the new step in the workflow — advise the user to think about ordering when multiple steps are being created.
+      x-ai-responding-instructions:
+      - Confirm successful creation by referencing the new step's ID and name.
+      - Suggest reviewing the full board structure via the corresponding GET endpoint to verify step placement.
+      - If the board is not found or access is denied, explain that boardId must correspond to a board the user owns or has access to.
+      x-ai-suggestions:
+      - New
+      - In Progress
+      - Review
+      - Completed
+      - On Hold
+      x-ai-capabilities:
+        confirmation:
+          type: None
+        security_info:
+          data_handling:
+          - ResourceStateUpdate
+  /boards/{boardId}/steps/{stepId}:
+    put:
+      tags:
+      - Tasks steps
+      summary: Update steps for board
+      description: Updates board step (with order)
+      parameters:
+      - name: boardId
+        in: path
+        required: true
+        schema:
+          type: integer
+      - name: stepId
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              properties:
+                name:
+                  type: string
+                  description: Step name
+                color:
+                  type: string
+                  description: Step color
+                order:
+                  type: integer
+                  description: Step order
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    $ref: '#/components/schemas/BoardSteps'
+      operationId: updateBoardStep
+      x-ai-role: project_management_specialist
+      x-ai-description: Updates a specific step (stage/column) within a board, including its name, visual color, and position order. Steps define the workflow stages through which tasks progress — modifying them restructures the entire board's pipeline logic.
+      x-ai-reasoning-instructions:
+      - Verify that both boardId and stepId exist before attempting the update.
+      - When changing 'order', check existing step positions to avoid conflicts or gaps in sequence.
+      - If only 'color' is being updated, no order recalculation is needed — apply a minimal patch.
+      - Warn the user if renaming a step that may be referenced in automations or filters.
+      x-ai-responding-instructions:
+      - Confirm which fields were updated and their new values.
+      - If order was changed, describe the step's new position relative to others.
+      - Suggest retrieving the full board structure via a GET /boards/{boardId}/steps call to verify the updated pipeline.
+      x-ai-suggestions:
+      - Use sequential integers (1, 2, 3…) for 'order' to maintain a clean pipeline.
+      - 'Common step colors: ''#FF5733'' for urgent, ''#28A745'' for done, ''#007BFF'' for in-progress.'
+      - 'Typical step names: ''Backlog'', ''In Progress'', ''Review'', ''Done'''
+      x-ai-capabilities:
+        confirmation:
+          type: None
+        security_info:
+          data_handling:
+          - ResourceStateUpdate
+components:
+  schemas:
+    BoardSteps:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        color:
+          type: string
+        order:
+          type: integer
+        boardId:
+          type: integer
+  securitySchemes:
+    apiKey:
+      type: http
+      scheme: bearer
+      bearerFormat: API Key
+      description: 'Static API Key authentication.  A long-lived token generated manually in the SendPulse account settings.
+
+        '
+      x-ai-description: 'Permanent authentication token. Ideal for simple integrations without token refresh logic.
+
+        '
+    outh2:
+      type: oauth2
+      description: OAuth 2.0 Client Credentials flow for temporary access tokens.
+      flows:
+        clientCredentials:
+          tokenUrl: https://api.sendpulse.com/oauth/access_token
+          scopes: {}
+      x-ai-description: 'Standard OAuth 2.0 flow using Client ID and Client Secret.  Provides temporary tokens (valid for 1 hour) for enhanced security.
+
+        '

@@ -1,0 +1,120 @@
+openapi: 3.2.0
+info:
+  title: SendPulse Pop-up Tariff API
+  description: API for managing pop-ups in SendPulse. This API allows you to create, update, and delete pop-ups, as well as retrieve information about them and their performance.
+  version: '1.0'
+servers:
+- description: Production server
+  url: https://api.sendpulse.com/v2/pop-ups
+security:
+- apiKey: []
+- oauth2: []
+tags:
+- name: Tariff
+paths:
+  /public/api/tariff/limits:
+    get:
+      tags:
+      - Tariff
+      summary: Get info about user tariff plan
+      description: Returns the information about user tariff plan
+      responses:
+        '200':
+          description: Operation successful
+          content:
+            application/json:
+              schema:
+                properties:
+                  result:
+                    type: boolean
+                  data:
+                    description: Tariff info
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/userPlanInfo'
+                type: object
+        '401':
+          $ref: '#/components/schemas/unauthorizedResponse'
+      operationId: getTariffLimits
+      x-ai-role: account_management_specialist
+      x-ai-description: 'Returns the current tariff plan limits for the authenticated user account — quota boundaries that govern what actions are permitted across all SendPulse services. This is a foundational diagnostic endpoint: before executing bulk operations, campaign sends, or contact imports, an agent should consult these limits to avoid hitting plan restrictions mid-task.'
+      x-ai-reasoning-instructions:
+      - Call this endpoint before any bulk or resource-heavy operation to confirm the account has sufficient quota.
+      - Parse the returned limits in relation to the intended action — e.g., compare available email sends against the planned campaign size.
+      - If limits are close to exhaustion, proactively warn the user before proceeding rather than letting the downstream call fail.
+      - Do not cache this response for long periods — tariff data can change after a plan upgrade or billing cycle reset.
+      x-ai-responding-instructions:
+      - Present limits in a human-readable summary, highlighting any quotas that are near their ceiling.
+      - If a limit is zero or fully consumed, clearly flag it as a blocker for the user's intended action.
+      - Suggest a plan upgrade path if the user's goal exceeds current quotas.
+      - Avoid listing raw numbers without context — always relate them to what the user is trying to accomplish.
+      x-ai-suggestions:
+      - Check this before scheduling a large email campaign to verify send quota.
+      - Use together with current usage stats to calculate remaining capacity.
+      - Consult before importing large contact lists to verify addressbook or contact limits.
+      x-ai-capabilities:
+        confirmation:
+          type: None
+        security_info:
+          data_handling:
+          - ReadOnly
+components:
+  schemas:
+    unauthorizedResponse:
+      description: Unauthorized
+    userPlanInfo:
+      title: Tariff info
+      properties:
+        expiredAt:
+          type: string
+          description: Expiring date
+        daysAmount:
+          type: integer
+          description: Tariff length in days
+        currentDaysAmount:
+          type: integer
+          description: Used days for this moment
+        daysLeft:
+          type: integer
+          description: Days left
+        nextLimitsDrop:
+          type: string
+          description: Date for monthly limits drop
+        options:
+          type: object
+          properties:
+            views:
+              type: object
+              properties:
+                amount:
+                  type: integer
+                  description: Total available amount
+                amountLeft:
+                  type: integer
+                  description: Left amount
+                currentAmount:
+                  type: integer
+                  description: Used amount
+          description: Tariff limits info
+      type: object
+  securitySchemes:
+    apiKey:
+      type: http
+      scheme: bearer
+      bearerFormat: API Key
+      description: 'Static API Key authentication.  A long-lived token generated manually in the SendPulse account settings.
+
+        '
+      x-ai-description: 'Permanent authentication token. Ideal for simple integrations without token refresh logic.
+
+        '
+    outh2:
+      type: oauth2
+      description: OAuth 2.0 Client Credentials flow for temporary access tokens.
+      flows:
+        clientCredentials:
+          tokenUrl: https://api.sendpulse.com/oauth/access_token
+          scopes: {}
+      x-ai-description: 'Standard OAuth 2.0 flow using Client ID and Client Secret.  Provides temporary tokens (valid for 1 hour) for enhanced security.
+
+        '
