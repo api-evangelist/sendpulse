@@ -46,10 +46,10 @@ tags:
 - Web Push
 - Chatbots
 - CRM
-- Multi-Channel
+- Multichannel
 - Messaging
 - Online Courses
-- Popups
+- Pop-ups
 - Email Verification
 - MCP
 - Agent Ready
@@ -79,6 +79,8 @@ apis:
   humanURL: https://sendpulse.com/integrations/api/bulk-email
   baseURL: https://api.sendpulse.com
   tags:
+  - Account
+  tags_raw:
   - account
   properties:
   - type: OpenAPI
@@ -151,6 +153,8 @@ apis:
   humanURL: https://sendpulse.com/integrations/api/bulk-email
   baseURL: https://api.sendpulse.com
   tags:
+  - Balances
+  tags_raw:
   - Balance
   properties:
   - type: OpenAPI
@@ -223,6 +227,8 @@ apis:
   humanURL: https://sendpulse.com/integrations/api/bulk-email
   baseURL: https://api.sendpulse.com
   tags:
+  - Bots
+  tags_raw:
   - bots
   properties:
   - type: OpenAPI
@@ -295,6 +301,8 @@ apis:
   humanURL: https://sendpulse.com/integrations/api/bulk-email
   baseURL: https://api.sendpulse.com
   tags:
+  - Chats
+  tags_raw:
   - chats
   properties:
   - type: OpenAPI
@@ -610,6 +618,8 @@ apis:
   humanURL: https://sendpulse.com/integrations/api/bulk-email
   baseURL: https://api.sendpulse.com
   tags:
+  - Contact Tags
+  tags_raw:
   - Contact tags
   properties:
   - type: OpenAPI
@@ -1042,6 +1052,8 @@ apis:
   humanURL: https://sendpulse.com/integrations/api/bulk-email
   baseURL: https://api.sendpulse.com
   tags:
+  - Email Address
+  tags_raw:
   - Email address
   properties:
   - type: OpenAPI
@@ -1090,6 +1102,8 @@ apis:
   humanURL: https://sendpulse.com/integrations/api/bulk-email
   baseURL: https://api.sendpulse.com
   tags:
+  - Event
+  tags_raw:
   - Events
   properties:
   - type: OpenAPI
@@ -1162,6 +1176,8 @@ apis:
   humanURL: https://sendpulse.com/integrations/api/bulk-email
   baseURL: https://api.sendpulse.com
   tags:
+  - Flows
+  tags_raw:
   - flows
   properties:
   - type: OpenAPI
@@ -1210,6 +1226,8 @@ apis:
   humanURL: https://sendpulse.com/integrations/api/bulk-email
   baseURL: https://api.sendpulse.com
   tags:
+  - Mailing Lists
+  tags_raw:
   - Mailing lists
   properties:
   - type: OpenAPI
@@ -1738,6 +1756,8 @@ apis:
   humanURL: https://sendpulse.com/integrations/api/bulk-email
   baseURL: https://api.sendpulse.com
   tags:
+  - Task CheckList
+  tags_raw:
   - Task Checklist
   properties:
   - type: OpenAPI
@@ -1858,6 +1878,8 @@ apis:
   humanURL: https://sendpulse.com/integrations/api/bulk-email
   baseURL: https://api.sendpulse.com
   tags:
+  - Task
+  tags_raw:
   - Tasks
   properties:
   - type: OpenAPI
@@ -1978,6 +2000,8 @@ apis:
   humanURL: https://sendpulse.com/integrations/api/bulk-email
   baseURL: https://api.sendpulse.com
   tags:
+  - Triggers
+  tags_raw:
   - triggers
   properties:
   - type: OpenAPI
@@ -2026,6 +2050,8 @@ apis:
   humanURL: https://sendpulse.com/integrations/api/bulk-email
   baseURL: https://api.sendpulse.com
   tags:
+  - User
+  tags_raw:
   - Users
   properties:
   - type: OpenAPI
@@ -2050,6 +2076,8 @@ apis:
   humanURL: https://sendpulse.com/integrations/api/bulk-email
   baseURL: https://api.sendpulse.com
   tags:
+  - Variables
+  tags_raw:
   - variables
   properties:
   - type: OpenAPI
@@ -2074,6 +2102,8 @@ apis:
   humanURL: https://sendpulse.com/integrations/api/bulk-email
   baseURL: https://api.sendpulse.com
   tags:
+  - Webhook
+  tags_raw:
   - Webhooks
   properties:
   - type: OpenAPI
