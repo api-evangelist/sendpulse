@@ -692,6 +692,8 @@ apis:
   humanURL: https://sendpulse.com/integrations/api/bulk-email
   baseURL: https://api.sendpulse.com
   tags:
+  - Conversion
+  tags_raw:
   - Conversions
   properties:
   - type: OpenAPI
@@ -1078,6 +1080,8 @@ apis:
   humanURL: https://sendpulse.com/integrations/api/bulk-email
   baseURL: https://api.sendpulse.com
   tags:
+  - Email
+  tags_raw:
   - Emails
   properties:
   - type: OpenAPI
@@ -1176,7 +1180,7 @@ apis:
   humanURL: https://sendpulse.com/integrations/api/bulk-email
   baseURL: https://api.sendpulse.com
   tags:
-  - Flows
+  - Flow
   tags_raw:
   - flows
   properties:
@@ -1348,6 +1352,8 @@ apis:
   humanURL: https://sendpulse.com/integrations/api/bulk-email
   baseURL: https://api.sendpulse.com
   tags:
+  - Phone
+  tags_raw:
   - Phones
   properties:
   - type: OpenAPI
@@ -1708,6 +1714,8 @@ apis:
   humanURL: https://sendpulse.com/integrations/api/bulk-email
   baseURL: https://api.sendpulse.com
   tags:
+  - Tariffs
+  tags_raw:
   - Tariff
   properties:
   - type: OpenAPI
