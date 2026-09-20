@@ -11,7 +11,7 @@ capability_model:
   attribution: Turbo EA Capabilities by Vincent Verdet — Turbo EA, https://github.com/vincentmakes/turbo-ea-capabilities,
     CC BY 4.0
   notice: NOTICE
-edge_count: 23
+edge_count: 26
 edges:
 - tag: Deals
   spec_file: sendpulse-deals-api-openapi.yml
@@ -62,6 +62,17 @@ edges:
   reason: Creation, scheduling, sending and statistics of email/SMS/push/messenger campaigns is outbound
     digital marketing campaign execution; some ambiguity between Digital Marketing and Demand Generation
     sub-capabilities.
+- tag: Company
+  spec_file: sendpulse-company-api-openapi.yml
+  capability_id: BC-420.10
+  capability_id_l1: BC-420
+  capability_name: Customer Data Management
+  confidence: 0.78
+  evidence: 'POST /companies createCompany Create company; GET /companies/{companyId} getCompanyById;
+    schemas: Company, Phone, Email, Messenger'
+  reason: CRUD over CRM company (account) records with contact details and attributes is maintenance of
+    the customer master record; could alternatively be read as account management, hence not maximal confidence.
+  recovered_from: sweep-20260828T235257Z-edges.json
 - tag: Contact email addresses
   spec_file: sendpulse-contact-email-addresses-api-openapi.yml
   capability_id: BC-420.10
@@ -79,6 +90,16 @@ edges:
   evidence: POST /contacts/{contactId}/phones  addContactPhone  Add a phone number to the contact.
   reason: Maintains phone contact details on the CRM customer record — customer data management, not telecom
     numbering.
+- tag: Deal history
+  spec_file: sendpulse-deal-history-api-openapi.yml
+  capability_id: BC-410.30
+  capability_id_l1: BC-410
+  capability_name: Opportunity & Pipeline Management
+  confidence: 0.75
+  evidence: GET /deals/{dealId}/history  getDealHistory  Deal history; schema DealHistory
+  reason: Change history of a CRM deal supports tracking the deal lifecycle, so it belongs with Opportunity
+    & Pipeline Management; thin surface (one operation) keeps confidence moderate.
+  recovered_from: sweep-20260828T235257Z-edges.json
 - tag: Mailing lists
   spec_file: sendpulse-mailing-lists-api-openapi.yml
   capability_id: BC-400.60
@@ -231,3 +252,15 @@ edges:
     GET /public/api/subscribers/by-popup/{popupId} Get subscriber by popup
   reason: Operations manage web-push and pop-up subscribers of a website — the audience of digital marketing
     channels, i.e. Digital Marketing Management (web, marketing automation), not a customer master record.
+- tag: Webhooks
+  spec_file: sendpulse-webhooks-api-openapi.yml
+  capability_id: BC-4270.80
+  capability_id_l1: BC-4270
+  capability_name: Webhook & Event Subscription Management
+  confidence: 0.7
+  evidence: POST /v2/email-service/webhook createWebhook Create a webhook; DELETE /v2/email-service/webhook/{id}
+    deleteWebhook
+  reason: Full CRUD lifecycle over outbound webhook subscriptions exposed to integrating developers, which
+    is precisely Webhook & Event Subscription Management. Not full confidence because webhook endpoints
+    are also plain integration plumbing rather than a governed developer-platform programme.
+  recovered_from: sweep-20260828T235257Z-edges.json
