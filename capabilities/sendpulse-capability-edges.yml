@@ -1,0 +1,233 @@
+slug: sendpulse
+provider: SendPulse
+generated_by: planning/capability-mapping/scripts/classify_capabilities.py
+model: claude-opus-5
+frame:
+- Telecommunications
+min_confidence: 0.7
+capability_model:
+  source: https://github.com/vincentmakes/turbo-ea-capabilities
+  license: CC-BY-4.0
+  attribution: Turbo EA Capabilities by Vincent Verdet — Turbo EA, https://github.com/vincentmakes/turbo-ea-capabilities,
+    CC BY 4.0
+  notice: NOTICE
+edge_count: 23
+edges:
+- tag: Deals
+  spec_file: sendpulse-deals-api-openapi.yml
+  capability_id: BC-410.30
+  capability_id_l1: BC-410
+  capability_name: Opportunity & Pipeline Management
+  confidence: 0.9
+  evidence: POST /deals  createDeal  Create a new deal; POST /deals/{dealId}/change-pipeline  Change the
+    pipeline of a deal by its ID
+  reason: Core CRM deal CRUD plus pipeline stage movement is plainly opportunity and pipeline management.
+- tag: Contacts
+  spec_file: sendpulse-contacts-api-openapi.yml
+  capability_id: BC-420.10
+  capability_id_l1: BC-420
+  capability_name: Customer Data Management
+  confidence: 0.85
+  evidence: POST /contacts/create  createContact  Create a new contact; GET /contacts/{contactId}  getContactById  Get
+    information about a contact by ID
+  reason: Core CRM contact record CRUD across CRM and messaging channels, including notes and related
+    deals — customer master/record management.
+- tag: Pipeline Steps
+  spec_file: sendpulse-pipeline-steps-api-openapi.yml
+  capability_id: BC-410.30
+  capability_id_l1: BC-410
+  capability_name: Opportunity & Pipeline Management
+  confidence: 0.85
+  evidence: 'POST /pipelines/{pipelineId}/steps createPipelineStep Create a new pipeline step; schemas:
+    Step, DefaultStatusProperty'
+  reason: Defines the stages of a CRM sales pipeline through which deals progress — deal/opportunity pipeline
+    configuration.
+- tag: Pipelines
+  spec_file: sendpulse-pipelines-api-openapi.yml
+  capability_id: BC-410.30
+  capability_id_l1: BC-410
+  capability_name: Opportunity & Pipeline Management
+  confidence: 0.85
+  evidence: 'POST /pipelines createPipeline Create new pipeline; CRM description: ''receive detailed information
+    on pipelines, deals, contacts'''
+  reason: Sales pipelines holding deals in a CRM — opportunity and pipeline lifecycle management.
+- tag: Campaigns
+  spec_file: sendpulse-campaigns-api-openapi.yml
+  capability_id: BC-400.60
+  capability_id_l1: BC-400
+  capability_name: Digital Marketing Management
+  confidence: 0.78
+  evidence: POST /campaigns createCampaign Create a campaign; POST /sms/send sendSmsToNumbers Create a
+    campaign for a list of phone numbers
+  reason: Creation, scheduling, sending and statistics of email/SMS/push/messenger campaigns is outbound
+    digital marketing campaign execution; some ambiguity between Digital Marketing and Demand Generation
+    sub-capabilities.
+- tag: Contact email addresses
+  spec_file: sendpulse-contact-email-addresses-api-openapi.yml
+  capability_id: BC-420.10
+  capability_id_l1: BC-420
+  capability_name: Customer Data Management
+  confidence: 0.75
+  evidence: POST /contacts/{contactId}/emails  addContactEmails  Add an email address to the contact
+  reason: Manages contact detail (email) on the CRM customer record — customer data management.
+- tag: Contact phone number
+  spec_file: sendpulse-contact-phone-number-api-openapi.yml
+  capability_id: BC-420.10
+  capability_id_l1: BC-420
+  capability_name: Customer Data Management
+  confidence: 0.75
+  evidence: POST /contacts/{contactId}/phones  addContactPhone  Add a phone number to the contact.
+  reason: Maintains phone contact details on the CRM customer record — customer data management, not telecom
+    numbering.
+- tag: Mailing lists
+  spec_file: sendpulse-mailing-lists-api-openapi.yml
+  capability_id: BC-400.60
+  capability_id_l1: BC-400
+  capability_name: Digital Marketing Management
+  confidence: 0.75
+  evidence: POST /addressbooks createMailingList Create a mailing list; POST /addressbooks/{id}/emails/unsubscribe
+    unsubscribeEmailsFromMailingList Unsubscribe contacts from a mailing list
+  reason: Managing mailing lists, subscribers and unsubscribes underpins email campaign execution — digital
+    marketing / marketing automation.
+- tag: Popup
+  spec_file: sendpulse-popup-api-openapi.yml
+  capability_id: BC-400.60
+  capability_id_l1: BC-400
+  capability_name: Digital Marketing Management
+  confidence: 0.75
+  evidence: API for managing pop-ups in SendPulse. This API allows you to create, update, and delete pop-ups;
+    GET /public/api/popups/conditions Get a list of available display conditions for popups
+  reason: Creation and display-targeting of website pop-ups used for on-site lead capture and promotion
+    — web/digital marketing execution.
+- tag: Automation Flows
+  spec_file: sendpulse-automation-flows-api-openapi.yml
+  capability_id: BC-400.60
+  capability_id_l1: BC-400
+  capability_name: Digital Marketing Management
+  confidence: 0.72
+  evidence: API for managing and analyzing automation flows (autoflows); GET /a360/autoresponders/list
+    getAutomationFlows
+  reason: Autoresponder/automation flow listing and statistics in the Automation 360 marketing product
+    is marketing automation, mapped to Digital Marketing Management; only read operations so confidence
+    moderate.
+- tag: Deal Expiration
+  spec_file: sendpulse-deal-expiration-api-openapi.yml
+  capability_id: BC-410.30
+  capability_id_l1: BC-410
+  capability_name: Opportunity & Pipeline Management
+  confidence: 0.72
+  evidence: PUT /deals/{dealId}/expiration  upsertDealExpiration  Update or create deal expiration
+  reason: Sets deadlines/expiry on CRM deals — part of managing the deal (opportunity) lifecycle.
+- tag: Email address
+  spec_file: sendpulse-email-address-api-openapi.yml
+  capability_id: BC-400.60
+  capability_id_l1: BC-400
+  capability_name: Digital Marketing Management
+  confidence: 0.72
+  evidence: GET /emails/{email}/campaigns getEmailCampaignStats Get email stats; POST /addressbooks/{id}/emails/variable
+    updateContactVariables Update variables for a contact in a mailing list
+  reason: Operations manage subscriber email records in mailing lists and their campaign statistics —
+    email marketing execution within digital marketing.
+- tag: Company Attributes
+  spec_file: sendpulse-company-attributes-api-openapi.yml
+  capability_id: BC-420.10
+  capability_id_l1: BC-420
+  capability_name: Customer Data Management
+  confidence: 0.7
+  evidence: GET /companies/attributes  getCompanyAttributes  Get company attributes list; POST /companies/attributes  createCompanyAttribute
+  reason: CRM company (account) record attribute definitions — custom field schema on the customer master
+    within SendPulse CRM. Best fits Customer Data Management, though it is close to configuration plumbing.
+- tag: Contact Attributes
+  spec_file: sendpulse-contact-attributes-api-openapi.yml
+  capability_id: BC-420.10
+  capability_id_l1: BC-420
+  capability_name: Customer Data Management
+  confidence: 0.7
+  evidence: POST /contacts/attributes  createContactAttribute  Create a contact attribute
+  reason: Definition of custom fields on CRM contact records — customer master data structure. Borderline
+    configuration, hence moderate confidence.
+- tag: Contact attributes Value
+  spec_file: sendpulse-contact-attributes-value-api-openapi.yml
+  capability_id: BC-420.10
+  capability_id_l1: BC-420
+  capability_name: Customer Data Management
+  confidence: 0.7
+  evidence: POST /contacts/{contactId}/attributes  addContactAttributeValue  Add attribute value to contact
+  reason: CRUD over attribute values stored against CRM contacts — maintenance of the customer record.
+- tag: Contacts messengers
+  spec_file: sendpulse-contacts-messengers-api-openapi.yml
+  capability_id: BC-420.10
+  capability_id_l1: BC-420
+  capability_name: Customer Data Management
+  confidence: 0.7
+  evidence: POST /contacts/{contactId}/messengers  addContactMessenger  Add messenger to contact
+  reason: CRM contact record enrichment — maintaining messenger contact details on the customer record
+    is customer master/contact data management, not messaging delivery itself.
+- tag: Deal Attributes
+  spec_file: sendpulse-deal-attributes-api-openapi.yml
+  capability_id: BC-410.30
+  capability_id_l1: BC-410
+  capability_name: Opportunity & Pipeline Management
+  confidence: 0.7
+  evidence: GET /pipelines/{pipelineId}/attributes  listPipelineAttributes  Get deal attributes list;
+    POST createPipelineAttribute  Create a deal attribute
+  reason: Defines the attribute model of deals within sales pipelines; supports opportunity/deal lifecycle
+    management, though it is the configuration layer of it.
+- tag: Deal attribute Value
+  spec_file: sendpulse-deal-attribute-value-api-openapi.yml
+  capability_id: BC-410.30
+  capability_id_l1: BC-410
+  capability_name: Opportunity & Pipeline Management
+  confidence: 0.7
+  evidence: POST /deals/{dealId}/attributes  addDealAttribute  Add a attribute value to deal by deal ID
+  reason: Reads and writes attribute values on deals in pipelines, i.e. data captured against opportunities
+    in the deal lifecycle.
+- tag: Deal contacts
+  spec_file: sendpulse-deal-contacts-api-openapi.yml
+  capability_id: BC-410.30
+  capability_id_l1: BC-410
+  capability_name: Opportunity & Pipeline Management
+  confidence: 0.7
+  evidence: POST /deals/{dealId}/contacts/{contactId}  addContactToDeal  Add a contact to a deal
+  reason: Associates CRM contacts with deals, part of managing opportunities/deals; could alternatively
+    be read as customer data linkage.
+- tag: Deal notes
+  spec_file: sendpulse-deal-notes-api-openapi.yml
+  capability_id: BC-410.30
+  capability_id_l1: BC-410
+  capability_name: Opportunity & Pipeline Management
+  confidence: 0.7
+  evidence: POST /deals/{dealId}/comments  addDealComment  Add a note to a deal
+  reason: Notes/comments attached to deals are part of working an opportunity through the pipeline in
+    the CRM.
+- tag: Element Statistics
+  spec_file: sendpulse-element-statistics-api-openapi.yml
+  capability_id: BC-400.60
+  capability_id_l1: BC-400
+  capability_name: Digital Marketing Management
+  confidence: 0.7
+  evidence: API for managing and analyzing automation flows (autoflows) ... GET /a360/stats/email/{ID}/group-stat
+    getEmailStats Get Email element stats
+  reason: Performance statistics for elements of marketing automation flows (email, push, SMS, messenger)
+    is marketing automation measurement, i.e. digital marketing management.
+- tag: Phones
+  spec_file: sendpulse-phones-api-openapi.yml
+  capability_id: BC-420.10
+  capability_id_l1: BC-420
+  capability_name: Customer Data Management
+  confidence: 0.7
+  evidence: 'GET /companies/{companyId}/phones getCompanyPhones Get phones; schemas: Phone; CRM description:
+    ''assign and remove fields, tags, contact details and instant messengers'''
+  reason: 'Maintains phone contact details on CRM company records — customer master/contact data maintenance
+    rather than any telephony or numbering capability. Homograph check: ''Phones'' here is a contact attribute,
+    not a telecom numbering resource.'
+- tag: Subscribers
+  spec_file: sendpulse-subscribers-api-openapi.yml
+  capability_id: BC-400.60
+  capability_id_l1: BC-400
+  capability_name: Digital Marketing Management
+  confidence: 0.7
+  evidence: GET /push/websites/{id}/subscriptions getWebPushSubscriptions Get a list of website subscribers;
+    GET /public/api/subscribers/by-popup/{popupId} Get subscriber by popup
+  reason: Operations manage web-push and pop-up subscribers of a website — the audience of digital marketing
+    channels, i.e. Digital Marketing Management (web, marketing automation), not a customer master record.
