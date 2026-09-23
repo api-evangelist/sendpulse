@@ -2,22 +2,14 @@ openapi: 3.2.0
 info:
   title: Sendpulse Account API
   version: 0.0.1
-  description: 'Operations tagged account across 8 of this provider''s published API definitions: sendpulse-chatbots-openapi.yml, sendpulse-facebook-openapi.yml, sendpulse-instagram-openapi.yml, sendpulse-live-chat-openapi.yml, sendpulse-telegram-openapi.yml, sendpulse-tiktok-openapi.yml, sendpulse-viber-chatbot-openapi.yml, sendpulse-whatsapp-openapi.yml. Each path carries the servers of the definition it was published in.'
+  description: 'Operations tagged account across 4 of this provider''s published API definitions: sendpulse-chatbots-openapi.yml, sendpulse-facebook-openapi.yml, sendpulse-telegram-openapi.yml, sendpulse-whatsapp-openapi.yml. Each path carries the servers of the definition it was published in.'
 servers:
 - description: ''
   url: https://api.sendpulse.com/chatbots
 - description: ''
   url: https://api.sendpulse.com/messenger
 - description: ''
-  url: https://api.sendpulse.com/instagram
-- description: ''
-  url: https://api.sendpulse.com/live-chat
-- description: ''
   url: https://api.sendpulse.com/telegram
-- description: ''
-  url: https://api.sendpulse.com/tiktok
-- description: ''
-  url: https://api.sendpulse.com/viber/chatbots
 - description: ''
   url: https://api.sendpulse.com/whatsapp
 security:
@@ -25,7 +17,7 @@ security:
 - oauth2: []
 tags:
 - description: ''
-  name: account
+  name: Account
 paths:
   /account:
     get:
@@ -34,7 +26,7 @@ paths:
       security:
       - oAuth2ClientCredentials: []
       tags:
-      - account
+      - Account
       responses:
         '200':
           description: Operation successful
@@ -174,86 +166,6 @@ components:
               type: integer
     Account_3:
       properties:
-        tariff:
-          type: object
-          description: '`-1` - unlimited'
-          properties:
-            code:
-              type: string
-            max_bots:
-              type: integer
-            max_contacts:
-              type: integer
-              example: -1
-            max_messages:
-              type: integer
-            max_tags:
-              type: integer
-            max_variables:
-              type: integer
-            branding:
-              type: boolean
-            is_exceeded:
-              type: boolean
-            is_expired:
-              type: boolean
-            expired_at:
-              type: string
-              example: 2020-12-11 21:00:00+00:00
-        statistics:
-          type: object
-          description: ''
-          properties:
-            messages:
-              type: integer
-            bots:
-              type: integer
-            contacts:
-              type: integer
-            variables:
-              type: integer
-    Account_4:
-      properties:
-        tariff:
-          type: object
-          description: '`-1` - unlimited'
-          properties:
-            code:
-              type: string
-            max_bots:
-              type: integer
-            max_contacts:
-              type: integer
-              example: -1
-            max_messages:
-              type: integer
-            max_tags:
-              type: integer
-            max_variables:
-              type: integer
-            branding:
-              type: boolean
-            is_exceeded:
-              type: boolean
-            is_expired:
-              type: boolean
-            expired_at:
-              type: string
-              example: 2020-12-11 21:00:00+00:00
-        statistics:
-          type: object
-          description: ''
-          properties:
-            messages:
-              type: integer
-            bots:
-              type: integer
-            contacts:
-              type: integer
-            variables:
-              type: integer
-    Account_5:
-      properties:
         plan:
           type: object
           description: '`-1` - unlimited'
@@ -292,87 +204,7 @@ components:
               type: integer
             variables:
               type: integer
-    Account_6:
-      properties:
-        tariff:
-          type: object
-          description: '`-1` - unlimited'
-          properties:
-            code:
-              type: string
-            max_bots:
-              type: integer
-            max_contacts:
-              type: integer
-              example: -1
-            max_messages:
-              type: integer
-            max_tags:
-              type: integer
-            max_variables:
-              type: integer
-            branding:
-              type: boolean
-            is_exceeded:
-              type: boolean
-            is_expired:
-              type: boolean
-            expired_at:
-              type: string
-              example: 2020-12-11 21:00:00+00:00
-        statistics:
-          type: object
-          description: ''
-          properties:
-            messages:
-              type: integer
-            bots:
-              type: integer
-            contacts:
-              type: integer
-            variables:
-              type: integer
-    Account_7:
-      properties:
-        tariff:
-          type: object
-          description: '`-1` - unlimited'
-          properties:
-            code:
-              type: string
-            max_bots:
-              type: integer
-            max_contacts:
-              type: integer
-              example: -1
-            max_messages:
-              type: integer
-            max_tags:
-              type: integer
-            max_variables:
-              type: integer
-            branding:
-              type: boolean
-            is_exceeded:
-              type: boolean
-            is_expired:
-              type: boolean
-            expired_at:
-              type: string
-              example: 2020-12-11 21:00:00+00:00
-        statistics:
-          type: object
-          description: ''
-          properties:
-            messages:
-              type: integer
-            bots:
-              type: integer
-            contacts:
-              type: integer
-            variables:
-              type: integer
-    Account_8:
+    Account_4:
       properties:
         plan:
           type: object
@@ -436,9 +268,5 @@ components:
 x-refined-from:
 - sendpulse-chatbots-openapi.yml
 - sendpulse-facebook-openapi.yml
-- sendpulse-instagram-openapi.yml
-- sendpulse-live-chat-openapi.yml
 - sendpulse-telegram-openapi.yml
-- sendpulse-tiktok-openapi.yml
-- sendpulse-viber-chatbot-openapi.yml
 - sendpulse-whatsapp-openapi.yml

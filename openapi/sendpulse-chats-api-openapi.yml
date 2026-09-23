@@ -2,20 +2,12 @@ openapi: 3.2.0
 info:
   title: Sendpulse Chats API
   version: 0.0.1
-  description: 'Operations tagged chats across 7 of this provider''s published API definitions: sendpulse-facebook-openapi.yml, sendpulse-instagram-openapi.yml, sendpulse-live-chat-openapi.yml, sendpulse-telegram-openapi.yml, sendpulse-tiktok-openapi.yml, sendpulse-viber-chatbot-openapi.yml, sendpulse-whatsapp-openapi.yml. Each path carries the servers of the definition it was published in.'
+  description: 'Operations tagged chats across 3 of this provider''s published API definitions: sendpulse-facebook-openapi.yml, sendpulse-telegram-openapi.yml, sendpulse-whatsapp-openapi.yml. Each path carries the servers of the definition it was published in.'
 servers:
 - description: ''
   url: https://api.sendpulse.com/messenger
 - description: ''
-  url: https://api.sendpulse.com/instagram
-- description: ''
-  url: https://api.sendpulse.com/live-chat
-- description: ''
   url: https://api.sendpulse.com/telegram
-- description: ''
-  url: https://api.sendpulse.com/tiktok
-- description: ''
-  url: https://api.sendpulse.com/viber/chatbots
 - description: ''
   url: https://api.sendpulse.com/whatsapp
 security:
@@ -23,7 +15,7 @@ security:
 - oauth2: []
 tags:
 - description: ''
-  name: chats
+  name: Chats
 paths:
   /chats:
     get:
@@ -32,7 +24,7 @@ paths:
       security:
       - oAuth2ClientCredentials: []
       tags:
-      - chats
+      - Chats
       parameters:
       - in: query
         name: bot_id
@@ -92,7 +84,7 @@ paths:
       security:
       - oAuth2ClientCredentials: []
       tags:
-      - chats
+      - Chats
       parameters:
       - in: query
         name: contact_id
@@ -163,7 +155,7 @@ paths:
       security:
       - oAuth2ClientCredentials: []
       tags:
-      - chats
+      - Chats
       requestBody:
         description: Choose one of available request body
         required: true
@@ -228,6 +220,65 @@ paths:
       url: https://api.sendpulse.com/whatsapp
 components:
   schemas:
+    Chat:
+      properties:
+        contact:
+          $ref: '#/components/schemas/Contact'
+        inbox_last_message:
+          $ref: '#/components/schemas/Message'
+        inbox_unread:
+          type: integer
+    Message:
+      properties:
+        id:
+          type: string
+        contact_id:
+          type: string
+        bot_id:
+          type: string
+        campaign_id:
+          type:
+          - string
+          - 'null'
+        data:
+          type: object
+          description: https://developers.facebook.com/docs/messenger-platform/reference/send-api/#message
+          example:
+            text: hello
+        direction:
+          type: integer
+          enum:
+          - 1
+          - 2
+          description: "\n                    * `1` - in\n\n                    * `2` - out"
+        status:
+          type: integer
+          enum:
+          - 1
+          - 2
+          - 3
+          - 4
+          - 5
+          - 6
+          description: "\n                    * `1` - new\n\n                    * `2` - sent\n\n                    * `3` - delivered\n\n                    * `4` - opened\n\n                    * `5` - redirected\n\n                    * `6` - rejected"
+        delivered_at:
+          type:
+          - string
+          - 'null'
+          example: 2020-12-11 21:00:00+00:00
+        opened_at:
+          type:
+          - string
+          - 'null'
+          example: 2020-12-11 21:00:00+00:00
+        redirected_at:
+          type:
+          - string
+          - 'null'
+          example: 2020-12-11 21:00:00+00:00
+        created_at:
+          type: string
+          example: 2020-12-11 21:00:00+00:00
     Contact:
       properties:
         id:
@@ -292,314 +343,7 @@ components:
         created_at:
           type: string
           example: 2020-12-11 21:00:00+00:00
-    Chat:
-      properties:
-        contact:
-          $ref: '#/components/schemas/Contact'
-        inbox_last_message:
-          $ref: '#/components/schemas/Message'
-        inbox_unread:
-          type: integer
-    Message:
-      properties:
-        id:
-          type: string
-        contact_id:
-          type: string
-        bot_id:
-          type: string
-        campaign_id:
-          type:
-          - string
-          - 'null'
-        data:
-          type: object
-          description: https://developers.facebook.com/docs/messenger-platform/reference/send-api/#message
-          example:
-            text: hello
-        direction:
-          type: integer
-          enum:
-          - 1
-          - 2
-          description: "\n                    * `1` - in\n\n                    * `2` - out"
-        status:
-          type: integer
-          enum:
-          - 1
-          - 2
-          - 3
-          - 4
-          - 5
-          - 6
-          description: "\n                    * `1` - new\n\n                    * `2` - sent\n\n                    * `3` - delivered\n\n                    * `4` - opened\n\n                    * `5` - redirected\n\n                    * `6` - rejected"
-        delivered_at:
-          type:
-          - string
-          - 'null'
-          example: 2020-12-11 21:00:00+00:00
-        opened_at:
-          type:
-          - string
-          - 'null'
-          example: 2020-12-11 21:00:00+00:00
-        redirected_at:
-          type:
-          - string
-          - 'null'
-          example: 2020-12-11 21:00:00+00:00
-        created_at:
-          type: string
-          example: 2020-12-11 21:00:00+00:00
-    Contact_2:
-      properties:
-        id:
-          type: string
-        bot_id:
-          type: string
-        status:
-          type: integer
-          enum:
-          - 1
-          - 2
-          - 3
-          - 4
-          description: "\n                    * `1` - active\n\n                    * `2` - unsubscribed\n\n                    * `3` - disabled\n\n                    * `4` - blocked by user"
-        channel_data:
-          type: object
-          properties:
-            id:
-              type: integer
-            user_name:
-              type:
-              - string
-              - 'null'
-            first_name:
-              type: string
-            last_name:
-              type:
-              - string
-              - 'null'
-            name:
-              type: string
-            profile_pic:
-              type:
-              - string
-              - 'null'
-        tags:
-          type: array
-          uniqueItems: true
-          items:
-            type: string
-        variables:
-          type: object
-          description: 'variable_name: variable_value'
-        is_chat_opened:
-          type: boolean
-        last_activity_at:
-          type: string
-          example: 2020-12-11 21:00:00+00:00
-        automation_paused_until:
-          type:
-          - string
-          - 'null'
-          example: 2020-12-11 21:00:00+00:00
-        created_at:
-          type: string
-          example: 2020-12-11 21:00:00+00:00
     Message_2:
-      properties:
-        id:
-          type: string
-        contact_id:
-          type: string
-        bot_id:
-          type: string
-        campaign_id:
-          type:
-          - string
-          - 'null'
-        data:
-          type: object
-          description: https://core.telegram.org/bots/api#message
-          example:
-            text: hello
-        direction:
-          type: integer
-          enum:
-            IN: 1
-            OUT: 2
-          description: "\n                    * `1` - in\n\n                    * `2` - out"
-        status:
-          type: integer
-          enum:
-          - 1
-          description: "\n                    * `1` - delivered\n\n                    * `4` - opened\n\n                    * `5` - redirected\n\n                    * `6` - rejected"
-        created_at:
-          type: string
-          example: 2020-12-11 21:00:00+00:00
-    Contact_3:
-      properties:
-        id:
-          type: string
-        bot_id:
-          type: string
-        status:
-          type: integer
-          enum:
-          - 1
-          - 2
-          - 3
-          - 4
-          description: "\n                    * `1` - active\n\n                    * `2` - unsubscribed\n\n                    * `3` - disabled\n\n                    * `4` - blocked by user"
-        online:
-          type: boolean
-        channel_data:
-          type: object
-          properties:
-            id:
-              type: integer
-            full_name:
-              type: string
-            url:
-              type:
-              - string
-              - 'null'
-              example: null
-            lang:
-              type:
-              - string
-              - 'null'
-              example: null
-        tags:
-          type: array
-          uniqueItems: true
-          items:
-            type: string
-        variables:
-          type: object
-          description: 'variable_name: variable_value'
-        is_chat_opened:
-          type: boolean
-        last_activity_at:
-          type: string
-          example: 2020-12-11 21:00:00+00:00
-        automation_paused_until:
-          type:
-          - string
-          - 'null'
-          example: 2020-12-11 21:00:00+00:00
-        created_at:
-          type: string
-          example: 2020-12-11 21:00:00+00:00
-    Message_3:
-      properties:
-        id:
-          type: string
-        contact_id:
-          type: string
-        bot_id:
-          type: string
-        campaign:
-          type:
-          - object
-          - 'null'
-          example: null
-        chain:
-          type:
-          - object
-          - 'null'
-          example: null
-        reject_reason:
-          type:
-          - string
-          - 'null'
-          example: null
-        data:
-          type: object
-          description: https://core.telegram.org/bots/api#message
-          example:
-            type: type
-            text: hello
-            subscriber_id: d86e2ca7-0000-0000-1111-1f1f32d0f0b1
-        direction:
-          type: integer
-          enum:
-            IN: 1
-            OUT: 2
-          description: "\n                    * `1` - in\n\n                    * `2` - out"
-        status:
-          type: integer
-          enum:
-          - 1
-          description: "\n                    * `1` - new\n\n                    * `2` - sent\n\n                    * `3` - delivered\n\n                    * `4` - opened\n\n                    * `5` - redirected\n\n                    * `6` - rejected"
-        type:
-          type: string
-          enum:
-          - text
-          - image
-          - document
-          description: "\n                    * `1` - new\n\n                    * `2` - sent\n\n                    * `3` - delivered\n\n                    * `4` - opened\n\n                    * `5` - redirected\n\n                    * `6` - rejected"
-        created_at:
-          type: string
-          example: 2020-12-11 21:00:00+00:00
-    Contact_4:
-      properties:
-        id:
-          type: string
-        bot_id:
-          type: string
-        status:
-          type: integer
-          enum:
-          - 1
-          - 2
-          - 3
-          - 4
-          description: "\n                    * `1` - active\n\n                    * `2` - unsubscribed\n\n                    * `3` - disabled\n\n                    * `4` - blocked by user"
-        channel_data:
-          type: object
-          properties:
-            username:
-              type:
-              - string
-              - 'null'
-            first_name:
-              type: string
-            last_name:
-              type:
-              - string
-              - 'null'
-            name:
-              type: string
-            language_code:
-              type:
-              - string
-              - 'null'
-        tags:
-          type: array
-          uniqueItems: true
-          items:
-            type: string
-        variables:
-          type: object
-          description: 'variable_name: variable_value'
-        is_chat_opened:
-          type: boolean
-        last_activity_at:
-          type: string
-          example: 2020-12-11 21:00:00+00:00
-        automation_paused_until:
-          type:
-          - string
-          - 'null'
-          example: 2020-12-11 21:00:00+00:00
-        telegram_id:
-          type: string
-        created_at:
-          type: string
-          example: 2020-12-11 21:00:00+00:00
-    Message_4:
       properties:
         id:
           type: string
@@ -656,7 +400,7 @@ components:
           - jivo
           - open_ai
           - payment
-    Contact_5:
+    Contact_2:
       properties:
         id:
           type: string
@@ -673,106 +417,22 @@ components:
         channel_data:
           type: object
           properties:
-            id:
-              type: string
-            conversation_id:
-              type: string
-            display_name:
-              type: string
             username:
-              type: string
-            profile_image:
               type:
               - string
               - 'null'
-        tags:
-          type: array
-          uniqueItems: true
-          items:
-            type: string
-        variables:
-          type: object
-          description: 'variable_name: variable_value'
-        is_chat_opened:
-          type: boolean
-        last_activity_at:
-          type: string
-          example: 2020-12-11 21:00:00+00:00
-        automation_paused_until:
-          type:
-          - string
-          - 'null'
-          example: 2020-12-11 21:00:00+00:00
-        created_at:
-          type: string
-          example: 2020-12-11 21:00:00+00:00
-    Message_5:
-      properties:
-        id:
-          type: string
-        contact_id:
-          type: string
-        bot_id:
-          type: string
-        campaign_id:
-          type:
-          - string
-          - 'null'
-        data:
-          type: object
-          description: https://core.telegram.org/bots/api#message
-          example:
-            text: hello
-        direction:
-          type: integer
-          enum:
-            IN: 1
-            OUT: 2
-          description: "\n                    * `1` - in\n\n                    * `2` - out"
-        status:
-          type: integer
-          enum:
-          - 1
-          - 2
-          - 3
-          - 4
-          - 5
-          - 6
-          description: "\n                    * `1` - new\n\n                    * `2` - sent\n\n                    * `3` - delivered\n\n                    * `4` - opened\n\n                    * `5` - redirected\n\n                    * `6` - rejected"
-        created_at:
-          type: string
-          example: 2020-12-11 21:00:00+00:00
-    Contact_6:
-      properties:
-        id:
-          type: string
-        bot_id:
-          type: string
-        status:
-          type: integer
-          enum:
-          - 1
-          - 2
-          - 3
-          - 4
-          description: "\n                    * `1` - active\n\n                    * `2` - unsubscribed\n\n                    * `3` - disabled\n\n                    * `4` - blocked by user"
-        channel_data:
-          type: object
-          properties:
-            id:
-              type: integer
+            first_name:
+              type: string
+            last_name:
+              type:
+              - string
+              - 'null'
             name:
+              type: string
+            language_code:
               type:
               - string
               - 'null'
-            avatar:
-              type:
-              - string
-              - 'null'
-            country:
-              type: string
-            language:
-              type: string
         tags:
           type: array
           uniqueItems: true
@@ -791,10 +451,12 @@ components:
           - string
           - 'null'
           example: 2020-12-11 21:00:00+00:00
+        telegram_id:
+          type: string
         created_at:
           type: string
           example: 2020-12-11 21:00:00+00:00
-    Message_6:
+    Message_3:
       properties:
         id:
           type: string
@@ -821,16 +483,24 @@ components:
           type: integer
           enum:
           - 1
-          - 2
-          - 3
-          - 4
-          - 5
-          - 6
           description: "\n                    * `1` - new\n\n                    * `2` - sent\n\n                    * `3` - delivered\n\n                    * `4` - opened\n\n                    * `5` - redirected\n\n                    * `6` - rejected"
+        is_paid:
+          type: boolean
+        price_cbp:
+          type:
+          - object
+          - 'null'
+          description: Conversation Based Price
+          example:
+            price: 0.006
+            currency: USD
+            origin_type: user_initiated
+            is_free_conversation: false
+            country_code: TR
         created_at:
           type: string
           example: 2020-12-11 21:00:00+00:00
-    Contact_7:
+    Contact_3:
       properties:
         id:
           type: string
@@ -884,50 +554,6 @@ components:
         created_at:
           type: string
           example: 2020-12-11 21:00:00+00:00
-    Message_7:
-      properties:
-        id:
-          type: string
-        contact_id:
-          type: string
-        bot_id:
-          type: string
-        campaign_id:
-          type:
-          - string
-          - 'null'
-        data:
-          type: object
-          description: https://core.telegram.org/bots/api#message
-          example:
-            text: hello
-        direction:
-          type: integer
-          enum:
-            IN: 1
-            OUT: 2
-          description: "\n                    * `1` - in\n\n                    * `2` - out"
-        status:
-          type: integer
-          enum:
-          - 1
-          description: "\n                    * `1` - new\n\n                    * `2` - sent\n\n                    * `3` - delivered\n\n                    * `4` - opened\n\n                    * `5` - redirected\n\n                    * `6` - rejected"
-        is_paid:
-          type: boolean
-        price_cbp:
-          type:
-          - object
-          - 'null'
-          description: Conversation Based Price
-          example:
-            price: 0.006
-            currency: USD
-            origin_type: user_initiated
-            is_free_conversation: false
-            country_code: TR
-        created_at:
-          type: string
-          example: 2020-12-11 21:00:00+00:00
   securitySchemes:
     apiKey:
       type: http
@@ -951,9 +577,5 @@ components:
         '
 x-refined-from:
 - sendpulse-facebook-openapi.yml
-- sendpulse-instagram-openapi.yml
-- sendpulse-live-chat-openapi.yml
 - sendpulse-telegram-openapi.yml
-- sendpulse-tiktok-openapi.yml
-- sendpulse-viber-chatbot-openapi.yml
 - sendpulse-whatsapp-openapi.yml

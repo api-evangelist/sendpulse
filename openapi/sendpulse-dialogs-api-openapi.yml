@@ -1,6 +1,6 @@
 openapi: 3.2.0
 info:
-  description: "Using the API for Chatbots, you can integrate your system with SendPulse’s chatbots service and get detailed information about your account, bots, dialogs.\n\n            \nOn the right, there is a button for authorizing requests made on this page. Click “Authorize,” then insert the ID and Secret from your account.\n\n            \nTo perform a request directly from the page, click the \"Try it out\" button within each method block. Then fill in input fields if any (for URL parameters, the description is right below the URL request; for body parameters, the description is under the “Scheme” button to the right of the example), and click “Run.” You'll find the server response and description of received parameters below.\n        "
+  description: Using the API for Chatbots, you can integrate your system with SendPulse’s chatbots service and get detailed information about your account, bots, dialogs.
   title: Chatbots service Dialogs API
   version: 0.0.1
 servers:

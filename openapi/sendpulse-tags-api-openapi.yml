@@ -4,7 +4,7 @@ info:
   x-refined-note:
   - x-ai-description differs across the merged source definitions and was not carried
   version: '1.0'
-  description: 'Operations tagged Tags across 9 of this provider''s published API definitions: sendpulse-bulk-email-openapi.yml, sendpulse-edu-openapi.yml, sendpulse-facebook-openapi.yml, sendpulse-instagram-openapi.yml, sendpulse-live-chat-openapi.yml, sendpulse-telegram-openapi.yml, sendpulse-tiktok-openapi.yml, sendpulse-viber-chatbot-openapi.yml, sendpulse-whatsapp-openapi.yml. Each path carries the servers of the definition it was published in.'
+  description: 'Operations tagged Tags across 5 of this provider''s published API definitions: sendpulse-bulk-email-openapi.yml, sendpulse-edu-openapi.yml, sendpulse-facebook-openapi.yml, sendpulse-telegram-openapi.yml, sendpulse-whatsapp-openapi.yml. Each path carries the servers of the definition it was published in.'
 servers:
 - url: https://api.sendpulse.com
   description: Production server
@@ -12,15 +12,7 @@ servers:
 - description: ''
   url: https://api.sendpulse.com/messenger
 - description: ''
-  url: https://api.sendpulse.com/instagram
-- description: ''
-  url: https://api.sendpulse.com/live-chat
-- description: ''
   url: https://api.sendpulse.com/telegram
-- description: ''
-  url: https://api.sendpulse.com/tiktok
-- description: ''
-  url: https://api.sendpulse.com/viber/chatbots
 - description: ''
   url: https://api.sendpulse.com/whatsapp
 security:
@@ -339,6 +331,46 @@ paths:
       description: Production server
 components:
   schemas:
+    Tag:
+      type: object
+      x-ai-description: Subscriber tag metadata.
+      properties:
+        id:
+          type: integer
+          example: 2506
+        name:
+          type: string
+          example: test1
+        color:
+          type: string
+          example: '#f0f4f6'
+    TagListResponse:
+      type: object
+      x-ai-description: List of created tags.
+      properties:
+        tags:
+          type: array
+          items:
+            $ref: '#/components/schemas/Tag'
+        user_id:
+          type: integer
+          example: 7043663
+        version:
+          type: string
+          example: 2.7.3
+    TagUpdateRequest:
+      type: object
+      x-ai-description: Payload to update an existing tag.
+      required:
+      - name
+      - color
+      properties:
+        name:
+          type: string
+          example: newName
+        color:
+          type: string
+          example: '#f0f4f6'
     TagPinUnpinPhoneRequest:
       type: object
       x-ai-description: Payload to assign/unassign tags for a phone number.
@@ -356,19 +388,23 @@ components:
           example:
           - 11111
           - 22222
-    Tag:
+    TagPinUnpinEmailRequest:
       type: object
-      x-ai-description: Subscriber tag metadata.
+      x-ai-description: Payload to assign/unassign tags for an email.
+      required:
+      - email
+      - tags
       properties:
-        id:
-          type: integer
-          example: 2506
-        name:
+        email:
           type: string
-          example: test1
-        color:
-          type: string
-          example: '#f0f4f6'
+          example: test@test.com
+        tags:
+          type: array
+          items:
+            type: integer
+          example:
+          - 11111
+          - 22222
     TagQueueResponse:
       type: object
       x-ai-description: Asynchronous request confirmation.
@@ -397,33 +433,6 @@ components:
         version:
           type: string
           example: 2.7.3
-    TagUpdateRequest:
-      type: object
-      x-ai-description: Payload to update an existing tag.
-      required:
-      - name
-      - color
-      properties:
-        name:
-          type: string
-          example: newName
-        color:
-          type: string
-          example: '#f0f4f6'
-    TagListResponse:
-      type: object
-      x-ai-description: List of created tags.
-      properties:
-        tags:
-          type: array
-          items:
-            $ref: '#/components/schemas/Tag'
-        user_id:
-          type: integer
-          example: 7043663
-        version:
-          type: string
-          example: 2.7.3
     TagCreateRequest:
       type: object
       x-ai-description: Payload to create a new tag.
@@ -437,23 +446,6 @@ components:
         color:
           type: string
           example: '#f0f4f6'
-    TagPinUnpinEmailRequest:
-      type: object
-      x-ai-description: Payload to assign/unassign tags for an email.
-      required:
-      - email
-      - tags
-      properties:
-        email:
-          type: string
-          example: test@test.com
-        tags:
-          type: array
-          items:
-            type: integer
-          example:
-          - 11111
-          - 22222
     Tag_2:
       type: object
       properties:
@@ -508,50 +500,6 @@ components:
         created_at:
           type: string
           example: 2020-12-11 21:00:00+00:00
-    Tag_6:
-      properties:
-        id:
-          type: string
-        name:
-          type: string
-        contact_count:
-          type: integer
-        created_at:
-          type: string
-          example: 2020-12-11 21:00:00+00:00
-    Tag_7:
-      properties:
-        id:
-          type: string
-        name:
-          type: string
-        contact_count:
-          type: integer
-        created_at:
-          type: string
-          example: 2020-12-11 21:00:00+00:00
-    Tag_8:
-      properties:
-        id:
-          type: string
-        name:
-          type: string
-        contact_count:
-          type: integer
-        created_at:
-          type: string
-          example: 2020-12-11 21:00:00+00:00
-    Tag_9:
-      properties:
-        id:
-          type: string
-        name:
-          type: string
-        contact_count:
-          type: integer
-        created_at:
-          type: string
-          example: 2020-12-11 21:00:00+00:00
   securitySchemes:
     apiKey:
       type: http
@@ -587,9 +535,5 @@ x-refined-from:
 - sendpulse-bulk-email-openapi.yml
 - sendpulse-edu-openapi.yml
 - sendpulse-facebook-openapi.yml
-- sendpulse-instagram-openapi.yml
-- sendpulse-live-chat-openapi.yml
 - sendpulse-telegram-openapi.yml
-- sendpulse-tiktok-openapi.yml
-- sendpulse-viber-chatbot-openapi.yml
 - sendpulse-whatsapp-openapi.yml

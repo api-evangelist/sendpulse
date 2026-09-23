@@ -16,7 +16,7 @@ security:
 - apiKey: []
 - oauth2: []
 tags:
-- name: Email address
+- name: Email Address
   description: Endpoints related to Email address.
 paths:
   /addressbooks/{id}/emails/variable:
@@ -28,7 +28,7 @@ paths:
         type: integer
     post:
       tags:
-      - Email address
+      - Email Address
       summary: Update variables for a contact in a mailing list
       operationId: updateContactVariables
       description: Updates custom variable values for a specific email address within a mailing list.
@@ -141,7 +141,7 @@ paths:
         type: string
     get:
       tags:
-      - Email address
+      - Email Address
       summary: Get general info for an email
       operationId: getEmailInfo
       description: Finds which address books this email belongs to.
@@ -176,7 +176,7 @@ paths:
           description: Forbidden
     delete:
       tags:
-      - Email address
+      - Email Address
       summary: Delete email globally
       operationId: deleteEmailGlobally
       description: Wipes a subscriber from all lists.
@@ -215,7 +215,7 @@ paths:
         type: string
     get:
       tags:
-      - Email address
+      - Email Address
       summary: Get detailed info for an email
       operationId: getEmailDetails
       description: Retrieves list names, addition dates, and sources.
@@ -251,7 +251,7 @@ paths:
   /emails:
     post:
       tags:
-      - Email address
+      - Email Address
       summary: Get info for multiple emails
       operationId: getMultipleEmailsInfo
       description: Batch check for subscriber statuses.
@@ -307,7 +307,7 @@ paths:
         type: string
     get:
       tags:
-      - Email address
+      - Email Address
       summary: Get email stats
       operationId: getEmailCampaignStats
       description: Analytics for a specific subscriber.
@@ -352,7 +352,7 @@ paths:
         type: string
     get:
       tags:
-      - Email address
+      - Email Address
       summary: Get info for an email from a campaign
       operationId: getEmailCampaignInfo
       description: Checks exactly what happened to a specific email in a specific campaign.
@@ -408,7 +408,7 @@ paths:
         type: string
     get:
       tags:
-      - Email address
+      - Email Address
       summary: Get info for an email from a mailing list
       operationId: getEmailFromList
       description: Retrieves exact variables and status in one list.
@@ -464,7 +464,7 @@ paths:
   /emails/campaigns:
     post:
       tags:
-      - Email address
+      - Email Address
       summary: Get stats for multiple emails
       operationId: getMultipleEmailsCampaignStats
       description: Batch fetch engagement stats.
@@ -517,12 +517,6 @@ components:
       properties:
         result:
           type: boolean
-    EmailInfoShort:
-      type: object
-      x-ai-description: Brief subscriber status.
-      properties:
-        book_id:
-          type: integer
     SubscriberStats:
       type: object
       x-ai-description: Engagement statistics.
@@ -537,6 +531,12 @@ components:
           type: string
         source:
           type: string
+    EmailInfoShort:
+      type: object
+      x-ai-description: Brief subscriber status.
+      properties:
+        book_id:
+          type: integer
     EmailAcrossBooks:
       type: object
       x-ai-description: Subscriber status in a book.

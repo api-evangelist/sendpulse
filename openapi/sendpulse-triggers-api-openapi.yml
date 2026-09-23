@@ -2,20 +2,12 @@ openapi: 3.2.0
 info:
   title: Sendpulse Triggers API
   version: 0.0.1
-  description: 'Operations tagged triggers across 7 of this provider''s published API definitions: sendpulse-facebook-openapi.yml, sendpulse-instagram-openapi.yml, sendpulse-live-chat-openapi.yml, sendpulse-telegram-openapi.yml, sendpulse-tiktok-openapi.yml, sendpulse-viber-chatbot-openapi.yml, sendpulse-whatsapp-openapi.yml. Each path carries the servers of the definition it was published in.'
+  description: 'Operations tagged triggers across 3 of this provider''s published API definitions: sendpulse-facebook-openapi.yml, sendpulse-telegram-openapi.yml, sendpulse-whatsapp-openapi.yml. Each path carries the servers of the definition it was published in.'
 servers:
 - description: ''
   url: https://api.sendpulse.com/messenger
 - description: ''
-  url: https://api.sendpulse.com/instagram
-- description: ''
-  url: https://api.sendpulse.com/live-chat
-- description: ''
   url: https://api.sendpulse.com/telegram
-- description: ''
-  url: https://api.sendpulse.com/tiktok
-- description: ''
-  url: https://api.sendpulse.com/viber/chatbots
 - description: ''
   url: https://api.sendpulse.com/whatsapp
 security:
@@ -23,7 +15,7 @@ security:
 - oauth2: []
 tags:
 - description: (keywords)
-  name: triggers
+  name: Triggers
 paths:
   /triggers:
     get:
@@ -32,7 +24,7 @@ paths:
       security:
       - oAuth2ClientCredentials: []
       tags:
-      - triggers
+      - Triggers
       parameters:
       - in: query
         name: bot_id
@@ -182,196 +174,6 @@ components:
         created_at:
           type: string
           example: 2020-12-11 21:00:00+00:00
-    Trigger_3:
-      properties:
-        id:
-          type: string
-        bot_id:
-          type: string
-        flow_id:
-          type:
-          - string
-          - 'null'
-        name:
-          type: string
-        type:
-          type: integer
-          enum:
-          - 1
-          - 2
-          - 3
-          - 4
-          - 5
-          description: "\n                    * `1` - starts immediately upon subscription\n\n                    * `2` - starts when unsubscribed\n\n                    * `3` - default reply\n\n                    * `4` - starts when the specified keyword is entered\n\n                    * `5` - starts at the specified time when subscribing"
-        keywords_search_type:
-          type: integer
-          enum:
-          - 1
-          - 2
-          description: "\n                    * `1` - STRICT_MATCH\n\n                    * `2` - CONTAINS"
-        status:
-          type: integer
-          enum:
-            ACTIVE: 1
-            INACTIVE: 2
-          description: "\n                    * `1` - active\n\n                    * `2` - inactive"
-        keywords:
-          type: array
-          items:
-            type: string
-        execution:
-          type: object
-          properties:
-            interval:
-              type: integer
-            units:
-              type: integer
-              enum:
-                MINUTES: 1
-                HOURS: 2
-                DAYS: 3
-              description: "\n                        * `1` - minutes\n\n                        * `2` - hours\n\n                        * `3` - days"
-        created_at:
-          type: string
-          example: 2020-12-11 21:00:00+00:00
-    Trigger_4:
-      properties:
-        id:
-          type: string
-        bot_id:
-          type: string
-        flow_id:
-          type:
-          - string
-          - 'null'
-        name:
-          type: string
-        type:
-          type: integer
-          enum:
-          - 1
-          - 2
-          - 3
-          - 4
-          - 5
-          description: "\n                    * `1` - starts immediately upon subscription\n\n                    * `2` - starts when unsubscribed\n\n                    * `3` - default reply\n\n                    * `4` - starts when the specified keyword is entered\n\n                    * `5` - starts at the specified time when subscribing"
-        status:
-          type: integer
-          enum:
-            ACTIVE: 1
-            INACTIVE: 2
-          description: "\n                    * `1` - active\n\n                    * `2` - inactive"
-        keywords:
-          type: array
-          items:
-            type: string
-        execution:
-          type: object
-          properties:
-            interval:
-              type: integer
-            units:
-              type: integer
-              enum:
-                MINUTES: 1
-                HOURS: 2
-                DAYS: 3
-              description: "\n                        * `1` - minutes\n\n                        * `2` - hours\n\n                        * `3` - days"
-        created_at:
-          type: string
-          example: 2020-12-11 21:00:00+00:00
-    Trigger_5:
-      properties:
-        id:
-          type: string
-        bot_id:
-          type: string
-        flow_id:
-          type:
-          - string
-          - 'null'
-        name:
-          type: string
-        type:
-          type: integer
-          enum:
-          - 1
-          - 2
-          - 3
-          - 4
-          - 5
-          description: "\n                    * `1` - starts immediately upon subscription\n\n                    * `2` - starts when unsubscribed\n\n                    * `3` - default reply\n\n                    * `4` - starts when the specified keyword is entered\n\n                    * `5` - starts at the specified time when subscribing"
-        status:
-          type: integer
-          enum:
-            ACTIVE: 1
-            INACTIVE: 2
-          description: "\n                    * `1` - active\n\n                    * `2` - inactive"
-        keywords:
-          type: array
-          items:
-            type: string
-        execution:
-          type: object
-          properties:
-            interval:
-              type: integer
-            units:
-              type: integer
-              enum:
-                MINUTES: 1
-                HOURS: 2
-                DAYS: 3
-              description: "\n                        * `1` - minutes\n\n                        * `2` - hours\n\n                        * `3` - days"
-        created_at:
-          type: string
-          example: 2020-12-11 21:00:00+00:00
-    Trigger_6:
-      properties:
-        id:
-          type: string
-        bot_id:
-          type: string
-        flow_id:
-          type:
-          - string
-          - 'null'
-        name:
-          type: string
-        type:
-          type: integer
-          enum:
-          - 1
-          - 2
-          - 3
-          - 4
-          - 5
-          description: "\n                    * `1` - starts immediately upon subscription\n\n                    * `2` - starts when unsubscribed\n\n                    * `3` - default reply\n\n                    * `4` - starts when the specified keyword is entered\n\n                    * `5` - starts at the specified time when subscribing"
-        status:
-          type: integer
-          enum:
-            ACTIVE: 1
-            INACTIVE: 2
-          description: "\n                    * `1` - active\n\n                    * `2` - inactive"
-        keywords:
-          type: array
-          items:
-            type: string
-        execution:
-          type: object
-          properties:
-            interval:
-              type: integer
-            units:
-              type: integer
-              enum:
-                MINUTES: 1
-                HOURS: 2
-                DAYS: 3
-              description: "\n                        * `1` - minutes\n\n                        * `2` - hours\n\n                        * `3` - days"
-        created_at:
-          type: string
-          example: 2020-12-11 21:00:00+00:00
   securitySchemes:
     apiKey:
       type: http
@@ -395,9 +197,5 @@ components:
         '
 x-refined-from:
 - sendpulse-facebook-openapi.yml
-- sendpulse-instagram-openapi.yml
-- sendpulse-live-chat-openapi.yml
 - sendpulse-telegram-openapi.yml
-- sendpulse-tiktok-openapi.yml
-- sendpulse-viber-chatbot-openapi.yml
 - sendpulse-whatsapp-openapi.yml

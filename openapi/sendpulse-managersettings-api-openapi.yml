@@ -1,6 +1,6 @@
 openapi: 3.2.0
 info:
-  description: Using the API for the CRM service, you can integrate your system with CRM from SendPulse and receive detailed information on pipelines, deals, contacts and their attributes and users. You can also create deals and contacts, assign and remove fields, tags, contact details and instant messengers. On the right, there is a button for authorizing requests made on this page. Click “Authorize,” then insert the ID and Secret from your account. To perform a request directly from the page, click the "Try it out" button within each method block. Then fill in input fields if any (for URL parameters, the description is right below the URL request; for body parameters, the description is under the “Scheme” button to the right of the example), and click “Run.” You will find the server response and description of received parameters below.
+  description: Using the API for the CRM service, you can integrate your system with CRM from SendPulse and receive detailed information on pipelines, deals, contacts and their attributes and users.
   title: SendPulse CRM Public Manager Settings API
   version: 0.1.0
 servers:

@@ -363,6 +363,10 @@ paths:
     - url: https://api.sendpulse.com
 components:
   schemas:
+    unauthorizedResponse:
+      description: Unauthorized
+    accessDeniedResponse:
+      description: Access denied
     subscriber:
       title: Subscriber
       properties:
@@ -400,10 +404,6 @@ components:
         updatedAt:
           type: string
       type: object
-    accessDeniedResponse:
-      description: Access denied
-    unauthorizedResponse:
-      description: Unauthorized
   securitySchemes:
     apiKey:
       type: http

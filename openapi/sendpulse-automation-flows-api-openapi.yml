@@ -105,9 +105,9 @@ paths:
           description: Forbidden
 components:
   schemas:
-    AutomationFlowStats:
-      type: object
     AutomationFlow:
+      type: object
+    AutomationFlowStats:
       type: object
   securitySchemes:
     apiKey:

@@ -4,20 +4,14 @@ info:
   x-refined-note:
   - x-ai-description differs across the merged source definitions and was not carried
   version: '1.0'
-  description: 'Operations tagged Campaigns across 10 of this provider''s published API definitions: sendpulse-bulk-email-openapi.yml, sendpulse-facebook-openapi.yml, sendpulse-instagram-openapi.yml, sendpulse-sms-openapi.yml, sendpulse-telegram-openapi.yml, sendpulse-tiktok-openapi.yml, sendpulse-viber-chatbot-openapi.yml, sendpulse-viber-openapi.yml, sendpulse-web-push-openapi.yml, sendpulse-whatsapp-openapi.yml. Each path carries the servers of the definition it was published in.'
+  description: 'Operations tagged Campaigns across 7 of this provider''s published API definitions: sendpulse-bulk-email-openapi.yml, sendpulse-facebook-openapi.yml, sendpulse-sms-openapi.yml, sendpulse-telegram-openapi.yml, sendpulse-viber-openapi.yml, sendpulse-web-push-openapi.yml, sendpulse-whatsapp-openapi.yml. Each path carries the servers of the definition it was published in.'
 servers:
 - url: https://api.sendpulse.com
   description: Production server
 - description: ''
   url: https://api.sendpulse.com/messenger
 - description: ''
-  url: https://api.sendpulse.com/instagram
-- description: ''
   url: https://api.sendpulse.com/telegram
-- description: ''
-  url: https://api.sendpulse.com/tiktok
-- description: ''
-  url: https://api.sendpulse.com/viber/chatbots
 - description: ''
   url: https://api.sendpulse.com/whatsapp
 security:
@@ -1599,7 +1593,7 @@ paths:
                   success:
                     type: boolean
                   data:
-                    $ref: '#/components/schemas/Campaign_6'
+                    $ref: '#/components/schemas/Campaign_3'
                 type: object
       operationId: sendTemplateCampaign
       x-ai-role: chatbot_campaign_manager
@@ -1635,54 +1629,6 @@ paths:
       url: https://api.sendpulse.com/whatsapp
 components:
   schemas:
-    CampaignByListSummary:
-      type: object
-      x-ai-description: Campaigns for a list.
-      properties:
-        task_id:
-          type: integer
-    ResultTrue:
-      type: object
-      x-ai-description: Success indicator.
-      properties:
-        result:
-          type: boolean
-    CampaignUpdateRequest:
-      type: object
-      x-ai-description: Payload for updating a campaign.
-      properties:
-        name:
-          type: string
-        subject:
-          type: string
-    ResultTrueWithId:
-      type: object
-      x-ai-description: Success indicator with ID.
-      properties:
-        result:
-          type: boolean
-        id:
-          type: integer
-    CampaignDetails:
-      type: object
-      x-ai-description: Detailed campaign stats.
-      properties:
-        id:
-          type: integer
-        name:
-          type: string
-        status:
-          type: integer
-    CampaignSummary:
-      type: object
-      x-ai-description: Campaign summary.
-      properties:
-        id:
-          type: integer
-        name:
-          type: string
-        status:
-          type: integer
     ReferralStat:
       type: object
       x-ai-description: Click statistics.
@@ -1690,6 +1636,18 @@ components:
         link:
           type: string
         count:
+          type: integer
+    ResultTrue:
+      type: object
+      x-ai-description: Success indicator.
+      properties:
+        result:
+          type: boolean
+    CampaignByListSummary:
+      type: object
+      x-ai-description: Campaigns for a list.
+      properties:
+        task_id:
           type: integer
     CampaignCreateResponse:
       type: object
@@ -1719,6 +1677,16 @@ components:
           type: string
           description: Currency
           example: USD
+    CampaignDetails:
+      type: object
+      x-ai-description: Detailed campaign stats.
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        status:
+          type: integer
     CampaignCreateRequest:
       type: object
       required:
@@ -1821,6 +1789,32 @@ components:
             opens: true
             clicks: false
             utm_campaign: MY_UTM
+    ResultTrueWithId:
+      type: object
+      x-ai-description: Success indicator with ID.
+      properties:
+        result:
+          type: boolean
+        id:
+          type: integer
+    CampaignUpdateRequest:
+      type: object
+      x-ai-description: Payload for updating a campaign.
+      properties:
+        name:
+          type: string
+        subject:
+          type: string
+    CampaignSummary:
+      type: object
+      x-ai-description: Campaign summary.
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        status:
+          type: integer
     Campaign:
       properties:
         id:
@@ -1907,60 +1901,6 @@ components:
         created_at:
           type: string
           example: 2020-12-11 21:00:00+00:00
-    Campaign_3:
-      properties:
-        id:
-          type: string
-        bot_id:
-          type: string
-        title:
-          type: string
-        send_at:
-          type: string
-          example: 2020-12-11 21:00:00+00:00
-        messages:
-          type: array
-          items:
-            type: object
-        created_at:
-          type: string
-          example: 2020-12-11 21:00:00+00:00
-    Campaign_4:
-      properties:
-        id:
-          type: string
-        bot_id:
-          type: string
-        title:
-          type: string
-        send_at:
-          type: string
-          example: 2020-12-11 21:00:00+00:00
-        messages:
-          type: array
-          items:
-            type: object
-        created_at:
-          type: string
-          example: 2020-12-11 21:00:00+00:00
-    Campaign_5:
-      properties:
-        id:
-          type: string
-        bot_id:
-          type: string
-        title:
-          type: string
-        send_at:
-          type: string
-          example: 2020-12-11 21:00:00+00:00
-        messages:
-          type: array
-          items:
-            type: object
-        created_at:
-          type: string
-          example: 2020-12-11 21:00:00+00:00
     ViberCampaign:
       type: object
       properties:
@@ -1978,7 +1918,7 @@ components:
           type: string
         created:
           type: string
-    Campaign_6:
+    Campaign_3:
       properties:
         id:
           type: string
@@ -2039,11 +1979,8 @@ components:
 x-refined-from:
 - sendpulse-bulk-email-openapi.yml
 - sendpulse-facebook-openapi.yml
-- sendpulse-instagram-openapi.yml
 - sendpulse-sms-openapi.yml
 - sendpulse-telegram-openapi.yml
-- sendpulse-tiktok-openapi.yml
-- sendpulse-viber-chatbot-openapi.yml
 - sendpulse-viber-openapi.yml
 - sendpulse-web-push-openapi.yml
 - sendpulse-whatsapp-openapi.yml

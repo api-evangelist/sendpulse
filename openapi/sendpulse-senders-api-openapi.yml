@@ -233,12 +233,6 @@ components:
       properties:
         result:
           type: boolean
-    SenderActivationResponse:
-      type: object
-      x-ai-description: Activation result.
-      properties:
-        result:
-          type: boolean
     Sender:
       type: object
       x-ai-description: Authorized sender.
@@ -247,6 +241,12 @@ components:
           type: string
         name:
           type: string
+    SenderActivationResponse:
+      type: object
+      x-ai-description: Activation result.
+      properties:
+        result:
+          type: boolean
   securitySchemes:
     apiKey:
       type: http

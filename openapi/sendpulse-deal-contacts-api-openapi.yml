@@ -1,6 +1,6 @@
 openapi: 3.2.0
 info:
-  description: Using the API for the CRM service, you can integrate your system with CRM from SendPulse and receive detailed information on pipelines, deals, contacts and their attributes and users. You can also create deals and contacts, assign and remove fields, tags, contact details and instant messengers. On the right, there is a button for authorizing requests made on this page. Click “Authorize,” then insert the ID and Secret from your account. To perform a request directly from the page, click the "Try it out" button within each method block. Then fill in input fields if any (for URL parameters, the description is right below the URL request; for body parameters, the description is under the “Scheme” button to the right of the example), and click “Run.” You will find the server response and description of received parameters below.
+  description: Using the API for the CRM service, you can integrate your system with CRM from SendPulse and receive detailed information on pipelines, deals, contacts and their attributes and users.
   title: SendPulse CRM Public Deal contacts API
   version: 0.1.0
 servers:
@@ -146,6 +146,71 @@ paths:
           - RelationshipDelete
 components:
   schemas:
+    Contact:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Contact ID
+        userId:
+          type: integer
+          description: ID of user who created the contact
+        sourceType:
+          type: string
+          enum:
+          - manually
+          - chatbot
+          - subscription_form
+          - landing
+          - a360
+          - payments
+        responsibleId:
+          type: integer
+          description: ID of user responsible for the contact. Can be obtained in the “Get list of invited users” method
+        firstName:
+          type: string
+          description: Contact first name
+        lastName:
+          type: string
+          description: Contact last name
+        dealsQty:
+          type: integer
+        externalContactId:
+          type: string
+        comments:
+          items:
+            $ref: '#/components/schemas/ContactComment'
+        tags:
+          items:
+            $ref: '#/components/schemas/ContactTag'
+        phones:
+          items:
+            $ref: '#/components/schemas/ContactPhone'
+        emails:
+          items:
+            $ref: '#/components/schemas/ContactEmail'
+        messengers:
+          items:
+            $ref: '#/components/schemas/ContactMessenger'
+        attributes:
+          items:
+            $ref: '#/components/schemas/ContactAttributeValue'
+        history:
+          items:
+            $ref: '#/components/schemas/ContactHistory'
+        tasks:
+          type: array
+          items:
+            type: integer
+        createdAt:
+          type: string
+          format: date-time
+          description: The date and time the contact was created. Output in YYYY-MM-DD hh:mm:ss format with fractions of a second and time zone
+        updatedAt:
+          type: string
+          format: date-time
+        attachments:
+          $ref: '#/components/schemas/EntityAttachment'
     ContactEmail:
       type: object
       properties:
@@ -226,6 +291,63 @@ components:
           type: string
         isMain:
           type: boolean
+    ContactTag:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Tag ID
+        name:
+          type: string
+          description: Tag name
+        colorText:
+          type: string
+        colorBackground:
+          type: string
+        contactCount:
+          type: integer
+          description: Number of contacts associated with the tag
+        taskCount:
+          type: integer
+          description: Number of tasks associated with a tag
+    EntityAttachment:
+      type: object
+      properties:
+        id:
+          type: integer
+        link:
+          type: string
+        entityId:
+          type: number
+        entityType:
+          type: string
+        createdAt:
+          type: string
+        updatedAt:
+          type: string
+    ContactComment:
+      type: object
+      properties:
+        id:
+          type: integer
+        userId:
+          type: integer
+        text:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        attachments:
+          $ref: '#/components/schemas/EntityAttachment'
+        childCount:
+          type: integer
+        childUsers:
+          type: array
+          items:
+            type: integer
     ContactMessenger:
       type: object
       properties:
@@ -252,128 +374,6 @@ components:
         isMainChatbot:
           type: boolean
           description: Determine if chatbot messenger is the main one
-    EntityAttachment:
-      type: object
-      properties:
-        id:
-          type: integer
-        link:
-          type: string
-        entityId:
-          type: number
-        entityType:
-          type: string
-        createdAt:
-          type: string
-        updatedAt:
-          type: string
-    Contact:
-      type: object
-      properties:
-        id:
-          type: integer
-          description: Contact ID
-        userId:
-          type: integer
-          description: ID of user who created the contact
-        sourceType:
-          type: string
-          enum:
-          - manually
-          - chatbot
-          - subscription_form
-          - landing
-          - a360
-          - payments
-        responsibleId:
-          type: integer
-          description: ID of user responsible for the contact. Can be obtained in the “Get list of invited users” method
-        firstName:
-          type: string
-          description: Contact first name
-        lastName:
-          type: string
-          description: Contact last name
-        dealsQty:
-          type: integer
-        externalContactId:
-          type: string
-        comments:
-          items:
-            $ref: '#/components/schemas/ContactComment'
-        tags:
-          items:
-            $ref: '#/components/schemas/ContactTag'
-        phones:
-          items:
-            $ref: '#/components/schemas/ContactPhone'
-        emails:
-          items:
-            $ref: '#/components/schemas/ContactEmail'
-        messengers:
-          items:
-            $ref: '#/components/schemas/ContactMessenger'
-        attributes:
-          items:
-            $ref: '#/components/schemas/ContactAttributeValue'
-        history:
-          items:
-            $ref: '#/components/schemas/ContactHistory'
-        tasks:
-          type: array
-          items:
-            type: integer
-        createdAt:
-          type: string
-          format: date-time
-          description: The date and time the contact was created. Output in YYYY-MM-DD hh:mm:ss format with fractions of a second and time zone
-        updatedAt:
-          type: string
-          format: date-time
-        attachments:
-          $ref: '#/components/schemas/EntityAttachment'
-    ContactComment:
-      type: object
-      properties:
-        id:
-          type: integer
-        userId:
-          type: integer
-        text:
-          type: string
-        createdAt:
-          type: string
-          format: date-time
-        updatedAt:
-          type: string
-          format: date-time
-        attachments:
-          $ref: '#/components/schemas/EntityAttachment'
-        childCount:
-          type: integer
-        childUsers:
-          type: array
-          items:
-            type: integer
-    ContactTag:
-      type: object
-      properties:
-        id:
-          type: integer
-          description: Tag ID
-        name:
-          type: string
-          description: Tag name
-        colorText:
-          type: string
-        colorBackground:
-          type: string
-        contactCount:
-          type: integer
-          description: Number of contacts associated with the tag
-        taskCount:
-          type: integer
-          description: Number of tasks associated with a tag
   securitySchemes:
     apiKey:
       type: http

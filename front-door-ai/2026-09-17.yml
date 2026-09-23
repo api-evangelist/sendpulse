@@ -1,0 +1,27 @@
+# Front Door AI Index — sendpulse — 2026-09-17
+# AI vocabulary counted on the provider's root page. Generated; do not edit.
+# `score` is null unless ownership is `own` — see front_door_ai.py.
+front_door_ai:
+  slug: sendpulse
+  lexicon_version: '1.0'
+  probed_at: '2026-09-17'
+  host: sendpulse.com
+  final_host: sendpulse.com
+  ownership: own
+  owner: sendpulse
+  shares_host_with: null
+  inherited_from: null
+  verdict: scored
+  score: 18
+  host_score: 18
+  density: 11.95
+  words: 1506
+  tiers:
+    agentic: 16
+    core: 2
+    model: 0
+  ambiguous: 10
+  top_terms:
+    chatbot: 16
+    automation: 10
+    AI: 2

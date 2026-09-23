@@ -1,7 +1,7 @@
 openapi: 3.2.0
 info:
   description: This is the REST API endpoints definition for Education SendPulse project
-  title: Education SendPulse Project API Definition Students groups API
+  title: Education SendPulse Project API Definition Students groups…
   version: 1.0.0
 servers:
 - url: https://api.sendpulse.com/edu/public/v1

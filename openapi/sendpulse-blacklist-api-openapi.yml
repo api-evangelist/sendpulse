@@ -133,6 +133,16 @@ components:
       properties:
         result:
           type: boolean
+    BlacklistDeleteRequest:
+      type: object
+      x-ai-description: Payload to remove emails from blacklist.
+      required:
+      - emails
+      properties:
+        emails:
+          type: string
+          description: Base64 encoded comma-separated emails.
+          example: dXNlcjFAbWFpbHNlcnZlci5jb20sdXNlcjJAbWFpbHNlcnZlci5jb20sdXNlcjNAbWFpbHNlcnZlci5jb20=
     BlacklistAddRequest:
       type: object
       x-ai-description: Payload to add emails to blacklist.
@@ -146,16 +156,6 @@ components:
         comment:
           type: string
           example: comment
-    BlacklistDeleteRequest:
-      type: object
-      x-ai-description: Payload to remove emails from blacklist.
-      required:
-      - emails
-      properties:
-        emails:
-          type: string
-          description: Base64 encoded comma-separated emails.
-          example: dXNlcjFAbWFpbHNlcnZlci5jb20sdXNlcjJAbWFpbHNlcnZlci5jb20sdXNlcjNAbWFpbHNlcnZlci5jb20=
   securitySchemes:
     apiKey:
       type: http

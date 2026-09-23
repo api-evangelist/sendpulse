@@ -1,7 +1,7 @@
 openapi: 3.2.0
 info:
   description: This is the REST API endpoints definition for Education SendPulse project
-  title: Education SendPulse Project API Definition Course tariffs API
+  title: Education SendPulse Project API Definition Course tariffs…
   version: 1.0.0
 servers:
 - url: https://api.sendpulse.com/edu/public/v1
@@ -58,6 +58,98 @@ paths:
           - ReadOnly
 components:
   schemas:
+    FunctionalityResource:
+      type: object
+      properties:
+        type:
+          type: string
+          description: Type of available functionality
+          enum:
+          - chat
+    PaymentMethodResource:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Unique payment method identifier
+        name:
+          type: string
+          description: Payment method name
+        price:
+          type: integer
+          description: Price in the smallest currency units (e.g., cents)
+        currency:
+          type: string
+          description: Payment currency (ISO 4217)
+        paymentId:
+          type: string
+          format: uuid
+          description: Payment identifier in the payment system
+        paymentType:
+          type: string
+          description: Payment system type/provider
+          enum:
+          - YooKassa
+          - Fondy
+          - PayPal
+          - YooMoney
+          - ROBOKASSA
+          - Stripe
+          - MERCADOPAGO
+          - LiqPay
+          - Wayforpay
+          - Flutterwave
+    CourseTariffSettingResource:
+      type: object
+      properties:
+        startDate:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: Tariff start date
+        endDate:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: Tariff end date
+        timezone:
+          type:
+          - string
+          - 'null'
+          description: Time zone used for tariff dates
+    ContentAccessesResource:
+      type: object
+      properties:
+        contentType:
+          type: string
+          description: Type of content being granted access to
+          enum:
+          - lesson
+          - test
+          - certificate
+        entityId:
+          type: integer
+          description: Entity ID (lesson/test/certificate)
+    CourseAccessRestrictionSettingsResource:
+      type: object
+      properties:
+        courseId:
+          type: integer
+          description: Course ID to which the restriction applies
+        restrictedDays:
+          type: integer
+          description: Number of restricted access days
+        restrictedToDate:
+          type: string
+          description: Date until which the restriction applies (ISO 8601)
+        timezone:
+          type: string
+          description: Time zone for calculating restriction dates
+        typeUpdate:
+          type: string
+          description: Type of restriction settings update
     ShortCourseTariffResource:
       type: object
       properties:
@@ -124,19 +216,6 @@ components:
         wasStarted:
           type: boolean
           description: Whether learning under this tariff has already started
-    ContentAccessesResource:
-      type: object
-      properties:
-        contentType:
-          type: string
-          description: Type of content being granted access to
-          enum:
-          - lesson
-          - test
-          - certificate
-        entityId:
-          type: integer
-          description: Entity ID (lesson/test/certificate)
     StudentBaseStateSettingResource:
       type: object
       properties:
@@ -167,85 +246,6 @@ components:
             dealName:
               type: string
               description: Deal name template
-    CourseAccessRestrictionSettingsResource:
-      type: object
-      properties:
-        courseId:
-          type: integer
-          description: Course ID to which the restriction applies
-        restrictedDays:
-          type: integer
-          description: Number of restricted access days
-        restrictedToDate:
-          type: string
-          description: Date until which the restriction applies (ISO 8601)
-        timezone:
-          type: string
-          description: Time zone for calculating restriction dates
-        typeUpdate:
-          type: string
-          description: Type of restriction settings update
-    CourseTariffSettingResource:
-      type: object
-      properties:
-        startDate:
-          type:
-          - string
-          - 'null'
-          format: date-time
-          description: Tariff start date
-        endDate:
-          type:
-          - string
-          - 'null'
-          format: date-time
-          description: Tariff end date
-        timezone:
-          type:
-          - string
-          - 'null'
-          description: Time zone used for tariff dates
-    PaymentMethodResource:
-      type: object
-      properties:
-        id:
-          type: integer
-          description: Unique payment method identifier
-        name:
-          type: string
-          description: Payment method name
-        price:
-          type: integer
-          description: Price in the smallest currency units (e.g., cents)
-        currency:
-          type: string
-          description: Payment currency (ISO 4217)
-        paymentId:
-          type: string
-          format: uuid
-          description: Payment identifier in the payment system
-        paymentType:
-          type: string
-          description: Payment system type/provider
-          enum:
-          - YooKassa
-          - Fondy
-          - PayPal
-          - YooMoney
-          - ROBOKASSA
-          - Stripe
-          - MERCADOPAGO
-          - LiqPay
-          - Wayforpay
-          - Flutterwave
-    FunctionalityResource:
-      type: object
-      properties:
-        type:
-          type: string
-          description: Type of available functionality
-          enum:
-          - chat
   securitySchemes:
     apiKey:
       type: http

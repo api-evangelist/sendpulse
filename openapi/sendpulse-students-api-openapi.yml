@@ -1251,6 +1251,34 @@ paths:
           - BillingStatusChange
 components:
   schemas:
+    CourseTariffSettingResource:
+      type: object
+      properties:
+        startDate:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: Tariff start date
+        endDate:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: Tariff end date
+        timezone:
+          type:
+          - string
+          - 'null'
+          description: Time zone used for tariff dates
+    FunctionalityResource:
+      type: object
+      properties:
+        type:
+          type: string
+          description: Type of available functionality
+          enum:
+          - chat
     Student:
       type: object
       properties:
@@ -1314,34 +1342,6 @@ components:
           - string
           - 'null'
           description: Recommended languages for the student (nullable)
-    CourseTariffSettingResource:
-      type: object
-      properties:
-        startDate:
-          type:
-          - string
-          - 'null'
-          format: date-time
-          description: Tariff start date
-        endDate:
-          type:
-          - string
-          - 'null'
-          format: date-time
-          description: Tariff end date
-        timezone:
-          type:
-          - string
-          - 'null'
-          description: Time zone used for tariff dates
-    FunctionalityResource:
-      type: object
-      properties:
-        type:
-          type: string
-          description: Type of available functionality
-          enum:
-          - chat
   securitySchemes:
     apiKey:
       type: http

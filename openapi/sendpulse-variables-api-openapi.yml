@@ -2,20 +2,12 @@ openapi: 3.2.0
 info:
   title: Sendpulse Variables API
   version: 0.0.1
-  description: 'Operations tagged variables across 7 of this provider''s published API definitions: sendpulse-facebook-openapi.yml, sendpulse-instagram-openapi.yml, sendpulse-live-chat-openapi.yml, sendpulse-telegram-openapi.yml, sendpulse-tiktok-openapi.yml, sendpulse-viber-chatbot-openapi.yml, sendpulse-whatsapp-openapi.yml. Each path carries the servers of the definition it was published in.'
+  description: 'Operations tagged variables across 3 of this provider''s published API definitions: sendpulse-facebook-openapi.yml, sendpulse-telegram-openapi.yml, sendpulse-whatsapp-openapi.yml. Each path carries the servers of the definition it was published in.'
 servers:
 - description: ''
   url: https://api.sendpulse.com/messenger
 - description: ''
-  url: https://api.sendpulse.com/instagram
-- description: ''
-  url: https://api.sendpulse.com/live-chat
-- description: ''
   url: https://api.sendpulse.com/telegram
-- description: ''
-  url: https://api.sendpulse.com/tiktok
-- description: ''
-  url: https://api.sendpulse.com/viber/chatbots
 - description: ''
   url: https://api.sendpulse.com/whatsapp
 security:
@@ -23,7 +15,7 @@ security:
 - oauth2: []
 tags:
 - description: ''
-  name: variables
+  name: Variables
 paths:
   /variables:
     get:
@@ -32,7 +24,7 @@ paths:
       security:
       - oAuth2ClientCredentials: []
       tags:
-      - variables
+      - Variables
       parameters:
       - in: query
         name: bot_id
@@ -168,170 +160,6 @@ components:
         created_at:
           type: string
           example: 2020-12-11 21:00:00+00:00
-    Variable_3:
-      properties:
-        id:
-          type: string
-        bot_id:
-          type: string
-        name:
-          type: string
-        description:
-          type:
-          - string
-          - 'null'
-        type:
-          type: integer
-          enum:
-            CONTACT: 1
-          description: "\n                    * `1` - contact variable\n\n                    * `2` - bot variable"
-        value_type:
-          type: integer
-          example: 1
-          enum:
-            STRING: 1
-            NUMBER: 2
-            DATE: 3
-            BOOLEAN: 4
-            PHONE: 5
-            EMAIL: 6
-            URL: 7
-            LOCATION: 8
-            DATETIME: 9
-            TIME: 10
-          description: "\n                this type of variable can have the following values:\n\n                    * `1` - string\n\n                    * `2` - number\n\n                    * `3` - date\n\n                    * `4` - boolean\n\n                    * `5` - phone\n\n                    * `6` - email\n\n                    * `7` - url"
-        status:
-          type: integer
-          enum:
-            ACTIVE: 1
-            TRASHED: 2
-          description: "\n                    * `1` - active\n\n                    * `2` - trashed"
-        created_at:
-          type: string
-          example: 2020-12-11 21:00:00+00:00
-    Variable_4:
-      properties:
-        id:
-          type: string
-        bot_id:
-          type: string
-        name:
-          type: string
-        description:
-          type:
-          - string
-          - 'null'
-        type:
-          type: integer
-          enum:
-            CONTACT: 1
-          description: "\n                    * `1` - contact variable\n\n                    * `2` - bot variable"
-        value_type:
-          type: integer
-          example: 1
-          enum:
-            STRING: 1
-            NUMBER: 2
-            DATE: 3
-            BOOLEAN: 4
-            PHONE: 5
-            EMAIL: 6
-            URL: 7
-            LOCATION: 8
-            DATETIME: 9
-            TIME: 10
-          description: "\n                this type of variable can have the following values:\n\n                    * `1` - string\n\n                    * `2` - number\n\n                    * `3` - date\n\n                    * `4` - boolean\n\n                    * `5` - phone\n\n                    * `6` - email\n\n                    * `7` - url"
-        status:
-          type: integer
-          enum:
-            ACTIVE: 1
-            TRASHED: 2
-          description: "\n                    * `1` - active\n\n                    * `2` - trashed"
-        created_at:
-          type: string
-          example: 2020-12-11 21:00:00+00:00
-    Variable_5:
-      properties:
-        id:
-          type: string
-        bot_id:
-          type: string
-        name:
-          type: string
-        description:
-          type:
-          - string
-          - 'null'
-        type:
-          type: integer
-          enum:
-            CONTACT: 1
-          description: "\n                    * `1` - contact variable\n\n                    * `2` - bot variable"
-        value_type:
-          type: integer
-          example: 1
-          enum:
-            STRING: 1
-            NUMBER: 2
-            DATE: 3
-            BOOLEAN: 4
-            PHONE: 5
-            EMAIL: 6
-            URL: 7
-            LOCATION: 8
-            DATETIME: 9
-            TIME: 10
-          description: "\n                this type of variable can have the following values:\n\n                    * `1` - string\n\n                    * `2` - number\n\n                    * `3` - date\n\n                    * `4` - boolean\n\n                    * `5` - phone\n\n                    * `6` - email\n\n                    * `7` - url"
-        status:
-          type: integer
-          enum:
-            ACTIVE: 1
-            TRASHED: 2
-          description: "\n                    * `1` - active\n\n                    * `2` - trashed"
-        created_at:
-          type: string
-          example: 2020-12-11 21:00:00+00:00
-    Variable_6:
-      properties:
-        id:
-          type: string
-        bot_id:
-          type: string
-        name:
-          type: string
-        description:
-          type:
-          - string
-          - 'null'
-        type:
-          type: integer
-          enum:
-            CONTACT: 1
-          description: "\n                    * `1` - contact variable\n\n                    * `2` - bot variable"
-        value_type:
-          type: integer
-          example: 1
-          enum:
-            STRING: 1
-            NUMBER: 2
-            DATE: 3
-            BOOLEAN: 4
-            PHONE: 5
-            EMAIL: 6
-            URL: 7
-            LOCATION: 8
-            DATETIME: 9
-            TIME: 10
-          description: "\n                this type of variable can have the following values:\n\n                    * `1` - string\n\n                    * `2` - number\n\n                    * `3` - date\n\n                    * `4` - boolean\n\n                    * `5` - phone\n\n                    * `6` - email\n\n                    * `7` - url"
-        status:
-          type: integer
-          enum:
-            ACTIVE: 1
-            TRASHED: 2
-          description: "\n                    * `1` - active\n\n                    * `2` - trashed"
-        created_at:
-          type: string
-          example: 2020-12-11 21:00:00+00:00
   securitySchemes:
     apiKey:
       type: http
@@ -355,9 +183,5 @@ components:
         '
 x-refined-from:
 - sendpulse-facebook-openapi.yml
-- sendpulse-instagram-openapi.yml
-- sendpulse-live-chat-openapi.yml
 - sendpulse-telegram-openapi.yml
-- sendpulse-tiktok-openapi.yml
-- sendpulse-viber-chatbot-openapi.yml
 - sendpulse-whatsapp-openapi.yml

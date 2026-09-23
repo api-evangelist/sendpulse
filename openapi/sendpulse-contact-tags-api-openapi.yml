@@ -1,6 +1,6 @@
 openapi: 3.2.0
 info:
-  description: Using the API for the CRM service, you can integrate your system with CRM from SendPulse and receive detailed information on pipelines, deals, contacts and their attributes and users. You can also create deals and contacts, assign and remove fields, tags, contact details and instant messengers. On the right, there is a button for authorizing requests made on this page. Click “Authorize,” then insert the ID and Secret from your account. To perform a request directly from the page, click the "Try it out" button within each method block. Then fill in input fields if any (for URL parameters, the description is right below the URL request; for body parameters, the description is under the “Scheme” button to the right of the example), and click “Run.” You will find the server response and description of received parameters below.
+  description: Using the API for the CRM service, you can integrate your system with CRM from SendPulse and receive detailed information on pipelines, deals, contacts and their attributes and users.
   title: SendPulse CRM Public Contact tags API
   version: 0.1.0
 servers:
@@ -10,12 +10,12 @@ security:
 - oauth2: []
 tags:
 - description: ''
-  name: Contact tags
+  name: Contact Tags
 paths:
   /contact-tags/{tagId}/contact/{contactId}:
     post:
       tags:
-      - Contact tags
+      - Contact Tags
       summary: Add a tag to the contact
       description: Adds a tag to the specified contact
       parameters:
@@ -57,7 +57,7 @@ paths:
           - ResourceStateUpdate
     delete:
       tags:
-      - Contact tags
+      - Contact Tags
       summary: Delete a tag from a contact
       description: Removes the tag of the specified contact
       parameters:
@@ -98,7 +98,7 @@ paths:
   /contact-tags:
     get:
       tags:
-      - Contact tags
+      - Contact Tags
       summary: Get a list of contact tags
       description: Returns a list of contact tags with the tag ID, tag name, and the number of contacts associated with this tag
       parameters:
@@ -150,7 +150,7 @@ paths:
           - ReadOnly
     post:
       tags:
-      - Contact tags
+      - Contact Tags
       summary: Create a tag
       description: Creates a tag with the specified name
       requestBody:
@@ -205,7 +205,7 @@ paths:
   /contact-tags/{tagId}:
     put:
       tags:
-      - Contact tags
+      - Contact Tags
       summary: Update a tag
       description: Updates the specified tag with a new name. Provided property values will be overwritten.
       parameters:
@@ -268,7 +268,7 @@ paths:
           - ResourceStateUpdate
     delete:
       tags:
-      - Contact tags
+      - Contact Tags
       summary: Remove tag
       description: Removes the specified tag
       parameters:

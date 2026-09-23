@@ -16,13 +16,13 @@ security:
 - apiKey: []
 - oauth2: []
 tags:
-- name: Mailing lists
+- name: Mailing Lists
   description: Endpoints related to Mailing lists.
 paths:
   /addressbooks:
     post:
       tags:
-      - Mailing lists
+      - Mailing Lists
       summary: Create a mailing list
       operationId: createMailingList
       description: Create a new mailing list (address book).
@@ -94,7 +94,7 @@ paths:
                     error_code: 203
     get:
       tags:
-      - Mailing lists
+      - Mailing Lists
       summary: Get a list of mailing lists
       operationId: getMailingLists
       description: Retrieve all mailing lists.
@@ -188,7 +188,7 @@ paths:
         type: integer
     get:
       tags:
-      - Mailing lists
+      - Mailing Lists
       summary: Get mailing list information
       operationId: getMailingListById
       description: Detailed information regarding a specific mailing list.
@@ -235,7 +235,7 @@ paths:
                     error_code: 213
     put:
       tags:
-      - Mailing lists
+      - Mailing Lists
       summary: Edit a mailing list
       operationId: updateMailingList
       description: Rename an existing mailing list.
@@ -313,7 +313,7 @@ paths:
                     error_code: 203
     delete:
       tags:
-      - Mailing lists
+      - Mailing Lists
       summary: Delete a mailing list
       operationId: deleteMailingList
       description: Permanently remove a mailing list.
@@ -376,7 +376,7 @@ paths:
         type: integer
     get:
       tags:
-      - Mailing lists
+      - Mailing Lists
       summary: Get a list of variables for a mailing list
       operationId: getMailingListVariables
       description: Get variables available on a mailing list.
@@ -430,7 +430,7 @@ paths:
         type: integer
     get:
       tags:
-      - Mailing lists
+      - Mailing Lists
       summary: Get a list of emails from a mailing list
       operationId: getEmailsFromMailingList
       description: Retrieve contacts from a mailing list.
@@ -554,7 +554,7 @@ paths:
                     error_code: 422
     post:
       tags:
-      - Mailing lists
+      - Mailing Lists
       summary: Add emails to a mailing list
       operationId: addEmailsToMailingList
       description: Add contacts using single or double opt-in.
@@ -709,7 +709,7 @@ paths:
                     error_code: 422
     delete:
       tags:
-      - Mailing lists
+      - Mailing Lists
       summary: Delete emails from a mailing list
       operationId: deleteEmailsFromMailingList
       description: Remove specific email addresses.
@@ -798,7 +798,7 @@ paths:
         type: integer
     get:
       tags:
-      - Mailing lists
+      - Mailing Lists
       summary: Get the total number of contacts
       operationId: getEmailsTotalCount
       description: Returns the total count of emails in a list.
@@ -858,7 +858,7 @@ paths:
         type: integer
     post:
       tags:
-      - Mailing lists
+      - Mailing Lists
       summary: Unsubscribe contacts from a mailing list
       operationId: unsubscribeEmailsFromMailingList
       description: Moves specified email addresses to the unsubscribed state within a given list.
@@ -970,7 +970,7 @@ paths:
         type: string
     get:
       tags:
-      - Mailing lists
+      - Mailing Lists
       summary: Get contacts by variable
       operationId: getContactsByVariable
       description: Find all contacts matching a specific variable value.
@@ -1046,7 +1046,7 @@ paths:
         type: integer
     put:
       tags:
-      - Mailing lists
+      - Mailing Lists
       summary: Change a phone number for a contact
       operationId: updateContactPhone
       description: Update the 'Phone' variable for a subscriber.
@@ -1130,7 +1130,7 @@ paths:
         type: integer
     get:
       tags:
-      - Mailing lists
+      - Mailing Lists
       summary: Get campaign cost
       operationId: getCampaignCostByList
       description: Calculate the cost of sending to this list.
@@ -1192,18 +1192,16 @@ paths:
                     error_code: 422
 components:
   schemas:
-    CampaignCost:
+    EmailContactBasic:
       type: object
-      x-ai-description: Cost breakdown.
+      x-ai-description: Minimal subscriber record.
       properties:
-        cur:
+        email:
           type: string
-        sent_emails_qty:
+        status:
           type: integer
-        overdraftAllEmailsPrice:
-          type: number
-        result:
-          type: boolean
+        status_explain:
+          type: string
     ResultTrue:
       type: object
       x-ai-description: Success indicator.
@@ -1216,18 +1214,26 @@ components:
       properties:
         emails:
           type: array
-    VariableDefinition:
+    CampaignCost:
       type: object
-      x-ai-description: Definition of a custom field.
+      x-ai-description: Cost breakdown.
       properties:
-        name:
+        cur:
           type: string
-        type:
+        sent_emails_qty:
+          type: integer
+        overdraftAllEmailsPrice:
+          type: number
+        result:
+          type: boolean
+    AddEmailsDoubleOptIn:
+      type: object
+      x-ai-description: Add emails with confirmation.
+      properties:
+        emails:
+          type: array
+        confirmation:
           type: string
-          enum:
-          - string
-          - number
-          - date
     MailingList:
       type: object
       x-ai-description: Metadata and health metrics for a subscriber list.
@@ -1248,24 +1254,6 @@ components:
           type: integer
         status_explain:
           type: string
-    AddEmailsDoubleOptIn:
-      type: object
-      x-ai-description: Add emails with confirmation.
-      properties:
-        emails:
-          type: array
-        confirmation:
-          type: string
-    EmailContactBasic:
-      type: object
-      x-ai-description: Minimal subscriber record.
-      properties:
-        email:
-          type: string
-        status:
-          type: integer
-        status_explain:
-          type: string
     EmailContact:
       type: object
       x-ai-description: Subscriber record.
@@ -1278,6 +1266,18 @@ components:
           type: string
         variables:
           type: object
+    VariableDefinition:
+      type: object
+      x-ai-description: Definition of a custom field.
+      properties:
+        name:
+          type: string
+        type:
+          type: string
+          enum:
+          - string
+          - number
+          - date
   securitySchemes:
     apiKey:
       type: http

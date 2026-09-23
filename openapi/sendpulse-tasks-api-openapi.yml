@@ -1,6 +1,6 @@
 openapi: 3.2.0
 info:
-  description: Using the API for the CRM service, you can integrate your system with CRM from SendPulse and receive detailed information on pipelines, deals, contacts and their attributes and users. You can also create deals and contacts, assign and remove fields, tags, contact details and instant messengers. On the right, there is a button for authorizing requests made on this page. Click “Authorize,” then insert the ID and Secret from your account. To perform a request directly from the page, click the "Try it out" button within each method block. Then fill in input fields if any (for URL parameters, the description is right below the URL request; for body parameters, the description is under the “Scheme” button to the right of the example), and click “Run.” You will find the server response and description of received parameters below.
+  description: Using the API for the CRM service, you can integrate your system with CRM from SendPulse and receive detailed information on pipelines, deals, contacts and their attributes and users.
   title: SendPulse CRM Public Tasks API
   version: 0.1.0
 servers:
@@ -172,7 +172,8 @@ paths:
 
         ''endSetting'': {''type'':''byDate'',''value'': ''2021-11-25''},''setting'': {''everyDay'': 2 }};
 
-        <br> ''everyDay'' - 2 (repeat every Tuesday)
+
+        ''everyDay'' - 2 (repeat every Tuesday)
 
 
         2) ''repeatSetting'': {''type'': 2, ''startDate'': ''2021-11-25 13:38'',
@@ -181,7 +182,8 @@ paths:
 
         ''days'': [1,4,5], ''everyWeekOfMonth'': 3
 
-        <br> (repeat every Monday, Thursday, Friday of every 3rd week of the month)
+
+        (repeat every Monday, Thursday, Friday of every 3rd week of the month)
 
 
         3) ''repeatSetting'': {''type'': 3, ''startDate'': ''2021-11-25 13:38'',
@@ -190,16 +192,16 @@ paths:
 
         ''setting'': {''numberOfMonth'': {''everyDay'': 31, ''everyMonth'':5} }};
 
-        <br> ''numberOfMonth'': {''everyDay'': 31, ''everyMonth'':5 (repeat every 31st day of every 5th month)
+
+        ''numberOfMonth'': {''everyDay'': 31, ''everyMonth'':5 (repeat every 31st day of every 5th month)
 
 
         4) ''repeatSetting'': {''type'': 3, ''startDate'': ''2021-11-25 13:38'',''endSetting'': {''type'':''byCount'',''value'': 11},
 
         ''setting'': {''dayOfMonth'': {''everyWeek'': 3, ''dayOfWeek'':5, ''everyMonth'':12} }};
 
-        <br> ''dayOfMonth'': {''everyWeek'': 3, ''dayOfWeek'':5, ''everyMonth'':12} - (repeat every 3rd week every 5th day of the week every 12th month)
 
-        '
+        ''dayOfMonth'': {''everyWeek'': 3, ''dayOfWeek'':5, ''everyMonth'':12} - (repeat every 3rd week every 5th day of the week every 12th month)'
       requestBody:
         description: ''
         content:
@@ -630,6 +632,141 @@ paths:
           - ResourceStateUpdate
 components:
   schemas:
+    TaskHistory:
+      type: object
+      properties:
+        id:
+          type: integer
+        taskId:
+          type: integer
+        eventTime:
+          type: string
+        eventType:
+          type: string
+        eventData:
+          type: object
+        userId:
+          type: number
+    Attributes:
+      type: object
+      properties:
+        type:
+          type: integer
+          enum:
+          - 1
+          - 2
+          - 3
+          - 4
+          - 5
+          - 6
+        name:
+          type: string
+        status:
+          type: boolean
+        value:
+          type: array
+          items:
+            $ref: '#/components/schemas/AttributeValue'
+    IntegerSourceTypeProperty:
+      type: integer
+      description: '| * 1 - chatbot * 2 - manually * 3 - subscription_form * 4 - landing * 5 - a360 * 6 - payments * 7 - import * 8 - public_api * 9 - education * 10 - integration * 11 - popup * 12 - emailService'
+    TaskTag:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        colorText:
+          type: string
+        colorBackground:
+          type: string
+    AttributeValue:
+      type: object
+      properties:
+        id:
+          type: number
+        value:
+          type: string
+    TaskChecklist:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        taskId:
+          type: integer
+        isDone:
+          type: boolean
+        items:
+          $ref: '#/components/schemas/ChecklistItems'
+    TaskRepeats:
+      type: object
+      properties:
+        type:
+          type: integer
+          description: 'Repetition frequency
+
+
+            * 1 - daily
+
+            * 2 - weekly
+
+            * 3 - monthly
+
+            * 4 - yearly
+
+            '
+        startDate:
+          type: string
+          format: date-time
+          description: Format - 2021-11-25 13:38
+        endSetting:
+          type: object
+          properties:
+            type:
+              type: string
+              description: '* byDate - Complete task on the specified date
+
+                * byCount - Complete task after task performs "byCount" times
+
+                '
+            value:
+              description: Has Date type if "byDate" type, Number if "byCount"
+        setting:
+          type: object
+          properties:
+            everyDay:
+              type: number
+            days:
+              type: array
+              description: Array of ordinal days of the week
+              example: '[1, 3, 5] - repeat every Monday, Wednesday and Friday'
+            everyWeekOfMonth:
+              type: integer
+              description: Ordinal number of week of the month (from 1 to 4)
+            numberOfMonth:
+              type: object
+              properties:
+                everyDay:
+                  type: integer
+                  description: Ordinal number of the day of the month
+                everyMonth:
+                  type: integer
+                  description: Ordinal number of the month
+            dayOfMonth:
+              type: object
+              properties:
+                dayOfWeek:
+                  type: integer
+                  description: Ordinal day of the week
+                everyMonth:
+                  type: integer
+                  description: Ordinal month of the year
+                everyWeek:
+                  type: integer
+                  description: Ordinal number of week of the month (from 1 to 4)
     Tasks:
       type: object
       properties:
@@ -700,95 +837,6 @@ components:
           type: string
         updatedAt:
           type: string
-    TaskChecklist:
-      type: object
-      properties:
-        id:
-          type: integer
-        name:
-          type: string
-        taskId:
-          type: integer
-        isDone:
-          type: boolean
-        items:
-          $ref: '#/components/schemas/ChecklistItems'
-    Attributes:
-      type: object
-      properties:
-        type:
-          type: integer
-          enum:
-          - 1
-          - 2
-          - 3
-          - 4
-          - 5
-          - 6
-        name:
-          type: string
-        status:
-          type: boolean
-        value:
-          type: array
-          items:
-            $ref: '#/components/schemas/AttributeValue'
-    ChecklistItems:
-      type: object
-      properties:
-        id:
-          type: integer
-        name:
-          type: string
-        order:
-          type: number
-        isDone:
-          type: boolean
-    IntegerSourceTypeProperty:
-      type: integer
-      description: '| * 1 - chatbot * 2 - manually * 3 - subscription_form * 4 - landing * 5 - a360 * 6 - payments * 7 - import * 8 - public_api * 9 - education * 10 - integration * 11 - popup * 12 - emailService'
-    TaskHistory:
-      type: object
-      properties:
-        id:
-          type: integer
-        taskId:
-          type: integer
-        eventTime:
-          type: string
-        eventType:
-          type: string
-        eventData:
-          type: object
-        userId:
-          type: number
-    EntityAttachment:
-      type: object
-      properties:
-        id:
-          type: integer
-        link:
-          type: string
-        entityId:
-          type: number
-        entityType:
-          type: string
-        createdAt:
-          type: string
-        updatedAt:
-          type: string
-    TaskPriorityProperty:
-      type: integer
-      description: '| Task priority
-
-        * 1 - low * 2 - middle * 3 - high'
-    AttributeValue:
-      type: object
-      properties:
-        id:
-          type: number
-        value:
-          type: string
     TaskComment:
       type: object
       properties:
@@ -815,83 +863,17 @@ components:
           type: array
           items:
             type: integer
-    TaskRepeats:
-      type: object
-      properties:
-        type:
-          type: integer
-          description: 'Repetition frequency
-
-
-            * 1 - daily
-
-            * 2 - weekly
-
-            * 3 - monthly
-
-            * 4 - yearly
-
-            '
-        startDate:
-          type: string
-          format: date-time
-          description: Format - 2021-11-25 13:38
-        endSetting:
-          type: object
-          properties:
-            type:
-              type: string
-              description: '* byDate - Complete task on the specified date
-
-                * byCount - Complete task after task performs "byCount" times
-
-                '
-            value:
-              description: Has Date type if "byDate" type, Number if "byCount"
-        setting:
-          type: object
-          properties:
-            everyDay:
-              type: number
-            days:
-              type: array
-              description: Array of ordinal days of the week
-              example: '[1, 3, 5] - repeat every Monday, Wednesday and Friday'
-            everyWeekOfMonth:
-              type: integer
-              description: Ordinal number of week of the month (from 1 to 4)
-            numberOfMonth:
-              type: object
-              properties:
-                everyDay:
-                  type: integer
-                  description: Ordinal number of the day of the month
-                everyMonth:
-                  type: integer
-                  description: Ordinal number of the month
-            dayOfMonth:
-              type: object
-              properties:
-                dayOfWeek:
-                  type: integer
-                  description: Ordinal day of the week
-                everyMonth:
-                  type: integer
-                  description: Ordinal month of the year
-                everyWeek:
-                  type: integer
-                  description: Ordinal number of week of the month (from 1 to 4)
-    TaskTag:
+    ChecklistItems:
       type: object
       properties:
         id:
           type: integer
         name:
           type: string
-        colorText:
-          type: string
-        colorBackground:
-          type: string
+        order:
+          type: number
+        isDone:
+          type: boolean
     TasksAttribute:
       type: array
       items:
@@ -901,6 +883,26 @@ components:
           value:
             type: string
             example: string or number or array
+    EntityAttachment:
+      type: object
+      properties:
+        id:
+          type: integer
+        link:
+          type: string
+        entityId:
+          type: number
+        entityType:
+          type: string
+        createdAt:
+          type: string
+        updatedAt:
+          type: string
+    TaskPriorityProperty:
+      type: integer
+      description: '| Task priority
+
+        * 1 - low * 2 - middle * 3 - high'
   securitySchemes:
     apiKey:
       type: http

@@ -1,9 +1,7 @@
 openapi: 3.2.0
 info:
   title: SendPulse SMTP Bounces API
-  description: 'The SendPulse SMTP API allows you to send transactional emails, manage unsubscribed users,  monitor bounces, and configure sender identities.  SMTP is ideal for high-volume transactional messages like order confirmations,  password resets, and notifications.
-
-    '
+  description: The SendPulse SMTP API allows you to send transactional emails, manage unsubscribed users, monitor bounces, and configure sender identities. SMTP is ideal for high-volume transactional messages like order confirmations, password resets, and notifications.
   version: 1.0.0
   x-ai-description: 'Expert-level SMTP relay service for transactional and bulk email delivery.  This API provides granular control over the delivery lifecycle, including  sender IP management, bounce tracking, and multi-channel fallback support.
 

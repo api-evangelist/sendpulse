@@ -121,6 +121,16 @@ paths:
           description: Forbidden
 components:
   schemas:
+    BalanceResponse:
+      type: object
+      x-ai-description: Account balance info.
+      properties:
+        currency:
+          type: string
+          example: USD
+        balance_currency:
+          type: number
+          example: 0.02
     DetailedBalanceResponse:
       type: object
       x-ai-description: Detailed account balance and limits.
@@ -179,16 +189,6 @@ components:
             auto_renew:
               type: integer
               example: 1
-    BalanceResponse:
-      type: object
-      x-ai-description: Account balance info.
-      properties:
-        currency:
-          type: string
-          example: USD
-        balance_currency:
-          type: number
-          example: 0.02
   securitySchemes:
     apiKey:
       type: http

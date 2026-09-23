@@ -1,9 +1,7 @@
 openapi: 3.2.0
 info:
   title: SendPulse Web Push Websites API
-  description: 'The SendPulse Web Push API allows you to send browser notifications to your  website visitors. It supports subscriber management, advanced segmentation,  and detailed tracking of delivery and clicks.
-
-    '
+  description: The SendPulse Web Push API allows you to send browser notifications to your website visitors. It supports subscriber management, advanced segmentation, and detailed tracking of delivery and clicks.
   version: 1.0.0
   x-ai-description: 'High-engagement browser notification service. This API enables real-time  communication with website subscribers across desktop and mobile browsers,  featuring advanced segmentation, scheduled broadcasts, and interactive  elements like buttons and custom icons.
 
