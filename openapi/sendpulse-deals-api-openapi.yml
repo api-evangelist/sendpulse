@@ -381,82 +381,6 @@ paths:
           - ResourceStateUpdate
 components:
   schemas:
-    FilterExpressionProperty:
-      type: string
-      description: '| Possible values:
-
-        - eq (=) - neq (!=) - gt (>) - gte (>=) - lt (<) - lte (<=) - like - in (check among list of values).'
-    DealSourceType:
-      type: object
-      properties:
-        id:
-          type: integer
-          description: ''
-        name:
-          type: string
-          description: ''
-    DealStatusProperty:
-      type: integer
-      description: '| Step status
-
-        * 0 — inactive (deleted by user) * 1 — active * 2 - completed deal as “Unsuccessful” * 3 - completed deal as “Successful”'
-    DealAttributeValue:
-      type: object
-      properties:
-        id:
-          type: integer
-        pipelineId:
-          type: integer
-        name:
-          type: string
-        status:
-          type: integer
-        type:
-          type: integer
-        mandatory:
-          type: boolean
-        order:
-          type: integer
-        options:
-          type: array
-          description: Items of "List" field type
-          items:
-            oneOf:
-            - type: string
-            - type: integer
-        value:
-          properties:
-            value:
-              type: string
-    DealComment:
-      type: object
-      properties:
-        id:
-          type: integer
-        userId:
-          type: integer
-        eventData:
-          type: object
-          properties:
-            text:
-              type: string
-        status:
-          type: integer
-        eventTime:
-          type: string
-        createdAt:
-          type: string
-        updatedAt:
-          type: string
-        attachments:
-          items:
-            $ref: '#/components/schemas/EntityAttachment'
-        childCount:
-          type: integer
-        childUsers:
-          type: array
-          items:
-            type: integer
     DealExpiration:
       type: object
       properties:
@@ -488,6 +412,88 @@ components:
         expires_within_day:
           type: boolean
           description: The deal expires within 24 hours
+    DealAttributeValue:
+      type: object
+      properties:
+        id:
+          type: integer
+        pipelineId:
+          type: integer
+        name:
+          type: string
+        status:
+          type: integer
+        type:
+          type: integer
+        mandatory:
+          type: boolean
+        order:
+          type: integer
+        options:
+          type: array
+          description: Items of "List" field type
+          items:
+            oneOf:
+            - type: string
+            - type: integer
+        value:
+          properties:
+            value:
+              type: string
+    EntityAttachment:
+      type: object
+      properties:
+        id:
+          type: integer
+        link:
+          type: string
+        entityId:
+          type: number
+        entityType:
+          type: string
+        createdAt:
+          type: string
+        updatedAt:
+          type: string
+    FilterExpressionProperty:
+      type: string
+      description: '| Possible values:
+
+        - eq (=) - neq (!=) - gt (>) - gte (>=) - lt (<) - lte (<=) - like - in (check among list of values).'
+    DealStatusProperty:
+      type: integer
+      description: '| Step status
+
+        * 0 — inactive (deleted by user) * 1 — active * 2 - completed deal as “Unsuccessful” * 3 - completed deal as “Successful”'
+    DealComment:
+      type: object
+      properties:
+        id:
+          type: integer
+        userId:
+          type: integer
+        eventData:
+          type: object
+          properties:
+            text:
+              type: string
+        status:
+          type: integer
+        eventTime:
+          type: string
+        createdAt:
+          type: string
+        updatedAt:
+          type: string
+        attachments:
+          items:
+            $ref: '#/components/schemas/EntityAttachment'
+        childCount:
+          type: integer
+        childUsers:
+          type: array
+          items:
+            type: integer
     AttributesProperty:
       type: array
       description: Filter by attributes only
@@ -502,6 +508,63 @@ components:
           value:
             maxLength: 255
             description: Can have string value or array of strings
+    DealDetailed:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Deal ID
+        pipelineId:
+          type: integer
+          description: Pipeline ID
+        status:
+          $ref: '#/components/schemas/DealStatusProperty'
+        stepId:
+          type: integer
+          description: Pipeline step ID
+        responsibleId:
+          type: integer
+          description: ID of the responsible for the deal user. Can be obtained in the “Get list of invited users” method
+        number:
+          type: integer
+          description: Deal number, the number is generated automatically according to the order in which deal was created. Used in deal name if a custom value has not been specified
+        name:
+          type: string
+          description: Deal name
+        price:
+          type: number
+          description: Deal price
+        currency:
+          type: string
+          description: 'Deal currency. Example: UAH, USD, EUR'
+        profit:
+          type: number
+          description: Deal profit in major currency units
+        hasExpense:
+          type: boolean
+          description: Shows if the deal has at least one expense
+        order:
+          type: integer
+          description: Deal order
+        sourceType:
+          $ref: '#/components/schemas/DealSourceType'
+        sourceId:
+          type: integer
+          description: ID of external source
+        createdAt:
+          type: string
+          format: date-time
+          description: The date and time the transaction was created. Output in YYYY-MM-DD hh:mm:ss format with fractions of a second and time zone
+        updatedAt:
+          type: string
+          format: date-time
+          description: The date and time the transaction information was last updated. Output in YYYY-MM-DD hh:mm:ss format with fractions of a second and time zone
+        history:
+          $ref: '#/components/schemas/DealHistory'
+        comments:
+          $ref: '#/components/schemas/DealComment'
+        attributes:
+          $ref: '#/components/schemas/DealAttributeValue'
     DealHistory:
       type: object
       properties:
@@ -523,21 +586,15 @@ components:
               type: string
             contactLastName:
               type: string
-    EntityAttachment:
+    DealSourceType:
       type: object
       properties:
         id:
           type: integer
-        link:
+          description: ''
+        name:
           type: string
-        entityId:
-          type: number
-        entityType:
-          type: string
-        createdAt:
-          type: string
-        updatedAt:
-          type: string
+          description: ''
     Deal:
       type: object
       properties:
@@ -606,63 +663,6 @@ components:
           type: string
           format: date-time
           description: The date and time the transaction information was last updated. Output in YYYY-MM-DD hh:mm:ss format with fractions of a second and time zone
-    DealDetailed:
-      type: object
-      properties:
-        id:
-          type: integer
-          description: Deal ID
-        pipelineId:
-          type: integer
-          description: Pipeline ID
-        status:
-          $ref: '#/components/schemas/DealStatusProperty'
-        stepId:
-          type: integer
-          description: Pipeline step ID
-        responsibleId:
-          type: integer
-          description: ID of the responsible for the deal user. Can be obtained in the “Get list of invited users” method
-        number:
-          type: integer
-          description: Deal number, the number is generated automatically according to the order in which deal was created. Used in deal name if a custom value has not been specified
-        name:
-          type: string
-          description: Deal name
-        price:
-          type: number
-          description: Deal price
-        currency:
-          type: string
-          description: 'Deal currency. Example: UAH, USD, EUR'
-        profit:
-          type: number
-          description: Deal profit in major currency units
-        hasExpense:
-          type: boolean
-          description: Shows if the deal has at least one expense
-        order:
-          type: integer
-          description: Deal order
-        sourceType:
-          $ref: '#/components/schemas/DealSourceType'
-        sourceId:
-          type: integer
-          description: ID of external source
-        createdAt:
-          type: string
-          format: date-time
-          description: The date and time the transaction was created. Output in YYYY-MM-DD hh:mm:ss format with fractions of a second and time zone
-        updatedAt:
-          type: string
-          format: date-time
-          description: The date and time the transaction information was last updated. Output in YYYY-MM-DD hh:mm:ss format with fractions of a second and time zone
-        history:
-          $ref: '#/components/schemas/DealHistory'
-        comments:
-          $ref: '#/components/schemas/DealComment'
-        attributes:
-          $ref: '#/components/schemas/DealAttributeValue'
   requestBodies:
     DealFilter:
       content:

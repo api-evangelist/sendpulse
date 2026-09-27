@@ -358,10 +358,6 @@ paths:
           - IrreversibleDelete
 components:
   schemas:
-    unauthorizedResponse:
-      description: Unauthorized
-    accessDeniedResponse:
-      description: Access denied
     popup:
       title: Popup
       properties:
@@ -583,6 +579,8 @@ components:
           type: boolean
           description: Is unique
       type: object
+    unauthorizedResponse:
+      description: Unauthorized
     pageInfo:
       title: Page Info
       properties:
@@ -598,6 +596,8 @@ components:
         arguments:
           type: object
       type: object
+    accessDeniedResponse:
+      description: Access denied
   securitySchemes:
     apiKey:
       type: http

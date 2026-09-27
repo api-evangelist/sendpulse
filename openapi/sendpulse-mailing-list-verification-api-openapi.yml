@@ -226,6 +226,40 @@ paths:
           description: Forbidden
 components:
   schemas:
+    EmailAddressVerification:
+      type: object
+      properties:
+        id:
+          type: integer
+        email_address:
+          type: string
+        check_date:
+          type: string
+        status:
+          type: integer
+        status_text:
+          type: string
+    VerifiedListSummary:
+      type: object
+      properties:
+        id:
+          type: integer
+        address_book_name:
+          type: string
+        all_emails_quantity:
+          type: integer
+        status:
+          type: integer
+        check_date:
+          type: string
+        data:
+          type: object
+        is_updated:
+          type: integer
+        status_text:
+          type: string
+        is_garbage_in_book:
+          type: boolean
     MailingListVerificationResult:
       type: object
       x-ai-description: Detailed breakdown of mailing list health.
@@ -272,40 +306,6 @@ components:
         result:
           type: boolean
           example: true
-    VerifiedListSummary:
-      type: object
-      properties:
-        id:
-          type: integer
-        address_book_name:
-          type: string
-        all_emails_quantity:
-          type: integer
-        status:
-          type: integer
-        check_date:
-          type: string
-        data:
-          type: object
-        is_updated:
-          type: integer
-        status_text:
-          type: string
-        is_garbage_in_book:
-          type: boolean
-    EmailAddressVerification:
-      type: object
-      properties:
-        id:
-          type: integer
-        email_address:
-          type: string
-        check_date:
-          type: string
-        status:
-          type: integer
-        status_text:
-          type: string
   securitySchemes:
     apiKey:
       type: http

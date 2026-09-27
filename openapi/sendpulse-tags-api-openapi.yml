@@ -331,6 +331,66 @@ paths:
       description: Production server
 components:
   schemas:
+    TagPinUnpinPhoneRequest:
+      type: object
+      x-ai-description: Payload to assign/unassign tags for a phone number.
+      required:
+      - phone
+      - tags
+      properties:
+        phone:
+          type: string
+          example: '123456789'
+        tags:
+          type: array
+          items:
+            type: integer
+          example:
+          - 11111
+          - 22222
+    TagUpdateRequest:
+      type: object
+      x-ai-description: Payload to update an existing tag.
+      required:
+      - name
+      - color
+      properties:
+        name:
+          type: string
+          example: newName
+        color:
+          type: string
+          example: '#f0f4f6'
+    TagCreateRequest:
+      type: object
+      x-ai-description: Payload to create a new tag.
+      required:
+      - name
+      - color
+      properties:
+        name:
+          type: string
+          example: test3
+        color:
+          type: string
+          example: '#f0f4f6'
+    TagPinUnpinEmailRequest:
+      type: object
+      x-ai-description: Payload to assign/unassign tags for an email.
+      required:
+      - email
+      - tags
+      properties:
+        email:
+          type: string
+          example: test@test.com
+        tags:
+          type: array
+          items:
+            type: integer
+          example:
+          - 11111
+          - 22222
     Tag:
       type: object
       x-ai-description: Subscriber tag metadata.
@@ -358,53 +418,6 @@ components:
         version:
           type: string
           example: 2.7.3
-    TagUpdateRequest:
-      type: object
-      x-ai-description: Payload to update an existing tag.
-      required:
-      - name
-      - color
-      properties:
-        name:
-          type: string
-          example: newName
-        color:
-          type: string
-          example: '#f0f4f6'
-    TagPinUnpinPhoneRequest:
-      type: object
-      x-ai-description: Payload to assign/unassign tags for a phone number.
-      required:
-      - phone
-      - tags
-      properties:
-        phone:
-          type: string
-          example: '123456789'
-        tags:
-          type: array
-          items:
-            type: integer
-          example:
-          - 11111
-          - 22222
-    TagPinUnpinEmailRequest:
-      type: object
-      x-ai-description: Payload to assign/unassign tags for an email.
-      required:
-      - email
-      - tags
-      properties:
-        email:
-          type: string
-          example: test@test.com
-        tags:
-          type: array
-          items:
-            type: integer
-          example:
-          - 11111
-          - 22222
     TagQueueResponse:
       type: object
       x-ai-description: Asynchronous request confirmation.
@@ -433,19 +446,6 @@ components:
         version:
           type: string
           example: 2.7.3
-    TagCreateRequest:
-      type: object
-      x-ai-description: Payload to create a new tag.
-      required:
-      - name
-      - color
-      properties:
-        name:
-          type: string
-          example: test3
-        color:
-          type: string
-          example: '#f0f4f6'
     Tag_2:
       type: object
       properties:

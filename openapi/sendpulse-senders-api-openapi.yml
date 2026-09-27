@@ -227,9 +227,9 @@ paths:
           description: Forbidden
 components:
   schemas:
-    ResultTrue:
+    SenderActivationResponse:
       type: object
-      x-ai-description: Success indicator.
+      x-ai-description: Activation result.
       properties:
         result:
           type: boolean
@@ -241,9 +241,9 @@ components:
           type: string
         name:
           type: string
-    SenderActivationResponse:
+    ResultTrue:
       type: object
-      x-ai-description: Activation result.
+      x-ai-description: Success indicator.
       properties:
         result:
           type: boolean

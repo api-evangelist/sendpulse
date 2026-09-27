@@ -127,12 +127,6 @@ paths:
           description: Forbidden
 components:
   schemas:
-    ResultTrue:
-      type: object
-      x-ai-description: Success indicator.
-      properties:
-        result:
-          type: boolean
     BlacklistDeleteRequest:
       type: object
       x-ai-description: Payload to remove emails from blacklist.
@@ -156,6 +150,12 @@ components:
         comment:
           type: string
           example: comment
+    ResultTrue:
+      type: object
+      x-ai-description: Success indicator.
+      properties:
+        result:
+          type: boolean
   securitySchemes:
     apiKey:
       type: http

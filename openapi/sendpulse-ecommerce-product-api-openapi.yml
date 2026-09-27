@@ -1599,7 +1599,7 @@ paths:
       responses:
         '200':
           description: Sections successfully updated
-      operationId: updateProductSections
+      operationId: putProductsByProductIdSections
       x-ai-role: ecommerce_catalog_manager
       x-ai-description: Updates structured content sections within a product, including their names, statuses, and typed attribute values. Sections define the product's informational schema — each section groups related attributes (key-value pairs) that describe characteristics like materials, dimensions, or specifications. Modifying sections affects how the product is displayed and indexed across the catalog.
       x-ai-reasoning-instructions:
@@ -1625,6 +1625,8 @@ paths:
           data_handling:
           - ResourceStateUpdate
           - PotentialDataLoss
+      x-operation-id-source: normalized
+      x-operation-id-original: updateProductSections
   /products/{productId}/sections/{sectionId}:
     delete:
       tags:

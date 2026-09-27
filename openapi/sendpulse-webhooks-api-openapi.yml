@@ -205,6 +205,40 @@ paths:
           description: Forbidden
 components:
   schemas:
+    WebhookResponse:
+      type: object
+      x-ai-description: Single webhook response.
+      properties:
+        success:
+          type: boolean
+          example: true
+        data:
+          $ref: '#/components/schemas/Webhook'
+    Webhook:
+      type: object
+      x-ai-description: Webhook configuration.
+      properties:
+        id:
+          type: integer
+          example: 162242
+        user_id:
+          type: integer
+          example: 7043663
+        url:
+          type: string
+          example: https://site.com/callback
+        action:
+          type: string
+          example: unsubscribe
+    WebhookUpdateRequest:
+      type: object
+      x-ai-description: Payload to update a webhook.
+      required:
+      - url
+      properties:
+        url:
+          type: string
+          example: https://site.com/callback
     WebhookListResponse:
       type: object
       x-ai-description: List of webhooks.
@@ -232,40 +266,6 @@ components:
             type: string
           example:
           - delivered
-    WebhookUpdateRequest:
-      type: object
-      x-ai-description: Payload to update a webhook.
-      required:
-      - url
-      properties:
-        url:
-          type: string
-          example: https://site.com/callback
-    Webhook:
-      type: object
-      x-ai-description: Webhook configuration.
-      properties:
-        id:
-          type: integer
-          example: 162242
-        user_id:
-          type: integer
-          example: 7043663
-        url:
-          type: string
-          example: https://site.com/callback
-        action:
-          type: string
-          example: unsubscribe
-    WebhookResponse:
-      type: object
-      x-ai-description: Single webhook response.
-      properties:
-        success:
-          type: boolean
-          example: true
-        data:
-          $ref: '#/components/schemas/Webhook'
   securitySchemes:
     apiKey:
       type: http

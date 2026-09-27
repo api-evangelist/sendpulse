@@ -1192,48 +1192,6 @@ paths:
                     error_code: 422
 components:
   schemas:
-    EmailContactBasic:
-      type: object
-      x-ai-description: Minimal subscriber record.
-      properties:
-        email:
-          type: string
-        status:
-          type: integer
-        status_explain:
-          type: string
-    ResultTrue:
-      type: object
-      x-ai-description: Success indicator.
-      properties:
-        result:
-          type: boolean
-    AddEmailsSingleOptIn:
-      type: object
-      x-ai-description: Add emails without confirmation.
-      properties:
-        emails:
-          type: array
-    CampaignCost:
-      type: object
-      x-ai-description: Cost breakdown.
-      properties:
-        cur:
-          type: string
-        sent_emails_qty:
-          type: integer
-        overdraftAllEmailsPrice:
-          type: number
-        result:
-          type: boolean
-    AddEmailsDoubleOptIn:
-      type: object
-      x-ai-description: Add emails with confirmation.
-      properties:
-        emails:
-          type: array
-        confirmation:
-          type: string
     MailingList:
       type: object
       x-ai-description: Metadata and health metrics for a subscriber list.
@@ -1254,6 +1212,42 @@ components:
           type: integer
         status_explain:
           type: string
+    EmailContactBasic:
+      type: object
+      x-ai-description: Minimal subscriber record.
+      properties:
+        email:
+          type: string
+        status:
+          type: integer
+        status_explain:
+          type: string
+    CampaignCost:
+      type: object
+      x-ai-description: Cost breakdown.
+      properties:
+        cur:
+          type: string
+        sent_emails_qty:
+          type: integer
+        overdraftAllEmailsPrice:
+          type: number
+        result:
+          type: boolean
+    AddEmailsDoubleOptIn:
+      type: object
+      x-ai-description: Add emails with confirmation.
+      properties:
+        emails:
+          type: array
+        confirmation:
+          type: string
+    AddEmailsSingleOptIn:
+      type: object
+      x-ai-description: Add emails without confirmation.
+      properties:
+        emails:
+          type: array
     EmailContact:
       type: object
       x-ai-description: Subscriber record.
@@ -1266,6 +1260,12 @@ components:
           type: string
         variables:
           type: object
+    ResultTrue:
+      type: object
+      x-ai-description: Success indicator.
+      properties:
+        result:
+          type: boolean
     VariableDefinition:
       type: object
       x-ai-description: Definition of a custom field.

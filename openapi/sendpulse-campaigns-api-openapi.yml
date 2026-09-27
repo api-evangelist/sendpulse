@@ -1629,25 +1629,19 @@ paths:
       url: https://api.sendpulse.com/whatsapp
 components:
   schemas:
-    ReferralStat:
-      type: object
-      x-ai-description: Click statistics.
-      properties:
-        link:
-          type: string
-        count:
-          type: integer
-    ResultTrue:
-      type: object
-      x-ai-description: Success indicator.
-      properties:
-        result:
-          type: boolean
     CampaignByListSummary:
       type: object
       x-ai-description: Campaigns for a list.
       properties:
         task_id:
+          type: integer
+    ResultTrueWithId:
+      type: object
+      x-ai-description: Success indicator with ID.
+      properties:
+        result:
+          type: boolean
+        id:
           type: integer
     CampaignCreateResponse:
       type: object
@@ -1677,15 +1671,13 @@ components:
           type: string
           description: Currency
           example: USD
-    CampaignDetails:
+    ReferralStat:
       type: object
-      x-ai-description: Detailed campaign stats.
+      x-ai-description: Click statistics.
       properties:
-        id:
-          type: integer
-        name:
+        link:
           type: string
-        status:
+        count:
           type: integer
     CampaignCreateRequest:
       type: object
@@ -1789,22 +1781,16 @@ components:
             opens: true
             clicks: false
             utm_campaign: MY_UTM
-    ResultTrueWithId:
+    CampaignDetails:
       type: object
-      x-ai-description: Success indicator with ID.
+      x-ai-description: Detailed campaign stats.
       properties:
-        result:
-          type: boolean
         id:
           type: integer
-    CampaignUpdateRequest:
-      type: object
-      x-ai-description: Payload for updating a campaign.
-      properties:
         name:
           type: string
-        subject:
-          type: string
+        status:
+          type: integer
     CampaignSummary:
       type: object
       x-ai-description: Campaign summary.
@@ -1815,6 +1801,20 @@ components:
           type: string
         status:
           type: integer
+    CampaignUpdateRequest:
+      type: object
+      x-ai-description: Payload for updating a campaign.
+      properties:
+        name:
+          type: string
+        subject:
+          type: string
+    ResultTrue:
+      type: object
+      x-ai-description: Success indicator.
+      properties:
+        result:
+          type: boolean
     Campaign:
       properties:
         id:

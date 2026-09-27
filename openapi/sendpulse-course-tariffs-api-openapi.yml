@@ -58,14 +58,19 @@ paths:
           - ReadOnly
 components:
   schemas:
-    FunctionalityResource:
+    ContentAccessesResource:
       type: object
       properties:
-        type:
+        contentType:
           type: string
-          description: Type of available functionality
+          description: Type of content being granted access to
           enum:
-          - chat
+          - lesson
+          - test
+          - certificate
+        entityId:
+          type: integer
+          description: Entity ID (lesson/test/certificate)
     PaymentMethodResource:
       type: object
       properties:
@@ -99,6 +104,14 @@ components:
           - LiqPay
           - Wayforpay
           - Flutterwave
+    FunctionalityResource:
+      type: object
+      properties:
+        type:
+          type: string
+          description: Type of available functionality
+          enum:
+          - chat
     CourseTariffSettingResource:
       type: object
       properties:
@@ -119,19 +132,36 @@ components:
           - string
           - 'null'
           description: Time zone used for tariff dates
-    ContentAccessesResource:
+    StudentBaseStateSettingResource:
       type: object
       properties:
-        contentType:
-          type: string
-          description: Type of content being granted access to
-          enum:
-          - lesson
-          - test
-          - certificate
-        entityId:
+        group:
           type: integer
-          description: Entity ID (lesson/test/certificate)
+          description: Default student group ID
+        responsible:
+          type: integer
+          description: Responsible manager ID
+        tags:
+          type: array
+          description: List of tag IDs to assign to the student
+          items:
+            type: integer
+        dealCreation:
+          type: object
+          description: Settings for creating a CRM deal upon payment
+          properties:
+            createDealOnPayment:
+              type: boolean
+              description: Create a deal after successful payment
+            pipelineId:
+              type: integer
+              description: CRM sales pipeline ID
+            stepId:
+              type: integer
+              description: Sales pipeline stage ID
+            dealName:
+              type: string
+              description: Deal name template
     CourseAccessRestrictionSettingsResource:
       type: object
       properties:
@@ -216,36 +246,6 @@ components:
         wasStarted:
           type: boolean
           description: Whether learning under this tariff has already started
-    StudentBaseStateSettingResource:
-      type: object
-      properties:
-        group:
-          type: integer
-          description: Default student group ID
-        responsible:
-          type: integer
-          description: Responsible manager ID
-        tags:
-          type: array
-          description: List of tag IDs to assign to the student
-          items:
-            type: integer
-        dealCreation:
-          type: object
-          description: Settings for creating a CRM deal upon payment
-          properties:
-            createDealOnPayment:
-              type: boolean
-              description: Create a deal after successful payment
-            pipelineId:
-              type: integer
-              description: CRM sales pipeline ID
-            stepId:
-              type: integer
-              description: Sales pipeline stage ID
-            dealName:
-              type: string
-              description: Deal name template
   securitySchemes:
     apiKey:
       type: http

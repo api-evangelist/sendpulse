@@ -146,6 +146,32 @@ paths:
           - RelationshipDelete
 components:
   schemas:
+    ContactMessenger:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: ID of the added messenger
+        typeId:
+          type: integer
+          description: Messenger type
+        login:
+          type: string
+          description: Contact login in the specified messenger
+        botId:
+          type: string
+          description: External bot ID
+        contactId:
+          type: string
+          description: External contact ID
+        status:
+          type: integer
+        chatbotUrl:
+          type: string
+          description: URL of the chatbot from which the contact was received
+        isMainChatbot:
+          type: boolean
+          description: Determine if chatbot messenger is the main one
     Contact:
       type: object
       properties:
@@ -211,6 +237,31 @@ components:
           format: date-time
         attachments:
           $ref: '#/components/schemas/EntityAttachment'
+    ContactPhone:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Contact phone ID
+        phone:
+          type: string
+        isMain:
+          type: boolean
+    EntityAttachment:
+      type: object
+      properties:
+        id:
+          type: integer
+        link:
+          type: string
+        entityId:
+          type: number
+        entityType:
+          type: string
+        createdAt:
+          type: string
+        updatedAt:
+          type: string
     ContactEmail:
       type: object
       properties:
@@ -223,25 +274,25 @@ components:
         isMain:
           type: boolean
           description: Determines whether the email address is the main one
-    ContactHistory:
+    ContactTag:
       type: object
       properties:
         id:
           type: integer
-        userId:
-          type: integer
-        contactId:
-          type: integer
-        eventType:
+          description: Tag ID
+        name:
           type: string
-        eventTime:
+          description: Tag name
+        colorText:
           type: string
-          format: date-time
-        eventData:
-          type: object
-          properties:
-            dealName:
-              type: string
+        colorBackground:
+          type: string
+        contactCount:
+          type: integer
+          description: Number of contacts associated with the tag
+        taskCount:
+          type: integer
+          description: Number of tasks associated with a tag
     ContactAttributeValue:
       type: object
       properties:
@@ -281,50 +332,6 @@ components:
         default:
           type: boolean
           description: ''
-    ContactPhone:
-      type: object
-      properties:
-        id:
-          type: integer
-          description: Contact phone ID
-        phone:
-          type: string
-        isMain:
-          type: boolean
-    ContactTag:
-      type: object
-      properties:
-        id:
-          type: integer
-          description: Tag ID
-        name:
-          type: string
-          description: Tag name
-        colorText:
-          type: string
-        colorBackground:
-          type: string
-        contactCount:
-          type: integer
-          description: Number of contacts associated with the tag
-        taskCount:
-          type: integer
-          description: Number of tasks associated with a tag
-    EntityAttachment:
-      type: object
-      properties:
-        id:
-          type: integer
-        link:
-          type: string
-        entityId:
-          type: number
-        entityType:
-          type: string
-        createdAt:
-          type: string
-        updatedAt:
-          type: string
     ContactComment:
       type: object
       properties:
@@ -348,32 +355,25 @@ components:
           type: array
           items:
             type: integer
-    ContactMessenger:
+    ContactHistory:
       type: object
       properties:
         id:
           type: integer
-          description: ID of the added messenger
-        typeId:
+        userId:
           type: integer
-          description: Messenger type
-        login:
-          type: string
-          description: Contact login in the specified messenger
-        botId:
-          type: string
-          description: External bot ID
         contactId:
-          type: string
-          description: External contact ID
-        status:
           type: integer
-        chatbotUrl:
+        eventType:
           type: string
-          description: URL of the chatbot from which the contact was received
-        isMainChatbot:
-          type: boolean
-          description: Determine if chatbot messenger is the main one
+        eventTime:
+          type: string
+          format: date-time
+        eventData:
+          type: object
+          properties:
+            dealName:
+              type: string
   securitySchemes:
     apiKey:
       type: http

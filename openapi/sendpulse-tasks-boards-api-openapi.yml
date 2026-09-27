@@ -219,17 +219,23 @@ components:
           type: integer
         boardId:
           type: integer
-    BoardSettings:
+    Boards:
       type: object
       properties:
         id:
           type: integer
         name:
           type: string
-        value:
-          type: string
-        boardId:
-          type: number
+        userId:
+          type: integer
+        order:
+          type: integer
+        steps:
+          $ref: '#/components/schemas/BoardSteps'
+        settings:
+          $ref: '#/components/schemas/BoardSettings'
+        attributes:
+          $ref: '#/components/schemas/BoardAttribute'
     BoardAttribute:
       type: object
       properties:
@@ -250,23 +256,17 @@ components:
           type: integer
         order:
           type: integer
-    Boards:
+    BoardSettings:
       type: object
       properties:
         id:
           type: integer
         name:
           type: string
-        userId:
-          type: integer
-        order:
-          type: integer
-        steps:
-          $ref: '#/components/schemas/BoardSteps'
-        settings:
-          $ref: '#/components/schemas/BoardSettings'
-        attributes:
-          $ref: '#/components/schemas/BoardAttribute'
+        value:
+          type: string
+        boardId:
+          type: number
   securitySchemes:
     apiKey:
       type: http

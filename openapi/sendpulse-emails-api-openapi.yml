@@ -819,15 +819,6 @@ paths:
     - url: https://api.sendpulse.com
 components:
   schemas:
-    Email:
-      type: object
-      properties:
-        id:
-          type: integer
-        isMain:
-          type: boolean
-        email:
-          type: string
     Messenger:
       type: object
       properties:
@@ -837,6 +828,22 @@ components:
           type: integer
         login:
           type: string
+    Email:
+      type: object
+      properties:
+        id:
+          type: integer
+        isMain:
+          type: boolean
+        email:
+          type: string
+    Error:
+      type: object
+      properties:
+        message:
+          type: string
+        error_code:
+          type: integer
     EmailRecord:
       type: object
       properties:
@@ -883,13 +890,6 @@ components:
               type: array
               items:
                 type: object
-    Error:
-      type: object
-      properties:
-        message:
-          type: string
-        error_code:
-          type: integer
   securitySchemes:
     apiKey:
       type: http

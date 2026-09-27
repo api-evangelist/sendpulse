@@ -244,26 +244,33 @@ paths:
           - ReadOnly
 components:
   schemas:
-    unauthorizedResponse:
-      description: Unauthorized
-    popupStatistic:
-      title: Popup statistic
+    aggregatedNPSStatistic:
+      title: Aggregated NPS statistic
       properties:
-        peopleReached:
+        average:
           type: integer
-          description: The number of times your widget was viewed
-        engagements:
+          description: NPS score
+        total:
           type: integer
-          description: The number of visitors who interacted with your widget, expanded it, read its message, clicked its button, and followed the link.
-        subscriptions:
+          description: Total number of results
+        promoter:
           type: integer
-          description: The number of email addresses or phone numbers customers entered in the "Email Address Request" or "Phone Number Request" form.
-        formEngagements:
+          description: Total promoters
+        neutral:
           type: integer
-          description: The number of leads who submitted your form
-        wereClosed:
+          description: Total neutral
+        critic:
           type: integer
-          description: The number of visitors who closed your widget (clicked the "cross" icon).
+          description: Total critic
+        promoterPercent:
+          type: integer
+          description: Percent of promoters
+        neutralPercent:
+          type: integer
+          description: Percent of neutrals
+        criticPercent:
+          type: integer
+          description: Percent of critics
       type: object
     NPSStatistic:
       title: NPS variant statistic
@@ -307,34 +314,27 @@ components:
           type: integer
           description: Total amount of voices for this variant
       type: object
-    aggregatedNPSStatistic:
-      title: Aggregated NPS statistic
+    popupStatistic:
+      title: Popup statistic
       properties:
-        average:
+        peopleReached:
           type: integer
-          description: NPS score
-        total:
+          description: The number of times your widget was viewed
+        engagements:
           type: integer
-          description: Total number of results
-        promoter:
+          description: The number of visitors who interacted with your widget, expanded it, read its message, clicked its button, and followed the link.
+        subscriptions:
           type: integer
-          description: Total promoters
-        neutral:
+          description: The number of email addresses or phone numbers customers entered in the "Email Address Request" or "Phone Number Request" form.
+        formEngagements:
           type: integer
-          description: Total neutral
-        critic:
+          description: The number of leads who submitted your form
+        wereClosed:
           type: integer
-          description: Total critic
-        promoterPercent:
-          type: integer
-          description: Percent of promoters
-        neutralPercent:
-          type: integer
-          description: Percent of neutrals
-        criticPercent:
-          type: integer
-          description: Percent of critics
+          description: The number of visitors who closed your widget (clicked the "cross" icon).
       type: object
+    unauthorizedResponse:
+      description: Unauthorized
   securitySchemes:
     apiKey:
       type: http

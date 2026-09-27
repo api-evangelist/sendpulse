@@ -458,12 +458,6 @@ paths:
       description: Production server
 components:
   schemas:
-    ResultTrue:
-      type: object
-      x-ai-description: Success indicator.
-      properties:
-        result:
-          type: boolean
     TemplateDetails:
       type: object
       x-ai-description: Template metadata.
@@ -480,6 +474,12 @@ components:
           type: string
         name:
           type: string
+    ResultTrue:
+      type: object
+      x-ai-description: Success indicator.
+      properties:
+        result:
+          type: boolean
     Template:
       properties:
         id:

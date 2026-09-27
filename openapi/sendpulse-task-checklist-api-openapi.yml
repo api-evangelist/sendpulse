@@ -360,6 +360,17 @@ paths:
           - ResourceStateUpdate
 components:
   schemas:
+    ChecklistItems:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        order:
+          type: number
+        isDone:
+          type: boolean
     TaskChecklist:
       type: object
       properties:
@@ -373,17 +384,6 @@ components:
           type: boolean
         items:
           $ref: '#/components/schemas/ChecklistItems'
-    ChecklistItems:
-      type: object
-      properties:
-        id:
-          type: integer
-        name:
-          type: string
-        order:
-          type: number
-        isDone:
-          type: boolean
   securitySchemes:
     apiKey:
       type: http
