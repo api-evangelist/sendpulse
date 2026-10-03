@@ -282,6 +282,11 @@ paths:
           - ResourceStateUpdate
 components:
   schemas:
+    DefaultStatusProperty:
+      type: integer
+      description: '| Status
+
+        * 0 — inactive (deleted by user) * 1 — active'
     Step:
       type: object
       properties:
@@ -338,11 +343,6 @@ components:
           - 6d
           - 7d
           description: Time notification
-    DefaultStatusProperty:
-      type: integer
-      description: '| Status
-
-        * 0 — inactive (deleted by user) * 1 — active'
   securitySchemes:
     apiKey:
       type: http

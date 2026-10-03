@@ -1629,48 +1629,6 @@ paths:
       url: https://api.sendpulse.com/whatsapp
 components:
   schemas:
-    CampaignByListSummary:
-      type: object
-      x-ai-description: Campaigns for a list.
-      properties:
-        task_id:
-          type: integer
-    ResultTrueWithId:
-      type: object
-      x-ai-description: Success indicator with ID.
-      properties:
-        result:
-          type: boolean
-        id:
-          type: integer
-    CampaignCreateResponse:
-      type: object
-      x-ai-description: Response from campaign creation.
-      properties:
-        id:
-          type: integer
-          description: Email campaign ID
-          example: 245587
-        status:
-          type: integer
-          description: Task status for sending (13 - copying addresses, 26 - draft)
-          example: 13
-        count:
-          type: integer
-          description: Number of recipients
-          example: 1
-        tariff_email_qty:
-          type: integer
-          description: Number of emails written off from balance
-          example: 1
-        overdraft_price:
-          type: string
-          description: Price for one email at an increase
-          example: '0.0044'
-        ovedraft_currency:
-          type: string
-          description: Currency
-          example: USD
     ReferralStat:
       type: object
       x-ai-description: Click statistics.
@@ -1679,6 +1637,14 @@ components:
           type: string
         count:
           type: integer
+    CampaignUpdateRequest:
+      type: object
+      x-ai-description: Payload for updating a campaign.
+      properties:
+        name:
+          type: string
+        subject:
+          type: string
     CampaignCreateRequest:
       type: object
       required:
@@ -1791,6 +1757,42 @@ components:
           type: string
         status:
           type: integer
+    ResultTrueWithId:
+      type: object
+      x-ai-description: Success indicator with ID.
+      properties:
+        result:
+          type: boolean
+        id:
+          type: integer
+    CampaignCreateResponse:
+      type: object
+      x-ai-description: Response from campaign creation.
+      properties:
+        id:
+          type: integer
+          description: Email campaign ID
+          example: 245587
+        status:
+          type: integer
+          description: Task status for sending (13 - copying addresses, 26 - draft)
+          example: 13
+        count:
+          type: integer
+          description: Number of recipients
+          example: 1
+        tariff_email_qty:
+          type: integer
+          description: Number of emails written off from balance
+          example: 1
+        overdraft_price:
+          type: string
+          description: Price for one email at an increase
+          example: '0.0044'
+        ovedraft_currency:
+          type: string
+          description: Currency
+          example: USD
     CampaignSummary:
       type: object
       x-ai-description: Campaign summary.
@@ -1801,14 +1803,12 @@ components:
           type: string
         status:
           type: integer
-    CampaignUpdateRequest:
+    CampaignByListSummary:
       type: object
-      x-ai-description: Payload for updating a campaign.
+      x-ai-description: Campaigns for a list.
       properties:
-        name:
-          type: string
-        subject:
-          type: string
+        task_id:
+          type: integer
     ResultTrue:
       type: object
       x-ai-description: Success indicator.

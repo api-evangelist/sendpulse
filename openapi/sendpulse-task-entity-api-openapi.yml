@@ -212,6 +212,20 @@ components:
             type: number
           stepId:
             type: number
+    ContactsAutocomplete:
+      type: array
+      items:
+        properties:
+          id:
+            type: integer
+          firstName:
+            type: string
+          lastName:
+            type: string
+          email:
+            type: string
+          phone:
+            type: string
     TaskAutocomplete:
       type: array
       items:
@@ -228,20 +242,6 @@ components:
             type: integer
           observers:
             type: array
-    ContactsAutocomplete:
-      type: array
-      items:
-        properties:
-          id:
-            type: integer
-          firstName:
-            type: string
-          lastName:
-            type: string
-          email:
-            type: string
-          phone:
-            type: string
     TasksConnection:
       type: object
       properties:

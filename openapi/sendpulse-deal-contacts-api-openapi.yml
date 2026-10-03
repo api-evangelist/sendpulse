@@ -146,6 +146,70 @@ paths:
           - RelationshipDelete
 components:
   schemas:
+    ContactComment:
+      type: object
+      properties:
+        id:
+          type: integer
+        userId:
+          type: integer
+        text:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        attachments:
+          $ref: '#/components/schemas/EntityAttachment'
+        childCount:
+          type: integer
+        childUsers:
+          type: array
+          items:
+            type: integer
+    ContactEmail:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Email address ID
+        email:
+          type: string
+          description: Email address
+        isMain:
+          type: boolean
+          description: Determines whether the email address is the main one
+    ContactTag:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Tag ID
+        name:
+          type: string
+          description: Tag name
+        colorText:
+          type: string
+        colorBackground:
+          type: string
+        contactCount:
+          type: integer
+          description: Number of contacts associated with the tag
+        taskCount:
+          type: integer
+          description: Number of tasks associated with a tag
+    ContactPhone:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Contact phone ID
+        phone:
+          type: string
+        isMain:
+          type: boolean
     ContactMessenger:
       type: object
       properties:
@@ -237,62 +301,6 @@ components:
           format: date-time
         attachments:
           $ref: '#/components/schemas/EntityAttachment'
-    ContactPhone:
-      type: object
-      properties:
-        id:
-          type: integer
-          description: Contact phone ID
-        phone:
-          type: string
-        isMain:
-          type: boolean
-    EntityAttachment:
-      type: object
-      properties:
-        id:
-          type: integer
-        link:
-          type: string
-        entityId:
-          type: number
-        entityType:
-          type: string
-        createdAt:
-          type: string
-        updatedAt:
-          type: string
-    ContactEmail:
-      type: object
-      properties:
-        id:
-          type: integer
-          description: Email address ID
-        email:
-          type: string
-          description: Email address
-        isMain:
-          type: boolean
-          description: Determines whether the email address is the main one
-    ContactTag:
-      type: object
-      properties:
-        id:
-          type: integer
-          description: Tag ID
-        name:
-          type: string
-          description: Tag name
-        colorText:
-          type: string
-        colorBackground:
-          type: string
-        contactCount:
-          type: integer
-          description: Number of contacts associated with the tag
-        taskCount:
-          type: integer
-          description: Number of tasks associated with a tag
     ContactAttributeValue:
       type: object
       properties:
@@ -332,29 +340,21 @@ components:
         default:
           type: boolean
           description: ''
-    ContactComment:
+    EntityAttachment:
       type: object
       properties:
         id:
           type: integer
-        userId:
-          type: integer
-        text:
+        link:
+          type: string
+        entityId:
+          type: number
+        entityType:
           type: string
         createdAt:
           type: string
-          format: date-time
         updatedAt:
           type: string
-          format: date-time
-        attachments:
-          $ref: '#/components/schemas/EntityAttachment'
-        childCount:
-          type: integer
-        childUsers:
-          type: array
-          items:
-            type: integer
     ContactHistory:
       type: object
       properties:

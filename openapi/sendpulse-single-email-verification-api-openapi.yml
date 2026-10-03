@@ -112,12 +112,6 @@ paths:
           description: Forbidden
 components:
   schemas:
-    ResultTrue:
-      type: object
-      properties:
-        result:
-          type: boolean
-          example: true
     SingleEmailResult:
       type: object
       properties:
@@ -138,6 +132,12 @@ components:
               type: integer
             status_text:
               type: string
+    ResultTrue:
+      type: object
+      properties:
+        result:
+          type: boolean
+          example: true
   securitySchemes:
     apiKey:
       type: http

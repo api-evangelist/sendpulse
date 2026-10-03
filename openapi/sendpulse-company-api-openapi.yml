@@ -415,14 +415,20 @@ paths:
           - CascadeRisk
 components:
   schemas:
-    Phone:
+    AttachmentResource:
       type: object
       properties:
         id:
           type: integer
-        isMain:
-          type: boolean
-        phone:
+        link:
+          type: array
+        entityId:
+          type: integer
+        entityType:
+          type: string
+        createdAt:
+          type: string
+        updatedAt:
           type: string
     Messenger:
       type: object
@@ -433,20 +439,14 @@ components:
           type: integer
         login:
           type: string
-    CompanySortData:
+    Email:
       type: object
       properties:
         id:
           type: integer
-        companyName:
-          type: string
-        responsibleId:
-          type: integer
-        address:
-          type: string
-        annualBusinessVolume:
-          type: integer
-        currency:
+        isMain:
+          type: boolean
+        email:
           type: string
     Company:
       type: object
@@ -510,29 +510,29 @@ components:
             oneOf:
             - type: string
             - type: integer
-    Email:
+    Phone:
       type: object
       properties:
         id:
           type: integer
         isMain:
           type: boolean
-        email:
+        phone:
           type: string
-    AttachmentResource:
+    CompanySortData:
       type: object
       properties:
         id:
           type: integer
-        link:
-          type: array
-        entityId:
+        companyName:
+          type: string
+        responsibleId:
           type: integer
-        entityType:
+        address:
           type: string
-        createdAt:
-          type: string
-        updatedAt:
+        annualBusinessVolume:
+          type: integer
+        currency:
           type: string
   securitySchemes:
     apiKey:

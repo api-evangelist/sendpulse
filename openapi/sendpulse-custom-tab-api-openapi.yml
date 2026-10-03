@@ -363,40 +363,6 @@ paths:
           - RelationDelete
 components:
   schemas:
-    CustomTab:
-      type: object
-      properties:
-        id:
-          type: integer
-        name:
-          type: string
-          description: Custom tab name
-        userId:
-          type: integer
-          description: Custom tab owner
-        isVisible:
-          type: boolean
-          description: Indicates whether the entity is visible to users
-        isDefault:
-          type: boolean
-          description: Indicates whether the entity is default and cannot be changed
-        type:
-          type: integer
-          enum:
-          - 0
-          - 1
-          description: 0 - attributes, 1 - integration
-        entityType:
-          type: integer
-          enum:
-          - 0
-          - 1
-          - 2
-          - 3
-          description: 0 - contact, 1 - pipeline, 2 - board, 3 - company
-        entityId:
-          type: integer
-          description: Related entity ID. Only for boards and pipelines
     CustomTabWithAttribute:
       type: object
       properties:
@@ -440,6 +406,40 @@ components:
                 type: integer
               attributeType:
                 type: integer
+    CustomTab:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+          description: Custom tab name
+        userId:
+          type: integer
+          description: Custom tab owner
+        isVisible:
+          type: boolean
+          description: Indicates whether the entity is visible to users
+        isDefault:
+          type: boolean
+          description: Indicates whether the entity is default and cannot be changed
+        type:
+          type: integer
+          enum:
+          - 0
+          - 1
+          description: 0 - attributes, 1 - integration
+        entityType:
+          type: integer
+          enum:
+          - 0
+          - 1
+          - 2
+          - 3
+          description: 0 - contact, 1 - pipeline, 2 - board, 3 - company
+        entityId:
+          type: integer
+          description: Related entity ID. Only for boards and pipelines
   securitySchemes:
     apiKey:
       type: http

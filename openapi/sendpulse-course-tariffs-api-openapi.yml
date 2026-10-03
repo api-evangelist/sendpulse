@@ -71,47 +71,6 @@ components:
         entityId:
           type: integer
           description: Entity ID (lesson/test/certificate)
-    PaymentMethodResource:
-      type: object
-      properties:
-        id:
-          type: integer
-          description: Unique payment method identifier
-        name:
-          type: string
-          description: Payment method name
-        price:
-          type: integer
-          description: Price in the smallest currency units (e.g., cents)
-        currency:
-          type: string
-          description: Payment currency (ISO 4217)
-        paymentId:
-          type: string
-          format: uuid
-          description: Payment identifier in the payment system
-        paymentType:
-          type: string
-          description: Payment system type/provider
-          enum:
-          - YooKassa
-          - Fondy
-          - PayPal
-          - YooMoney
-          - ROBOKASSA
-          - Stripe
-          - MERCADOPAGO
-          - LiqPay
-          - Wayforpay
-          - Flutterwave
-    FunctionalityResource:
-      type: object
-      properties:
-        type:
-          type: string
-          description: Type of available functionality
-          enum:
-          - chat
     CourseTariffSettingResource:
       type: object
       properties:
@@ -132,54 +91,6 @@ components:
           - string
           - 'null'
           description: Time zone used for tariff dates
-    StudentBaseStateSettingResource:
-      type: object
-      properties:
-        group:
-          type: integer
-          description: Default student group ID
-        responsible:
-          type: integer
-          description: Responsible manager ID
-        tags:
-          type: array
-          description: List of tag IDs to assign to the student
-          items:
-            type: integer
-        dealCreation:
-          type: object
-          description: Settings for creating a CRM deal upon payment
-          properties:
-            createDealOnPayment:
-              type: boolean
-              description: Create a deal after successful payment
-            pipelineId:
-              type: integer
-              description: CRM sales pipeline ID
-            stepId:
-              type: integer
-              description: Sales pipeline stage ID
-            dealName:
-              type: string
-              description: Deal name template
-    CourseAccessRestrictionSettingsResource:
-      type: object
-      properties:
-        courseId:
-          type: integer
-          description: Course ID to which the restriction applies
-        restrictedDays:
-          type: integer
-          description: Number of restricted access days
-        restrictedToDate:
-          type: string
-          description: Date until which the restriction applies (ISO 8601)
-        timezone:
-          type: string
-          description: Time zone for calculating restriction dates
-        typeUpdate:
-          type: string
-          description: Type of restriction settings update
     ShortCourseTariffResource:
       type: object
       properties:
@@ -246,6 +157,95 @@ components:
         wasStarted:
           type: boolean
           description: Whether learning under this tariff has already started
+    FunctionalityResource:
+      type: object
+      properties:
+        type:
+          type: string
+          description: Type of available functionality
+          enum:
+          - chat
+    CourseAccessRestrictionSettingsResource:
+      type: object
+      properties:
+        courseId:
+          type: integer
+          description: Course ID to which the restriction applies
+        restrictedDays:
+          type: integer
+          description: Number of restricted access days
+        restrictedToDate:
+          type: string
+          description: Date until which the restriction applies (ISO 8601)
+        timezone:
+          type: string
+          description: Time zone for calculating restriction dates
+        typeUpdate:
+          type: string
+          description: Type of restriction settings update
+    StudentBaseStateSettingResource:
+      type: object
+      properties:
+        group:
+          type: integer
+          description: Default student group ID
+        responsible:
+          type: integer
+          description: Responsible manager ID
+        tags:
+          type: array
+          description: List of tag IDs to assign to the student
+          items:
+            type: integer
+        dealCreation:
+          type: object
+          description: Settings for creating a CRM deal upon payment
+          properties:
+            createDealOnPayment:
+              type: boolean
+              description: Create a deal after successful payment
+            pipelineId:
+              type: integer
+              description: CRM sales pipeline ID
+            stepId:
+              type: integer
+              description: Sales pipeline stage ID
+            dealName:
+              type: string
+              description: Deal name template
+    PaymentMethodResource:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Unique payment method identifier
+        name:
+          type: string
+          description: Payment method name
+        price:
+          type: integer
+          description: Price in the smallest currency units (e.g., cents)
+        currency:
+          type: string
+          description: Payment currency (ISO 4217)
+        paymentId:
+          type: string
+          format: uuid
+          description: Payment identifier in the payment system
+        paymentType:
+          type: string
+          description: Payment system type/provider
+          enum:
+          - YooKassa
+          - Fondy
+          - PayPal
+          - YooMoney
+          - ROBOKASSA
+          - Stripe
+          - MERCADOPAGO
+          - LiqPay
+          - Wayforpay
+          - Flutterwave
   securitySchemes:
     apiKey:
       type: http

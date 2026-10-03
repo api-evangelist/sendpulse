@@ -205,31 +205,6 @@ paths:
           description: Forbidden
 components:
   schemas:
-    WebhookResponse:
-      type: object
-      x-ai-description: Single webhook response.
-      properties:
-        success:
-          type: boolean
-          example: true
-        data:
-          $ref: '#/components/schemas/Webhook'
-    Webhook:
-      type: object
-      x-ai-description: Webhook configuration.
-      properties:
-        id:
-          type: integer
-          example: 162242
-        user_id:
-          type: integer
-          example: 7043663
-        url:
-          type: string
-          example: https://site.com/callback
-        action:
-          type: string
-          example: unsubscribe
     WebhookUpdateRequest:
       type: object
       x-ai-description: Payload to update a webhook.
@@ -239,17 +214,15 @@ components:
         url:
           type: string
           example: https://site.com/callback
-    WebhookListResponse:
+    WebhookResponse:
       type: object
-      x-ai-description: List of webhooks.
+      x-ai-description: Single webhook response.
       properties:
         success:
           type: boolean
           example: true
         data:
-          type: array
-          items:
-            $ref: '#/components/schemas/Webhook'
+          $ref: '#/components/schemas/Webhook'
     WebhookCreateRequest:
       type: object
       x-ai-description: Payload to create webhooks.
@@ -266,6 +239,33 @@ components:
             type: string
           example:
           - delivered
+    WebhookListResponse:
+      type: object
+      x-ai-description: List of webhooks.
+      properties:
+        success:
+          type: boolean
+          example: true
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Webhook'
+    Webhook:
+      type: object
+      x-ai-description: Webhook configuration.
+      properties:
+        id:
+          type: integer
+          example: 162242
+        user_id:
+          type: integer
+          example: 7043663
+        url:
+          type: string
+          example: https://site.com/callback
+        action:
+          type: string
+          example: unsubscribe
   securitySchemes:
     apiKey:
       type: http

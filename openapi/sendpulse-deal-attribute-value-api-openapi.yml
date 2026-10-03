@@ -221,6 +221,35 @@ paths:
           - DataOverwrite
 components:
   schemas:
+    DefaultStatusProperty:
+      type: integer
+      description: '| Status
+
+        * 0 — inactive (deleted by user) * 1 — active'
+    DealAttribute:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        status:
+          $ref: '#/components/schemas/DefaultStatusProperty'
+        type:
+          type: integer
+          description: ''
+        mandatory:
+          type: boolean
+          description: ''
+        order:
+          type: integer
+        options:
+          type: array
+          items:
+            oneOf:
+            - type: string
+            - type: integer
+          description: Items of "List" field type
     DealAttributeValue:
       type: object
       properties:
@@ -249,35 +278,6 @@ components:
           properties:
             value:
               type: string
-    DealAttribute:
-      type: object
-      properties:
-        id:
-          type: integer
-        name:
-          type: string
-        status:
-          $ref: '#/components/schemas/DefaultStatusProperty'
-        type:
-          type: integer
-          description: ''
-        mandatory:
-          type: boolean
-          description: ''
-        order:
-          type: integer
-        options:
-          type: array
-          items:
-            oneOf:
-            - type: string
-            - type: integer
-          description: Items of "List" field type
-    DefaultStatusProperty:
-      type: integer
-      description: '| Status
-
-        * 0 — inactive (deleted by user) * 1 — active'
   securitySchemes:
     apiKey:
       type: http

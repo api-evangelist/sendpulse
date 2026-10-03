@@ -259,43 +259,6 @@ paths:
           - IrreversibleAction
 components:
   schemas:
-    Payment:
-      type: object
-      properties:
-        id:
-          type: integer
-        name:
-          type: string
-        price:
-          $ref: '#/components/schemas/PaymentOrderPrice'
-        status:
-          type: integer
-        orderId:
-          type: string
-        paymentDescription:
-          type:
-          - string
-          - 'null'
-        paymentMethod:
-          type: string
-          enum:
-          - Fondy
-          - YooMoney
-          - PayPal
-        createdAt:
-          type: string
-          format: date-time
-        promoCode:
-          type: string
-        promoCodeDiscount:
-          type: number
-    PaymentOrderPrice:
-      type: object
-      properties:
-        amount:
-          type: string
-        currency:
-          type: string
     UserPaymentData:
       type: object
       properties:
@@ -358,6 +321,43 @@ components:
                 type: string
               amount:
                 type: integer
+    PaymentOrderPrice:
+      type: object
+      properties:
+        amount:
+          type: string
+        currency:
+          type: string
+    Payment:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        price:
+          $ref: '#/components/schemas/PaymentOrderPrice'
+        status:
+          type: integer
+        orderId:
+          type: string
+        paymentDescription:
+          type:
+          - string
+          - 'null'
+        paymentMethod:
+          type: string
+          enum:
+          - Fondy
+          - YooMoney
+          - PayPal
+        createdAt:
+          type: string
+          format: date-time
+        promoCode:
+          type: string
+        promoCodeDiscount:
+          type: number
   securitySchemes:
     apiKey:
       type: http

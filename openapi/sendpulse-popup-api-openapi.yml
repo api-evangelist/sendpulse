@@ -358,6 +358,41 @@ paths:
           - IrreversibleDelete
 components:
   schemas:
+    scenarioSetting:
+      title: Display condition
+      properties:
+        groupId:
+          type: integer
+          description: "Behavior group:\n * `1` - frequency;\n * `2` - time;\n * `3` - user behavior;\n * `4` - clicks;\n * `5` - pages and urls;\n * `6` - utm parameters;\n * `7` - visitor data.\n"
+        dataType:
+          type: string
+          description: Data type
+        name:
+          type: string
+          description: Condition name
+        uniq:
+          type: boolean
+          description: Is unique
+      type: object
+    unauthorizedResponse:
+      description: Unauthorized
+    accessDeniedResponse:
+      description: Access denied
+    pageInfo:
+      title: Page Info
+      properties:
+        total:
+          type: integer
+          description: Total number of records
+        offset:
+          type: integer
+          description: Limit on the number of displayed records
+        first:
+          type: integer
+          description: Record count offset
+        arguments:
+          type: object
+      type: object
     popup:
       title: Popup
       properties:
@@ -563,41 +598,6 @@ components:
           example: 2023-08-07 20:14:15+00:00
           description: 'The date and time your project was created. Output in the YYYY-MM-DD hh: mm: ss format with a decimal fraction of a second and time zone designator.'
       type: object
-    scenarioSetting:
-      title: Display condition
-      properties:
-        groupId:
-          type: integer
-          description: "Behavior group:\n * `1` - frequency;\n * `2` - time;\n * `3` - user behavior;\n * `4` - clicks;\n * `5` - pages and urls;\n * `6` - utm parameters;\n * `7` - visitor data.\n"
-        dataType:
-          type: string
-          description: Data type
-        name:
-          type: string
-          description: Condition name
-        uniq:
-          type: boolean
-          description: Is unique
-      type: object
-    unauthorizedResponse:
-      description: Unauthorized
-    pageInfo:
-      title: Page Info
-      properties:
-        total:
-          type: integer
-          description: Total number of records
-        offset:
-          type: integer
-          description: Limit on the number of displayed records
-        first:
-          type: integer
-          description: Record count offset
-        arguments:
-          type: object
-      type: object
-    accessDeniedResponse:
-      description: Access denied
   securitySchemes:
     apiKey:
       type: http

@@ -220,14 +220,6 @@ paths:
       url: https://api.sendpulse.com/whatsapp
 components:
   schemas:
-    Chat:
-      properties:
-        contact:
-          $ref: '#/components/schemas/Contact'
-        inbox_last_message:
-          $ref: '#/components/schemas/Message'
-        inbox_unread:
-          type: integer
     Message:
       properties:
         id:
@@ -279,6 +271,14 @@ components:
         created_at:
           type: string
           example: 2020-12-11 21:00:00+00:00
+    Chat:
+      properties:
+        contact:
+          $ref: '#/components/schemas/Contact'
+        inbox_last_message:
+          $ref: '#/components/schemas/Message'
+        inbox_unread:
+          type: integer
     Contact:
       properties:
         id:

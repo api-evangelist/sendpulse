@@ -49,6 +49,9 @@ paths:
           - ReadOnly
 components:
   schemas:
+    MessengerTypeProperty:
+      type: integer
+      description: '| Messenger type. Possible values: * 1 — Telegram * 2 — Facebook * 4 — Instagram * 5 — WhatsApp * 6 — Viber'
     MessengerType:
       type: object
       properties:
@@ -57,9 +60,6 @@ components:
         name:
           type: string
           description: Messenger name
-    MessengerTypeProperty:
-      type: integer
-      description: '| Messenger type. Possible values: * 1 — Telegram * 2 — Facebook * 4 — Instagram * 5 — WhatsApp * 6 — Viber'
   securitySchemes:
     apiKey:
       type: http

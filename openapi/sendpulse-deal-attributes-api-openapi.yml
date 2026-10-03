@@ -280,6 +280,11 @@ paths:
           - IrreversibleDelete
 components:
   schemas:
+    DefaultStatusProperty:
+      type: integer
+      description: '| Status
+
+        * 0 — inactive (deleted by user) * 1 — active'
     DealAttribute:
       type: object
       properties:
@@ -304,11 +309,6 @@ components:
             - type: string
             - type: integer
           description: Items of "List" field type
-    DefaultStatusProperty:
-      type: integer
-      description: '| Status
-
-        * 0 — inactive (deleted by user) * 1 — active'
   securitySchemes:
     apiKey:
       type: http

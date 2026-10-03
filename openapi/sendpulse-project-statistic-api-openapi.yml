@@ -90,6 +90,8 @@ paths:
           - ReadOnly
 components:
   schemas:
+    unauthorizedResponse:
+      description: Unauthorized
     projectStatistic:
       title: Project statistic
       properties:
@@ -112,8 +114,6 @@ components:
           type: integer
           description: The number of visitors who use widget buttons.
       type: object
-    unauthorizedResponse:
-      description: Unauthorized
   securitySchemes:
     apiKey:
       type: http

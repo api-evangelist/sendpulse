@@ -213,6 +213,21 @@ paths:
           - IrreversibleDelete
 components:
   schemas:
+    EntityAttachment:
+      type: object
+      properties:
+        id:
+          type: integer
+        link:
+          type: string
+        entityId:
+          type: number
+        entityType:
+          type: string
+        createdAt:
+          type: string
+        updatedAt:
+          type: string
     DealComment:
       type: object
       properties:
@@ -242,21 +257,6 @@ components:
           type: array
           items:
             type: integer
-    EntityAttachment:
-      type: object
-      properties:
-        id:
-          type: integer
-        link:
-          type: string
-        entityId:
-          type: number
-        entityType:
-          type: string
-        createdAt:
-          type: string
-        updatedAt:
-          type: string
   securitySchemes:
     apiKey:
       type: http

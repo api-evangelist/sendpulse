@@ -1259,6 +1259,26 @@ components:
           description: Type of available functionality
           enum:
           - chat
+    CourseTariffSettingResource:
+      type: object
+      properties:
+        startDate:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: Tariff start date
+        endDate:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: Tariff end date
+        timezone:
+          type:
+          - string
+          - 'null'
+          description: Time zone used for tariff dates
     Student:
       type: object
       properties:
@@ -1322,26 +1342,6 @@ components:
           - string
           - 'null'
           description: Recommended languages for the student (nullable)
-    CourseTariffSettingResource:
-      type: object
-      properties:
-        startDate:
-          type:
-          - string
-          - 'null'
-          format: date-time
-          description: Tariff start date
-        endDate:
-          type:
-          - string
-          - 'null'
-          format: date-time
-          description: Tariff end date
-        timezone:
-          type:
-          - string
-          - 'null'
-          description: Time zone used for tariff dates
   securitySchemes:
     apiKey:
       type: http

@@ -201,6 +201,31 @@ paths:
           - ResourceStateUpdate
 components:
   schemas:
+    Pipeline:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Pipeline ID
+        userId:
+          type: integer
+          description: ID of the user who created the pipeline
+        name:
+          type: string
+          description: Pipeline name
+        status:
+          $ref: '#/components/schemas/DefaultStatusProperty'
+        order:
+          type: integer
+          description: Pipelines order
+        steps:
+          type: array
+          items:
+            $ref: '#/components/schemas/Step'
+        settings:
+          type: array
+          items:
+            $ref: '#/components/schemas/Setting'
     Step:
       type: object
       properties:
@@ -257,31 +282,11 @@ components:
           - 6d
           - 7d
           description: Time notification
-    Pipeline:
-      type: object
-      properties:
-        id:
-          type: integer
-          description: Pipeline ID
-        userId:
-          type: integer
-          description: ID of the user who created the pipeline
-        name:
-          type: string
-          description: Pipeline name
-        status:
-          $ref: '#/components/schemas/DefaultStatusProperty'
-        order:
-          type: integer
-          description: Pipelines order
-        steps:
-          type: array
-          items:
-            $ref: '#/components/schemas/Step'
-        settings:
-          type: array
-          items:
-            $ref: '#/components/schemas/Setting'
+    DefaultStatusProperty:
+      type: integer
+      description: '| Status
+
+        * 0 — inactive (deleted by user) * 1 — active'
     Setting:
       type: object
       properties:
@@ -291,11 +296,6 @@ components:
         value:
           type: string
           description: Setting value
-    DefaultStatusProperty:
-      type: integer
-      description: '| Status
-
-        * 0 — inactive (deleted by user) * 1 — active'
   securitySchemes:
     apiKey:
       type: http
