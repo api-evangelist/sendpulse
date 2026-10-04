@@ -958,6 +958,8 @@ apis:
   humanURL: https://sendpulse.com/integrations/api/bulk-email
   baseURL: https://api.sendpulse.com
   tags:
+  - Dialogs
+  tags_raw:
   - dialogs
   properties:
   - type: OpenAPI
