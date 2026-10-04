@@ -458,6 +458,14 @@ paths:
       description: Production server
 components:
   schemas:
+    TemplateDetails:
+      type: object
+      x-ai-description: Template metadata.
+      properties:
+        id:
+          type: string
+        name:
+          type: string
     ResultTrue:
       type: object
       x-ai-description: Success indicator.
@@ -467,14 +475,6 @@ components:
     TemplateSummary:
       type: object
       x-ai-description: Template summary.
-      properties:
-        id:
-          type: string
-        name:
-          type: string
-    TemplateDetails:
-      type: object
-      x-ai-description: Template metadata.
       properties:
         id:
           type: string

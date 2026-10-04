@@ -211,18 +211,6 @@ paths:
       url: https://api.sendpulse.com/messenger
 components:
   schemas:
-    SuccessResponse:
-      properties:
-        success:
-          type: boolean
-        data:
-          anyOf:
-          - type: array
-            items:
-              type: object
-          - type: object
-          - type: boolean
-      type: object
     Flow:
       properties:
         id:
@@ -249,6 +237,18 @@ components:
         created_at:
           type: string
           example: 2020-12-11 21:00:00+00:00
+    SuccessResponse:
+      properties:
+        success:
+          type: boolean
+        data:
+          anyOf:
+          - type: array
+            items:
+              type: object
+          - type: object
+          - type: boolean
+      type: object
     Flow_2:
       properties:
         id:

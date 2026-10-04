@@ -511,14 +511,6 @@ paths:
           description: Forbidden
 components:
   schemas:
-    EmailAcrossBooks:
-      type: object
-      x-ai-description: Subscriber status in a book.
-      properties:
-        book_id:
-          type: integer
-        email:
-          type: string
     EmailDetails:
       type: object
       x-ai-description: History for an email.
@@ -527,24 +519,32 @@ components:
           type: string
         source:
           type: string
-    EmailInfoShort:
-      type: object
-      x-ai-description: Brief subscriber status.
-      properties:
-        book_id:
-          type: integer
     SubscriberStats:
       type: object
       x-ai-description: Engagement statistics.
       properties:
         statistic:
           type: object
+    EmailInfoShort:
+      type: object
+      x-ai-description: Brief subscriber status.
+      properties:
+        book_id:
+          type: integer
     ResultTrue:
       type: object
       x-ai-description: Success indicator.
       properties:
         result:
           type: boolean
+    EmailAcrossBooks:
+      type: object
+      x-ai-description: Subscriber status in a book.
+      properties:
+        book_id:
+          type: integer
+        email:
+          type: string
   securitySchemes:
     apiKey:
       type: http

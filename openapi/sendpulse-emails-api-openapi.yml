@@ -837,6 +837,13 @@ components:
           type: boolean
         email:
           type: string
+    Error:
+      type: object
+      properties:
+        message:
+          type: string
+        error_code:
+          type: integer
     EmailRecord:
       type: object
       properties:
@@ -883,13 +890,6 @@ components:
               type: array
               items:
                 type: object
-    Error:
-      type: object
-      properties:
-        message:
-          type: string
-        error_code:
-          type: integer
   securitySchemes:
     apiKey:
       type: http

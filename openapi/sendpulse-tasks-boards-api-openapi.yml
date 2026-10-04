@@ -206,6 +206,19 @@ paths:
           - ResourceStateUpdate
 components:
   schemas:
+    BoardSteps:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        color:
+          type: string
+        order:
+          type: integer
+        boardId:
+          type: integer
     Boards:
       type: object
       properties:
@@ -223,30 +236,6 @@ components:
           $ref: '#/components/schemas/BoardSettings'
         attributes:
           $ref: '#/components/schemas/BoardAttribute'
-    BoardSteps:
-      type: object
-      properties:
-        id:
-          type: integer
-        name:
-          type: string
-        color:
-          type: string
-        order:
-          type: integer
-        boardId:
-          type: integer
-    BoardSettings:
-      type: object
-      properties:
-        id:
-          type: integer
-        name:
-          type: string
-        value:
-          type: string
-        boardId:
-          type: number
     BoardAttribute:
       type: object
       properties:
@@ -267,6 +256,17 @@ components:
           type: integer
         order:
           type: integer
+    BoardSettings:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        value:
+          type: string
+        boardId:
+          type: number
   securitySchemes:
     apiKey:
       type: http

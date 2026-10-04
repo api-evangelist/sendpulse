@@ -272,8 +272,6 @@ components:
           type: integer
           description: Percent of critics
       type: object
-    unauthorizedResponse:
-      description: Unauthorized
     popupStatistic:
       title: Popup statistic
       properties:
@@ -335,6 +333,8 @@ components:
           type: integer
           description: Total amount of voices for this variant
       type: object
+    unauthorizedResponse:
+      description: Unauthorized
   securitySchemes:
     apiKey:
       type: http

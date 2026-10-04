@@ -205,6 +205,22 @@ paths:
           description: Forbidden
 components:
   schemas:
+    WebhookCreateRequest:
+      type: object
+      x-ai-description: Payload to create webhooks.
+      required:
+      - url
+      - actions
+      properties:
+        url:
+          type: string
+          example: https://site.com/callback
+        actions:
+          type: array
+          items:
+            type: string
+          example:
+          - delivered
     WebhookUpdateRequest:
       type: object
       x-ai-description: Payload to update a webhook.
@@ -223,22 +239,6 @@ components:
           example: true
         data:
           $ref: '#/components/schemas/Webhook'
-    WebhookCreateRequest:
-      type: object
-      x-ai-description: Payload to create webhooks.
-      required:
-      - url
-      - actions
-      properties:
-        url:
-          type: string
-          example: https://site.com/callback
-        actions:
-          type: array
-          items:
-            type: string
-          example:
-          - delivered
     WebhookListResponse:
       type: object
       x-ai-description: List of webhooks.

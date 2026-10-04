@@ -174,6 +174,12 @@ paths:
           description: Forbidden
 components:
   schemas:
+    ResultTrue:
+      type: object
+      properties:
+        result:
+          type: boolean
+          example: true
     EmailAddressVerification:
       type: object
       properties:
@@ -227,12 +233,6 @@ components:
             $ref: '#/components/schemas/EmailAddressVerification'
         email_addresses_total:
           type: integer
-    ResultTrue:
-      type: object
-      properties:
-        result:
-          type: boolean
-          example: true
   securitySchemes:
     apiKey:
       type: http

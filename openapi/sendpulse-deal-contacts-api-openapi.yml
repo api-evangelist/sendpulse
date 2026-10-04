@@ -146,41 +146,6 @@ paths:
           - RelationshipDelete
 components:
   schemas:
-    ContactComment:
-      type: object
-      properties:
-        id:
-          type: integer
-        userId:
-          type: integer
-        text:
-          type: string
-        createdAt:
-          type: string
-          format: date-time
-        updatedAt:
-          type: string
-          format: date-time
-        attachments:
-          $ref: '#/components/schemas/EntityAttachment'
-        childCount:
-          type: integer
-        childUsers:
-          type: array
-          items:
-            type: integer
-    ContactEmail:
-      type: object
-      properties:
-        id:
-          type: integer
-          description: Email address ID
-        email:
-          type: string
-          description: Email address
-        isMain:
-          type: boolean
-          description: Determines whether the email address is the main one
     ContactTag:
       type: object
       properties:
@@ -200,16 +165,6 @@ components:
         taskCount:
           type: integer
           description: Number of tasks associated with a tag
-    ContactPhone:
-      type: object
-      properties:
-        id:
-          type: integer
-          description: Contact phone ID
-        phone:
-          type: string
-        isMain:
-          type: boolean
     ContactMessenger:
       type: object
       properties:
@@ -236,6 +191,91 @@ components:
         isMainChatbot:
           type: boolean
           description: Determine if chatbot messenger is the main one
+    ContactAttributeValue:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        status:
+          type: integer
+          description: '| Status
+
+            * 0 — inactive (deleted by user) * 1 — active * 2 — hidden'
+        type:
+          type: integer
+        mandatory:
+          type: boolean
+        contactCardShow:
+          type: boolean
+        order:
+          type: integer
+        options:
+          type: array
+          items:
+            oneOf:
+            - type: string
+            - type: integer
+          description: Items of "List" field type
+        value:
+          properties:
+            type:
+              type: string
+              description: Field type
+            value:
+              type: string
+              description: Field value
+          description: ''
+        default:
+          type: boolean
+          description: ''
+    ContactEmail:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Email address ID
+        email:
+          type: string
+          description: Email address
+        isMain:
+          type: boolean
+          description: Determines whether the email address is the main one
+    EntityAttachment:
+      type: object
+      properties:
+        id:
+          type: integer
+        link:
+          type: string
+        entityId:
+          type: number
+        entityType:
+          type: string
+        createdAt:
+          type: string
+        updatedAt:
+          type: string
+    ContactHistory:
+      type: object
+      properties:
+        id:
+          type: integer
+        userId:
+          type: integer
+        contactId:
+          type: integer
+        eventType:
+          type: string
+        eventTime:
+          type: string
+          format: date-time
+        eventData:
+          type: object
+          properties:
+            dealName:
+              type: string
     Contact:
       type: object
       properties:
@@ -301,79 +341,39 @@ components:
           format: date-time
         attachments:
           $ref: '#/components/schemas/EntityAttachment'
-    ContactAttributeValue:
-      type: object
-      properties:
-        id:
-          type: integer
-        name:
-          type: string
-        status:
-          type: integer
-          description: '| Status
-
-            * 0 — inactive (deleted by user) * 1 — active * 2 — hidden'
-        type:
-          type: integer
-        mandatory:
-          type: boolean
-        contactCardShow:
-          type: boolean
-        order:
-          type: integer
-        options:
-          type: array
-          items:
-            oneOf:
-            - type: string
-            - type: integer
-          description: Items of "List" field type
-        value:
-          properties:
-            type:
-              type: string
-              description: Field type
-            value:
-              type: string
-              description: Field value
-          description: ''
-        default:
-          type: boolean
-          description: ''
-    EntityAttachment:
-      type: object
-      properties:
-        id:
-          type: integer
-        link:
-          type: string
-        entityId:
-          type: number
-        entityType:
-          type: string
-        createdAt:
-          type: string
-        updatedAt:
-          type: string
-    ContactHistory:
+    ContactComment:
       type: object
       properties:
         id:
           type: integer
         userId:
           type: integer
-        contactId:
-          type: integer
-        eventType:
+        text:
           type: string
-        eventTime:
+        createdAt:
           type: string
           format: date-time
-        eventData:
-          type: object
-          properties:
-            dealName:
-              type: string
+        updatedAt:
+          type: string
+          format: date-time
+        attachments:
+          $ref: '#/components/schemas/EntityAttachment'
+        childCount:
+          type: integer
+        childUsers:
+          type: array
+          items:
+            type: integer
+    ContactPhone:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Contact phone ID
+        phone:
+          type: string
+        isMain:
+          type: boolean
   securitySchemes:
     apiKey:
       type: http

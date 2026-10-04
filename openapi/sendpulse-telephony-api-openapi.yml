@@ -219,42 +219,6 @@ paths:
           data_handling:
           - ResourceStateUpdate
 components:
-  requestBodies:
-    FilterTelephonyCalls:
-      content:
-        application/json:
-          schema:
-            type: object
-            properties:
-              from:
-                type: string
-                format: date-time
-                description: Date from
-              to:
-                type: string
-                format: date-time
-                description: Date to
-              responsibleIds:
-                type: array
-                description: List of responsible user IDs
-                items:
-                  type: integer
-              callType:
-                type: integer
-                description: Type of the call (0 - incoming, 1 - outgoing)
-              state:
-                type: integer
-                description: State of the call (pending - 1, successful - 2, failed - 3)
-              integrationGroupId:
-                type: integer
-              contactFirstName:
-                type: string
-              contactLastName:
-                type: string
-              contactEmail:
-                type: string
-              contactPhone:
-                type: string
   schemas:
     TelephonyCall:
       type: object
@@ -306,6 +270,42 @@ components:
               type: integer
             name:
               type: string
+  requestBodies:
+    FilterTelephonyCalls:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              from:
+                type: string
+                format: date-time
+                description: Date from
+              to:
+                type: string
+                format: date-time
+                description: Date to
+              responsibleIds:
+                type: array
+                description: List of responsible user IDs
+                items:
+                  type: integer
+              callType:
+                type: integer
+                description: Type of the call (0 - incoming, 1 - outgoing)
+              state:
+                type: integer
+                description: State of the call (pending - 1, successful - 2, failed - 3)
+              integrationGroupId:
+                type: integer
+              contactFirstName:
+                type: string
+              contactLastName:
+                type: string
+              contactEmail:
+                type: string
+              contactPhone:
+                type: string
   securitySchemes:
     apiKey:
       type: http

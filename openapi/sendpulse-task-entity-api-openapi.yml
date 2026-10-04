@@ -200,6 +200,17 @@ paths:
           - RelationshipStateUpdate
 components:
   schemas:
+    TasksConnection:
+      type: object
+      properties:
+        tasks:
+          $ref: '#/components/schemas/TaskAutocomplete'
+        deals:
+          $ref: '#/components/schemas/DealsAutocomplete'
+        contacts:
+          $ref: '#/components/schemas/ContactsAutocomplete'
+        subTasks:
+          $ref: '#/components/schemas/TaskAutocomplete'
     DealsAutocomplete:
       type: array
       items:
@@ -242,17 +253,6 @@ components:
             type: integer
           observers:
             type: array
-    TasksConnection:
-      type: object
-      properties:
-        tasks:
-          $ref: '#/components/schemas/TaskAutocomplete'
-        deals:
-          $ref: '#/components/schemas/DealsAutocomplete'
-        contacts:
-          $ref: '#/components/schemas/ContactsAutocomplete'
-        subTasks:
-          $ref: '#/components/schemas/TaskAutocomplete'
   securitySchemes:
     apiKey:
       type: http

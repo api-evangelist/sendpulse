@@ -1192,12 +1192,6 @@ paths:
                     error_code: 422
 components:
   schemas:
-    AddEmailsSingleOptIn:
-      type: object
-      x-ai-description: Add emails without confirmation.
-      properties:
-        emails:
-          type: array
     CampaignCost:
       type: object
       x-ai-description: Cost breakdown.
@@ -1210,9 +1204,9 @@ components:
           type: number
         result:
           type: boolean
-    EmailContactBasic:
+    EmailContact:
       type: object
-      x-ai-description: Minimal subscriber record.
+      x-ai-description: Subscriber record.
       properties:
         email:
           type: string
@@ -1220,14 +1214,32 @@ components:
           type: integer
         status_explain:
           type: string
-    AddEmailsDoubleOptIn:
+        variables:
+          type: object
+    AddEmailsSingleOptIn:
       type: object
-      x-ai-description: Add emails with confirmation.
+      x-ai-description: Add emails without confirmation.
       properties:
         emails:
           type: array
-        confirmation:
+    ResultTrue:
+      type: object
+      x-ai-description: Success indicator.
+      properties:
+        result:
+          type: boolean
+    VariableDefinition:
+      type: object
+      x-ai-description: Definition of a custom field.
+      properties:
+        name:
           type: string
+        type:
+          type: string
+          enum:
+          - string
+          - number
+          - date
     MailingList:
       type: object
       x-ai-description: Metadata and health metrics for a subscriber list.
@@ -1248,9 +1260,17 @@ components:
           type: integer
         status_explain:
           type: string
-    EmailContact:
+    AddEmailsDoubleOptIn:
       type: object
-      x-ai-description: Subscriber record.
+      x-ai-description: Add emails with confirmation.
+      properties:
+        emails:
+          type: array
+        confirmation:
+          type: string
+    EmailContactBasic:
+      type: object
+      x-ai-description: Minimal subscriber record.
       properties:
         email:
           type: string
@@ -1258,26 +1278,6 @@ components:
           type: integer
         status_explain:
           type: string
-        variables:
-          type: object
-    VariableDefinition:
-      type: object
-      x-ai-description: Definition of a custom field.
-      properties:
-        name:
-          type: string
-        type:
-          type: string
-          enum:
-          - string
-          - number
-          - date
-    ResultTrue:
-      type: object
-      x-ai-description: Success indicator.
-      properties:
-        result:
-          type: boolean
   securitySchemes:
     apiKey:
       type: http

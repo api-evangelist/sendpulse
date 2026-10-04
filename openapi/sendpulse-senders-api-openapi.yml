@@ -235,15 +235,15 @@ components:
           type: string
         name:
           type: string
-    SenderActivationResponse:
-      type: object
-      x-ai-description: Activation result.
-      properties:
-        result:
-          type: boolean
     ResultTrue:
       type: object
       x-ai-description: Success indicator.
+      properties:
+        result:
+          type: boolean
+    SenderActivationResponse:
+      type: object
+      x-ai-description: Activation result.
       properties:
         result:
           type: boolean

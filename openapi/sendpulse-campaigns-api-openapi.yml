@@ -1629,13 +1629,13 @@ paths:
       url: https://api.sendpulse.com/whatsapp
 components:
   schemas:
-    ReferralStat:
+    ResultTrueWithId:
       type: object
-      x-ai-description: Click statistics.
+      x-ai-description: Success indicator with ID.
       properties:
-        link:
-          type: string
-        count:
+        result:
+          type: boolean
+        id:
           type: integer
     CampaignUpdateRequest:
       type: object
@@ -1747,24 +1747,6 @@ components:
             opens: true
             clicks: false
             utm_campaign: MY_UTM
-    CampaignDetails:
-      type: object
-      x-ai-description: Detailed campaign stats.
-      properties:
-        id:
-          type: integer
-        name:
-          type: string
-        status:
-          type: integer
-    ResultTrueWithId:
-      type: object
-      x-ai-description: Success indicator with ID.
-      properties:
-        result:
-          type: boolean
-        id:
-          type: integer
     CampaignCreateResponse:
       type: object
       x-ai-description: Response from campaign creation.
@@ -1803,18 +1785,36 @@ components:
           type: string
         status:
           type: integer
-    CampaignByListSummary:
-      type: object
-      x-ai-description: Campaigns for a list.
-      properties:
-        task_id:
-          type: integer
     ResultTrue:
       type: object
       x-ai-description: Success indicator.
       properties:
         result:
           type: boolean
+    ReferralStat:
+      type: object
+      x-ai-description: Click statistics.
+      properties:
+        link:
+          type: string
+        count:
+          type: integer
+    CampaignByListSummary:
+      type: object
+      x-ai-description: Campaigns for a list.
+      properties:
+        task_id:
+          type: integer
+    CampaignDetails:
+      type: object
+      x-ai-description: Detailed campaign stats.
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        status:
+          type: integer
     Campaign:
       properties:
         id:

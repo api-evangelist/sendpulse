@@ -201,6 +201,20 @@ paths:
           - ResourceStateUpdate
 components:
   schemas:
+    DefaultStatusProperty:
+      type: integer
+      description: '| Status
+
+        * 0 — inactive (deleted by user) * 1 — active'
+    Setting:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Setting name
+        value:
+          type: string
+          description: Setting value
     Pipeline:
       type: object
       properties:
@@ -282,20 +296,6 @@ components:
           - 6d
           - 7d
           description: Time notification
-    DefaultStatusProperty:
-      type: integer
-      description: '| Status
-
-        * 0 — inactive (deleted by user) * 1 — active'
-    Setting:
-      type: object
-      properties:
-        name:
-          type: string
-          description: Setting name
-        value:
-          type: string
-          description: Setting value
   securitySchemes:
     apiKey:
       type: http

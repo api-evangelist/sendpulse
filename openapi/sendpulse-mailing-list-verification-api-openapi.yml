@@ -247,6 +247,12 @@ components:
           type: string
         is_garbage_in_book:
           type: boolean
+    ResultTrue:
+      type: object
+      properties:
+        result:
+          type: boolean
+          example: true
     EmailAddressVerification:
       type: object
       properties:
@@ -300,12 +306,6 @@ components:
             $ref: '#/components/schemas/EmailAddressVerification'
         email_addresses_total:
           type: integer
-    ResultTrue:
-      type: object
-      properties:
-        result:
-          type: boolean
-          example: true
   securitySchemes:
     apiKey:
       type: http

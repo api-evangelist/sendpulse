@@ -358,6 +358,21 @@ paths:
           - IrreversibleDelete
 components:
   schemas:
+    pageInfo:
+      title: Page Info
+      properties:
+        total:
+          type: integer
+          description: Total number of records
+        offset:
+          type: integer
+          description: Limit on the number of displayed records
+        first:
+          type: integer
+          description: Record count offset
+        arguments:
+          type: object
+      type: object
     scenarioSetting:
       title: Display condition
       properties:
@@ -374,25 +389,8 @@ components:
           type: boolean
           description: Is unique
       type: object
-    unauthorizedResponse:
-      description: Unauthorized
     accessDeniedResponse:
       description: Access denied
-    pageInfo:
-      title: Page Info
-      properties:
-        total:
-          type: integer
-          description: Total number of records
-        offset:
-          type: integer
-          description: Limit on the number of displayed records
-        first:
-          type: integer
-          description: Record count offset
-        arguments:
-          type: object
-      type: object
     popup:
       title: Popup
       properties:
@@ -598,6 +596,8 @@ components:
           example: 2023-08-07 20:14:15+00:00
           description: 'The date and time your project was created. Output in the YYYY-MM-DD hh: mm: ss format with a decimal fraction of a second and time zone designator.'
       type: object
+    unauthorizedResponse:
+      description: Unauthorized
   securitySchemes:
     apiKey:
       type: http

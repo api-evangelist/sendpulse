@@ -415,30 +415,27 @@ paths:
           - CascadeRisk
 components:
   schemas:
-    AttachmentResource:
+    Attribute:
       type: object
       properties:
         id:
           type: integer
-        link:
+        name:
+          type: string
+        status:
+          type: integer
+        type:
+          type: integer
+        mandatory:
+          type: boolean
+        order:
+          type: integer
+        options:
           type: array
-        entityId:
-          type: integer
-        entityType:
-          type: string
-        createdAt:
-          type: string
-        updatedAt:
-          type: string
-    Messenger:
-      type: object
-      properties:
-        id:
-          type: integer
-        typeId:
-          type: integer
-        login:
-          type: string
+          items:
+            oneOf:
+            - type: string
+            - type: integer
     Email:
       type: object
       properties:
@@ -447,6 +444,21 @@ components:
         isMain:
           type: boolean
         email:
+          type: string
+    CompanySortData:
+      type: object
+      properties:
+        id:
+          type: integer
+        companyName:
+          type: string
+        responsibleId:
+          type: integer
+        address:
+          type: string
+        annualBusinessVolume:
+          type: integer
+        currency:
           type: string
     Company:
       type: object
@@ -489,27 +501,21 @@ components:
           type: string
         updatedAt:
           type: string
-    Attribute:
+    AttachmentResource:
       type: object
       properties:
         id:
           type: integer
-        name:
-          type: string
-        status:
-          type: integer
-        type:
-          type: integer
-        mandatory:
-          type: boolean
-        order:
-          type: integer
-        options:
+        link:
           type: array
-          items:
-            oneOf:
-            - type: string
-            - type: integer
+        entityId:
+          type: integer
+        entityType:
+          type: string
+        createdAt:
+          type: string
+        updatedAt:
+          type: string
     Phone:
       type: object
       properties:
@@ -519,20 +525,14 @@ components:
           type: boolean
         phone:
           type: string
-    CompanySortData:
+    Messenger:
       type: object
       properties:
         id:
           type: integer
-        companyName:
-          type: string
-        responsibleId:
+        typeId:
           type: integer
-        address:
-          type: string
-        annualBusinessVolume:
-          type: integer
-        currency:
+        login:
           type: string
   securitySchemes:
     apiKey:

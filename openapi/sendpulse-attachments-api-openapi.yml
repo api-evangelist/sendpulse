@@ -189,33 +189,6 @@ paths:
           data_handling:
           - IrreversibleDelete
 components:
-  requestBodies:
-    AttachmentUpdateBody:
-      content:
-        application/json:
-          schema:
-            type: object
-            properties:
-              link:
-                type: string
-                example: /contacts/sendPulse_crm_report.pdf
-                description: First, the file must be uploaded to the file manager, and then the file can be attached.
-    AttachmentBody:
-      content:
-        application/json:
-          schema:
-            type: object
-            properties:
-              link:
-                type: string
-                example: /contacts/sendPulse_crm_report.pdf
-                description: First, the file must be uploaded to the file manager, and then the file can be attached.
-              entityId:
-                type: number
-                description: ID of entityType (example - id of task, if entityType=task)
-              entityType:
-                type: string
-                description: 'One of entity types: task, deal, contact'
   schemas:
     EntityAttachment:
       type: object
@@ -232,6 +205,33 @@ components:
           type: string
         updatedAt:
           type: string
+  requestBodies:
+    AttachmentBody:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              link:
+                type: string
+                example: /contacts/sendPulse_crm_report.pdf
+                description: First, the file must be uploaded to the file manager, and then the file can be attached.
+              entityId:
+                type: number
+                description: ID of entityType (example - id of task, if entityType=task)
+              entityType:
+                type: string
+                description: 'One of entity types: task, deal, contact'
+    AttachmentUpdateBody:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              link:
+                type: string
+                example: /contacts/sendPulse_crm_report.pdf
+                description: First, the file must be uploaded to the file manager, and then the file can be attached.
   securitySchemes:
     apiKey:
       type: http
