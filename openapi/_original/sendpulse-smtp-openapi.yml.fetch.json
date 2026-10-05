@@ -1,0 +1,12 @@
+{
+ "url": "https://api.sendpulse.com/.well-known/openapi/smtp.yaml",
+ "requested_url": "https://api.sendpulse.com/.well-known/openapi/smtp.yaml",
+ "status": 200,
+ "content_type": "application/yaml",
+ "bytes": 44511,
+ "sha256": "9bab1dd9ec2e973ec2d0b6de6a3925b5a7e1061dce48e8e84b7035accaeac00b",
+ "fetched_at": "2026-10-04",
+ "fetched_by": "APIEvangelist-Harvest/1.0 (+https://apievangelist.com)",
+ "match": "byte-identical",
+ "note": "Re-fetched from the provider by verify-openapi-sources.py; the archived file is byte-identical to what the provider serves."
+}

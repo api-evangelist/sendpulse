@@ -1,0 +1,12 @@
+{
+ "url": "https://api.sendpulse.com/.well-known/openapi/a360.yaml",
+ "requested_url": "https://api.sendpulse.com/.well-known/openapi/a360.yaml",
+ "status": 200,
+ "content_type": "application/yaml",
+ "bytes": 15351,
+ "sha256": "7392ac6fb2de43b4a27b064f18fc61cdd1d01bb37045c533cdef6c2da1078702",
+ "fetched_at": "2026-10-04",
+ "fetched_by": "APIEvangelist-Harvest/1.0 (+https://apievangelist.com)",
+ "match": "byte-identical",
+ "note": "Re-fetched from the provider by verify-openapi-sources.py; the archived file is byte-identical to what the provider serves."
+}

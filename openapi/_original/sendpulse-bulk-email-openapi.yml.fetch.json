@@ -1,0 +1,12 @@
+{
+ "url": "https://api.sendpulse.com/.well-known/openapi/bulk-email.yaml",
+ "requested_url": "https://api.sendpulse.com/.well-known/openapi/bulk-email.yaml",
+ "status": 200,
+ "content_type": "application/yaml",
+ "bytes": 128472,
+ "sha256": "cd38f8c6a42536e9c5b3a1850fc4ce9a4c855202466714ecce53825995a2f71e",
+ "fetched_at": "2026-10-04",
+ "fetched_by": "APIEvangelist-Harvest/1.0 (+https://apievangelist.com)",
+ "match": "byte-identical",
+ "note": "Re-fetched from the provider by verify-openapi-sources.py; the archived file is byte-identical to what the provider serves."
+}

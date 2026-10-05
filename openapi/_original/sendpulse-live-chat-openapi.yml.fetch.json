@@ -1,0 +1,12 @@
+{
+ "url": "https://api.sendpulse.com/.well-known/openapi/instagram.yaml",
+ "requested_url": "https://api.sendpulse.com/.well-known/openapi/instagram.yaml",
+ "status": 200,
+ "content_type": "application/yaml",
+ "bytes": 153722,
+ "sha256": "f2e6f99ebee634bd9f735d774cb3e4e49a339441b00fd93281cbbd7f50a2f982",
+ "fetched_at": "2026-10-04",
+ "fetched_by": "APIEvangelist-Harvest/1.0 (+https://apievangelist.com)",
+ "match": "equivalent",
+ "note": "Re-fetched from the provider by verify-openapi-sources.py; the provider's current document describes the same operations (Jaccard 0.946), but the bytes differ, so the archive is an earlier or reformatted copy."
+}

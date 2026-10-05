@@ -1,0 +1,12 @@
+{
+ "url": "https://api.sendpulse.com/.well-known/openapi/whatsapp.yaml",
+ "requested_url": "https://api.sendpulse.com/.well-known/openapi/whatsapp.yaml",
+ "status": 200,
+ "content_type": "application/yaml",
+ "bytes": 227987,
+ "sha256": "2e400bb3b904b710e277a99ac0bcf01e003ad7ddf5a43e865e937b99153480b3",
+ "fetched_at": "2026-10-04",
+ "fetched_by": "APIEvangelist-Harvest/1.0 (+https://apievangelist.com)",
+ "match": "byte-identical",
+ "note": "Re-fetched from the provider by verify-openapi-sources.py; the archived file is byte-identical to what the provider serves."
+}

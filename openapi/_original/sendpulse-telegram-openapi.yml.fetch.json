@@ -1,0 +1,12 @@
+{
+ "url": "https://api.sendpulse.com/.well-known/openapi/telegram.yaml",
+ "requested_url": "https://api.sendpulse.com/.well-known/openapi/telegram.yaml",
+ "status": 200,
+ "content_type": "application/yaml",
+ "bytes": 171287,
+ "sha256": "3e4b7bf8308d20cf2cd166cac05259e4bb76707d6d04a5f5f7dcb99651ba602d",
+ "fetched_at": "2026-10-04",
+ "fetched_by": "APIEvangelist-Harvest/1.0 (+https://apievangelist.com)",
+ "match": "byte-identical",
+ "note": "Re-fetched from the provider by verify-openapi-sources.py; the archived file is byte-identical to what the provider serves."
+}
