@@ -219,3 +219,80 @@ note_2026_08_13: 'Re-read on 2026-08-13 against https://sendpulse.com/prices. Th
   Prices are size-banded and change frequently.'
 api_access_note: The REST API is available on every plan including Free; what scales with the plan is the request
   quota (see rate-limits/) and the sending quota.
+x-canonical:
+  generated: '2026-10-08'
+  vocabulary: all/0-working/economics/plans-canonical.yml
+  models:
+  - free
+  - metered
+  - subscription
+  units:
+  - active-user
+  - message
+  plans:
+  - name: Free
+    access: free
+    model: free
+    model_how: derived
+    units:
+    - active-user
+    - message
+    periods:
+    - month
+  - name: Standard
+    access: other
+    model: subscription
+    model_how: stated
+    units:
+    - active-user
+    - message
+    periods:
+    - month
+  - name: Pro
+    access: other
+    model: subscription
+    model_how: stated
+    units:
+    - active-user
+    periods:
+    - month
+  - name: Enterprise
+    access: other
+    model: subscription
+    model_how: stated
+    units:
+    - active-user
+    periods:
+    - month
+  - name: Pay-As-You-Go (Emails)
+    access: other
+    model: metered
+    model_how: stated
+    units:
+    - message
+    periods:
+    - year
+  - name: SMTP / Transactional Email
+    access: other
+    model: metered
+    model_how: stated
+    units:
+    - message
+    periods:
+    - month
+  - name: SMS
+    access: other
+    model: metered
+    model_how: stated
+    units:
+    - message
+    periods:
+    - month
+  - name: Chatbots
+    access: other
+    model: subscription
+    model_how: stated
+    units:
+    - active-user
+    periods:
+    - month
