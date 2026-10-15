@@ -8,6 +8,7 @@ checked:
 - https://n8n.io/integrations/sendpulse/
 - https://registry.modelcontextprotocol.io/v0/servers
 - https://zapier.com/apps/sendpulse/integrations
+- wordpress/integrations/wordpress-integration-edges.yml
 summary: null
 marketplace_apps:
 - marketplace: zapier
@@ -397,6 +398,23 @@ edges:
   - namespace-domain
   detected_by: sweep-agent-tools.py
   first_seen: '2026-10-14'
+- partner_name: WordPress (own)
+  partner: wordpress
+  partner_match: mirror
+  mirror_match: domain
+  type: marketplace
+  relationship: platform-app
+  direction: third-party
+  channel: partner-built
+  marketplace: own
+  evidence: https://wordpress.org/plugins/sendpulse-web-push/
+  mirror_of: wordpress/integrations/wordpress-integration-edges.yml
+  apps:
+  - SendPulse Free Web Push
+  listing_count: 1
+  detected: '2026-10-15'
+  detected_by: mirror-platform-listings.py
+  category: WordPress plugin
 templates:
 - title: Subscribe Webflow form submissions to a SendPulse list
   url: https://zapier.com/apps/sendpulse/integrations/webflow/21491/subscribe-webflow-form-submissions-to-a-sendpulse-list
