@@ -289,13 +289,6 @@ components:
           type: string
         promoCodeDiscount:
           type: number
-    PaymentOrderPrice:
-      type: object
-      properties:
-        amount:
-          type: string
-        currency:
-          type: string
     UserPaymentData:
       type: object
       properties:
@@ -358,6 +351,13 @@ components:
                 type: string
               amount:
                 type: integer
+    PaymentOrderPrice:
+      type: object
+      properties:
+        amount:
+          type: string
+        currency:
+          type: string
   securitySchemes:
     apiKey:
       type: http

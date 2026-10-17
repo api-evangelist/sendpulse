@@ -632,37 +632,19 @@ paths:
           - ResourceStateUpdate
 components:
   schemas:
-    TaskPriorityProperty:
-      type: integer
-      description: '| Task priority
-
-        * 1 - low * 2 - middle * 3 - high'
-    ChecklistItems:
+    TaskChecklist:
       type: object
       properties:
         id:
           type: integer
         name:
           type: string
-        order:
-          type: number
-        isDone:
-          type: boolean
-    TaskHistory:
-      type: object
-      properties:
-        id:
-          type: integer
         taskId:
           type: integer
-        eventTime:
-          type: string
-        eventType:
-          type: string
-        eventData:
-          type: object
-        userId:
-          type: number
+        isDone:
+          type: boolean
+        items:
+          $ref: '#/components/schemas/ChecklistItems'
     Attributes:
       type: object
       properties:
@@ -749,9 +731,6 @@ components:
                 everyWeek:
                   type: integer
                   description: Ordinal number of week of the month (from 1 to 4)
-    IntegerSourceTypeProperty:
-      type: integer
-      description: '| * 1 - chatbot * 2 - manually * 3 - subscription_form * 4 - landing * 5 - a360 * 6 - payments * 7 - import * 8 - public_api * 9 - education * 10 - integration * 11 - popup * 12 - emailService'
     EntityAttachment:
       type: object
       properties:
@@ -767,19 +746,6 @@ components:
           type: string
         updatedAt:
           type: string
-    TaskChecklist:
-      type: object
-      properties:
-        id:
-          type: integer
-        name:
-          type: string
-        taskId:
-          type: integer
-        isDone:
-          type: boolean
-        items:
-          $ref: '#/components/schemas/ChecklistItems'
     AttributeValue:
       type: object
       properties:
@@ -787,6 +753,21 @@ components:
           type: number
         value:
           type: string
+    TaskHistory:
+      type: object
+      properties:
+        id:
+          type: integer
+        taskId:
+          type: integer
+        eventTime:
+          type: string
+        eventType:
+          type: string
+        eventData:
+          type: object
+        userId:
+          type: number
     TasksAttribute:
       type: array
       items:
@@ -796,6 +777,43 @@ components:
           value:
             type: string
             example: string or number or array
+    TaskComment:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        taskId:
+          type: integer
+        userId:
+          type: integer
+        body:
+          type: string
+        createdAt:
+          type: string
+        updatedAt:
+          type: string
+        attachments:
+          items:
+            $ref: '#/components/schemas/EntityAttachment'
+        childCount:
+          type: integer
+        childUsers:
+          type: array
+          items:
+            type: integer
+    ChecklistItems:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        order:
+          type: number
+        isDone:
+          type: boolean
     Tasks:
       type: object
       properties:
@@ -877,32 +895,14 @@ components:
           type: string
         colorBackground:
           type: string
-    TaskComment:
-      type: object
-      properties:
-        id:
-          type: integer
-        name:
-          type: string
-        taskId:
-          type: integer
-        userId:
-          type: integer
-        body:
-          type: string
-        createdAt:
-          type: string
-        updatedAt:
-          type: string
-        attachments:
-          items:
-            $ref: '#/components/schemas/EntityAttachment'
-        childCount:
-          type: integer
-        childUsers:
-          type: array
-          items:
-            type: integer
+    IntegerSourceTypeProperty:
+      type: integer
+      description: '| * 1 - chatbot * 2 - manually * 3 - subscription_form * 4 - landing * 5 - a360 * 6 - payments * 7 - import * 8 - public_api * 9 - education * 10 - integration * 11 - popup * 12 - emailService'
+    TaskPriorityProperty:
+      type: integer
+      description: '| Task priority
+
+        * 1 - low * 2 - middle * 3 - high'
   securitySchemes:
     apiKey:
       type: http

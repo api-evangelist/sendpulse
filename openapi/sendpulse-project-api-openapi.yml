@@ -140,21 +140,6 @@ paths:
           - ResourceStateUpdate
 components:
   schemas:
-    pageInfo:
-      title: Page Info
-      properties:
-        total:
-          type: integer
-          description: Total number of records
-        offset:
-          type: integer
-          description: Limit on the number of displayed records
-        first:
-          type: integer
-          description: Record count offset
-        arguments:
-          type: object
-      type: object
     project:
       title: Project
       properties:
@@ -188,6 +173,21 @@ components:
           type: string
           example: 2023-08-07 20:14:15+00:00
           description: 'The date and time your project was created. Output in the YYYY-MM-DD hh: mm: ss format with a decimal fraction of a second and time zone designator.'
+      type: object
+    pageInfo:
+      title: Page Info
+      properties:
+        total:
+          type: integer
+          description: Total number of records
+        offset:
+          type: integer
+          description: Limit on the number of displayed records
+        first:
+          type: integer
+          description: Record count offset
+        arguments:
+          type: object
       type: object
     unauthorizedResponse:
       description: Unauthorized

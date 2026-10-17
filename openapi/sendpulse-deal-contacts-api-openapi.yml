@@ -146,6 +146,150 @@ paths:
           - RelationshipDelete
 components:
   schemas:
+    ContactPhone:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Contact phone ID
+        phone:
+          type: string
+        isMain:
+          type: boolean
+    Contact:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Contact ID
+        userId:
+          type: integer
+          description: ID of user who created the contact
+        sourceType:
+          type: string
+          enum:
+          - manually
+          - chatbot
+          - subscription_form
+          - landing
+          - a360
+          - payments
+        responsibleId:
+          type: integer
+          description: ID of user responsible for the contact. Can be obtained in the “Get list of invited users” method
+        firstName:
+          type: string
+          description: Contact first name
+        lastName:
+          type: string
+          description: Contact last name
+        dealsQty:
+          type: integer
+        externalContactId:
+          type: string
+        comments:
+          items:
+            $ref: '#/components/schemas/ContactComment'
+        tags:
+          items:
+            $ref: '#/components/schemas/ContactTag'
+        phones:
+          items:
+            $ref: '#/components/schemas/ContactPhone'
+        emails:
+          items:
+            $ref: '#/components/schemas/ContactEmail'
+        messengers:
+          items:
+            $ref: '#/components/schemas/ContactMessenger'
+        attributes:
+          items:
+            $ref: '#/components/schemas/ContactAttributeValue'
+        history:
+          items:
+            $ref: '#/components/schemas/ContactHistory'
+        tasks:
+          type: array
+          items:
+            type: integer
+        createdAt:
+          type: string
+          format: date-time
+          description: The date and time the contact was created. Output in YYYY-MM-DD hh:mm:ss format with fractions of a second and time zone
+        updatedAt:
+          type: string
+          format: date-time
+        attachments:
+          $ref: '#/components/schemas/EntityAttachment'
+    EntityAttachment:
+      type: object
+      properties:
+        id:
+          type: integer
+        link:
+          type: string
+        entityId:
+          type: number
+        entityType:
+          type: string
+        createdAt:
+          type: string
+        updatedAt:
+          type: string
+    ContactHistory:
+      type: object
+      properties:
+        id:
+          type: integer
+        userId:
+          type: integer
+        contactId:
+          type: integer
+        eventType:
+          type: string
+        eventTime:
+          type: string
+          format: date-time
+        eventData:
+          type: object
+          properties:
+            dealName:
+              type: string
+    ContactEmail:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Email address ID
+        email:
+          type: string
+          description: Email address
+        isMain:
+          type: boolean
+          description: Determines whether the email address is the main one
+    ContactComment:
+      type: object
+      properties:
+        id:
+          type: integer
+        userId:
+          type: integer
+        text:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        attachments:
+          $ref: '#/components/schemas/EntityAttachment'
+        childCount:
+          type: integer
+        childUsers:
+          type: array
+          items:
+            type: integer
     ContactTag:
       type: object
       properties:
@@ -230,150 +374,6 @@ components:
         default:
           type: boolean
           description: ''
-    ContactEmail:
-      type: object
-      properties:
-        id:
-          type: integer
-          description: Email address ID
-        email:
-          type: string
-          description: Email address
-        isMain:
-          type: boolean
-          description: Determines whether the email address is the main one
-    EntityAttachment:
-      type: object
-      properties:
-        id:
-          type: integer
-        link:
-          type: string
-        entityId:
-          type: number
-        entityType:
-          type: string
-        createdAt:
-          type: string
-        updatedAt:
-          type: string
-    ContactHistory:
-      type: object
-      properties:
-        id:
-          type: integer
-        userId:
-          type: integer
-        contactId:
-          type: integer
-        eventType:
-          type: string
-        eventTime:
-          type: string
-          format: date-time
-        eventData:
-          type: object
-          properties:
-            dealName:
-              type: string
-    Contact:
-      type: object
-      properties:
-        id:
-          type: integer
-          description: Contact ID
-        userId:
-          type: integer
-          description: ID of user who created the contact
-        sourceType:
-          type: string
-          enum:
-          - manually
-          - chatbot
-          - subscription_form
-          - landing
-          - a360
-          - payments
-        responsibleId:
-          type: integer
-          description: ID of user responsible for the contact. Can be obtained in the “Get list of invited users” method
-        firstName:
-          type: string
-          description: Contact first name
-        lastName:
-          type: string
-          description: Contact last name
-        dealsQty:
-          type: integer
-        externalContactId:
-          type: string
-        comments:
-          items:
-            $ref: '#/components/schemas/ContactComment'
-        tags:
-          items:
-            $ref: '#/components/schemas/ContactTag'
-        phones:
-          items:
-            $ref: '#/components/schemas/ContactPhone'
-        emails:
-          items:
-            $ref: '#/components/schemas/ContactEmail'
-        messengers:
-          items:
-            $ref: '#/components/schemas/ContactMessenger'
-        attributes:
-          items:
-            $ref: '#/components/schemas/ContactAttributeValue'
-        history:
-          items:
-            $ref: '#/components/schemas/ContactHistory'
-        tasks:
-          type: array
-          items:
-            type: integer
-        createdAt:
-          type: string
-          format: date-time
-          description: The date and time the contact was created. Output in YYYY-MM-DD hh:mm:ss format with fractions of a second and time zone
-        updatedAt:
-          type: string
-          format: date-time
-        attachments:
-          $ref: '#/components/schemas/EntityAttachment'
-    ContactComment:
-      type: object
-      properties:
-        id:
-          type: integer
-        userId:
-          type: integer
-        text:
-          type: string
-        createdAt:
-          type: string
-          format: date-time
-        updatedAt:
-          type: string
-          format: date-time
-        attachments:
-          $ref: '#/components/schemas/EntityAttachment'
-        childCount:
-          type: integer
-        childUsers:
-          type: array
-          items:
-            type: integer
-    ContactPhone:
-      type: object
-      properties:
-        id:
-          type: integer
-          description: Contact phone ID
-        phone:
-          type: string
-        isMain:
-          type: boolean
   securitySchemes:
     apiKey:
       type: http

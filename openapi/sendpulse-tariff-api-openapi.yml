@@ -60,6 +60,8 @@ paths:
           - ReadOnly
 components:
   schemas:
+    unauthorizedResponse:
+      description: Unauthorized
     userPlanInfo:
       title: Tariff info
       properties:
@@ -95,8 +97,6 @@ components:
                   description: Used amount
           description: Tariff limits info
       type: object
-    unauthorizedResponse:
-      description: Unauthorized
   securitySchemes:
     apiKey:
       type: http

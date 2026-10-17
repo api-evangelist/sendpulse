@@ -1251,14 +1251,6 @@ paths:
           - BillingStatusChange
 components:
   schemas:
-    FunctionalityResource:
-      type: object
-      properties:
-        type:
-          type: string
-          description: Type of available functionality
-          enum:
-          - chat
     CourseTariffSettingResource:
       type: object
       properties:
@@ -1279,6 +1271,14 @@ components:
           - string
           - 'null'
           description: Time zone used for tariff dates
+    FunctionalityResource:
+      type: object
+      properties:
+        type:
+          type: string
+          description: Type of available functionality
+          enum:
+          - chat
     Student:
       type: object
       properties:

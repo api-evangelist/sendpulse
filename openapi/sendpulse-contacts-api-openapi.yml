@@ -4209,6 +4209,53 @@ paths:
       url: https://api.sendpulse.com/whatsapp
 components:
   schemas:
+    ContactHistory:
+      type: object
+      properties:
+        id:
+          type: integer
+        userId:
+          type: integer
+        contactId:
+          type: integer
+        eventType:
+          type: string
+        eventTime:
+          type: string
+          format: date-time
+        eventData:
+          type: object
+          properties:
+            dealName:
+              type: string
+    DealAttributeValue:
+      type: object
+      properties:
+        id:
+          type: integer
+        pipelineId:
+          type: integer
+        name:
+          type: string
+        status:
+          type: integer
+        type:
+          type: integer
+        mandatory:
+          type: boolean
+        order:
+          type: integer
+        options:
+          type: array
+          description: Items of "List" field type
+          items:
+            oneOf:
+            - type: string
+            - type: integer
+        value:
+          properties:
+            value:
+              type: string
     FilterExpressionProperty:
       type: string
       description: '| Possible values:
@@ -4235,37 +4282,29 @@ components:
               type: string
             contactLastName:
               type: string
-    ContactEmail:
+    ContactComment:
       type: object
       properties:
         id:
           type: integer
-          description: Email address ID
-        email:
-          type: string
-          description: Email address
-        isMain:
-          type: boolean
-          description: Determines whether the email address is the main one
-    ContactPhone:
-      type: object
-      properties:
-        id:
+        userId:
           type: integer
-          description: Contact phone ID
-        phone:
+        text:
           type: string
-        isMain:
-          type: boolean
-    DealSourceType:
-      type: object
-      properties:
-        id:
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        attachments:
+          $ref: '#/components/schemas/EntityAttachment'
+        childCount:
           type: integer
-          description: ''
-        name:
-          type: string
-          description: ''
+        childUsers:
+          type: array
+          items:
+            type: integer
     ContactMessenger:
       type: object
       properties:
@@ -4292,74 +4331,30 @@ components:
         isMainChatbot:
           type: boolean
           description: Determine if chatbot messenger is the main one
-    DealComment:
+    AttributesProperty:
+      type: array
+      description: Filter by attributes only
+      items:
+        type: object
+        properties:
+          id:
+            type: string
+            description: Attribute ID
+          expression:
+            $ref: '#/components/schemas/FilterExpressionProperty'
+          value:
+            maxLength: 255
+            description: Can have string value or array of strings
+    ContactPhone:
       type: object
       properties:
         id:
           type: integer
-        userId:
-          type: integer
-        eventData:
-          type: object
-          properties:
-            text:
-              type: string
-        status:
-          type: integer
-        eventTime:
+          description: Contact phone ID
+        phone:
           type: string
-        createdAt:
-          type: string
-        updatedAt:
-          type: string
-        attachments:
-          items:
-            $ref: '#/components/schemas/EntityAttachment'
-        childCount:
-          type: integer
-        childUsers:
-          type: array
-          items:
-            type: integer
-    ContactAttributeValue:
-      type: object
-      properties:
-        id:
-          type: integer
-        name:
-          type: string
-        status:
-          type: integer
-          description: '| Status
-
-            * 0 — inactive (deleted by user) * 1 — active * 2 — hidden'
-        type:
-          type: integer
-        mandatory:
+        isMain:
           type: boolean
-        contactCardShow:
-          type: boolean
-        order:
-          type: integer
-        options:
-          type: array
-          items:
-            oneOf:
-            - type: string
-            - type: integer
-          description: Items of "List" field type
-        value:
-          properties:
-            type:
-              type: string
-              description: Field type
-            value:
-              type: string
-              description: Field value
-          description: ''
-        default:
-          type: boolean
-          description: ''
     EntityAttachment:
       type: object
       properties:
@@ -4375,67 +4370,18 @@ components:
           type: string
         updatedAt:
           type: string
-    ContactHistory:
+    ContactEmail:
       type: object
       properties:
         id:
           type: integer
-        userId:
-          type: integer
-        contactId:
-          type: integer
-        eventType:
+          description: Email address ID
+        email:
           type: string
-        eventTime:
-          type: string
-          format: date-time
-        eventData:
-          type: object
-          properties:
-            dealName:
-              type: string
-    ContactComment:
-      type: object
-      properties:
-        id:
-          type: integer
-        userId:
-          type: integer
-        text:
-          type: string
-        createdAt:
-          type: string
-          format: date-time
-        updatedAt:
-          type: string
-          format: date-time
-        attachments:
-          $ref: '#/components/schemas/EntityAttachment'
-        childCount:
-          type: integer
-        childUsers:
-          type: array
-          items:
-            type: integer
-    ContactTag:
-      type: object
-      properties:
-        id:
-          type: integer
-          description: Tag ID
-        name:
-          type: string
-          description: Tag name
-        colorText:
-          type: string
-        colorBackground:
-          type: string
-        contactCount:
-          type: integer
-          description: Number of contacts associated with the tag
-        taskCount:
-          type: integer
-          description: Number of tasks associated with a tag
+          description: Email address
+        isMain:
+          type: boolean
+          description: Determines whether the email address is the main one
     Contact:
       type: object
       properties:
@@ -4569,48 +4515,44 @@ components:
           type: string
           format: date-time
           description: The date and time the transaction information was last updated. Output in YYYY-MM-DD hh:mm:ss format with fractions of a second and time zone
-    AttributesProperty:
-      type: array
-      description: Filter by attributes only
-      items:
-        type: object
-        properties:
-          id:
-            type: string
-            description: Attribute ID
-          expression:
-            $ref: '#/components/schemas/FilterExpressionProperty'
-          value:
-            maxLength: 255
-            description: Can have string value or array of strings
-    DealAttributeValue:
+    DealSourceType:
       type: object
       properties:
         id:
           type: integer
-        pipelineId:
-          type: integer
+          description: ''
         name:
           type: string
+          description: ''
+    DealComment:
+      type: object
+      properties:
+        id:
+          type: integer
+        userId:
+          type: integer
+        eventData:
+          type: object
+          properties:
+            text:
+              type: string
         status:
           type: integer
-        type:
-          type: integer
-        mandatory:
-          type: boolean
-        order:
-          type: integer
-        options:
-          type: array
-          description: Items of "List" field type
+        eventTime:
+          type: string
+        createdAt:
+          type: string
+        updatedAt:
+          type: string
+        attachments:
           items:
-            oneOf:
-            - type: string
-            - type: integer
-        value:
-          properties:
-            value:
-              type: string
+            $ref: '#/components/schemas/EntityAttachment'
+        childCount:
+          type: integer
+        childUsers:
+          type: array
+          items:
+            type: integer
     DealExpiration:
       type: object
       properties:
@@ -4642,133 +4584,72 @@ components:
         expires_within_day:
           type: boolean
           description: The deal expires within 24 hours
-    MessengerTypeProperty:
-      type: integer
-      description: '| Messenger type. Possible values: * 1 — Telegram * 2 — Facebook * 4 — Instagram * 5 — WhatsApp * 6 — Viber'
     DealStatusProperty:
       type: integer
       description: '| Step status
 
         * 0 — inactive (deleted by user) * 1 — active * 2 - completed deal as “Unsuccessful” * 3 - completed deal as “Successful”'
-    Message:
+    ContactTag:
+      type: object
       properties:
         id:
-          type: string
-        contact_id:
-          type: string
-        bot_id:
-          type: string
-        campaign_id:
-          type:
-          - string
-          - 'null'
-        data:
-          type: object
-          description: https://developers.facebook.com/docs/messenger-platform/reference/send-api/#message
-          example:
-            text: hello
-        direction:
           type: integer
-          enum:
-          - 1
-          - 2
-          description: "\n                    * `1` - in\n\n                    * `2` - out"
+          description: Tag ID
+        name:
+          type: string
+          description: Tag name
+        colorText:
+          type: string
+        colorBackground:
+          type: string
+        contactCount:
+          type: integer
+          description: Number of contacts associated with the tag
+        taskCount:
+          type: integer
+          description: Number of tasks associated with a tag
+    ContactAttributeValue:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
         status:
           type: integer
-          enum:
-          - 1
-          - 2
-          - 3
-          - 4
-          - 5
-          - 6
-          description: "\n                    * `1` - new\n\n                    * `2` - sent\n\n                    * `3` - delivered\n\n                    * `4` - opened\n\n                    * `5` - redirected\n\n                    * `6` - rejected"
-        delivered_at:
-          type:
-          - string
-          - 'null'
-          example: 2020-12-11 21:00:00+00:00
-        opened_at:
-          type:
-          - string
-          - 'null'
-          example: 2020-12-11 21:00:00+00:00
-        redirected_at:
-          type:
-          - string
-          - 'null'
-          example: 2020-12-11 21:00:00+00:00
-        created_at:
-          type: string
-          example: 2020-12-11 21:00:00+00:00
-    Campaign:
-      properties:
-        id:
-          type: string
-        bot_id:
-          type: string
-        title:
-          type: string
-        message_tag:
-          type: string
-          enum:
-          - HUMAN_AGENT
-          - CUSTOMER_FEEDBACK
-          description: ''
-          example: HUMAN_AGENT
-        message_notification_type:
-          type: string
-          enum:
-          - REGULAR
-          - SILENT_PUSH
-          - NO_PUSH
-          description: ''
-          example: REGULAR
-        send_at:
-          type: string
-          example: 2020-12-11 21:00:00+00:00
-        messages:
-          type: array
-          description: A list of messages to send
-          items:
-            type: object
-            properties:
-              type:
-                type: string
-                enum:
-                - text
-                - media_img
-                - media_file
-                - media_audio
-                - media_video
-                - template
-                - list
-                description: '* `text` - text message
+          description: '| Status
 
-                  '
-                example: text
-              data:
-                type: object
-                description: ''
-                properties:
-                  attachment:
-                    type: object
-                    properties:
-                      payload:
-                        type: object
-                        properties:
-                          elements:
-                            type: array
-                            items:
-                              type: object
-                              properties:
-                                filename:
-                                  type: string
-                                is_external_attachment:
-                                  type: boolean
-        created_at:
-          type: string
-          example: 2020-12-11 21:00:00+00:00
+            * 0 — inactive (deleted by user) * 1 — active * 2 — hidden'
+        type:
+          type: integer
+        mandatory:
+          type: boolean
+        contactCardShow:
+          type: boolean
+        order:
+          type: integer
+        options:
+          type: array
+          items:
+            oneOf:
+            - type: string
+            - type: integer
+          description: Items of "List" field type
+        value:
+          properties:
+            type:
+              type: string
+              description: Field type
+            value:
+              type: string
+              description: Field value
+          description: ''
+        default:
+          type: boolean
+          description: ''
+    MessengerTypeProperty:
+      type: integer
+      description: '| Messenger type. Possible values: * 1 — Telegram * 2 — Facebook * 4 — Instagram * 5 — WhatsApp * 6 — Viber'
     Contact_2:
       properties:
         id:
@@ -4845,6 +4726,181 @@ components:
           - type: object
           - type: boolean
       type: object
+    Campaign:
+      properties:
+        id:
+          type: string
+        bot_id:
+          type: string
+        title:
+          type: string
+        message_tag:
+          type: string
+          enum:
+          - HUMAN_AGENT
+          - CUSTOMER_FEEDBACK
+          description: ''
+          example: HUMAN_AGENT
+        message_notification_type:
+          type: string
+          enum:
+          - REGULAR
+          - SILENT_PUSH
+          - NO_PUSH
+          description: ''
+          example: REGULAR
+        send_at:
+          type: string
+          example: 2020-12-11 21:00:00+00:00
+        messages:
+          type: array
+          description: A list of messages to send
+          items:
+            type: object
+            properties:
+              type:
+                type: string
+                enum:
+                - text
+                - media_img
+                - media_file
+                - media_audio
+                - media_video
+                - template
+                - list
+                description: '* `text` - text message
+
+                  '
+                example: text
+              data:
+                type: object
+                description: ''
+                properties:
+                  attachment:
+                    type: object
+                    properties:
+                      payload:
+                        type: object
+                        properties:
+                          elements:
+                            type: array
+                            items:
+                              type: object
+                              properties:
+                                filename:
+                                  type: string
+                                is_external_attachment:
+                                  type: boolean
+        created_at:
+          type: string
+          example: 2020-12-11 21:00:00+00:00
+    Message:
+      properties:
+        id:
+          type: string
+        contact_id:
+          type: string
+        bot_id:
+          type: string
+        campaign_id:
+          type:
+          - string
+          - 'null'
+        data:
+          type: object
+          description: https://developers.facebook.com/docs/messenger-platform/reference/send-api/#message
+          example:
+            text: hello
+        direction:
+          type: integer
+          enum:
+          - 1
+          - 2
+          description: "\n                    * `1` - in\n\n                    * `2` - out"
+        status:
+          type: integer
+          enum:
+          - 1
+          - 2
+          - 3
+          - 4
+          - 5
+          - 6
+          description: "\n                    * `1` - new\n\n                    * `2` - sent\n\n                    * `3` - delivered\n\n                    * `4` - opened\n\n                    * `5` - redirected\n\n                    * `6` - rejected"
+        delivered_at:
+          type:
+          - string
+          - 'null'
+          example: 2020-12-11 21:00:00+00:00
+        opened_at:
+          type:
+          - string
+          - 'null'
+          example: 2020-12-11 21:00:00+00:00
+        redirected_at:
+          type:
+          - string
+          - 'null'
+          example: 2020-12-11 21:00:00+00:00
+        created_at:
+          type: string
+          example: 2020-12-11 21:00:00+00:00
+    Contact_3:
+      properties:
+        id:
+          type: string
+        bot_id:
+          type: string
+        status:
+          type: integer
+          enum:
+          - 1
+          - 2
+          - 3
+          - 4
+          description: "\n                    * `1` - active\n\n                    * `2` - unsubscribed\n\n                    * `3` - disabled\n\n                    * `4` - blocked by user"
+        channel_data:
+          type: object
+          properties:
+            username:
+              type:
+              - string
+              - 'null'
+            first_name:
+              type: string
+            last_name:
+              type:
+              - string
+              - 'null'
+            name:
+              type: string
+            language_code:
+              type:
+              - string
+              - 'null'
+        tags:
+          type: array
+          uniqueItems: true
+          items:
+            type: string
+        variables:
+          type: object
+          description: 'variable_name: variable_value'
+        is_chat_opened:
+          type: boolean
+        last_activity_at:
+          type: string
+          example: 2020-12-11 21:00:00+00:00
+        automation_paused_until:
+          type:
+          - string
+          - 'null'
+          example: 2020-12-11 21:00:00+00:00
+        telegram_id:
+          type: string
+        created_at:
+          type: string
+          example: 2020-12-11 21:00:00+00:00
     Message_2:
       properties:
         id:
@@ -4902,106 +4958,6 @@ components:
           - jivo
           - open_ai
           - payment
-    Contact_3:
-      properties:
-        id:
-          type: string
-        bot_id:
-          type: string
-        status:
-          type: integer
-          enum:
-          - 1
-          - 2
-          - 3
-          - 4
-          description: "\n                    * `1` - active\n\n                    * `2` - unsubscribed\n\n                    * `3` - disabled\n\n                    * `4` - blocked by user"
-        channel_data:
-          type: object
-          properties:
-            username:
-              type:
-              - string
-              - 'null'
-            first_name:
-              type: string
-            last_name:
-              type:
-              - string
-              - 'null'
-            name:
-              type: string
-            language_code:
-              type:
-              - string
-              - 'null'
-        tags:
-          type: array
-          uniqueItems: true
-          items:
-            type: string
-        variables:
-          type: object
-          description: 'variable_name: variable_value'
-        is_chat_opened:
-          type: boolean
-        last_activity_at:
-          type: string
-          example: 2020-12-11 21:00:00+00:00
-        automation_paused_until:
-          type:
-          - string
-          - 'null'
-          example: 2020-12-11 21:00:00+00:00
-        telegram_id:
-          type: string
-        created_at:
-          type: string
-          example: 2020-12-11 21:00:00+00:00
-    Message_3:
-      properties:
-        id:
-          type: string
-        contact_id:
-          type: string
-        bot_id:
-          type: string
-        campaign_id:
-          type:
-          - string
-          - 'null'
-        data:
-          type: object
-          description: https://core.telegram.org/bots/api#message
-          example:
-            text: hello
-        direction:
-          type: integer
-          enum:
-            IN: 1
-            OUT: 2
-          description: "\n                    * `1` - in\n\n                    * `2` - out"
-        status:
-          type: integer
-          enum:
-          - 1
-          description: "\n                    * `1` - new\n\n                    * `2` - sent\n\n                    * `3` - delivered\n\n                    * `4` - opened\n\n                    * `5` - redirected\n\n                    * `6` - rejected"
-        is_paid:
-          type: boolean
-        price_cbp:
-          type:
-          - object
-          - 'null'
-          description: Conversation Based Price
-          example:
-            price: 0.006
-            currency: USD
-            origin_type: user_initiated
-            is_free_conversation: false
-            country_code: TR
-        created_at:
-          type: string
-          example: 2020-12-11 21:00:00+00:00
     Contact_4:
       properties:
         id:
@@ -5053,6 +5009,50 @@ components:
           - string
           - 'null'
           example: 2020-12-11 21:00:00+00:00
+        created_at:
+          type: string
+          example: 2020-12-11 21:00:00+00:00
+    Message_3:
+      properties:
+        id:
+          type: string
+        contact_id:
+          type: string
+        bot_id:
+          type: string
+        campaign_id:
+          type:
+          - string
+          - 'null'
+        data:
+          type: object
+          description: https://core.telegram.org/bots/api#message
+          example:
+            text: hello
+        direction:
+          type: integer
+          enum:
+            IN: 1
+            OUT: 2
+          description: "\n                    * `1` - in\n\n                    * `2` - out"
+        status:
+          type: integer
+          enum:
+          - 1
+          description: "\n                    * `1` - new\n\n                    * `2` - sent\n\n                    * `3` - delivered\n\n                    * `4` - opened\n\n                    * `5` - redirected\n\n                    * `6` - rejected"
+        is_paid:
+          type: boolean
+        price_cbp:
+          type:
+          - object
+          - 'null'
+          description: Conversation Based Price
+          example:
+            price: 0.006
+            currency: USD
+            origin_type: user_initiated
+            is_free_conversation: false
+            country_code: TR
         created_at:
           type: string
           example: 2020-12-11 21:00:00+00:00

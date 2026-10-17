@@ -189,9 +189,6 @@ paths:
           - ResourceDeletion
 components:
   schemas:
-    MessengerTypeProperty:
-      type: integer
-      description: '| Messenger type. Possible values: * 1 — Telegram * 2 — Facebook * 4 — Instagram * 5 — WhatsApp * 6 — Viber'
     ContactMessenger:
       type: object
       properties:
@@ -218,6 +215,9 @@ components:
         isMainChatbot:
           type: boolean
           description: Determine if chatbot messenger is the main one
+    MessengerTypeProperty:
+      type: integer
+      description: '| Messenger type. Possible values: * 1 — Telegram * 2 — Facebook * 4 — Instagram * 5 — WhatsApp * 6 — Viber'
   securitySchemes:
     apiKey:
       type: http

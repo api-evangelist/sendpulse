@@ -436,15 +436,6 @@ components:
             oneOf:
             - type: string
             - type: integer
-    Email:
-      type: object
-      properties:
-        id:
-          type: integer
-        isMain:
-          type: boolean
-        email:
-          type: string
     CompanySortData:
       type: object
       properties:
@@ -501,6 +492,15 @@ components:
           type: string
         updatedAt:
           type: string
+    Phone:
+      type: object
+      properties:
+        id:
+          type: integer
+        isMain:
+          type: boolean
+        phone:
+          type: string
     AttachmentResource:
       type: object
       properties:
@@ -516,14 +516,14 @@ components:
           type: string
         updatedAt:
           type: string
-    Phone:
+    Email:
       type: object
       properties:
         id:
           type: integer
         isMain:
           type: boolean
-        phone:
+        email:
           type: string
     Messenger:
       type: object

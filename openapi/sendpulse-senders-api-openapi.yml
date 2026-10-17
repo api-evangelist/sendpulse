@@ -227,6 +227,12 @@ paths:
           description: Forbidden
 components:
   schemas:
+    SenderActivationResponse:
+      type: object
+      x-ai-description: Activation result.
+      properties:
+        result:
+          type: boolean
     Sender:
       type: object
       x-ai-description: Authorized sender.
@@ -238,12 +244,6 @@ components:
     ResultTrue:
       type: object
       x-ai-description: Success indicator.
-      properties:
-        result:
-          type: boolean
-    SenderActivationResponse:
-      type: object
-      x-ai-description: Activation result.
       properties:
         result:
           type: boolean

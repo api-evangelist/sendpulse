@@ -205,6 +205,15 @@ paths:
           description: Forbidden
 components:
   schemas:
+    WebhookUpdateRequest:
+      type: object
+      x-ai-description: Payload to update a webhook.
+      required:
+      - url
+      properties:
+        url:
+          type: string
+          example: https://site.com/callback
     WebhookCreateRequest:
       type: object
       x-ai-description: Payload to create webhooks.
@@ -221,15 +230,6 @@ components:
             type: string
           example:
           - delivered
-    WebhookUpdateRequest:
-      type: object
-      x-ai-description: Payload to update a webhook.
-      required:
-      - url
-      properties:
-        url:
-          type: string
-          example: https://site.com/callback
     WebhookResponse:
       type: object
       x-ai-description: Single webhook response.

@@ -458,9 +458,9 @@ paths:
       description: Production server
 components:
   schemas:
-    TemplateDetails:
+    TemplateSummary:
       type: object
-      x-ai-description: Template metadata.
+      x-ai-description: Template summary.
       properties:
         id:
           type: string
@@ -472,9 +472,9 @@ components:
       properties:
         result:
           type: boolean
-    TemplateSummary:
+    TemplateDetails:
       type: object
-      x-ai-description: Template summary.
+      x-ai-description: Template metadata.
       properties:
         id:
           type: string
