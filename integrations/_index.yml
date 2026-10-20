@@ -15,6 +15,7 @@
   evidence: https://zapier.com/apps/sendpulse/integrations/webflow/21491/subscribe-webflow-form-submissions-to-a-sendpulse-list
   template: https://zapier.com/apps/sendpulse/integrations/webflow/21491/subscribe-webflow-form-submissions-to-a-sendpulse-list
   source: template
+  relationship: ipaas-bridge
   status: pending-generation
   arazzo: null
 - slug: sendpulse-create-sendpulse-subscribers-from-new-wave-customers
@@ -29,6 +30,7 @@
   evidence: https://zapier.com/apps/sendpulse/integrations/wave/21712/create-sendpulse-subscribers-from-new-wave-customers
   template: https://zapier.com/apps/sendpulse/integrations/wave/21712/create-sendpulse-subscribers-from-new-wave-customers
   source: template
+  relationship: ipaas-bridge
   status: pending-partner-spec
   arazzo: null
 - slug: sendpulse-add-contact-to-customer-list-with-email-in-google-ads-for-new-subscriber-in-send
@@ -43,6 +45,7 @@
   evidence: https://zapier.com/apps/google-ads/integrations/sendpulse/1008388/add-contact-to-customer-list-with-email-in-google-ads-for-new-subscriber-in-sendpulse
   template: https://zapier.com/apps/google-ads/integrations/sendpulse/1008388/add-contact-to-customer-list-with-email-in-google-ads-for-new-subscriber-in-sendpulse
   source: template
+  relationship: ipaas-bridge
   status: pending-generation
   arazzo: null
 - slug: sendpulse-add-contacts-from-new-google-sheets-rows-to-a-sendpulse-list
@@ -57,6 +60,7 @@
   evidence: https://zapier.com/apps/google-sheets/integrations/sendpulse/12174/add-contacts-from-new-google-sheets-rows-to-a-sendpulse-list
   template: https://zapier.com/apps/google-sheets/integrations/sendpulse/12174/add-contacts-from-new-google-sheets-rows-to-a-sendpulse-list
   source: template
+  relationship: ipaas-bridge
   status: pending-generation
   arazzo: null
 - slug: sendpulse-add-subscriber-in-sendpulse-for-new-lead-form-entries-in-google-ads
@@ -71,6 +75,7 @@
   evidence: https://zapier.com/apps/google-ads/integrations/sendpulse/1007207/add-subscriber-in-sendpulse-for-new-lead-form-entries-in-google-ads
   template: https://zapier.com/apps/google-ads/integrations/sendpulse/1007207/add-subscriber-in-sendpulse-for-new-lead-form-entries-in-google-ads
   source: template
+  relationship: ipaas-bridge
   status: pending-generation
   arazzo: null
 - slug: sendpulse-add-sendpulse-subscribers-from-new-jotform-submissions
@@ -85,6 +90,7 @@
   evidence: https://zapier.com/apps/jotform/integrations/sendpulse/12751/add-sendpulse-subscribers-from-new-jotform-submissions
   template: https://zapier.com/apps/jotform/integrations/sendpulse/12751/add-sendpulse-subscribers-from-new-jotform-submissions
   source: template
+  relationship: ipaas-bridge
   status: pending-generation
   arazzo: null
 - slug: sendpulse-create-hubspot-crm-contacts-from-new-subscribers-on-sendpulse
@@ -99,6 +105,7 @@
   evidence: https://zapier.com/apps/hubspot/integrations/sendpulse/21080/create-hubspot-crm-contacts-from-new-subscribers-on-sendpulse
   template: https://zapier.com/apps/hubspot/integrations/sendpulse/21080/create-hubspot-crm-contacts-from-new-subscribers-on-sendpulse
   source: template
+  relationship: ipaas-bridge
   status: pending-generation
   arazzo: null
 - slug: sendpulse-subscribe-new-horoshop-users-to-sendpulse-lists
@@ -112,6 +119,7 @@
   evidence: https://zapier.com/apps/horoshop/integrations/sendpulse/25971/subscribe-new-horoshop-customers-to-a-sendpulse-list
   template: https://zapier.com/apps/horoshop/integrations/sendpulse/25971/subscribe-new-horoshop-customers-to-a-sendpulse-list
   source: template
+  relationship: ipaas-bridge
   status: pending-partner-spec
   arazzo: null
 - slug: sendpulse-add-new-wpforms-entries-to-sendpulse-as-subscribers
@@ -125,6 +133,7 @@
   evidence: https://zapier.com/apps/sendpulse/integrations/wpforms/1609510/add-new-wpforms-entries-to-sendpulse-as-subscribers
   template: https://zapier.com/apps/sendpulse/integrations/wpforms/1609510/add-new-wpforms-entries-to-sendpulse-as-subscribers
   source: template
+  relationship: ipaas-bridge
   status: pending-partner-spec
   arazzo: null
 - slug: sendpulse-add-new-facebook-lead-ads-to-sendpulse-as-subscribers
@@ -139,253 +148,8 @@
   evidence: https://zapier.com/apps/facebook-lead-ads/integrations/sendpulse/12194/add-new-facebook-lead-ads-to-sendpulse-as-subscribers
   template: https://zapier.com/apps/facebook-lead-ads/integrations/sendpulse/12194/add-new-facebook-lead-ads-to-sendpulse-as-subscribers
   source: template
+  relationship: ipaas-bridge
   status: pending-generation
-  arazzo: null
-- slug: sendpulse-typeform
-  label: Typeform
-  partner: typeform
-  partner_name: Typeform
-  category: Forms & Surveys
-  type: marketplace
-  marketplace: zapier
-  channel: ipaas-usage
-  evidence: https://zapier.com/apps/sendpulse/integrations/typeform
-  source: edge
-  status: pending-generation
-  arazzo: null
-- slug: sendpulse-google-forms
-  label: Google Forms
-  partner: google-forms
-  partner_name: Google Forms
-  category: Forms & Surveys
-  type: marketplace
-  marketplace: zapier
-  channel: ipaas-usage
-  evidence: https://zapier.com/apps/sendpulse/integrations/google-forms
-  source: edge
-  status: pending-generation
-  arazzo: null
-- slug: sendpulse-clickfunnels-classic
-  label: ClickFunnels Classic
-  partner: clickfunnels
-  partner_name: ClickFunnels Classic
-  category: Marketing Automation
-  type: marketplace
-  marketplace: zapier
-  channel: ipaas-usage
-  evidence: https://zapier.com/apps/sendpulse/integrations/clickfunnels-classic
-  source: edge
-  status: pending-generation
-  arazzo: null
-- slug: sendpulse-hotmart
-  label: Hotmart
-  partner: hotmart
-  partner_name: Hotmart
-  category: Online Courses
-  type: marketplace
-  marketplace: zapier
-  channel: ipaas-usage
-  evidence: https://zapier.com/apps/sendpulse/integrations/hotmart-7006
-  source: edge
-  status: pending-partner-spec
-  arazzo: null
-- slug: sendpulse-mailchimp
-  label: Mailchimp
-  partner: mailchimp
-  partner_name: Mailchimp
-  category: Marketing Automation
-  type: marketplace
-  marketplace: zapier
-  channel: ipaas-usage
-  evidence: https://zapier.com/apps/sendpulse/integrations/mailchimp
-  source: edge
-  status: pending-generation
-  arazzo: null
-- slug: sendpulse-pipedrive
-  label: Pipedrive
-  partner: pipedrive
-  partner_name: Pipedrive
-  category: CRM (Customer Relationship Management)
-  type: marketplace
-  marketplace: zapier
-  channel: ipaas-usage
-  evidence: https://zapier.com/apps/sendpulse/integrations/pipedrive
-  source: edge
-  status: pending-generation
-  arazzo: null
-- slug: sendpulse-wix
-  label: Wix
-  partner: wix
-  partner_name: Wix
-  category: Website Builders
-  type: marketplace
-  marketplace: zapier
-  channel: ipaas-usage
-  evidence: https://zapier.com/apps/sendpulse/integrations/wix
-  source: edge
-  status: pending-generation
-  arazzo: null
-- slug: sendpulse-kommo
-  label: Kommo
-  partner_name: Kommo
-  category: CRM (Customer Relationship Management)
-  type: marketplace
-  marketplace: zapier
-  channel: ipaas-usage
-  evidence: https://zapier.com/apps/sendpulse/integrations/kommo
-  source: edge
-  status: pending-partner-spec
-  arazzo: null
-- slug: sendpulse-activecampaign
-  label: ActiveCampaign
-  partner: activecampaign
-  partner_name: ActiveCampaign
-  category: Marketing Automation
-  type: marketplace
-  marketplace: zapier
-  channel: ipaas-usage
-  evidence: https://zapier.com/apps/sendpulse/integrations/activecampaign
-  source: edge
-  status: pending-generation
-  arazzo: null
-- slug: sendpulse-chatforma
-  label: Chatforma
-  partner_name: Chatforma
-  category: Marketing Automation
-  type: marketplace
-  marketplace: zapier
-  channel: ipaas-usage
-  evidence: https://zapier.com/apps/sendpulse/integrations/chatforma
-  source: edge
-  status: pending-partner-spec
-  arazzo: null
-- slug: sendpulse-passion-io
-  label: Passion.io
-  partner_name: Passion.io
-  category: App Builder
-  type: marketplace
-  marketplace: zapier
-  channel: ipaas-usage
-  evidence: https://zapier.com/apps/sendpulse/integrations/passion-io
-  source: edge
-  status: pending-partner-spec
-  arazzo: null
-- slug: sendpulse-involve-me
-  label: involve.me
-  partner: involve-me
-  partner_name: involve.me
-  category: Forms & Surveys
-  type: marketplace
-  marketplace: zapier
-  channel: ipaas-usage
-  evidence: https://zapier.com/apps/sendpulse/integrations/involveme
-  source: edge
-  status: pending-partner-spec
-  arazzo: null
-- slug: sendpulse-woocommerce
-  label: WooCommerce
-  partner: woocommerce
-  partner_name: WooCommerce
-  category: eCommerce
-  type: marketplace
-  marketplace: zapier
-  channel: ipaas-usage
-  evidence: https://zapier.com/apps/sendpulse/integrations/woocommerce
-  source: edge
-  status: pending-generation
-  arazzo: null
-- slug: sendpulse-manychat
-  label: Manychat
-  partner: manychat
-  partner_name: Manychat
-  category: Social Media Marketing
-  type: marketplace
-  marketplace: zapier
-  channel: ipaas-usage
-  evidence: https://zapier.com/apps/sendpulse/integrations/manychat
-  source: edge
-  status: pending-generation
-  arazzo: null
-- slug: sendpulse-unbounce
-  label: Unbounce
-  partner: unbounce
-  partner_name: Unbounce
-  category: Forms & Surveys
-  type: marketplace
-  marketplace: zapier
-  channel: ipaas-usage
-  evidence: https://zapier.com/apps/sendpulse/integrations/unbounce
-  source: edge
-  status: pending-generation
-  arazzo: null
-- slug: sendpulse-calendly
-  label: Calendly
-  partner: calendly
-  partner_name: Calendly
-  category: Scheduling & Booking
-  type: marketplace
-  marketplace: zapier
-  channel: ipaas-usage
-  evidence: https://zapier.com/apps/sendpulse/integrations/calendly
-  source: edge
-  status: pending-generation
-  arazzo: null
-- slug: sendpulse-tilda-publishing
-  label: Tilda Publishing
-  partner_name: Tilda Publishing
-  category: Website Builders
-  type: marketplace
-  marketplace: zapier
-  channel: ipaas-usage
-  evidence: https://zapier.com/apps/sendpulse/integrations/tilda-publishing
-  source: edge
-  status: pending-partner-spec
-  arazzo: null
-- slug: sendpulse-bitrix24-crm
-  label: Bitrix24 CRM
-  partner: bitrix24
-  partner_name: Bitrix24 CRM
-  category: CRM (Customer Relationship Management)
-  type: marketplace
-  marketplace: zapier
-  channel: ipaas-usage
-  evidence: https://zapier.com/apps/sendpulse/integrations/bitrix24-crm-new
-  source: edge
-  status: pending-generation
-  arazzo: null
-- slug: sendpulse-notion
-  label: Notion
-  partner: notion
-  partner_name: Notion
-  category: Task Management
-  type: marketplace
-  marketplace: zapier
-  channel: ipaas-usage
-  evidence: https://zapier.com/apps/sendpulse/integrations/notion
-  source: edge
-  status: pending-generation
-  arazzo: null
-- slug: sendpulse-facebook-conversions
-  label: Facebook Conversions
-  partner_name: Facebook Conversions
-  category: Ads & Conversion
-  type: marketplace
-  marketplace: zapier
-  channel: ipaas-usage
-  evidence: https://zapier.com/apps/sendpulse/integrations/facebook-conversions
-  source: edge
-  status: pending-partner-spec
-  arazzo: null
-- slug: sendpulse-magento-2-x
-  label: Magento 2.X
-  partner_name: Magento 2.X
-  category: eCommerce
-  type: marketplace
-  marketplace: zapier
-  channel: ipaas-usage
-  evidence: https://zapier.com/apps/sendpulse/integrations/magento-v2
-  source: edge
-  status: pending-partner-spec
   arazzo: null
 - slug: sendpulse-wordpress-own
   label: WordPress (own)
@@ -561,4 +325,272 @@
     sources: false
     builder: Pipedream repo (component)
   status: not-a-workflow
+  arazzo: null
+- slug: sendpulse-typeform
+  label: Typeform
+  partner: typeform
+  partner_name: Typeform
+  category: Forms & Surveys
+  type: marketplace
+  marketplace: zapier
+  channel: ipaas-usage
+  evidence: https://zapier.com/apps/sendpulse/integrations/typeform
+  source: edge
+  relationship: ipaas-bridge
+  status: pending-generation
+  arazzo: null
+- slug: sendpulse-google-forms
+  label: Google Forms
+  partner: google-forms
+  partner_name: Google Forms
+  category: Forms & Surveys
+  type: marketplace
+  marketplace: zapier
+  channel: ipaas-usage
+  evidence: https://zapier.com/apps/sendpulse/integrations/google-forms
+  source: edge
+  relationship: ipaas-bridge
+  status: pending-generation
+  arazzo: null
+- slug: sendpulse-clickfunnels-classic
+  label: ClickFunnels Classic
+  partner: clickfunnels
+  partner_name: ClickFunnels Classic
+  category: Marketing Automation
+  type: marketplace
+  marketplace: zapier
+  channel: ipaas-usage
+  evidence: https://zapier.com/apps/sendpulse/integrations/clickfunnels-classic
+  source: edge
+  relationship: ipaas-bridge
+  status: pending-generation
+  arazzo: null
+- slug: sendpulse-hotmart
+  label: Hotmart
+  partner: hotmart
+  partner_name: Hotmart
+  category: Online Courses
+  type: marketplace
+  marketplace: zapier
+  channel: ipaas-usage
+  evidence: https://zapier.com/apps/sendpulse/integrations/hotmart-7006
+  source: edge
+  relationship: ipaas-bridge
+  status: pending-partner-spec
+  arazzo: null
+- slug: sendpulse-mailchimp
+  label: Mailchimp
+  partner: mailchimp
+  partner_name: Mailchimp
+  category: Marketing Automation
+  type: marketplace
+  marketplace: zapier
+  channel: ipaas-usage
+  evidence: https://zapier.com/apps/sendpulse/integrations/mailchimp
+  source: edge
+  relationship: ipaas-bridge
+  status: pending-generation
+  arazzo: null
+- slug: sendpulse-wix
+  label: Wix
+  partner: wix
+  partner_name: Wix
+  category: Website Builders
+  type: marketplace
+  marketplace: zapier
+  channel: ipaas-usage
+  evidence: https://zapier.com/apps/sendpulse/integrations/wix
+  source: edge
+  relationship: ipaas-bridge
+  status: pending-generation
+  arazzo: null
+- slug: sendpulse-pipedrive
+  label: Pipedrive
+  partner: pipedrive
+  partner_name: Pipedrive
+  category: CRM (Customer Relationship Management)
+  type: marketplace
+  marketplace: zapier
+  channel: ipaas-usage
+  evidence: https://zapier.com/apps/sendpulse/integrations/pipedrive
+  source: edge
+  relationship: ipaas-bridge
+  status: pending-generation
+  arazzo: null
+- slug: sendpulse-kommo
+  label: Kommo
+  partner_name: Kommo
+  category: CRM (Customer Relationship Management)
+  type: marketplace
+  marketplace: zapier
+  channel: ipaas-usage
+  evidence: https://zapier.com/apps/sendpulse/integrations/kommo
+  source: edge
+  relationship: ipaas-bridge
+  status: pending-partner-spec
+  arazzo: null
+- slug: sendpulse-activecampaign
+  label: ActiveCampaign
+  partner: activecampaign
+  partner_name: ActiveCampaign
+  category: Marketing Automation
+  type: marketplace
+  marketplace: zapier
+  channel: ipaas-usage
+  evidence: https://zapier.com/apps/sendpulse/integrations/activecampaign
+  source: edge
+  relationship: ipaas-bridge
+  status: pending-generation
+  arazzo: null
+- slug: sendpulse-chatforma
+  label: Chatforma
+  partner_name: Chatforma
+  category: Marketing Automation
+  type: marketplace
+  marketplace: zapier
+  channel: ipaas-usage
+  evidence: https://zapier.com/apps/sendpulse/integrations/chatforma
+  source: edge
+  relationship: ipaas-bridge
+  status: pending-partner-spec
+  arazzo: null
+- slug: sendpulse-passion-io
+  label: Passion.io
+  partner_name: Passion.io
+  category: App Builder
+  type: marketplace
+  marketplace: zapier
+  channel: ipaas-usage
+  evidence: https://zapier.com/apps/sendpulse/integrations/passion-io
+  source: edge
+  relationship: ipaas-bridge
+  status: pending-partner-spec
+  arazzo: null
+- slug: sendpulse-involve-me
+  label: involve.me
+  partner: involve-me
+  partner_name: involve.me
+  category: Forms & Surveys
+  type: marketplace
+  marketplace: zapier
+  channel: ipaas-usage
+  evidence: https://zapier.com/apps/sendpulse/integrations/involveme
+  source: edge
+  relationship: ipaas-bridge
+  status: pending-partner-spec
+  arazzo: null
+- slug: sendpulse-woocommerce
+  label: WooCommerce
+  partner: woocommerce
+  partner_name: WooCommerce
+  category: eCommerce
+  type: marketplace
+  marketplace: zapier
+  channel: ipaas-usage
+  evidence: https://zapier.com/apps/sendpulse/integrations/woocommerce
+  source: edge
+  relationship: ipaas-bridge
+  status: pending-generation
+  arazzo: null
+- slug: sendpulse-manychat
+  label: Manychat
+  partner: manychat
+  partner_name: Manychat
+  category: Social Media Marketing
+  type: marketplace
+  marketplace: zapier
+  channel: ipaas-usage
+  evidence: https://zapier.com/apps/sendpulse/integrations/manychat
+  source: edge
+  relationship: ipaas-bridge
+  status: pending-generation
+  arazzo: null
+- slug: sendpulse-unbounce
+  label: Unbounce
+  partner: unbounce
+  partner_name: Unbounce
+  category: Forms & Surveys
+  type: marketplace
+  marketplace: zapier
+  channel: ipaas-usage
+  evidence: https://zapier.com/apps/sendpulse/integrations/unbounce
+  source: edge
+  relationship: ipaas-bridge
+  status: pending-generation
+  arazzo: null
+- slug: sendpulse-calendly
+  label: Calendly
+  partner: calendly
+  partner_name: Calendly
+  category: Scheduling & Booking
+  type: marketplace
+  marketplace: zapier
+  channel: ipaas-usage
+  evidence: https://zapier.com/apps/sendpulse/integrations/calendly
+  source: edge
+  relationship: ipaas-bridge
+  status: pending-generation
+  arazzo: null
+- slug: sendpulse-tilda-publishing
+  label: Tilda Publishing
+  partner_name: Tilda Publishing
+  category: Website Builders
+  type: marketplace
+  marketplace: zapier
+  channel: ipaas-usage
+  evidence: https://zapier.com/apps/sendpulse/integrations/tilda-publishing
+  source: edge
+  relationship: ipaas-bridge
+  status: pending-partner-spec
+  arazzo: null
+- slug: sendpulse-notion
+  label: Notion
+  partner: notion
+  partner_name: Notion
+  category: Task Management
+  type: marketplace
+  marketplace: zapier
+  channel: ipaas-usage
+  evidence: https://zapier.com/apps/sendpulse/integrations/notion
+  source: edge
+  relationship: ipaas-bridge
+  status: pending-generation
+  arazzo: null
+- slug: sendpulse-bitrix24-crm
+  label: Bitrix24 CRM
+  partner: bitrix24
+  partner_name: Bitrix24 CRM
+  category: CRM (Customer Relationship Management)
+  type: marketplace
+  marketplace: zapier
+  channel: ipaas-usage
+  evidence: https://zapier.com/apps/sendpulse/integrations/bitrix24-crm-new
+  source: edge
+  relationship: ipaas-bridge
+  status: pending-generation
+  arazzo: null
+- slug: sendpulse-facebook-conversions
+  label: Facebook Conversions
+  partner: facebook
+  partner_name: Facebook Conversions
+  category: Ads & Conversion
+  type: marketplace
+  marketplace: zapier
+  channel: ipaas-usage
+  evidence: https://zapier.com/apps/sendpulse/integrations/facebook-conversions
+  source: edge
+  relationship: ipaas-bridge
+  status: pending-generation
+  arazzo: null
+- slug: sendpulse-magento-2-x
+  label: Magento 2.X
+  partner_name: Magento 2.X
+  category: eCommerce
+  type: marketplace
+  marketplace: zapier
+  channel: ipaas-usage
+  evidence: https://zapier.com/apps/sendpulse/integrations/magento-v2
+  source: edge
+  relationship: ipaas-bridge
+  status: pending-partner-spec
   arazzo: null
