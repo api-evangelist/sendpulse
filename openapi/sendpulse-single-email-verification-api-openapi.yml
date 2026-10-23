@@ -159,3 +159,9 @@ components:
       x-ai-description: 'Standard OAuth 2.0 flow using Client ID and Client Secret.  Provides temporary tokens (valid for 1 hour) for enhanced security.
 
         '
+x-provenance:
+  method: harvested
+  publisher: SendPulse
+  source: https://api.sendpulse.com/.well-known/openapi/verifier.yaml
+  note: split by refine-openapis from the provider's own published document, verified by fetch (openapi/_original/*.fetch.json);
+    stamped by stamp-openapi-provenance.py (roadmap#793)

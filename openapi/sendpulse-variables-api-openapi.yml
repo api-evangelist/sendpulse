@@ -185,3 +185,9 @@ x-refined-from:
 - sendpulse-facebook-openapi.yml
 - sendpulse-telegram-openapi.yml
 - sendpulse-whatsapp-openapi.yml
+x-provenance:
+  method: harvested
+  publisher: SendPulse
+  source: https://api.sendpulse.com/.well-known/openapi/telegram.yaml
+  note: split by refine-openapis from the provider's own published document, verified by fetch (openapi/_original/*.fetch.json);
+    stamped by stamp-openapi-provenance.py (roadmap#793)

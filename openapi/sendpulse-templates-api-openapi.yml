@@ -551,3 +551,9 @@ components:
 x-refined-from:
 - sendpulse-bulk-email-openapi.yml
 - sendpulse-whatsapp-openapi.yml
+x-provenance:
+  method: harvested
+  publisher: SendPulse
+  source: https://api.sendpulse.com/.well-known/openapi/bulk-email.yaml
+  note: split by refine-openapis from the provider's own published document, verified by fetch (openapi/_original/*.fetch.json);
+    stamped by stamp-openapi-provenance.py (roadmap#793)
