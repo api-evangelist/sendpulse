@@ -1,4 +1,4 @@
-# SendPulse (sendpulse)
+# SendPulse
 
 <!-- API-EVANGELIST-PROVENANCE:BEGIN -->
 > ### About this repository
@@ -64,159 +64,273 @@
 > Full detail: **[Where this data comes from](https://apievangelist.com/about/where-our-data-comes-from)**
 <!-- API-EVANGELIST-PROVENANCE:END -->
 
-SendPulse is a multichannel marketing platform with a unified REST API for email campaigns and address books, SMTP transactional email, SMS, web push notifications, chatbots across messengers, and Automation 360 flows. The API uses OAuth2 client_credentials to issue short-lived Bearer tokens against https://api.sendpulse.com.
+SendPulse is a multichannel marketing automation platform covering bulk email, SMTP transactional email, SMS, web push, website pop-ups, a CRM, an online course builder, and chatbots across WhatsApp, Telegram, Facebook Messenger, Instagram, Viber, TikTok and its own live chat widget. It publishes nineteen first-party OpenAPI 3.1 specifications totalling 635 operations from https://api.sendpulse.com/.well-known/openapi/, indexed by a master index.yaml and mirrored by an llms.txt, an llms-full.txt, a service-directory.json and an ai-plugin.json. Authentication is OAuth 2.0 client_credentials against POST /oauth/access_token (one-hour Bearer tokens) or a static account API key in the same Authorization header. SendPulse also operates a first-party remote MCP server at https://mcp.sendpulse.com/mcp with 147 published tools covering chatbots, CRM, courses, email and SMTP.
 
-**APIs.json:** [https://raw.githubusercontent.com/api-evangelist/sendpulse/refs/heads/main/apis.yml](https://raw.githubusercontent.com/api-evangelist/sendpulse/refs/heads/main/apis.yml)
+**Areas:** Marketing · Marketing Automation · Email · Transactional Email · SMS · Web Push · Chatbots · CRM · Multi-Channel · Messaging · Online Courses · Popups
 
-## Tags
+## SendPulse on APIs.io
 
-- Marketing
-- Email
-- SMS
-- Web Push
-- Chatbots
-- Transactional Email
-- Multichannel
+Everything profiled for SendPulse is published on APIs.io rather than in this repository. Start at the provider page — **[apis.io/providers/sendpulse/](https://apis.io/providers/sendpulse/)** — or go straight to one of the APIs or properties below.
 
-## Timestamps
+### APIs (85)
 
-- **Created:** 2026-06-25
-- **Modified:** 2026-06-25
+- [SendPulse Account API](https://apis.io/apis/sendpulse/sendpulse-account-api/) — The account API from SendPulse — 1 operation(s) for account.
+- [SendPulse Attachments API](https://apis.io/apis/sendpulse/sendpulse-attachments-api/) — The Attachments API from SendPulse — 3 operation(s) for attachments.
+- [SendPulse Automation Flows API](https://apis.io/apis/sendpulse/sendpulse-automation-flows-api/) — Endpoints related to Automation Flows.
+- [SendPulse Balance API](https://apis.io/apis/sendpulse/sendpulse-balance-api/) — Endpoints related to Balance.
+- [SendPulse Blacklist API](https://apis.io/apis/sendpulse/sendpulse-blacklist-api/) — Endpoints related to Blacklist.
+- [SendPulse Board attributes API](https://apis.io/apis/sendpulse/sendpulse-board-attributes-api/) — The Board attributes API from SendPulse — 2 operation(s) for board attributes.
+- [SendPulse Bots API](https://apis.io/apis/sendpulse/sendpulse-bots-api/) — The bots API from SendPulse — 2 operation(s) for bots.
+- [SendPulse Bounces API](https://apis.io/apis/sendpulse/sendpulse-bounces-api/) — The Bounces API from SendPulse — 2 operation(s) for bounces.
+- [SendPulse Campaigns API](https://apis.io/apis/sendpulse/sendpulse-campaigns-api/) — Endpoints related to Campaigns.
+- [SendPulse Chats API](https://apis.io/apis/sendpulse/sendpulse-chats-api/) — The chats API from SendPulse — 3 operation(s) for chats.
+- [SendPulse Checklist Items API](https://apis.io/apis/sendpulse/sendpulse-checklist-items-api/) — The Checklist Items API from SendPulse — 2 operation(s) for checklist items.
+- [SendPulse Company API](https://apis.io/apis/sendpulse/sendpulse-company-api/) — The Company API from SendPulse — 4 operation(s) for company.
+- [SendPulse Company Attributes API](https://apis.io/apis/sendpulse/sendpulse-company-attributes-api/) — The Company Attributes API from SendPulse — 2 operation(s) for company attributes.
+- [SendPulse Company history API](https://apis.io/apis/sendpulse/sendpulse-company-history-api/) — The Company history API from SendPulse — 1 operation(s) for company history.
+- [SendPulse Compliance API](https://apis.io/apis/sendpulse/sendpulse-compliance-api/) — The Compliance API from SendPulse — 2 operation(s) for compliance.
+- [SendPulse Configuration API](https://apis.io/apis/sendpulse/sendpulse-configuration-api/) — The Configuration API from SendPulse — 9 operation(s) for configuration.
+- [SendPulse Contact Attributes API](https://apis.io/apis/sendpulse/sendpulse-contact-attributes-api/) — The Contact Attributes API from SendPulse — 2 operation(s) for contact attributes.
+- [SendPulse Contact attributes Value API](https://apis.io/apis/sendpulse/sendpulse-contact-attributes-value-api/) — The Contact attributes Value API from SendPulse — 2 operation(s) for contact attributes value.
+- [SendPulse Contact Attributes Values API](https://apis.io/apis/sendpulse/sendpulse-contact-attributes-values-api/) — The Contact Attributes Values API from SendPulse — 1 operation(s) for contact attributes values.
+- [SendPulse Contact email addresses API](https://apis.io/apis/sendpulse/sendpulse-contact-email-addresses-api/) — The Contact email addresses API from SendPulse — 2 operation(s) for contact email addresses.
+- [SendPulse Contact history API](https://apis.io/apis/sendpulse/sendpulse-contact-history-api/) — The Contact history API from SendPulse — 1 operation(s) for contact history.
+- [SendPulse Contact phone number API](https://apis.io/apis/sendpulse/sendpulse-contact-phone-number-api/) — The Contact phone number API from SendPulse — 2 operation(s) for contact phone number.
+- [SendPulse Contact tags API](https://apis.io/apis/sendpulse/sendpulse-contact-tags-api/) — The Contact tags API from SendPulse — 3 operation(s) for contact tags.
+- [SendPulse Contacts API](https://apis.io/apis/sendpulse/sendpulse-contacts-api/) — The Contacts API from SendPulse — 51 operation(s) for contacts.
+- [SendPulse Contacts messengers API](https://apis.io/apis/sendpulse/sendpulse-contacts-messengers-api/) — The Contacts messengers API from SendPulse — 2 operation(s) for contacts messengers.
+- [SendPulse Conversions API](https://apis.io/apis/sendpulse/sendpulse-conversions-api/) — Endpoints related to Conversions.
+- [SendPulse Course tariffs API](https://apis.io/apis/sendpulse/sendpulse-course-tariffs-api/) — The Course tariffs API from SendPulse — 1 operation(s) for course tariffs.
+- [SendPulse Courses API](https://apis.io/apis/sendpulse/sendpulse-courses-api/) — The Courses API from SendPulse — 1 operation(s) for courses.
+- [SendPulse Custom Tab API](https://apis.io/apis/sendpulse/sendpulse-custom-tab-api/) — The Custom Tab API from SendPulse — 3 operation(s) for custom tab.
+- [SendPulse Deal attribute Value API](https://apis.io/apis/sendpulse/sendpulse-deal-attribute-value-api/) — The Deal attribute Value API from SendPulse — 3 operation(s) for deal attribute value.
+- [SendPulse Deal Attributes API](https://apis.io/apis/sendpulse/sendpulse-deal-attributes-api/) — The Deal Attributes API from SendPulse — 3 operation(s) for deal attributes.
+- [SendPulse Deal contacts API](https://apis.io/apis/sendpulse/sendpulse-deal-contacts-api/) — The Deal contacts API from SendPulse — 2 operation(s) for deal contacts.
+- [SendPulse Deal Expiration API](https://apis.io/apis/sendpulse/sendpulse-deal-expiration-api/) — The Deal Expiration API from SendPulse — 1 operation(s) for deal expiration.
+- [SendPulse Deal history API](https://apis.io/apis/sendpulse/sendpulse-deal-history-api/) — The Deal history API from SendPulse — 1 operation(s) for deal history.
+- [SendPulse Deal notes API](https://apis.io/apis/sendpulse/sendpulse-deal-notes-api/) — The Deal notes API from SendPulse — 2 operation(s) for deal notes.
+- [SendPulse Deals API](https://apis.io/apis/sendpulse/sendpulse-deals-api/) — The Deals API from SendPulse — 4 operation(s) for deals.
+- [SendPulse Dialogs API](https://apis.io/apis/sendpulse/sendpulse-dialogs-api/) — The dialogs API from SendPulse — 1 operation(s) for dialogs.
+- [SendPulse Directory API](https://apis.io/apis/sendpulse/sendpulse-directory-api/) — directory entity
+- [SendPulse ECommerce Product API](https://apis.io/apis/sendpulse/sendpulse-ecommerce-product-api/) — The ECommerce Product API from SendPulse — 14 operation(s) for ecommerce product.
+- [SendPulse Element Statistics API](https://apis.io/apis/sendpulse/sendpulse-element-statistics-api/) — Endpoints related to Element Statistics.
+- [SendPulse Email address API](https://apis.io/apis/sendpulse/sendpulse-email-address-api/) — Endpoints related to Email address.
+- [SendPulse Emails API](https://apis.io/apis/sendpulse/sendpulse-emails-api/) — The Emails API from SendPulse — 7 operation(s) for emails.
+- [SendPulse Events API](https://apis.io/apis/sendpulse/sendpulse-events-api/) — Endpoints related to Events.
+- [SendPulse File API](https://apis.io/apis/sendpulse/sendpulse-file-api/) — file entity
+- [SendPulse File Manager API](https://apis.io/apis/sendpulse/sendpulse-file-manager-api/) — The File Manager API from SendPulse — 1 operation(s) for file manager.
+- [SendPulse Flows API](https://apis.io/apis/sendpulse/sendpulse-flows-api/) — The flows API from SendPulse — 3 operation(s) for flows.
+- [SendPulse Mailing List Verification API](https://apis.io/apis/sendpulse/sendpulse-mailing-list-verification-api/) — Endpoints related to Mailing List Verification.
+- [SendPulse Mailing lists API](https://apis.io/apis/sendpulse/sendpulse-mailing-lists-api/) — Endpoints related to Mailing lists.
+- [SendPulse Manager Settings API](https://apis.io/apis/sendpulse/sendpulse-managersettings-api/) — The ManagerSettings API from SendPulse — 5 operation(s) for managersettings.
+- [SendPulse Messengers API](https://apis.io/apis/sendpulse/sendpulse-messengers-api/) — The messengers API from SendPulse — 3 operation(s) for messengers.
+- [SendPulse Messengers types API](https://apis.io/apis/sendpulse/sendpulse-messengers-types-api/) — The Messengers types API from SendPulse — 1 operation(s) for messengers types.
+- [SendPulse Payments API](https://apis.io/apis/sendpulse/sendpulse-payments-api/) — The Payments API from SendPulse — 6 operation(s) for payments.
+- [SendPulse Phones API](https://apis.io/apis/sendpulse/sendpulse-phones-api/) — The Phones API from SendPulse — 3 operation(s) for phones.
+- [SendPulse Pipeline Steps API](https://apis.io/apis/sendpulse/sendpulse-pipeline-steps-api/) — The Pipeline Steps API from SendPulse — 2 operation(s) for pipeline steps.
+- [SendPulse Pipelines API](https://apis.io/apis/sendpulse/sendpulse-pipelines-api/) — The Pipelines API from SendPulse — 2 operation(s) for pipelines.
+- [SendPulse Popup API](https://apis.io/apis/sendpulse/sendpulse-popup-api/) — The Popup API from SendPulse — 5 operation(s) for popup.
+- [SendPulse Popup statistic API](https://apis.io/apis/sendpulse/sendpulse-popup-statistic-api/) — The Popup statistic API from SendPulse — 3 operation(s) for popup statistic.
+- [SendPulse Project API](https://apis.io/apis/sendpulse/sendpulse-project-api/) — The Project API from SendPulse — 2 operation(s) for project.
+- [SendPulse Project statistic API](https://apis.io/apis/sendpulse/sendpulse-project-statistic-api/) — The Project statistic API from SendPulse — 1 operation(s) for project statistic.
+- [SendPulse Reports API](https://apis.io/apis/sendpulse/sendpulse-reports-api/) — Endpoints related to Reports.
+- [SendPulse Schools API](https://apis.io/apis/sendpulse/sendpulse-schools-api/) — The Schools API from SendPulse — 1 operation(s) for schools.
+- [SendPulse Senders API](https://apis.io/apis/sendpulse/sendpulse-senders-api/) — Endpoints related to Senders.
+- [SendPulse Single Email Verification API](https://apis.io/apis/sendpulse/sendpulse-single-email-verification-api/) — Endpoints related to Single Email Verification.
+- [SendPulse Students API](https://apis.io/apis/sendpulse/sendpulse-students-api/) — The Students API from SendPulse — 7 operation(s) for students.
+- [SendPulse Students groups API](https://apis.io/apis/sendpulse/sendpulse-students-groups-api/) — The Students groups API from SendPulse — 1 operation(s) for students groups.
+- [SendPulse Subscribers API](https://apis.io/apis/sendpulse/sendpulse-subscribers-api/) — The Subscribers API from SendPulse — 6 operation(s) for subscribers.
+- [SendPulse Tags API](https://apis.io/apis/sendpulse/sendpulse-tags-api/) — Endpoints related to Tags.
+- [SendPulse Tariff API](https://apis.io/apis/sendpulse/sendpulse-tariff-api/) — The Tariff API from SendPulse — 1 operation(s) for tariff.
+- [SendPulse Task Attributes API](https://apis.io/apis/sendpulse/sendpulse-task-attributes-api/) — The Task Attributes API from SendPulse — 2 operation(s) for task attributes.
+- [SendPulse Task Checklist API](https://apis.io/apis/sendpulse/sendpulse-task-checklist-api/) — The Task Checklist API from SendPulse — 4 operation(s) for task checklist.
+- [SendPulse Task Comments API](https://apis.io/apis/sendpulse/sendpulse-task-comments-api/) — The Task Comments API from SendPulse — 2 operation(s) for task comments.
+- [SendPulse Task Entity API](https://apis.io/apis/sendpulse/sendpulse-task-entity-api/) — The Task Entity API from SendPulse — 4 operation(s) for task entity.
+- [SendPulse Task history API](https://apis.io/apis/sendpulse/sendpulse-task-history-api/) — The Task history API from SendPulse — 1 operation(s) for task history.
+- [SendPulse Task Tags API](https://apis.io/apis/sendpulse/sendpulse-task-tags-api/) — The Task Tags API from SendPulse — 3 operation(s) for task tags.
+- [SendPulse Tasks API](https://apis.io/apis/sendpulse/sendpulse-tasks-api/) — The Tasks API from SendPulse — 6 operation(s) for tasks.
+- [SendPulse Tasks boards API](https://apis.io/apis/sendpulse/sendpulse-tasks-boards-api/) — The Tasks boards API from SendPulse — 2 operation(s) for tasks boards.
+- [SendPulse Tasks steps API](https://apis.io/apis/sendpulse/sendpulse-tasks-steps-api/) — The Tasks steps API from SendPulse — 2 operation(s) for tasks steps.
+- [SendPulse Telephony API](https://apis.io/apis/sendpulse/sendpulse-telephony-api/) — The Telephony API from SendPulse — 4 operation(s) for telephony.
+- [SendPulse Templates API](https://apis.io/apis/sendpulse/sendpulse-templates-api/) — Endpoints related to Templates.
+- [SendPulse Triggers API](https://apis.io/apis/sendpulse/sendpulse-triggers-api/) — (keywords)
+- [SendPulse Unsubscribe API](https://apis.io/apis/sendpulse/sendpulse-unsubscribe-api/) — The Unsubscribe API from SendPulse — 3 operation(s) for unsubscribe.
+- [SendPulse Users API](https://apis.io/apis/sendpulse/sendpulse-users-api/) — The Users API from SendPulse — 1 operation(s) for users.
+- [SendPulse Variables API](https://apis.io/apis/sendpulse/sendpulse-variables-api/) — The variables API from SendPulse — 1 operation(s) for variables.
+- [SendPulse Webhooks API](https://apis.io/apis/sendpulse/sendpulse-webhooks-api/) — Endpoints related to Webhooks.
+- [SendPulse Websites API](https://apis.io/apis/sendpulse/sendpulse-websites-api/) — The Websites API from SendPulse — 4 operation(s) for websites.
 
-## APIs
+### Published properties
 
-### SendPulse Address Books & Email API
+Each property below is a page on APIs.io carrying the machine-readable artifact and what it says.
 
-Manage mailing lists (address books), subscribers and variables, and create, send, and report on bulk email campaigns, senders, templates, and the email blacklist.
+#### AsyncAPI (1)
 
-- **Human URL:** [https://sendpulse.com/integrations/api/bulk-email](https://sendpulse.com/integrations/api/bulk-email)
-- **Base URL:** `https://api.sendpulse.com`
+Event-driven and webhook contracts.
 
-#### Tags
+- [Sendpulse Webhooks](https://apis.io/asyncapis/sendpulse/sendpulse-webhooks/)
 
-- Email
-- Address Books
-- Campaigns
+#### MCP servers (1)
 
-#### Properties
+Model Context Protocol servers that expose the API to agents.
 
-- [Documentation](https://sendpulse.com/integrations/api/bulk-email)
-- [API Reference](https://sendpulse.com/integrations/api)
-- [OpenAPI](openapi/sendpulse-openapi.yml) — [OpenAPI Specification](https://spec.openapis.org/oas/latest.html)
-- [Postman Collection](collections/sendpulse.postman_collection.json) — [Postman Collection 2.1](https://schema.getpostman.com/json/collection/v2.1.0/collection.json)
-- [Open Collection](collections/sendpulse.opencollection.json) — [Open Collection 1.0](https://schema.opencollection.com/opencollection/v1.0.0.json)
+- [SendPulse MCP Server](https://apis.io/servers/sendpulse/sendpulse-mcp-server/)
 
-### SendPulse SMTP / Transactional Email API
+#### Agentic access (1)
 
-Send and track transactional email over SMTP, list sent messages, manage sending IP addresses, and maintain the unsubscribe list.
+Which operations an agent can call, which act, and which need a human in the loop.
 
-- **Human URL:** [https://sendpulse.com/integrations/api/smtp](https://sendpulse.com/integrations/api/smtp)
-- **Base URL:** `https://api.sendpulse.com`
+- [Sendpulse Agentic Access](https://apis.io/agentic-access/sendpulse/sendpulse-agentic-access/)
 
-#### Tags
+#### Collections (11)
 
-- SMTP
-- Transactional Email
-- Email
+Postman and Open Collection request collections.
 
-#### Properties
+- [SendPulse API](https://apis.io/collections/sendpulse/open-sendpulse/)
+- [SendPulse Account API](https://apis.io/collections/sendpulse/open-sendpulse-account-api/)
+- [SendPulse Account Address Books API](https://apis.io/collections/sendpulse/open-sendpulse-address-books-api/)
+- [SendPulse Account Authorization API](https://apis.io/collections/sendpulse/open-sendpulse-authorization-api/)
+- [SendPulse Account Automation 360 API](https://apis.io/collections/sendpulse/open-sendpulse-automation-360-api/)
+- [SendPulse Account Email Blacklist API](https://apis.io/collections/sendpulse/open-sendpulse-email-blacklist-api/)
+- [SendPulse Account Email Campaigns API](https://apis.io/collections/sendpulse/open-sendpulse-email-campaigns-api/)
+- [SendPulse Account Senders API](https://apis.io/collections/sendpulse/open-sendpulse-senders-api/)
+- [SendPulse Account SMS API](https://apis.io/collections/sendpulse/open-sendpulse-sms-api/)
+- [SendPulse Account SMTP API](https://apis.io/collections/sendpulse/open-sendpulse-smtp-api/)
+- [SendPulse Account Web Push API](https://apis.io/collections/sendpulse/open-sendpulse-web-push-api/)
 
-- [Documentation](https://sendpulse.com/integrations/api/smtp)
-- [OpenAPI](openapi/sendpulse-openapi.yml) — [OpenAPI Specification](https://spec.openapis.org/oas/latest.html)
-- [Postman Collection](collections/sendpulse.postman_collection.json) — [Postman Collection 2.1](https://schema.getpostman.com/json/collection/v2.1.0/collection.json)
-- [Open Collection](collections/sendpulse.opencollection.json) — [Open Collection 1.0](https://schema.opencollection.com/opencollection/v1.0.0.json)
+#### Overlays (104)
 
-### SendPulse SMS API
+OpenAPI overlays, including conversational phrasing for each operation.
 
-Add and manage phone numbers in address books, send SMS to phone lists, create and cancel SMS campaigns, retrieve campaign cost and statistics, and manage the SMS blacklist.
+- [Sendpulse A360 Overlay](https://apis.io/overlays/sendpulse/sendpulse-a360-overlay/)
+- [Sendpulse Account Api Phrasing Overlay](https://apis.io/overlays/sendpulse/sendpulse-account-api-phrasing-overlay/)
+- [Sendpulse Attachments Api Phrasing Overlay](https://apis.io/overlays/sendpulse/sendpulse-attachments-api-phrasing-overlay/)
+- [Sendpulse Automation Flows Api Phrasing Overlay](https://apis.io/overlays/sendpulse/sendpulse-automation-flows-api-phrasing-overlay/)
+- [Sendpulse Balance Api Phrasing Overlay](https://apis.io/overlays/sendpulse/sendpulse-balance-api-phrasing-overlay/)
+- [Sendpulse Blacklist Api Phrasing Overlay](https://apis.io/overlays/sendpulse/sendpulse-blacklist-api-phrasing-overlay/)
+- [Sendpulse Board Attributes Api Phrasing Overlay](https://apis.io/overlays/sendpulse/sendpulse-board-attributes-api-phrasing-overlay/)
+- [Sendpulse Bots Api Phrasing Overlay](https://apis.io/overlays/sendpulse/sendpulse-bots-api-phrasing-overlay/)
+- [Sendpulse Bounces Api Phrasing Overlay](https://apis.io/overlays/sendpulse/sendpulse-bounces-api-phrasing-overlay/)
+- [Sendpulse Bulk Email Overlay](https://apis.io/overlays/sendpulse/sendpulse-bulk-email-overlay/)
+- [Sendpulse Campaigns Api Phrasing Overlay](https://apis.io/overlays/sendpulse/sendpulse-campaigns-api-phrasing-overlay/)
+- [Sendpulse Chatbots Overlay](https://apis.io/overlays/sendpulse/sendpulse-chatbots-overlay/)
+- [Sendpulse Chats Api Phrasing Overlay](https://apis.io/overlays/sendpulse/sendpulse-chats-api-phrasing-overlay/)
+- [Sendpulse Checklist Items Api Phrasing Overlay](https://apis.io/overlays/sendpulse/sendpulse-checklist-items-api-phrasing-overlay/)
+- [Sendpulse Company Api Phrasing Overlay](https://apis.io/overlays/sendpulse/sendpulse-company-api-phrasing-overlay/)
+- [Sendpulse Company Attributes Api Phrasing Overlay](https://apis.io/overlays/sendpulse/sendpulse-company-attributes-api-phrasing-overlay/)
+- [Sendpulse Company History Api Phrasing Overlay](https://apis.io/overlays/sendpulse/sendpulse-company-history-api-phrasing-overlay/)
+- [Sendpulse Compliance Api Phrasing Overlay](https://apis.io/overlays/sendpulse/sendpulse-compliance-api-phrasing-overlay/)
+- [Sendpulse Configuration Api Phrasing Overlay](https://apis.io/overlays/sendpulse/sendpulse-configuration-api-phrasing-overlay/)
+- [Sendpulse Contact Attributes Api Phrasing Overlay](https://apis.io/overlays/sendpulse/sendpulse-contact-attributes-api-phrasing-overlay/)
+- [Sendpulse Contact Attributes Value Api Phrasing Overlay](https://apis.io/overlays/sendpulse/sendpulse-contact-attributes-value-api-phrasing-overlay/)
+- [Sendpulse Contact Attributes Values Api Phrasing Overlay](https://apis.io/overlays/sendpulse/sendpulse-contact-attributes-values-api-phrasing-overlay/)
+- [Sendpulse Contact Email Addresses Api Phrasing Overlay](https://apis.io/overlays/sendpulse/sendpulse-contact-email-addresses-api-phrasing-overlay/)
+- [Sendpulse Contact History Api Phrasing Overlay](https://apis.io/overlays/sendpulse/sendpulse-contact-history-api-phrasing-overlay/)
+- [Sendpulse Contact Phone Number Api Phrasing Overlay](https://apis.io/overlays/sendpulse/sendpulse-contact-phone-number-api-phrasing-overlay/)
+- …and 79 more published on APIs.io
 
-- **Human URL:** [https://sendpulse.com/integrations/api/bulk-sms](https://sendpulse.com/integrations/api/bulk-sms)
-- **Base URL:** `https://api.sendpulse.com`
+#### Security (4)
 
-#### Tags
+Authentication, trust centre, and vulnerability disclosure.
 
-- SMS
-- Messaging
-- Campaigns
+- [Sendpulse Authentication](https://apis.io/security/sendpulse/sendpulse-authentication/)
+- [Sendpulse Domain Security](https://apis.io/security/sendpulse/sendpulse-domain-security/)
+- [Sendpulse Trust Center](https://apis.io/security/sendpulse/sendpulse-trust-center/)
+- [Sendpulse Vulnerability Disclosure](https://apis.io/security/sendpulse/sendpulse-vulnerability-disclosure/)
 
-#### Properties
+#### OAuth scopes (1)
 
-- [Documentation](https://sendpulse.com/integrations/api/bulk-sms)
-- [OpenAPI](openapi/sendpulse-openapi.yml) — [OpenAPI Specification](https://spec.openapis.org/oas/latest.html)
-- [Postman Collection](collections/sendpulse.postman_collection.json) — [Postman Collection 2.1](https://schema.getpostman.com/json/collection/v2.1.0/collection.json)
-- [Open Collection](collections/sendpulse.opencollection.json) — [Open Collection 1.0](https://schema.opencollection.com/opencollection/v1.0.0.json)
+The permissions the API asks for.
 
-### SendPulse Web Push API
+- [Sendpulse Scopes](https://apis.io/scopes/sendpulse/sendpulse-scopes/)
 
-Create web push notification campaigns, manage registered websites and their subscribers and variables, retrieve integration code, and pull campaign statistics.
+#### Plans and pricing (1)
 
-- **Human URL:** [https://sendpulse.com/integrations/api/web-push](https://sendpulse.com/integrations/api/web-push)
-- **Base URL:** `https://api.sendpulse.com`
+Published plans, tiers and prices.
 
-#### Tags
+- [Sendpulse Plans Pricing](https://apis.io/plans/sendpulse/sendpulse-plans-pricing/)
 
-- Web Push
-- Notifications
-- Subscriptions
+#### Rate limits (1)
 
-#### Properties
+Published request limits.
 
-- [Documentation](https://sendpulse.com/integrations/api/web-push)
-- [OpenAPI](openapi/sendpulse-openapi.yml) — [OpenAPI Specification](https://spec.openapis.org/oas/latest.html)
-- [Postman Collection](collections/sendpulse.postman_collection.json) — [Postman Collection 2.1](https://schema.getpostman.com/json/collection/v2.1.0/collection.json)
-- [Open Collection](collections/sendpulse.opencollection.json) — [Open Collection 1.0](https://schema.opencollection.com/opencollection/v1.0.0.json)
+- [Sendpulse Rate Limits](https://apis.io/rate-limits/sendpulse/sendpulse-rate-limits/)
 
-### SendPulse Chatbots API
+#### FinOps (1)
 
-Manage chatbots across Telegram, Facebook Messenger, WhatsApp, Instagram, Viber, and Live Chat - list bots and contacts, send messages, and run flows.
+What the API costs to run, by operation.
 
-- **Human URL:** [https://sendpulse.com/integrations/api/chatbot](https://sendpulse.com/integrations/api/chatbot)
-- **Base URL:** `https://api.sendpulse.com`
+- [Sendpulse Finops](https://apis.io/finops/sendpulse/sendpulse-finops/)
 
-#### Tags
+## Where to find this API
 
-- Chatbots
-- Messengers
-- Conversational
+Links to the company's own pages. This repository publishes no copy of their specifications — the canonical document is theirs and lives at the URLs below.
 
-#### Properties
-
-- [Documentation](https://sendpulse.com/integrations/api/chatbot)
-- [OpenAPI](openapi/sendpulse-openapi.yml) — [OpenAPI Specification](https://spec.openapis.org/oas/latest.html)
-- [Postman Collection](collections/sendpulse.postman_collection.json) — [Postman Collection 2.1](https://schema.getpostman.com/json/collection/v2.1.0/collection.json)
-- [Open Collection](collections/sendpulse.opencollection.json) — [Open Collection 1.0](https://schema.opencollection.com/opencollection/v1.0.0.json)
-
-### SendPulse Automation 360 API
-
-Trigger Automation 360 flows by sending events with subscriber data, and report on flow, element, and conversion statistics.
-
-- **Human URL:** [https://sendpulse.com/integrations/api/automation360](https://sendpulse.com/integrations/api/automation360)
-- **Base URL:** `https://api.sendpulse.com`
-
-#### Tags
-
-- Automation
-- Workflows
-- Events
-
-#### Properties
-
-- [Documentation](https://sendpulse.com/integrations/api/automation360)
-- [OpenAPI](openapi/sendpulse-openapi.yml) — [OpenAPI Specification](https://spec.openapis.org/oas/latest.html)
-- [Postman Collection](collections/sendpulse.postman_collection.json) — [Postman Collection 2.1](https://schema.getpostman.com/json/collection/v2.1.0/collection.json)
-- [Open Collection](collections/sendpulse.opencollection.json) — [Open Collection 1.0](https://schema.opencollection.com/opencollection/v1.0.0.json)
-
-## Common Properties
-
-- [GitHub Organization](https://github.com/sendpulse)
-- [LinkedIn](https://www.linkedin.com/company/sendpulse)
 - [Website](https://sendpulse.com/)
 - [Documentation](https://sendpulse.com/integrations/api)
-- [Plans](plans/sendpulse-plans-pricing.yml)
-- [Rate Limits](rate-limits/sendpulse-rate-limits.yml)
-- [Fin Ops](finops/sendpulse-finops.yml)
+- [Getting started](https://sendpulse.com/integrations/api)
+- [API reference](https://sendpulse.com/integrations/api/bulk-email)
+- [Pricing](https://sendpulse.com/prices)
+- [Sign up](https://sendpulse.com/register)
+- [Support](https://sendpulse.com/knowledge-base)
+- [Changelog](https://sendpulse.com/updates)
+- [Blog](https://sendpulse.com/blog)
+- [Terms of service](https://sendpulse.com/legal/terms)
+- [Privacy policy](https://sendpulse.com/legal/pp)
+- [GitHub](https://github.com/sendpulse)
+- [Status](https://status.sendpulse.com/)
 
-## Maintainers
+## API Evangelist rating
 
-**FN:** Kin Lane
-**Email:** kin@apievangelist.com
+**Kin Score 68.4** — exemplar · rubric 0.25.0 · scored 2026-10-23
+
+| Facet | Score |
+|---|---|
+| Discoverability | 80.0 |
+| Contract quality | 52.7 |
+| Contract governance | 4.5 |
+| Operational transparency | 81.6 |
+| Developer ergonomics | 66.1 |
+| Access clarity | 88.9 |
+
+**Agent readiness 51.7** — agent-ready (gated down from agent-native)
+
+| Agent-readiness dimension | Result |
+|---|---|
+| Spec Presence | yes |
+| Agentic Access | derived (partial credit) |
+| Reversibility Documented | verified |
+| MCP Server | documented (partial credit) |
+| Auth Clarity | served (partial credit) |
+| Idempotency | — |
+| Error Semantics | verified |
+| OpenAPI Examples | partial |
+| Rate Limit Signal | documented (partial credit) |
+| Event Surface Described | yes |
+| Agent Skills | derived (partial credit) |
+| Well Known Catalog | — |
+| Consent Identity | — |
+| Agent Card | — |
+| Dry Run Mode | — |
+| Delegated Identity | served (partial credit) |
+| Protected Resource Metadata | — |
+| Dynamic Client Registration | yes |
+| Agentic Commerce | — |
+| Pagination Ratio | — |
+| Operation Distinctiveness | mostly (partial credit) |
+
+**Regulatory alignment 44.2** — Telecommunications
+
+The rubric is published at [github.com/api-evangelist/kin-score](https://github.com/api-evangelist/kin-score). The per-check breakdown behind these numbers — which checks were earned, partial or missed — along with score history and how this provider compares to its peers, is available at [apis.io/providers/sendpulse/](https://apis.io/providers/sendpulse/).
+
+## How this profile is made
+
+API Evangelist profiles a company's public API surface the way a developer would find it: the website, developer portal and documentation, the specifications it publishes, its public repositories, and its pricing, status and changelog pages. From that it derives the properties above — contracts split per API, workflows, schemas, collections, governance rules, plans and rate limits — and scores them against the published [Kin Score rubric](https://github.com/api-evangelist/kin-score).
+
+The artifacts are published on [APIs.io](https://apis.io), not in this repository. This repository is the public record for SendPulse: the place to say something is wrong, missing or out of date, and to ask for a re-score or a removal.
+
+## Open an issue
+
+- **Something about this listing** — a wrong description, a missing API, a stale artifact or a question about the rating: [open an issue on this repository](https://github.com/api-evangelist/sendpulse/issues/new).
+- **A new API, or one that is not in the catalog yet** — [submit it on APIs.io](https://apis.io/add/).
+- **Anything else** — [the APIs.io inbox](https://github.com/api-search/inbox/issues/new) or [info@apievangelist.com](mailto:info@apievangelist.com).
